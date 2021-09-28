@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        try {
+            if (!('theme' in localStorage)) {
+                localStorage.theme = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+            }
+            if (localStorage.theme === 'dark') {
+                document.querySelector('html').classList.add('dark');
+            }
+        } catch (_) {
+        }
+    </script>
+    <title>Langium</title>
+    <meta name="viewport" content="width=device-width">
+    <meta charset="utf-8">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="TODO(description)">
+    <meta property="og:description" content="TODO(description)">
+    <meta property="og:image" content="https://langium.org/img/social-card.jpg">
+    <meta property="og:site_name" content="Langium">
+    <meta property="og:title" content="Langium">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://langium.org">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description" content="TODO(description)">
+    <meta name="twitter:image" content="https://langium.org/img/social-card.jpg">
+    <!--meta name="twitter:site" content="@langium_org"-->
+    <meta name="twitter:title" content="Langium">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#00b4b6">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- TODO(website) --> 
+</body>
+</html>
