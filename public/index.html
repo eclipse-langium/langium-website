@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <script>
         try {
@@ -35,7 +36,102 @@
     <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#00b4b6">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-    <!-- TODO(website) --> 
+
+<body class='bg-white dark:bg-gray-900 '>
+    <div class="relative bg-white dark:bg-gray-900">
+        <div class="flex justify-between items-center px-4 py-6 sm:px-6 md:space-x-10">
+            <div class="flex justify-start lg:w-0 lg:flex-1">
+                <a href="#">
+                    <span class="sr-only">Workflow</span>
+                    <img class="h-8 w-auto sm:h-10" src="./assets/Langium_Feder_vorn_links.svg" alt="">
+                </a>
+            </div>
+            <div class="-mr-2 -my-2 md:hidden">
+                <button type="button"
+                    class="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                    aria-expanded="false">
+                    <span class="sr-only">Open menu</span>
+                    <!-- Heroicon name: outline/menu -->
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+            <nav class="hidden md:flex space-x-10 text-gray-500 dark:text-gray-300">
+                <a href="#" class="text-base font-medium text-emeraldLangium dark:text-emeraldLangium dark:hover:text-white hover:text-gray-900">
+                    Home
+                </a>
+                <a href="#" class="text-base font-medium dark:hover:text-white hover:text-gray-900">
+                    About
+                </a>
+                <a href="#" class="text-base font-medium dark:hover:text-white hover:text-gray-900">
+                    Documentation
+                </a>
+                <a href="#" class="text-base font-medium dark:hover:text-white hover:text-gray-900">
+                    Playground
+                </a>
+                <a href="#" class="text-base font-medium dark:hover:text-white hover:text-gray-900">
+                    Contact
+                </a>
+            </nav>
+        </div>
+
+        <!--
+      Mobile menu, show/hide based on mobile menu state.
+  
+      Entering: "duration-200 ease-out"
+        From: "opacity-0 scale-95"
+        To: "opacity-100 scale-100"
+      Leaving: "duration-100 ease-in"
+        From: "opacity-100 scale-100"
+        To: "opacity-0 scale-95"
+    -->
+        <div class="absolute top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden">
+            <div class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white dark:bg-gray-900 divide-y-2 divide-gray-50">
+                <div class="pt-5 pb-6 px-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <img class="h-8 w-auto" src="./assets/Langium_Feder_vorn_links.svg" alt="Workflow">
+                        </div>
+                        <div class="-mr-2">
+                            <button type="button"
+                                class="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                                <span class="sr-only">Close menu</span>
+                                <!-- Heroicon name: outline/x -->
+                                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <nav class="flex flex-col items-center dark:text-gray-200 text-gray-900">
+                            <a href="#" class="h-10 text-base font-medium dark:hover:text-white hover:text-gray-700">
+                                Home
+                            </a>
+                            <a href="#" class="h-10 text-base font-medium dark:hover:text-white hover:text-gray-700">
+                                About
+                            </a>
+                            <a href="#" class="h-10 text-base font-medium dark:hover:text-white hover:text-gray-700">
+                                Documentation
+                            </a>
+                            <a href="#" class="h-10 text-base font-medium dark:hover:text-white hover:text-gray-700">
+                                Playground
+                            </a>
+                            <a href="#" class="h-10 text-base font-medium dark:hover:text-white hover:text-gray-700">
+                                Contact
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
+
 </html>

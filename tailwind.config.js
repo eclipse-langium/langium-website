@@ -3,7 +3,12 @@ module.exports = {
   purge: ['./public/**/*.html'],
   darkMode: 'class',
   theme: {
-    extend: {},
+    fontFamily: {
+      sans: ['Menlo', 'sans-serif']
+    },
+    colors: {
+      emeraldLangium: '#26888C'
+    }
   },
   variants: {
     extend: {},
