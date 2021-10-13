@@ -6,8 +6,10 @@ module.exports = {
     fontFamily: {
       sans: ['Menlo', 'sans-serif']
     },
-    colors: {
-      emeraldLangium: '#26888C'
+    extend: {
+      colors: {
+        emeraldLangium: '#26888C'
+      }
     }
   },
   variants: {
