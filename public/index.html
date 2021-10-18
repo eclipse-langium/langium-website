@@ -2,17 +2,6 @@
 <html lang="en">
 
 <head>
-    <script>
-        try {
-            if (!('theme' in localStorage)) {
-                localStorage.theme = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
-            }
-            if (localStorage.theme === 'dark') {
-                document.querySelector('html').classList.add('dark');
-            }
-        } catch (_) {
-        }
-    </script>
     <title>Langium</title>
     <meta name="viewport" content="width=device-width">
     <meta charset="utf-8">
@@ -35,20 +24,21 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#00b4b6">
     <link rel="stylesheet" href="/css/style.css">
+    <script defer src="https://unpkg.com/alpinejs@3.4.2/dist/cdn.min.js"></script>
 </head>
 
 <body class='bg-white dark:bg-gray-900 '>
-    <div class="relative bg-white dark:bg-gray-900">
+    <div x-data="{ isOpen: false }" class="relative bg-white dark:bg-gray-900">
         <div class="flex justify-between items-center px-4 py-6 sm:px-6 md:space-x-10">
             <div class="flex justify-start lg:w-0 lg:flex-1">
                 <a href="#">
                     <span class="sr-only">Workflow</span>
-                    <img class="h-8 w-auto sm:h-10" src="./assets/Langium_Feder_vorn_links.svg" alt="">
+                    <img class="h-10 w-auto" src="./assets/Langium_Feder_vorn_links.svg" alt="">
                 </a>
             </div>
             <div class="-mr-2 -my-2 md:hidden">
-                <button type="button"
-                    class="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                <button type="button" @click="isOpen = true"
+                    class="dark:text-gray-300 rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
                     aria-expanded="false">
                     <span class="sr-only">Open menu</span>
                     <!-- Heroicon name: outline/menu -->
@@ -60,46 +50,41 @@
                 </button>
             </div>
             <nav class="hidden md:flex space-x-10 text-gray-500 dark:text-gray-300">
-                <a href="#" class="text-base font-medium text-emeraldLangium dark:text-emeraldLangium dark:hover:text-white hover:text-gray-900">
+                <a href="#" class="nav-link-desktop text-emeraldLangium dark:text-emeraldLangium">
                     Home
                 </a>
-                <a href="#" class="text-base font-medium dark:hover:text-white hover:text-gray-900">
+                <a href="#" class="nav-link-desktop">
                     About
                 </a>
-                <a href="#" class="text-base font-medium dark:hover:text-white hover:text-gray-900">
+                <a href="#" class="nav-link-desktop">
                     Documentation
                 </a>
-                <a href="#" class="text-base font-medium dark:hover:text-white hover:text-gray-900">
+                <a href="#" class="nav-link-desktop">
                     Playground
                 </a>
-                <a href="#" class="text-base font-medium dark:hover:text-white hover:text-gray-900">
+                <a href="#" class="nav-link-desktop">
                     Contact
                 </a>
             </nav>
         </div>
-
-        <!--
-      Mobile menu, show/hide based on mobile menu state.
-  
-      Entering: "duration-200 ease-out"
-        From: "opacity-0 scale-95"
-        To: "opacity-100 scale-100"
-      Leaving: "duration-100 ease-in"
-        From: "opacity-100 scale-100"
-        To: "opacity-0 scale-95"
-    -->
-        <div class="absolute top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden">
-            <div class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white dark:bg-gray-900 divide-y-2 divide-gray-50">
+        <div x-show="isOpen" x-transition:enter="transition duration-200 ease-out transform"
+            x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-100 transform"
+            x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+            class="absolute top-0 inset-x-0 p-2 transform origin-top-right md:hidden">
+            <div
+                class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white dark:bg-gray-900 divide-y-2 divide-gray-50">
                 <div class="pt-5 pb-6 px-5">
                     <div class="flex items-center justify-between">
                         <div>
-                            <img class="h-8 w-auto" src="./assets/Langium_Feder_vorn_links.svg" alt="Workflow">
+                            <img class="h-10 w-auto" src="./assets/Langium_Feder_vorn_links.svg" alt="Workflow">
                         </div>
                         <div class="-mr-2">
-                            <button type="button"
-                                class="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                            <button @click="isOpen = false" type="button" class="mobile-menu-btn p-2 inline-flex 
+                                       items-center justify-center 
+                                       text-gray-900 dark:text-gray-200
+                                       hover:text-gray-500">
                                 <span class="sr-only">Close menu</span>
-                                <!-- Heroicon name: outline/x -->
                                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -108,21 +93,21 @@
                             </button>
                         </div>
                     </div>
-                    <div class="mt-6">
+                    <div :class="{'hidden': !isOpen}" class="mt-6 mobile-menu">
                         <nav class="flex flex-col items-center dark:text-gray-200 text-gray-900">
-                            <a href="#" class="h-10 text-base font-medium dark:hover:text-white hover:text-gray-700">
+                            <a href="#" class="nav-link-mobile">
                                 Home
                             </a>
-                            <a href="#" class="h-10 text-base font-medium dark:hover:text-white hover:text-gray-700">
+                            <a href="#" class="nav-link-mobile">
                                 About
                             </a>
-                            <a href="#" class="h-10 text-base font-medium dark:hover:text-white hover:text-gray-700">
+                            <a href="#" class="nav-link-mobile">
                                 Documentation
                             </a>
-                            <a href="#" class="h-10 text-base font-medium dark:hover:text-white hover:text-gray-700">
+                            <a href="#" class="nav-link-mobile">
                                 Playground
                             </a>
-                            <a href="#" class="h-10 text-base font-medium dark:hover:text-white hover:text-gray-700">
+                            <a href="#" class="nav-link-mobile">
                                 Contact
                             </a>
                         </nav>
@@ -131,7 +116,17 @@
             </div>
         </div>
     </div>
-
+    <script>
+        try {
+            if (!('theme' in localStorage)) {
+                localStorage.theme = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+            }
+            if (localStorage.theme === 'dark') {
+                document.querySelector('html').classList.add('dark');
+            }
+        } catch (_) {
+        }
+    </script>
 </body>
 
 </html>

@@ -2,3 +2,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.nav-link-desktop {
+    @apply text-base font-medium dark:hover:text-white hover:text-gray-900;
+}
+
+.nav-link-mobile {
+    @apply h-10 text-base font-medium dark:hover:text-white hover:text-gray-700;
+}
