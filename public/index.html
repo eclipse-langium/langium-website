@@ -25,48 +25,239 @@
     <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#00b4b6">
     <link rel="stylesheet" href="/css/style.css">
     <script defer src="https://unpkg.com/alpinejs@3.4.2/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/ScrollToPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/ScrollTrigger.min.js"></script>
 </head>
 
 <body class='bg-white dark:bg-gray-900 '>
     <div x-data="{ isOpen: false }" class="relative bg-white dark:bg-gray-900">
-        <div class="flex justify-between items-center px-4 py-6 sm:px-6 md:space-x-10">
-            <div class="flex justify-start lg:w-0 lg:flex-1">
-                <a href="#">
-                    <span class="sr-only">Workflow</span>
-                    <img class="h-10 w-auto" src="./assets/Langium_Feder_vorn_links.svg" alt="">
-                </a>
+        <header>
+            <div class="flex justify-between items-center px-4 py-6 sm:px-6 md:space-x-10">
+                <div class="flex justify-start lg:w-0 lg:flex-1">
+                    <a href="#">
+                        <span class="sr-only">Workflow</span>
+                        <img class="h-10 w-auto" src="./assets/Langium_Feder_vorn_links.svg" alt="">
+                    </a>
+                </div>
+                <div class="-mr-2 -my-2 md:hidden">
+                    <button type="button" @click="isOpen = true"
+                        class="dark:text-gray-300 rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                        aria-expanded="false">
+                        <span class="sr-only">Open menu</span>
+                        <!-- Heroicon name: outline/menu -->
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+                <nav class="hidden md:flex space-x-10 text-gray-500 dark:text-gray-300">
+                    <a href="#" class="nav-link-desktop text-emeraldLangium dark:text-emeraldLangium">
+                        Home
+                    </a>
+                    <a href="#" class="nav-link-desktop">
+                        About
+                    </a>
+                    <a href="#" class="nav-link-desktop">
+                        Documentation
+                    </a>
+                    <a href="#" class="nav-link-desktop">
+                        Playground
+                    </a>
+                    <a href="#" class="nav-link-desktop">
+                        Contact
+                    </a>
+                </nav>
             </div>
-            <div class="-mr-2 -my-2 md:hidden">
-                <button type="button" @click="isOpen = true"
-                    class="dark:text-gray-300 rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-                    aria-expanded="false">
-                    <span class="sr-only">Open menu</span>
-                    <!-- Heroicon name: outline/menu -->
-                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+        </header>
+        <main>
+            <div id="teaser" class="relative">
+                <div
+                    class="teaser-bg absolute top-0 left-0 w-full h-full dark:bg-emeraldLangiumDarkest bg-office bg-blend-multiply bg-cover bg-center bg-no-repeat">
+                </div>
+                <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+                    <h2 class="text-center text-2xl tracking-tight sm:text-3xl lg:text-4xl">
+                        <span class="block dark:text-white">Built to bring</span>
+                        <span class="block dark:text-emeraldLangium">language engineering</span>
+                        <span class="block dark:text-white">to</span>
+                        <span class="block dark:text-emeraldLangium">the next level<span
+                                class="dark:text-white">_</span></span>
+                    </h2>
+                    <p class="mt-6 max-w-lg mx-auto text-center dark:text-gray-300 sm:max-w-3xl">
+                        Langium is an open source language engineering tool with first class support for the
+                        <span class="text-accentGreen">Language Server Protocol</span>, implemented in <span
+                            class="text-accentViolet">TypeScript</span>
+                        and running in <span class="text-accentBlue">NodeJS</span>.
+                        <br /><br />
+                        This web technology stack is more future than ever.
+                    </p>
+                    <div class="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center">
+                        <a href="#"
+                            class="flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium shadow-sm text-white bg-emeraldLangium hover:bg-indigo-50 sm:px-8">
+                            Try it
+                        </a>
+                    </div>
+                </div>
             </div>
-            <nav class="hidden md:flex space-x-10 text-gray-500 dark:text-gray-300">
-                <a href="#" class="nav-link-desktop text-emeraldLangium dark:text-emeraldLangium">
-                    Home
-                </a>
-                <a href="#" class="nav-link-desktop">
-                    About
-                </a>
-                <a href="#" class="nav-link-desktop">
-                    Documentation
-                </a>
-                <a href="#" class="nav-link-desktop">
-                    Playground
-                </a>
-                <a href="#" class="nav-link-desktop">
-                    Contact
-                </a>
-            </nav>
-        </div>
+            <div>
+                <div class="mt-12">
+                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        <div class="pt-6">
+                            <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+                                <div class="-mt-6">
+                                    <div>
+                                        <span
+                                            class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-md shadow-lg">
+                                            <!-- Heroicon name: outline/cloud-upload -->
+                                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Push to Deploy
+                                    </h3>
+                                    <p class="mt-5 text-base text-gray-500">
+                                        Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. Et magna sit
+                                        morbi vitae lobortis.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6">
+                            <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+                                <div class="-mt-6">
+                                    <div>
+                                        <span
+                                            class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-md shadow-lg">
+                                            <!-- Heroicon name: outline/lock-closed -->
+                                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">SSL Certificates
+                                    </h3>
+                                    <p class="mt-5 text-base text-gray-500">
+                                        Qui aut temporibus nesciunt vitae dicta repellat sit dolores pariatur.
+                                        Temporibus qui illum aut.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6">
+                            <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+                                <div class="-mt-6">
+                                    <div>
+                                        <span
+                                            class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-md shadow-lg">
+                                            <!-- Heroicon name: outline/refresh -->
+                                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Simple Queues</h3>
+                                    <p class="mt-5 text-base text-gray-500">
+                                        Rerum quas incidunt deleniti quaerat suscipit mollitia. Amet repellendus ut odit
+                                        dolores qui.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6">
+                            <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+                                <div class="-mt-6">
+                                    <div>
+                                        <span
+                                            class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-md shadow-lg">
+                                            <!-- Heroicon name: outline/shield-check -->
+                                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Advanced Security
+                                    </h3>
+                                    <p class="mt-5 text-base text-gray-500">
+                                        Ullam laboriosam est voluptatem maxime ut mollitia commodi. Et dignissimos
+                                        suscipit perspiciatis.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6">
+                            <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+                                <div class="-mt-6">
+                                    <div>
+                                        <span
+                                            class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-md shadow-lg">
+                                            <!-- Heroicon name: outline/cog -->
+                                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Powerful API</h3>
+                                    <p class="mt-5 text-base text-gray-500">
+                                        Ab a facere voluptatem in quia corrupti veritatis aliquam. Veritatis labore
+                                        quaerat ipsum quaerat id.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6">
+                            <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+                                <div class="-mt-6">
+                                    <div>
+                                        <span
+                                            class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-md shadow-lg">
+                                            <!-- Heroicon name: outline/server -->
+                                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Database Backups
+                                    </h3>
+                                    <p class="mt-5 text-base text-gray-500">
+                                        Quia qui et est officia cupiditate qui consectetur. Ratione similique et impedit
+                                        ea ipsum et.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Mobile Menu -->
         <div x-show="isOpen" x-transition:enter="transition duration-200 ease-out transform"
             x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-100 transform"
@@ -126,6 +317,18 @@
             }
         } catch (_) {
         }
+
+        const teaser = gsap.utils.selector('#teaser');
+        const teaserBg = teaser('.teaser-bg');
+        console.log("innerheight", innerHeight);
+        teaserBg[0].style.backgroundPosition = "50% -88px"; 
+        gsap.to(teaserBg, {
+            backgroundPosition: `50% 400px`,
+            ease: "none",
+            scrollTrigger: {
+                scrub: true
+            }
+        });
     </script>
 </body>
 
