@@ -980,10 +980,6 @@ video {
   letter-spacing: 0.025em;
 }
 
-.tracking-widest {
-  letter-spacing: 0.1em;
-}
-
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgba(163, 163, 163, var(--tw-text-opacity));
