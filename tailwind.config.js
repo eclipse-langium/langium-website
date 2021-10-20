@@ -6,7 +6,8 @@ module.exports = {
   darkMode: 'class',
   theme: {
     fontFamily: {
-      sans: ['Menlo', 'sans-serif']
+      sans: ['Menlo', 'sans-serif'],
+      'body': ['"Roboto Condensed"', 'sans-serif']
     },
     colors: {
       transparent: 'transparent',
