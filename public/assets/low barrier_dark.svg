@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 731 1044" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g transform="matrix(1,0,0,1,-543.383,-52.5827)">
+        <g transform="matrix(0.703639,0,0,1,295.739,1.48738)">
+            <path d="M672.547,1065.59L1202.8,1065.59L937.458,1065.59L937.458,671.697" style="fill:none;stroke:rgb(12,84,80);stroke-width:67.47px;"/>
+        </g>
+        <g transform="matrix(0.988569,0.150767,-0.150767,0.988569,71.2005,-134.548)">
+            <g transform="matrix(1.51728,0,0,1.51728,-1272.88,-299.536)">
+                <path d="M1244.53,665.321L1417.24,620.029L1364.93,517.242L1458.57,385.206L1346.98,355.641L1257.42,407.783" style="fill:none;stroke:rgb(12,84,80);stroke-width:38.45px;"/>
+            </g>
+            <g transform="matrix(1.51728,0,0,1.51728,-1272.88,-299.536)">
+                <path d="M1455.76,384.707L1567.26,424.667L1649.86,384.707" style="fill:none;stroke:rgb(12,84,80);stroke-width:38.45px;"/>
+            </g>
+            <g transform="matrix(1.51728,0,0,1.51728,-1272.88,-299.536)">
+                <path d="M1376.92,536.337L1510.96,529.041L1617.56,605.014" style="fill:none;stroke:rgb(12,84,80);stroke-width:38.45px;"/>
+            </g>
+            <path d="M983.783,40.452C927.617,40.452 883.407,85.17 883.407,138.472C883.407,191.774 927.617,236.491 983.783,236.491C1039.95,236.491 1084.16,191.774 1084.16,138.472C1084.16,85.17 1039.95,40.452 983.783,40.452ZM983.783,94.619C1009.29,94.619 1029.99,114.269 1029.99,138.472C1029.99,162.675 1009.29,182.324 983.783,182.324C958.279,182.324 937.574,162.675 937.574,138.472C937.574,114.269 958.279,94.619 983.783,94.619Z" style="fill:rgb(12,84,80);"/>
+        </g>
+    </g>
+</svg>
