@@ -23,7 +23,8 @@ module.exports = {
         emeraldLangiumDarkest: '#042424',
         accentBlue: '#1FCDEB',
         accentGreen: '#B6F059',
-        accentViolet: '#D568E7'
+        accentViolet: '#D568E7',
+        accentLightBlue: '#BCDBEF'
       },
       backgroundImage: {
         'office': "url('../assets/office.jpg')"
