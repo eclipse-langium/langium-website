@@ -17,6 +17,9 @@ module.exports = {
       gray: colors.trueGray
     },
     extend: {
+      spacing:{
+        '192':'48rem'
+      },
       colors: {
         emeraldLangium: '#26888C',
         emeraldLangiumDarker: '#0A4340',
