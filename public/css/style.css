@@ -711,6 +711,10 @@ video {
   box-sizing: border-box;
 }
 
+.box-content {
+  box-sizing: content-box;
+}
+
 .block {
   display: block;
 }
@@ -795,6 +799,10 @@ video {
   width: 48rem;
 }
 
+.w-32 {
+  width: 8rem;
+}
+
 .max-w-lg {
   max-width: 32rem;
 }
@@ -835,6 +843,14 @@ video {
   flex-wrap: nowrap;
 }
 
+.place-items-center {
+  place-items: center;
+}
+
+.content-center {
+  align-content: center;
+}
+
 .items-center {
   align-items: center;
 }
@@ -865,6 +881,18 @@ video {
   --tw-divide-y-reverse: 0;
   border-top-width: calc(2px * calc(1 - var(--tw-divide-y-reverse)));
   border-bottom-width: calc(2px * var(--tw-divide-y-reverse));
+}
+
+.divide-y > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-y-reverse: 0;
+  border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
+  border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
+}
+
+.divide-y-8 > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-y-reverse: 0;
+  border-top-width: calc(8px * calc(1 - var(--tw-divide-y-reverse)));
+  border-bottom-width: calc(8px * var(--tw-divide-y-reverse));
 }
 
 .divide-gray-50 > :not([hidden]) ~ :not([hidden]) {
@@ -931,8 +959,22 @@ video {
   background-repeat: no-repeat;
 }
 
+.object-contain {
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+.object-center {
+  -o-object-position: center;
+     object-position: center;
+}
+
 .p-2 {
   padding: 0.5rem;
+}
+
+.p-4 {
+  padding: 1rem;
 }
 
 .px-4 {
@@ -995,6 +1037,21 @@ video {
   padding-bottom: 2rem;
 }
 
+.px-192 {
+  padding-left: 48rem;
+  padding-right: 48rem;
+}
+
+.px-60 {
+  padding-left: 15rem;
+  padding-right: 15rem;
+}
+
+.px-80 {
+  padding-left: 20rem;
+  padding-right: 20rem;
+}
+
 .pt-36 {
   padding-top: 9rem;
 }
@@ -1041,6 +1098,10 @@ video {
 
 .text-center {
   text-align: center;
+}
+
+.align-middle {
+  vertical-align: middle;
 }
 
 .font-body {
@@ -1225,6 +1286,11 @@ video {
 
 .focus\:ring-inset:focus {
   --tw-ring-inset: inset;
+}
+
+.dark .dark\:divide-white > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-opacity: 1;
+  border-color: rgba(255, 255, 255, var(--tw-divide-opacity));
 }
 
 .dark .dark\:border-emeraldLangium {
