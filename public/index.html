@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 
 <head>
     <title>Langium</title>
@@ -434,15 +434,15 @@
         </div>
     </div>
     <script>
-        try {
-            if (!('theme' in localStorage)) {
-                localStorage.theme = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
-            }
-            if (localStorage.theme === 'dark') {
-                document.querySelector('html').classList.add('dark');
-            }
-        } catch (_) {
-        }
+        // try {
+        //     if (!('theme' in localStorage)) {
+        //         localStorage.theme = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+        //     }
+        //     if (localStorage.theme === 'dark') {
+        //         document.querySelector('html').classList.add('dark');
+        //     }
+        // } catch (_) {
+        // }
 
         const teaser = gsap.utils.selector('#teaser');
         const teaserBg = teaser('.teaser-bg');
