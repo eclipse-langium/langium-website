@@ -20,6 +20,9 @@ module.exports = {
       spacing:{
         '192':'48rem'
       },
+      minWidth: {
+        'featureItem': '420px'
+      },
       colors: {
         emeraldLangium: '#26888C',
         emeraldLangiumDarker: '#0A4340',
