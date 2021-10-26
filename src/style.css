@@ -10,3 +10,15 @@
 .nav-link-mobile {
     @apply h-10 text-base font-medium dark:hover:text-white hover:text-gray-700;
 }
+
+.about-item-icon-container {
+    @apply h-60 flex items-center justify-center;    
+}
+
+.about-item-title {
+    @apply h-20 text-lg font-medium text-gray-900 tracking-tight dark:text-gray-100;   
+}
+
+.about-item-text {
+    @apply text-base text-gray-100 dark:text-gray-100 font-body tracking-wide;    
+}
