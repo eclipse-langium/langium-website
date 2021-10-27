@@ -57,30 +57,24 @@
                     </button>
                 </div>
                 <nav class="hidden md:flex space-x-10 text-gray-1000 dark:text-gray-100 lg:px-12">
-                    <a href="#" class="nav-link-desktop text-emeraldLangium dark:text-emeraldLangium">
-                        Home
-                    </a>
-                    <a href="#about" class="nav-link-about">
-                        About
-                    </a>
                     <a href="#" class="nav-link-desktop">
                         Documentation
                     </a>
                     <a href="#" class="nav-link-desktop">
                         Playground
                     </a>
-                    <a href="#" class="nav-link-desktop">
+                    <a href="#" class="nav-link-desktop text-emeraldLangium dark:text-emeraldLangium">
                         Contact
                     </a>
                 </nav>
             </div>
         </header>
         <main>
-            <div id="teaser" class="relative">
+            <section id="teaser" class="relative h-teaser">
                 <div
                     class="teaser-bg absolute top-0 left-0 w-full h-full dark:bg-emeraldLangiumDarkest bg-office bg-fixed bg-blend-multiply bg-cover bg-center bg-no-repeat">
                 </div>
-                <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8">
+                <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:pt-32 lg:px-8">
                     <h2 class="text-center text-2xl tracking-tight sm:text-3xl lg:text-4xl">
                         <span class="block dark:text-gray-100">Built to bring</span>
                         <span class="block dark:text-emeraldLangium">language engineering</span>
@@ -103,17 +97,17 @@
                         </a>
                     </div>
                 </div>
-            </div>
+            </section>
             <!-- About Section -->
-            <div id="about">
-                <div class="pt-16 pb-4 px-6 py-8 sm:px-10 sm:pt-16 sm:pb-4 lg:pt-36 lg:pb-4 lg:px-16">
+            <section id="about" >
+                <div id="about-title" class="pt-16 pb-4 px-6 py-8 sm:px-10 sm:pt-16 sm:pb-4 lg:pt-36 lg:pb-4 lg:px-16">
                     <h2 class="text-gray-900 dark:text-gray-100 text-2xl tracking-tight sm:text-3xl lg:text-4xl">
                         Why Langium?
                         </p>
                     </h2>
                 </div>
                 <div class="grid grid-cols-1 gap-8 px-16 lg:px-28 sm:px-12 sm:grid-cols-2 lg:grid-cols-3">
-                    <div class="flow-root px-6 pb-8">
+                    <div class="about-item flow-root px-6 pb-8">
                         <div class="about-item-icon-container">
                             <!-- Heroicon name: outline/cloud-upload -->
                             <img class="h-20" src="./assets/TypeScript.svg" />
@@ -127,7 +121,7 @@
                             appropriate utility methods to help you work with it.
                         </p>
                     </div>
-                    <div class="flow-root px-6 pb-8">
+                    <div class="about-item flow-root px-6 pb-8">
                         <div class="about-item-icon-container">
                             <!-- Heroicon name: outline/cloud-upload -->
                             <img class="h-40" src="./assets/experience.svg" />
@@ -142,7 +136,7 @@
                             push language engineering to a new level.
                         </p>
                     </div>
-                    <div class="flow-root px-6 pb-8">
+                    <div class="about-item flow-root px-6 pb-8">
                         <div class="about-item-icon-container">
                             <!-- Heroicon name: outline/cloud-upload -->
                             <img class="h-32" src="./assets/low barrier.svg" />
@@ -157,7 +151,7 @@
                             of your language: the grammar language.
                         </p>
                     </div>
-                    <div class="flow-root px-6 pb-8">
+                    <div class="about-item flow-root px-6 pb-8">
                         <div class="about-item-icon-container">
                             <!-- Heroicon name: outline/cloud-upload -->
                             <img class="h-36" src="./assets/everywere.png" />
@@ -171,7 +165,7 @@
                             based environments but works just as well in your browser!
                         </p>
                     </div>
-                    <div class="flow-root px-6 pb-8">
+                    <div class="about-item flow-root px-6 pb-8">
                         <div class="about-item-icon-container">
                             <!-- Heroicon name: outline/cloud-upload -->
                             <img class="h-20" src="./assets/Customize.svg" />
@@ -186,7 +180,7 @@
                             you can override or replace the defaults completely with your custom implementation.
                         </p>
                     </div>
-                    <div class="flow-root px-6 pb-8">
+                    <div class="about-item flow-root px-6 pb-8">
                         <div class="about-item-icon-container">
                             <!-- Heroicon name: outline/cloud-upload -->
                             <img class="h-40" src="./assets/Versatile.svg" />
@@ -201,7 +195,7 @@
                         </p>
                     </div>
                 </div>
-            </div>
+            </section>
             <!-- Feature Section -->
             <div id="features">
                 <div class="pt-16 pb-4 px-6 py-8 sm:px-10 sm:pt-16 sm:pb-4 lg:pt-36 lg:pb-4 lg:px-16">
@@ -456,20 +450,9 @@
         //         document.querySelector('html').classList.add('dark');
         //     }
         // } catch (_) {
-        // }
-
-        const teaser = gsap.utils.selector('#teaser');
-        const teaserBg = teaser('.teaser-bg');
-        console.log("innerheight", innerHeight);
-        teaserBg[0].style.backgroundPosition = "50% 0";
-        gsap.to(teaserBg, {
-            backgroundPosition: `50% -450px`,
-            ease: "none",
-            scrollTrigger: {
-                scrub: true
-            }
-        });
+        // }        
     </script>
+    <script src="index.js"></script>
 </body>
 
 </html>

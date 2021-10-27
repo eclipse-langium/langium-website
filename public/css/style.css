@@ -756,6 +756,10 @@ video {
   height: 2.5rem;
 }
 
+.h-teaser {
+  height: calc(100vh - 96px);
+}
+
 .w-auto {
   width: auto;
 }
@@ -889,10 +893,6 @@ video {
 
 .bg-cover {
   background-size: cover;
-}
-
-.bg-contain {
-  background-size: contain;
 }
 
 .bg-fixed {
@@ -1410,6 +1410,22 @@ video {
 
   .lg\:pb-10 {
     padding-bottom: 2.5rem;
+  }
+
+  .lg\:pt-32 {
+    padding-top: 8rem;
+  }
+
+  .lg\:pt-1\.5 {
+    padding-top: 0.375rem;
+  }
+
+  .lg\:pt-1 {
+    padding-top: 0.25rem;
+  }
+
+  .lg\:pt-2 {
+    padding-top: 0.5rem;
   }
 
   .lg\:text-4xl {
