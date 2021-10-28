@@ -653,6 +653,18 @@ video {
   left: 0px;
 }
 
+.right-0 {
+  right: 0px;
+}
+
+.-m-4 {
+  margin: -1rem;
+}
+
+.-m-48 {
+  margin: -12rem;
+}
+
 .-my-2 {
   margin-top: -0.5rem;
   margin-bottom: -0.5rem;
@@ -694,6 +706,22 @@ video {
 
 .mb-6 {
   margin-bottom: 1.5rem;
+}
+
+.-mt-48 {
+  margin-top: -12rem;
+}
+
+.-mt-8 {
+  margin-top: -2rem;
+}
+
+.-mt-4 {
+  margin-top: -1rem;
+}
+
+.-mt-40 {
+  margin-top: -10rem;
 }
 
 .block {
@@ -740,6 +768,10 @@ video {
   height: 100%;
 }
 
+.h-96 {
+  height: 24rem;
+}
+
 .h-20 {
   height: 5rem;
 }
@@ -764,6 +796,18 @@ video {
   height: 2.5rem;
 }
 
+.h-120 {
+  height: 30rem;
+}
+
+.h-28 {
+  height: 7rem;
+}
+
+.h-80 {
+  height: 20rem;
+}
+
 .w-auto {
   width: auto;
 }
@@ -782,6 +826,18 @@ video {
 
 .w-10 {
   width: 2.5rem;
+}
+
+.w-48 {
+  width: 12rem;
+}
+
+.w-4 {
+  width: 1rem;
+}
+
+.w-16 {
+  width: 4rem;
 }
 
 .max-w-lg {
@@ -873,8 +929,16 @@ video {
   border-color: rgba(250, 250, 250, var(--tw-divide-opacity));
 }
 
+.overflow-hidden {
+  overflow: hidden;
+}
+
 .overflow-x-auto {
   overflow-x: auto;
+}
+
+.overflow-x-scroll {
+  overflow-x: scroll;
 }
 
 .rounded-md {
@@ -889,21 +953,12 @@ video {
   border-width: 1px;
 }
 
-.border-r {
-  border-right-width: 1px;
-}
-
 .border-r-2 {
   border-right-width: 2px;
 }
 
 .border-transparent {
   border-color: transparent;
-}
-
-.border-gray-100 {
-  --tw-border-opacity: 1;
-  border-color: rgba(245, 245, 245, var(--tw-border-opacity));
 }
 
 .bg-white {
@@ -985,11 +1040,6 @@ video {
   padding-right: 1.25rem;
 }
 
-.px-8 {
-  padding-left: 2rem;
-  padding-right: 2rem;
-}
-
 .pt-16 {
   padding-top: 4rem;
 }
@@ -1020,6 +1070,22 @@ video {
 
 .pb-6 {
   padding-bottom: 1.5rem;
+}
+
+.pr-24 {
+  padding-right: 6rem;
+}
+
+.pl-24 {
+  padding-left: 6rem;
+}
+
+.pr-12 {
+  padding-right: 3rem;
+}
+
+.pl-12 {
+  padding-left: 3rem;
 }
 
 .text-center {
@@ -1454,12 +1520,16 @@ video {
     padding-top: 8rem;
   }
 
-  .lg\:pt-36 {
-    padding-top: 9rem;
+  .lg\:pt-16 {
+    padding-top: 4rem;
   }
 
   .lg\:pb-4 {
     padding-bottom: 1rem;
+  }
+
+  .lg\:pt-36 {
+    padding-top: 9rem;
   }
 
   .lg\:pt-8 {

@@ -19,6 +19,7 @@ module.exports = {
     extend: {
       spacing:{
         '192':'48rem',
+        '120':'30rem',
         'teaser': 'calc(100vh - 96px)'
       },
       minWidth: {

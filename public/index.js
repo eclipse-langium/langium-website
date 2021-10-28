@@ -1,14 +1,3 @@
-// const aboutId = '#about';
-// const aboutBtn = document.querySelector(aboutId + '-link');
-// aboutBtn.addEventListener('click', () => {
-//     gsap.to(window, {
-//         duration: 1,
-//         ease: "expo", 
-//         scrollTo: aboutId
-//     });
-// });
-
-
 // Teaser BG parallax effect
 const teaser = gsap.utils.selector('#teaser');
 const teaserBg = teaser('.teaser-bg');
@@ -29,29 +18,73 @@ function getEndVal(el) {
     return end;
 }
 
-// About title animation
-const title = document.querySelector('#about-title');
-const titleEnd = getEndVal(title);
-title.style.paddingTop = '500px';
-gsap.to('#about-title', {
-    paddingTop: titleEnd,
-    scrollTrigger: {
-        trigger: '#about',
-        start: '10% bottom',
-        toggleActions: 'play none none reverse'
-    }
-})
+// title animations
+function animateTitle(name) {
+    const containerId = `#${name}-title-container`;
+    const titleContainer = document.querySelector(containerId);
+    const title = titleContainer.firstElementChild;
+    title.style.top = '200px';
+    gsap.to(`#${name}-title`, {
+        top: 0,
+        scrollTrigger: {
+            trigger: containerId,
+            start: '180px bottom',
+            toggleActions: 'play none none reverse'
+        }
+    });
+}
+['about', 'features', 'compare'].forEach(name => animateTitle(name));
 
 // About item animation
-const aboutItems = document.querySelectorAll('.about-item');
-aboutItems.forEach((item, index) => {
-    item.style.paddingTop = '500px';
+const aboutItemContainer = document.querySelectorAll('.about-item-container');
+aboutItemContainer.forEach((container, index) => {
+    const item = container.firstElementChild;
+    item.style.top = '500px';
     gsap.to(item, {
-        paddingTop: 0,
+        top: 0,
         scrollTrigger: {
-            trigger: '#about',
-            start: `${220+150*index}px bottom`,
+            trigger: container,
+            start: `${100 + (80 * (index % 3))}px bottom`,
             toggleActions: 'play none none reverse'
         }
     });
 });
+
+// Feature direction button animation
+const featureDirection = document.querySelectorAll('.feature-direction');
+featureDirection.forEach((container, index) => {
+    const item = container.firstElementChild;
+
+    const toObj = {
+        scrollTrigger: {
+            trigger: container,
+            start: `${100 + (80 * (index % 3))}px bottom`,
+            toggleActions: 'play none none reverse'
+        }
+    }
+    if (index === 0) {
+        item.style.right = '100px';
+        toObj['right'] = 0;
+    } else {
+        item.style.left = '100px';
+        toObj['left'] = 0;
+    }
+    gsap.to(item, toObj);
+});
+
+// Features opacity animation
+function opacityPartsAnimation(name) {
+    const el = document.querySelector('#' + name);
+        el.style.opacity = '0.0';
+        gsap.to(el, {
+            opacity: 1.0,
+            duration: 2.5,
+            scrollTrigger: {
+                trigger: el,
+                start: '20px bottom',
+                toggleActions: 'play none none reverse'
+            }
+        });
+}
+
+['feature-carussel', 'compare-text'].forEach(id => opacityPartsAnimation(id));
