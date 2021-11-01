@@ -35,20 +35,25 @@ function animateTitle(name) {
 }
 ['about', 'features', 'compare'].forEach(name => animateTitle(name));
 
-// About item animation
-const aboutItemContainer = document.querySelectorAll('.about-item-container');
-aboutItemContainer.forEach((container, index) => {
-    const item = container.firstElementChild;
-    item.style.top = '500px';
-    gsap.to(item, {
-        top: 0,
-        scrollTrigger: {
-            trigger: container,
-            start: `${100 + (80 * (index % 3))}px bottom`,
-            toggleActions: 'play none none reverse'
-        }
+// Icon Box animation
+function animateIconBox(container, start) {
+    const itemContainer = document.querySelectorAll(`.${container}-item-container`);
+    itemContainer.forEach((container, index) => {
+        const item = container.firstElementChild;
+        item.style.top = '500px';
+        gsap.to(item, {
+            top: 0,
+            scrollTrigger: {
+                trigger: container,
+                start: `${start ? start(index) : (100 + (80 * (index % 3)))}px bottom`,
+                toggleActions: 'play none none reverse'
+            }
+        });
     });
-});
+}
+animateIconBox('about');
+animateIconBox('compare');
+animateIconBox('feature', index => 30 * index);
 
 // Feature direction button animation
 const featureDirection = document.querySelectorAll('.feature-direction');
@@ -72,19 +77,78 @@ featureDirection.forEach((container, index) => {
     gsap.to(item, toObj);
 });
 
-// Features opacity animation
+// Content opacity animation
 function opacityPartsAnimation(name) {
     const el = document.querySelector('#' + name);
-        el.style.opacity = '0.0';
-        gsap.to(el, {
-            opacity: 1.0,
-            duration: 2.5,
-            scrollTrigger: {
-                trigger: el,
-                start: '20px bottom',
-                toggleActions: 'play none none reverse'
-            }
-        });
+    el.style.opacity = '0.0';
+    gsap.to(el, {
+        opacity: 1.0,
+        duration: 5.0,
+        ease: 'expo',
+        scrollTrigger: {
+            trigger: el,
+            start: '50% bottom',
+            toggleActions: 'play none none reverse'
+        }
+    });
 }
 
 ['feature-carussel', 'compare-text'].forEach(id => opacityPartsAnimation(id));
+
+// Feature carussel scroll action
+const carussel = document.querySelector('#feature-carussel');
+gsap.to(carussel, {
+    duration: 5.0,
+    ease: 'power2',
+    scrollTrigger: {
+        trigger: carussel,
+        start: '50% bottom',
+        toggleActions: 'play none none reverse'
+    },
+    scrollTo: {
+        x: 400,
+        autoKill: true
+    }
+})
+
+// animated opacity
+function animateOpacity(el, additionalProps) {
+    const props = Object.assign({
+        duration: 4,
+        opacity: 1.0,
+        ease: 'power3',
+        scrollTrigger: {
+            trigger: el,
+            start: '40px bottom',
+            toggleAction: 'play none none reverse'
+        }
+    }, additionalProps);
+    el.style.opacity = 0.0;
+    gsap.to(el, props);
+}
+const textParts = document.querySelectorAll('.animText');
+textParts.forEach((textPart, index) => {
+    animateOpacity(textPart, {
+        delay: index * 0.08
+    })
+});
+
+const feder = document.querySelector('#feder');
+animateOpacity(feder);
+const communityTitle = document.querySelector('#community-title');
+animateOpacity(communityTitle);
+
+const footerItems = document.querySelectorAll('.footer-item');
+footerItems.forEach((footerItem, index) => {
+    const icon = footerItem.firstChild;
+    icon.style.top = "200px";
+    gsap.to(icon, {
+        top: "0px",
+        delay: 0.2*index,
+        scrollTrigger: {
+            trigger: footerItem,
+            start: '100px bottom',
+            toggleAction: 'play none none reverse'
+        }
+    })
+});

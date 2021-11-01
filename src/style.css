@@ -24,13 +24,13 @@
 }
 
 .footer-item {
-    @apply h-16 w-16 mx-2
+    @apply h-full w-16 mx-2 relative overflow-hidden;
 }
 
-.feature-item {
-    @apply h-full p-2 min-w-featureItem;
+.feature-item-container {
+    @apply h-full min-w-featureItem mx-2;
 }
 
 .feature-item-content {
-    @apply h-full box-border rounded-xl border-8 border-emeraldLangium dark:border-emeraldLangium px-6 pb-6 bg-emeraldLangium dark:bg-gray-900 shadow-lg;
+    @apply h-full w-full box-border rounded-xl border-8 border-emeraldLangium dark:border-emeraldLangium px-6 pb-6 bg-emeraldLangium dark:bg-gray-900 shadow-lg;
 }

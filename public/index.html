@@ -231,8 +231,8 @@
                         </div>
                         <div id="feature-carussel" class="h-44 overflow-x-scroll">
                             <div class="h-full flex flex-nowrap">
-                                <div class="feature-item">
-                                    <div class="feature-item-content">
+                                <div class="feature-item-container relative h-44 overflow-hidden">
+                                    <div class="absolute feature-item-content">
                                         <h3
                                             class="mt-6 text-lg font-medium text-gray-100 tracking-tight dark:text-accentViolet">
                                             _
@@ -244,8 +244,8 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="feature-item">
-                                    <div class="feature-item-content">
+                                <div class="feature-item-container relative h-44 overflow-hidden">
+                                    <div class="absolute feature-item-content">
                                         <div class="flex items-center justify-center">
                                         </div>
                                         <h3
@@ -259,8 +259,8 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="feature-item">
-                                    <div class="feature-item-content">
+                                <div class="feature-item-container relative h-44 overflow-hidden">
+                                    <div class="absolute feature-item-content">
                                         <div class="flex items-center justify-center">
                                         </div>
                                         <h3
@@ -274,8 +274,8 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="feature-item">
-                                    <div class="feature-item-content">
+                                <div class="feature-item-container relative h-44 overflow-hidden">
+                                    <div class="absolute feature-item-content">
                                         <div class="flex items-center justify-center">
                                         </div>
                                         <h3
@@ -290,8 +290,8 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="feature-item">
-                                    <div class="feature-item-content">
+                                <div class="feature-item-container relative h-44 overflow-hidden">
+                                    <div class="absolute feature-item-content">
                                         <div class="flex items-center justify-center">
                                         </div>
                                         <h3
@@ -305,8 +305,8 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="feature-item">
-                                    <div class="feature-item-content">
+                                <div class="feature-item-container relative h-44 overflow-hidden">
+                                    <div class="absolute feature-item-content">
                                         <div class="flex items-center justify-center">
                                         </div>
                                         <h3
@@ -365,8 +365,8 @@
                 </p>
             </div>
             <div class="grid grid-cols-1 gap-8 px-10 lg:px-28 sm:px-40 lg:grid-cols-2">
-                <div class="pt-8">
-                    <div class="flow-root px-6">
+                <div class="compare-item-container relative h-120 overflow-hidden">
+                    <div class="absolute flow-root px-6">
                         <div class="flex items-center justify-center">
                             <img class="mt-8 h-36" src="./assets/clear.svg" />
                         </div>
@@ -382,8 +382,8 @@
                         </p>
                     </div>
                 </div>
-                <div class="pt-8">
-                    <div class="flow-root px-6 pb-8">
+                <div class="compare-item-container relative h-120 overflow-hidden">
+                    <div class="absolute flow-root px-6 pb-8">
                         <div class="flex items-center justify-center">
                             <img class="mt-8 h-36" src="./assets/simple.svg" />
                         </div>
@@ -404,12 +404,19 @@
                 </div>
             </div>
             <div class="py-16 sm:py-24 lg:pt-8 lg:pb-10 px-10 lg:px-28 sm:px-12">
-                <h3 class="text-gray-900 dark:text-gray-100 tracking-tight text-base md:text-lg lg:text-xl">
+                <h3 class="text-gray-900 dark:text-gray-100 tracking-tight text-base text-center md:text-lg lg:text-xl">
                     <span class="italic">
                         In short
                     </span>
-                    : Langium wants to keep the concepts that have made Xtext successful, but lift them onto another
-                    platform.
+                    <span class='animText'>:</span> <span class='animText'>Langium</span> 
+                    <span class='animText'>wants</span> <span class='animText'>to</span> 
+                    <span class='animText'>keep</span> <span class='animText'>the</span> 
+                    <span class='animText'>concepts</span> <span class='animText'>that</span> 
+                    <span class='animText'>have</span> <span class='animText'>made</span> 
+                    <span class='animText'>Xtext</span> <span class='animText'>successful,</span> 
+                    <span class='animText'>but</span> <span class='animText'>lift</span> 
+                    <span class='animText'>them</span> <span class='animText'>onto</span> <span class='animText'>another</span> 
+                    <span class='animText'>platform.</span>
                     </p>
                 </h3>
             </div>
@@ -417,7 +424,7 @@
 
             <div id="divider">
                 <div class="grid place-items-center pt-28 pb-8">
-                    <img class="h-10 w-10" src="./assets/Feder.svg">
+                    <img id='feder' class="h-16 w-16" src="./assets/Feder.svg">
                 </div>
             </div>
 
@@ -425,24 +432,21 @@
 
 
             <!-- Community Section -->
-            <div id="community">
-                <div class="grid place-items-center pt-28 dark:text-gray-100 text-xl">
+            <div id="community" class="pt-28">
+                <div id='community-title' class="grid place-items-center dark:text-gray-100 text-xl">
                     Join the Community
                 </div>
                 <div class="flex justify-center items-center">
-                    <div class="grid pt-10 pb-8 grid-cols-3 gap-4">
-                        <div class="footer-item">
-                            <a target="_blank" href="https://twitter.com/TypeFox_io">
+                    <div class="relative grid grid-cols-3 gap-4 h-36">
+                        <div class="footer-item"><a class='absolute pt-10 w-16 h-16' target="_blank" href="https://twitter.com/TypeFox_io">
                                 <img src="./assets/Twitter social icons - circle - white.svg" alt="Twitter" />
                             </a>
                         </div>
-                        <div class="footer-item">
-                            <a target="_blank" href="https://www.npmjs.com/package/langium">
+                        <div class="footer-item"><a class='absolute pt-10 w-16 h-16' target="_blank" href="https://www.npmjs.com/package/langium">
                                 <img src="./assets/npm-square-red-1.svg" alt="npm" />
                             </a>
                         </div>
-                        <div class="footer-item">
-                            <a target="_blank" href="https://github.com/langium/langium">
+                        <div class="footer-item"><a class='absolute pt-10 w-16 h-16' target="_blank" href="https://github.com/langium/langium">
                                 <img src="./assets/GitHub-Mark-Light-120px-plus.png" alt="GitHub" />
                             </a>
                         </div>
