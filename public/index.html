@@ -70,9 +70,9 @@
             </div>
         </header>
         <main>
-            <section id="teaser" class="relative h-teaser">
-                <div
-                    class="teaser-bg absolute top-0 left-0 w-full h-full dark:bg-emeraldLangiumDarkest bg-office bg-fixed bg-blend-multiply bg-cover bg-center bg-no-repeat">
+            <section id="teaser" class="relative sm:h-teaser">
+                <div class="teaser-bg absolute top-0 left-0 w-full sm:h-full sm:dark:bg-emeraldLangiumDarkest 
+                    sm:bg-office bg-fixed bg-blend-multiply bg-cover bg-center bg-no-repeat">
                 </div>
                 <div class="relative px-4 py-16 sm:px-6 sm:py-24 lg:pt-32 lg:px-8">
                     <h2 class="text-center text-2xl tracking-tight sm:text-3xl lg:text-4xl">
@@ -102,23 +102,22 @@
             <section id="about">
                 <div id="about-title-container" class="relative h-80 overflow-hidden">
                     <div id="about-title"
-                        class="absolute left-0 pt-16 pb-4 px-6 py-8 sm:px-10 sm:pt-16 sm:pb-4 lg:pt-16 lg:pb-4 lg:px-16">
-                        <h2 class="text-gray-900 dark:text-gray-100 text-2xl tracking-tight sm:text-3xl lg:text-4xl">
+                        class="sm:absolute sm:left-0 pt-16 pb-4 px-6 py-8 sm:px-10 sm:pt-16 sm:pb-4 lg:pt-16 lg:pb-4 lg:px-16">
+                        <h2
+                            class="text-gray-900 dark:text-gray-100 text-2xl tracking-tight sm:text-3xl lg:text-4xl text-center sm:text-left">
                             Why Langium?
-                            </p>
                         </h2>
                     </div>
                 </div>
-                <div class="-mt-48 grid grid-cols-1 gap-8 px-16 lg:px-28 sm:px-12 sm:grid-cols-2 lg:grid-cols-3">
-                    <div class="about-item-container relative h-120 overflow-hidden">
-                        <div class="about-item absolute left-0 flow-root px-6 pb-8">
+                <div class="-mt-48 grid gap-8 px-16 lg:px-28 sm:px-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    <div class="about-item-container">
+                        <div class="about-item">
                             <div class="about-item-icon-container">
                                 <!-- Heroicon name: outline/cloud-upload -->
                                 <img class="h-20" src="./assets/TypeScript.svg" />
                             </div>
                             <h3 class="about-item-title">
-                                _
-                                TypeScript integration
+                                _ TypeScript integration
                             </h3>
                             <p class="about-item-text">
                                 Langium generates a typed AST definition that perfectly fits your grammar and
@@ -126,8 +125,8 @@
                             </p>
                         </div>
                     </div>
-                    <div class="about-item-container relative h-120 overflow-hidden">
-                        <div class="about-item absolute flow-root px-6 pb-8">
+                    <div class="about-item-container">
+                        <div class="about-item">
                             <div class="about-item-icon-container">
                                 <!-- Heroicon name: outline/cloud-upload -->
                                 <img class="h-40" src="./assets/experience.svg" />
@@ -143,8 +142,8 @@
                             </p>
                         </div>
                     </div>
-                    <div class="about-item-container relative h-120 overflow-hidden">
-                        <div class="about-item absolute flow-root px-6 pb-8">
+                    <div class="about-item-container">
+                        <div class="about-item">
                             <div class="about-item-icon-container">
                                 <!-- Heroicon name: outline/cloud-upload -->
                                 <img class="h-32" src="./assets/low barrier.svg" />
@@ -160,8 +159,8 @@
                             </p>
                         </div>
                     </div>
-                    <div class="about-item-container relative h-120 overflow-hidden">
-                        <div class="about-item absolute flow-root px-6 pb-8">
+                    <div class="about-item-container">
+                        <div class="about-item">
                             <div class="about-item-icon-container">
                                 <!-- Heroicon name: outline/cloud-upload -->
                                 <img class="h-36" src="./assets/everywere.png" />
@@ -176,8 +175,8 @@
                             </p>
                         </div>
                     </div>
-                    <div class="about-item-container relative h-120 overflow-hidden">
-                        <div class="about-item absolute flow-root px-6 pb-8">
+                    <div class="about-item-container">
+                        <div class="about-item">
                             <div class="about-item-icon-container">
                                 <!-- Heroicon name: outline/cloud-upload -->
                                 <img class="h-20" src="./assets/Customize.svg" />
@@ -193,8 +192,8 @@
                             </p>
                         </div>
                     </div>
-                    <div class="about-item-container relative h-120 overflow-hidden">
-                        <div class="about-item absolute flow-root px-6 pb-8">
+                    <div class="about-item-container">
+                        <div class="about-item">
                             <div class="about-item-icon-container">
                                 <!-- Heroicon name: outline/cloud-upload -->
                                 <img class="h-40" src="./assets/Versatile.svg" />
@@ -224,15 +223,15 @@
                 </div>
                 <div class="-mt-40">
                     <div class="flex">
-                        <div class="feature-direction w-48 relative overflow-hidden">
-                            <div class="absolute right-0 h-full w-16 p-2 flex items-center justify-center">
+                        <div class="feature-direction w-120 sm:w-48 relative overflow-hidden">
+                            <div class="sm:absolute right-0 h-full w-16 p-2 flex items-center justify-center">
                                 <img src="./assets/Klammer_zu_hell.svg">
                             </div>
                         </div>
                         <div id="feature-carussel" class="h-44 overflow-x-scroll">
                             <div class="h-full flex flex-nowrap">
                                 <div class="feature-item-container relative h-44 overflow-hidden">
-                                    <div class="absolute feature-item-content">
+                                    <div class="feature-item-content">
                                         <h3
                                             class="mt-6 text-lg font-medium text-gray-100 tracking-tight dark:text-accentViolet">
                                             _
@@ -245,7 +244,7 @@
                                     </div>
                                 </div>
                                 <div class="feature-item-container relative h-44 overflow-hidden">
-                                    <div class="absolute feature-item-content">
+                                    <div class="feature-item-content">
                                         <div class="flex items-center justify-center">
                                         </div>
                                         <h3
@@ -260,7 +259,7 @@
                                     </div>
                                 </div>
                                 <div class="feature-item-container relative h-44 overflow-hidden">
-                                    <div class="absolute feature-item-content">
+                                    <div class="feature-item-content">
                                         <div class="flex items-center justify-center">
                                         </div>
                                         <h3
@@ -275,7 +274,7 @@
                                     </div>
                                 </div>
                                 <div class="feature-item-container relative h-44 overflow-hidden">
-                                    <div class="absolute feature-item-content">
+                                    <div class="feature-item-content">
                                         <div class="flex items-center justify-center">
                                         </div>
                                         <h3
@@ -291,7 +290,7 @@
                                     </div>
                                 </div>
                                 <div class="feature-item-container relative h-44 overflow-hidden">
-                                    <div class="absolute feature-item-content">
+                                    <div class="feature-item-content">
                                         <div class="flex items-center justify-center">
                                         </div>
                                         <h3
@@ -306,7 +305,7 @@
                                     </div>
                                 </div>
                                 <div class="feature-item-container relative h-44 overflow-hidden">
-                                    <div class="absolute feature-item-content">
+                                    <div class=" feature-item-content">
                                         <div class="flex items-center justify-center">
                                         </div>
                                         <h3
@@ -322,8 +321,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="feature-direction w-48 relative overflow-hidden">
-                            <div class="absolute left-0 h-full w-16 p-2 flex items-center justify-center">
+                        <div class="feature-direction w-120 sm:w-48 relative overflow-hidden">
+                            <div class="sm:absolute left-0 h-full w-16 p-2 flex items-center justify-center">
                                 <img src="./assets/Klammer_auf_hell.svg">
                             </div>
                         </div>
@@ -408,14 +407,15 @@
                     <span class="italic">
                         In short
                     </span>
-                    <span class='animText'>:</span> <span class='animText'>Langium</span> 
-                    <span class='animText'>wants</span> <span class='animText'>to</span> 
-                    <span class='animText'>keep</span> <span class='animText'>the</span> 
-                    <span class='animText'>concepts</span> <span class='animText'>that</span> 
-                    <span class='animText'>have</span> <span class='animText'>made</span> 
-                    <span class='animText'>Xtext</span> <span class='animText'>successful,</span> 
-                    <span class='animText'>but</span> <span class='animText'>lift</span> 
-                    <span class='animText'>them</span> <span class='animText'>onto</span> <span class='animText'>another</span> 
+                    <span class='animText'>:</span> <span class='animText'>Langium</span>
+                    <span class='animText'>wants</span> <span class='animText'>to</span>
+                    <span class='animText'>keep</span> <span class='animText'>the</span>
+                    <span class='animText'>concepts</span> <span class='animText'>that</span>
+                    <span class='animText'>have</span> <span class='animText'>made</span>
+                    <span class='animText'>Xtext</span> <span class='animText'>successful,</span>
+                    <span class='animText'>but</span> <span class='animText'>lift</span>
+                    <span class='animText'>them</span> <span class='animText'>onto</span> <span
+                        class='animText'>another</span>
                     <span class='animText'>platform.</span>
                     </p>
                 </h3>
@@ -438,15 +438,18 @@
                 </div>
                 <div class="flex justify-center items-center">
                     <div class="relative grid grid-cols-3 gap-4 h-36">
-                        <div class="footer-item"><a class='absolute pt-10 w-16 h-16' target="_blank" href="https://twitter.com/TypeFox_io">
+                        <div class="footer-item"><a class='absolute pt-10 w-16 h-16' target="_blank"
+                                href="https://twitter.com/TypeFox_io">
                                 <img src="./assets/Twitter social icons - circle - white.svg" alt="Twitter" />
                             </a>
                         </div>
-                        <div class="footer-item"><a class='absolute pt-10 w-16 h-16' target="_blank" href="https://www.npmjs.com/package/langium">
+                        <div class="footer-item"><a class='absolute pt-10 w-16 h-16' target="_blank"
+                                href="https://www.npmjs.com/package/langium">
                                 <img src="./assets/npm-square-red-1.svg" alt="npm" />
                             </a>
                         </div>
-                        <div class="footer-item"><a class='absolute pt-10 w-16 h-16' target="_blank" href="https://github.com/langium/langium">
+                        <div class="footer-item"><a class='absolute pt-10 w-16 h-16' target="_blank"
+                                href="https://github.com/langium/langium">
                                 <img src="./assets/GitHub-Mark-Light-120px-plus.png" alt="GitHub" />
                             </a>
                         </div>

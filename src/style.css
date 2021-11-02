@@ -11,16 +11,24 @@
     @apply h-10 text-base font-medium dark:hover:text-white hover:text-gray-700;
 }
 
+.about-item-container {
+    @apply relative h-48 sm:h-120 overflow-hidden flex justify-center items-center;
+}
+
+.about-item {
+    @apply sm:absolute sm:left-0 flow-root px-6 sm:pb-8;
+}
+
 .about-item-icon-container {
-    @apply h-60 flex items-center justify-center;    
+    @apply sm:h-60 sm:my-0 h-40 flex items-center justify-center;    
 }
 
 .about-item-title {
-    @apply h-20 text-lg font-medium text-gray-900 tracking-tight dark:text-gray-100;   
+    @apply sm:h-20 text-lg text-center font-medium text-gray-900 tracking-tight dark:text-gray-100;   
 }
 
 .about-item-text {
-    @apply text-base text-gray-100 dark:text-gray-100 font-body tracking-wide;    
+    @apply text-base text-gray-100 dark:text-gray-100 font-body tracking-wide hidden sm:block;    
 }
 
 .footer-item {
@@ -28,9 +36,9 @@
 }
 
 .feature-item-container {
-    @apply h-full min-w-featureItem mx-2;
+    @apply h-full sm:min-w-featureItem mx-2;
 }
 
 .feature-item-content {
-    @apply h-full w-full box-border rounded-xl border-8 border-emeraldLangium dark:border-emeraldLangium px-6 pb-6 bg-emeraldLangium dark:bg-gray-900 shadow-lg;
+    @apply sm:absolute h-full w-full box-border rounded-xl border-8 border-emeraldLangium dark:border-emeraldLangium px-6 pb-6 bg-emeraldLangium dark:bg-gray-900 shadow-lg;
 }

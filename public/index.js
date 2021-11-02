@@ -1,154 +1,173 @@
-// Teaser BG parallax effect
-const teaser = gsap.utils.selector('#teaser');
-const teaserBg = teaser('.teaser-bg');
-console.log("innerheight", innerHeight);
-teaserBg[0].style.backgroundPosition = "50% 0";
-gsap.to(teaserBg, {
-    backgroundPosition: `50% -450px`,
-    ease: "none",
-    scrollTrigger: {
-        scrub: true
-    }
-});
 
-// Enter animations
-function getEndVal(el) {
-    const style = getComputedStyle(el);
-    const end = style.paddingTop;
-    return end;
-}
-
-// title animations
-function animateTitle(name) {
-    const containerId = `#${name}-title-container`;
-    const titleContainer = document.querySelector(containerId);
-    const title = titleContainer.firstElementChild;
-    title.style.top = '200px';
-    gsap.to(`#${name}-title`, {
-        top: 0,
-        scrollTrigger: {
-            trigger: containerId,
-            start: '180px bottom',
-            toggleActions: 'play none none reverse'
-        }
-    });
-}
-['about', 'features', 'compare'].forEach(name => animateTitle(name));
-
-// Icon Box animation
-function animateIconBox(container, start) {
-    const itemContainer = document.querySelectorAll(`.${container}-item-container`);
-    itemContainer.forEach((container, index) => {
-        const item = container.firstElementChild;
-        item.style.top = '500px';
-        gsap.to(item, {
-            top: 0,
+function init(size) {
+    if(size !== 'mobile') {
+        // Teaser BG parallax effect
+        const teaser = gsap.utils.selector('#teaser');
+        const teaserBg = teaser('.teaser-bg');
+        teaserBg[0].style.backgroundPosition = "50% 0";
+        gsap.to(teaserBg, {
+            backgroundPosition: `50% -450px`,
+            ease: "none",
             scrollTrigger: {
-                trigger: container,
-                start: `${start ? start(index) : (100 + (80 * (index % 3)))}px bottom`,
-                toggleActions: 'play none none reverse'
+                scrub: true
             }
         });
-    });
-}
-animateIconBox('about');
-animateIconBox('compare');
-animateIconBox('feature', index => 30 * index);
-
-// Feature direction button animation
-const featureDirection = document.querySelectorAll('.feature-direction');
-featureDirection.forEach((container, index) => {
-    const item = container.firstElementChild;
-
-    const toObj = {
-        scrollTrigger: {
-            trigger: container,
-            start: `${100 + (80 * (index % 3))}px bottom`,
-            toggleActions: 'play none none reverse'
+    
+        // title animations
+        function animateTitle(name) {
+            const containerId = `#${name}-title-container`;
+            const titleContainer = document.querySelector(containerId);
+            const title = titleContainer.firstElementChild;
+            title.style.top = '200px';
+            gsap.to(`#${name}-title`, {
+                top: 0,
+                scrollTrigger: {
+                    trigger: containerId,
+                    start: '180px bottom',
+                    toggleActions: 'play none none reverse'
+                }
+            });
         }
-    }
-    if (index === 0) {
-        item.style.right = '100px';
-        toObj['right'] = 0;
+        ['about', 'features', 'compare'].forEach(name => animateTitle(name));
+    
+        // Icon Box animation
+        function animateIconBox(container, start, delay) {
+            const itemContainer = document.querySelectorAll(`.${container}-item-container`);
+            itemContainer.forEach((container, index) => {
+                const item = container.firstElementChild;
+                item.style.top = '500px';
+                gsap.to(item, {
+                    top: 0,
+                    duration: 0.8,
+                    ease: 'power3',
+                    delay: delay ? delay(index) : 0,
+    
+                    scrollTrigger: {
+                        trigger: container,
+                        start: `${start ? start(index) : (100 + (80 * (index % 3)))}px bottom`,
+                        toggleActions: 'play none none reverse'
+                    }
+                });
+            });
+        }
+        animateIconBox('about');
+        animateIconBox('compare');
+        animateIconBox('feature', index => 100, index => 0.15 * index);
+    
+        // Feature direction button animation
+        const featureDirection = document.querySelectorAll('.feature-direction');
+        featureDirection.forEach((container, index) => {
+            const item = container.firstElementChild;
+    
+            const toObj = {
+                scrollTrigger: {
+                    trigger: container,
+                    start: `${100 + (80 * (index % (size === 'lg' ? 3 : 2)))}px bottom`,
+                    toggleActions: 'play none none reverse'
+                }
+            }
+            if (index === 0) {
+                item.style.right = '100px';
+                toObj['right'] = 0;
+            } else {
+                item.style.left = '100px';
+                toObj['left'] = 0;
+            }
+            gsap.to(item, toObj);
+        });
+    
+        // Content opacity animation
+        function opacityPartsAnimation(name) {
+            const el = document.querySelector('#' + name);
+            el.style.opacity = '0.0';
+            gsap.to(el, {
+                opacity: 1.0,
+                duration: 5.0,
+                ease: 'expo',
+                scrollTrigger: {
+                    trigger: el,
+                    start: '50% bottom',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        }
+    
+        ['feature-carussel', 'compare-text'].forEach(id => opacityPartsAnimation(id));
+    
+        // Feature carussel scroll action
+        const carussel = document.querySelector('#feature-carussel');
+        gsap.to(carussel, {
+            duration: 5.0,
+            ease: 'power2',
+            scrollTrigger: {
+                trigger: carussel,
+                start: '50% bottom',
+                toggleActions: 'play none none reverse'
+            },
+            scrollTo: {
+                x: 400,
+                autoKill: true
+            }
+        })
+    
+        // animated opacity
+        function animateOpacity(el, additionalProps) {
+            const props = Object.assign({
+                duration: 4,
+                opacity: 1.0,
+                ease: 'power3',
+                scrollTrigger: {
+                    trigger: el,
+                    start: '40px bottom',
+                    toggleAction: 'play none none reverse'
+                }
+            }, additionalProps);
+            el.style.opacity = 0.0;
+            gsap.to(el, props);
+        }
+        const textParts = document.querySelectorAll('.animText');
+        textParts.forEach((textPart, index) => {
+            animateOpacity(textPart, {
+                delay: index * 0.08
+            })
+        });
+    
+        const feder = document.querySelector('#feder');
+        animateOpacity(feder);
+        const communityTitle = document.querySelector('#community-title');
+        animateOpacity(communityTitle);
+    
+        const footerItems = document.querySelectorAll('.footer-item');
+        footerItems.forEach((footerItem, index) => {
+            const icon = footerItem.firstChild;
+            icon.style.top = "200px";
+            gsap.to(icon, {
+                top: "0px",
+                delay: 0.2 * index,
+                scrollTrigger: {
+                    trigger: footerItem,
+                    start: '100px bottom',
+                    toggleAction: 'play none none reverse'
+                }
+            })
+        });
     } else {
-        item.style.left = '100px';
-        toObj['left'] = 0;
+        const featureItems = document.querySelectorAll('.feature-item-container');
+        featureItems.forEach(e => e.style.minWidth = `${(window.innerWidth - 96)}px`)
     }
-    gsap.to(item, toObj);
-});
-
-// Content opacity animation
-function opacityPartsAnimation(name) {
-    const el = document.querySelector('#' + name);
-    el.style.opacity = '0.0';
-    gsap.to(el, {
-        opacity: 1.0,
-        duration: 5.0,
-        ease: 'expo',
-        scrollTrigger: {
-            trigger: el,
-            start: '50% bottom',
-            toggleActions: 'play none none reverse'
-        }
-    });
 }
 
-['feature-carussel', 'compare-text'].forEach(id => opacityPartsAnimation(id));
 
-// Feature carussel scroll action
-const carussel = document.querySelector('#feature-carussel');
-gsap.to(carussel, {
-    duration: 5.0,
-    ease: 'power2',
-    scrollTrigger: {
-        trigger: carussel,
-        start: '50% bottom',
-        toggleActions: 'play none none reverse'
-    },
-    scrollTo: {
-        x: 400,
-        autoKill: true
-    }
-})
+const sm = window.matchMedia('(min-width: 640px)');
+const md = window.matchMedia('(min-width: 768px)');
+const lg = window.matchMedia('(min-width: 1024px)');
 
-// animated opacity
-function animateOpacity(el, additionalProps) {
-    const props = Object.assign({
-        duration: 4,
-        opacity: 1.0,
-        ease: 'power3',
-        scrollTrigger: {
-            trigger: el,
-            start: '40px bottom',
-            toggleAction: 'play none none reverse'
-        }
-    }, additionalProps);
-    el.style.opacity = 0.0;
-    gsap.to(el, props);
+function mediaChanged() {
+    const size = lg.matches ? 'lg' : md.matches ? 'md' :  sm.matches ? 'sm' : 'mobile';
+    init(size);
 }
-const textParts = document.querySelectorAll('.animText');
-textParts.forEach((textPart, index) => {
-    animateOpacity(textPart, {
-        delay: index * 0.08
-    })
-});
+mediaChanged();
 
-const feder = document.querySelector('#feder');
-animateOpacity(feder);
-const communityTitle = document.querySelector('#community-title');
-animateOpacity(communityTitle);
-
-const footerItems = document.querySelectorAll('.footer-item');
-footerItems.forEach((footerItem, index) => {
-    const icon = footerItem.firstChild;
-    icon.style.top = "200px";
-    gsap.to(icon, {
-        top: "0px",
-        delay: 0.2*index,
-        scrollTrigger: {
-            trigger: footerItem,
-            start: '100px bottom',
-            toggleAction: 'play none none reverse'
-        }
-    })
-});
+sm.addEventListener('change', mediaChanged);
+md.addEventListener('change', mediaChanged);
+lg.addEventListener('change', mediaChanged);

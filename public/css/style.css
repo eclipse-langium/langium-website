@@ -773,20 +773,8 @@ video {
   height: 1.5rem;
 }
 
-.h-teaser {
-  height: calc(100vh - 96px);
-}
-
-.h-full {
-  height: 100%;
-}
-
 .h-80 {
   height: 20rem;
-}
-
-.h-120 {
-  height: 30rem;
 }
 
 .h-20 {
@@ -805,8 +793,16 @@ video {
   height: 9rem;
 }
 
+.h-full {
+  height: 100%;
+}
+
 .h-44 {
   height: 11rem;
+}
+
+.h-120 {
+  height: 30rem;
 }
 
 .h-16 {
@@ -829,8 +825,8 @@ video {
   width: 100%;
 }
 
-.w-48 {
-  width: 12rem;
+.w-120 {
+  width: 30rem;
 }
 
 .w-16 {
@@ -964,10 +960,6 @@ video {
   background-color: rgba(38, 136, 140, var(--tw-bg-opacity));
 }
 
-.bg-office {
-  background-image: url('../assets/office.jpg');
-}
-
 .bg-cover {
   background-size: cover;
 }
@@ -1049,16 +1041,16 @@ video {
   padding-top: 7rem;
 }
 
+.pt-10 {
+  padding-top: 2.5rem;
+}
+
 .pt-5 {
   padding-top: 1.25rem;
 }
 
 .pb-6 {
   padding-bottom: 1.5rem;
-}
-
-.pt-10 {
-  padding-top: 2.5rem;
 }
 
 .text-center {
@@ -1234,15 +1226,61 @@ video {
   color: rgba(255, 255, 255, var(--tw-text-opacity));
 }
 
+.about-item-container {
+  position: relative;
+  display: flex;
+  height: 12rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .about-item-container {
+    height: 30rem;
+  }
+}
+
+.about-item {
+  display: flow-root;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .about-item {
+    position: absolute;
+  }
+
+  .about-item {
+    left: 0px;
+  }
+
+  .about-item {
+    padding-bottom: 2rem;
+  }
+}
+
 .about-item-icon-container {
   display: flex;
-  height: 15rem;
+  height: 10rem;
   align-items: center;
   justify-content: center;
 }
 
+@media (min-width: 640px) {
+  .about-item-icon-container {
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+
+  .about-item-icon-container {
+    height: 15rem;
+  }
+}
+
 .about-item-title {
-  height: 5rem;
+  text-align: center;
   font-size: 1.125rem;
   line-height: 1.75rem;
   font-weight: 500;
@@ -1256,7 +1294,14 @@ video {
   color: rgba(245, 245, 245, var(--tw-text-opacity));
 }
 
+@media (min-width: 640px) {
+  .about-item-title {
+    height: 5rem;
+  }
+}
+
 .about-item-text {
+  display: none;
   font-family: "Roboto Condensed", sans-serif;
   font-size: 1rem;
   line-height: 1.5rem;
@@ -1268,6 +1313,12 @@ video {
 .dark .about-item-text {
   --tw-text-opacity: 1;
   color: rgba(245, 245, 245, var(--tw-text-opacity));
+}
+
+@media (min-width: 640px) {
+  .about-item-text {
+    display: block;
+  }
 }
 
 .footer-item {
@@ -1283,7 +1334,12 @@ video {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
   height: 100%;
-  min-width: 420px;
+}
+
+@media (min-width: 640px) {
+  .feature-item-container {
+    min-width: 420px;
+  }
 }
 
 .feature-item-content {
@@ -1310,6 +1366,12 @@ video {
   background-color: rgba(23, 23, 23, var(--tw-bg-opacity));
 }
 
+@media (min-width: 640px) {
+  .feature-item-content {
+    position: absolute;
+  }
+}
+
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -1333,11 +1395,6 @@ video {
 .dark .dark\:bg-gray-900 {
   --tw-bg-opacity: 1;
   background-color: rgba(23, 23, 23, var(--tw-bg-opacity));
-}
-
-.dark .dark\:bg-emeraldLangiumDarkest {
-  --tw-bg-opacity: 1;
-  background-color: rgba(4, 36, 36, var(--tw-bg-opacity));
 }
 
 .dark .dark\:text-gray-100 {
@@ -1371,8 +1428,28 @@ video {
 }
 
 @media (min-width: 640px) {
+  .sm\:absolute {
+    position: absolute;
+  }
+
+  .sm\:left-0 {
+    left: 0px;
+  }
+
   .sm\:flex {
     display: flex;
+  }
+
+  .sm\:h-teaser {
+    height: calc(100vh - 96px);
+  }
+
+  .sm\:h-full {
+    height: 100%;
+  }
+
+  .sm\:w-48 {
+    width: 12rem;
   }
 
   .sm\:max-w-3xl {
@@ -1389,6 +1466,10 @@ video {
 
   .sm\:justify-center {
     justify-content: center;
+  }
+
+  .sm\:bg-office {
+    background-image: url('../assets/office.jpg');
   }
 
   .sm\:px-6 {
@@ -1429,9 +1510,18 @@ video {
     padding-bottom: 1rem;
   }
 
+  .sm\:text-left {
+    text-align: left;
+  }
+
   .sm\:text-3xl {
     font-size: 1.875rem;
     line-height: 2.25rem;
+  }
+
+  .dark .sm\:dark\:bg-emeraldLangiumDarkest {
+    --tw-bg-opacity: 1;
+    background-color: rgba(4, 36, 36, var(--tw-bg-opacity));
   }
 }
 
