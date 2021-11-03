@@ -813,6 +813,14 @@ video {
   height: 2.5rem;
 }
 
+.h-5 {
+  height: 1.25rem;
+}
+
+.h-14 {
+  height: 3.5rem;
+}
+
 .w-auto {
   width: auto;
 }
@@ -839,6 +847,14 @@ video {
 
 .w-10 {
   width: 2.5rem;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
+.w-14 {
+  width: 3.5rem;
 }
 
 .max-w-lg {

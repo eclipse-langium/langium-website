@@ -174,3 +174,15 @@ mediaChanged();
 sm.addEventListener('change', mediaChanged);
 md.addEventListener('change', mediaChanged);
 lg.addEventListener('change', mediaChanged);
+
+const scrollDown = document.querySelector('#scroll-down');
+scrollDown.addEventListener('click', () => {
+    gsap.to(window, {
+        duration: 1.5,
+        ease: 'power3',
+        scrollTo: {
+            y: "#about",
+            autoKill: true
+        }
+    })
+})
