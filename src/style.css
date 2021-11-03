@@ -12,7 +12,7 @@
 }
 
 .about-item-container {
-    @apply relative h-48 sm:h-120 overflow-hidden flex justify-center items-center;
+    @apply relative sm:h-120 sm:overflow-hidden flex justify-center items-center;
 }
 
 .about-item {
@@ -28,7 +28,24 @@
 }
 
 .about-item-text {
-    @apply text-base text-gray-100 dark:text-gray-100 font-body tracking-wide hidden sm:block;    
+    @apply 
+    bg-gray-700
+    sm:bg-transparent
+    absolute
+    sm:relative
+    top-0
+    left-0
+    w-full
+    min-h-full
+    text-base 
+    text-gray-100 
+    dark:text-gray-100 
+    font-body 
+    tracking-wide  
+    flex justify-center items-center
+    sm:block
+    p-6
+    sm:py-0 sm:px-0
 }
 
 .footer-item {

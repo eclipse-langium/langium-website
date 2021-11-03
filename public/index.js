@@ -1,4 +1,3 @@
-
 function init(size) {
     if(size !== 'mobile') {
         // Teaser BG parallax effect
@@ -23,8 +22,7 @@ function init(size) {
                 top: 0,
                 scrollTrigger: {
                     trigger: containerId,
-                    start: '180px bottom',
-                    toggleActions: 'play none none reverse'
+                    start: '180px bottom'
                 }
             });
         }
@@ -44,14 +42,13 @@ function init(size) {
     
                     scrollTrigger: {
                         trigger: container,
-                        start: `${start ? start(index) : (100 + (80 * (index % 3)))}px bottom`,
-                        toggleActions: 'play none none reverse'
+                        start: `${start ? start(index) : (100 + (80 * (index % 3)))}px bottom`
                     }
                 });
             });
         }
         animateIconBox('about');
-        animateIconBox('compare');
+        animateIconBox('compare', index => 100, index => 0.15 * index);
         animateIconBox('feature', index => 100, index => 0.15 * index);
     
         // Feature direction button animation
@@ -62,8 +59,7 @@ function init(size) {
             const toObj = {
                 scrollTrigger: {
                     trigger: container,
-                    start: `${100 + (80 * (index % (size === 'lg' ? 3 : 2)))}px bottom`,
-                    toggleActions: 'play none none reverse'
+                    start: `${100 + (80 * (index % (size === 'lg' ? 3 : 2)))}px bottom`
                 }
             }
             if (index === 0) {
@@ -86,8 +82,7 @@ function init(size) {
                 ease: 'expo',
                 scrollTrigger: {
                     trigger: el,
-                    start: '50% bottom',
-                    toggleActions: 'play none none reverse'
+                    start: '50% bottom'
                 }
             });
         }
@@ -101,8 +96,7 @@ function init(size) {
             ease: 'power2',
             scrollTrigger: {
                 trigger: carussel,
-                start: '50% bottom',
-                toggleActions: 'play none none reverse'
+                start: '50% bottom'
             },
             scrollTo: {
                 x: 400,
@@ -118,8 +112,7 @@ function init(size) {
                 ease: 'power3',
                 scrollTrigger: {
                     trigger: el,
-                    start: '40px bottom',
-                    toggleAction: 'play none none reverse'
+                    start: '40px bottom'
                 }
             }, additionalProps);
             el.style.opacity = 0.0;
@@ -146,17 +139,27 @@ function init(size) {
                 delay: 0.2 * index,
                 scrollTrigger: {
                     trigger: footerItem,
-                    start: '100px bottom',
-                    toggleAction: 'play none none reverse'
+                    start: '100px bottom'
                 }
             })
         });
     } else {
         const featureItems = document.querySelectorAll('.feature-item-container');
-        featureItems.forEach(e => e.style.minWidth = `${(window.innerWidth - 96)}px`)
+        featureItems.forEach(e => e.style.minWidth = `${(window.innerWidth - 144)}px`);
+
+        const aboutText = document.querySelectorAll('.about-item');
+        const compareText = document.querySelectorAll('.compare-item');
+        const forEachText = e => {
+            const p = e.querySelector('p');
+            p.style.display = 'none';
+            e.addEventListener('click', () => {
+                p.style.display = p.style.display === 'none' ? 'flex' : 'none';
+            });
+        };
+        aboutText.forEach(forEachText);
+        compareText.forEach(forEachText);
     }
 }
-
 
 const sm = window.matchMedia('(min-width: 640px)');
 const md = window.matchMedia('(min-width: 768px)');
