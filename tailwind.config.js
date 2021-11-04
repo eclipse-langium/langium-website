@@ -20,7 +20,8 @@ module.exports = {
       spacing:{
         '192':'48rem',
         '120':'30rem',
-        'teaser': 'calc(100vh - 96px)'
+        'teaser': 'calc(100vh - 96px)',
+        'underline': '0.1px'
       },
       minWidth: {
         'featureItem': '420px'
@@ -36,11 +37,13 @@ module.exports = {
       },
       backgroundImage: {
         'office': "url('../assets/office.jpg')"
-       }
+      }
     }
   },
   variants: {
-    extend: {}
+    extend: {
+        textDecoration: ['dashed']  
+    }
   },
   plugins: [],
 }

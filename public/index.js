@@ -15,7 +15,9 @@ function init(size) {
         // title animations
         function animateTitle(name) {
             const containerId = `#${name}-title-container`;
+            const contentId = `#${name}-content`;
             const titleContainer = document.querySelector(containerId);
+            const content = document.querySelector(contentId);
             const title = titleContainer.firstElementChild;
             title.style.top = '200px';
             gsap.to(`#${name}-title`, {
@@ -23,6 +25,11 @@ function init(size) {
                 scrollTrigger: {
                     trigger: containerId,
                     start: '180px bottom'
+                },
+                onComplete: () => {
+                    titleContainer.style.height = 'auto';
+                    title.style.position = 'relative';
+                    content.style.marginTop = '0px';
                 }
             });
         }
@@ -87,7 +94,7 @@ function init(size) {
             });
         }
     
-        ['feature-carussel', 'compare-text'].forEach(id => opacityPartsAnimation(id));
+        ['feature-carussel', 'compare-content'].forEach(id => opacityPartsAnimation(id));
     
         // Feature carussel scroll action
         const carussel = document.querySelector('#feature-carussel');

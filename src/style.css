@@ -3,6 +3,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.external-link {
+    @apply border-b border-dashed hover:border-solid pb-underline;
+}
+
 .nav-link-desktop {
     @apply text-base font-medium dark:hover:text-white hover:text-gray-900;
 }
