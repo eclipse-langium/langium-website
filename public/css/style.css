@@ -717,10 +717,6 @@ video {
   margin-top: 2.5rem;
 }
 
-.-mt-40 {
-  margin-top: -10rem;
-}
-
 .mt-8 {
   margin-top: 2rem;
 }
@@ -793,16 +789,16 @@ video {
   height: 9rem;
 }
 
-.h-80 {
-  height: 20rem;
-}
-
 .h-full {
   height: 100%;
 }
 
 .h-44 {
   height: 11rem;
+}
+
+.h-80 {
+  height: 20rem;
 }
 
 .h-16 {
@@ -1492,12 +1488,12 @@ video {
     margin-top: -12rem;
   }
 
-  .sm\:mt-10 {
-    margin-top: 2.5rem;
-  }
-
   .sm\:-mt-40 {
     margin-top: -10rem;
+  }
+
+  .sm\:mt-10 {
+    margin-top: 2.5rem;
   }
 
   .sm\:flex {
