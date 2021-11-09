@@ -749,6 +749,14 @@ video {
   margin-bottom: 7rem;
 }
 
+.mb-10 {
+  margin-bottom: 2.5rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
 .block {
   display: block;
 }
@@ -1062,6 +1070,11 @@ video {
 .px-52 {
   padding-left: 13rem;
   padding-right: 13rem;
+}
+
+.px-12 {
+  padding-left: 3rem;
+  padding-right: 3rem;
 }
 
 .pb-2 {
@@ -1633,6 +1646,10 @@ video {
     text-align: left;
   }
 
+  .sm\:text-center {
+    text-align: center;
+  }
+
   .sm\:text-3xl {
     font-size: 1.875rem;
     line-height: 2.25rem;
@@ -1659,6 +1676,10 @@ video {
     margin-left: calc(2.5rem * calc(1 - var(--tw-space-x-reverse)));
   }
 
+  .md\:text-center {
+    text-align: center;
+  }
+
   .md\:text-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
@@ -1666,6 +1687,10 @@ video {
 }
 
 @media (min-width: 1024px) {
+  .lg\:mt-28 {
+    margin-top: 7rem;
+  }
+
   .lg\:inline {
     display: inline;
   }
@@ -1706,6 +1731,11 @@ video {
     padding-right: 7rem;
   }
 
+  .lg\:px-52 {
+    padding-left: 13rem;
+    padding-right: 13rem;
+  }
+
   .lg\:pt-32 {
     padding-top: 8rem;
   }
@@ -1730,6 +1760,10 @@ video {
     padding-bottom: 2.5rem;
   }
 
+  .lg\:text-center {
+    text-align: center;
+  }
+
   .lg\:text-4xl {
     font-size: 2.25rem;
     line-height: 2.5rem;
@@ -1738,5 +1772,13 @@ video {
   .lg\:text-xl {
     font-size: 1.25rem;
     line-height: 1.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  @media (min-width: 1024px) {
+    .md\:lg\:text-center {
+      text-align: center;
+    }
   }
 }
