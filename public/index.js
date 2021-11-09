@@ -157,7 +157,7 @@ function init(size) {
         const aboutText = document.querySelectorAll('.about-item');
         const compareText = document.querySelectorAll('.compare-item');
         const forEachText = e => {
-            const p = e.querySelector('p');
+            const p = e.querySelector('.item-text');
             p.style.display = 'none';
             e.addEventListener('click', () => {
                 p.style.display = p.style.display === 'none' ? 'flex' : 'none';

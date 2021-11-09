@@ -137,10 +137,12 @@
                             <h3 class="about-item-title">
                                 _ TypeScript integration
                             </h3>
-                            <p class="about-item-text">
-                                Langium generates a typed abstract syntax tree (AST) definition that perfectly fits your grammar and
-                                provides utility functions to help you navigate and process the AST.
-                            </p>
+                            <div class="item-text">
+                                <p>
+                                    Langium generates a typed abstract syntax tree (AST) definition that perfectly fits your grammar and
+                                    provides utility functions to help you navigate and process the AST.
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="about-item-container">
@@ -153,12 +155,14 @@
                                 _
                                 Quality based on experience
                             </h3>
-                            <p class="about-item-text">
-                                Langium was developed on the basis of years of practical use of
-                                <a class="external-link" href="https://www.eclipse.org/Xtext/">Xtext</a>, which is an
-                                integral part of numerous projects and products worldwide. We apply this experience to
-                                push language engineering to a new level.
-                            </p>
+                            <div class="item-text">
+                                <p>
+                                    Langium was developed on the basis of years of practical use of
+                                    <a class="external-link" href="https://www.eclipse.org/Xtext/">Xtext</a>, which is an
+                                    integral part of numerous projects and products worldwide. We apply this experience to
+                                    push language engineering to a new level.
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="about-item-container">
@@ -171,11 +175,13 @@
                                 _
                                 Low barrier to entry
                             </h3>
-                            <p class="about-item-text">
-                                The main goal of Langium is to lower the barrier of creating a DSL or low-code
-                                platform. We achieve this by providing a special DSL that describes the syntax and structure
-                                of your language: the grammar language.
-                            </p>
+                            <div class="item-text">
+                                <p>
+                                    The main goal of Langium is to lower the barrier of creating a DSL or low-code
+                                    platform. We achieve this by providing a special DSL that describes the syntax and structure
+                                    of your language: the grammar language.
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="about-item-container">
@@ -188,11 +194,13 @@
                                 _
                                 Your language, everywhere
                             </h3>
-                            <p class="about-item-text">
-                                Built exclusively on web technologies, Langium is not only available for Node.js
-                                based environments but works just as well in your browser.
-                                When packaged as a language server, you can connect it to most modern IDEs.
-                            </p>
+                            <div class="item-text">
+                                <p>
+                                    Built exclusively on web technologies, Langium is not only available for Node.js
+                                    based environments but works just as well in your browser.
+                                    When packaged as a language server, you can connect it to most modern IDEs.
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="about-item-container">
@@ -205,11 +213,13 @@
                                 Lean by default,
                                 customizable by design
                             </h3>
-                            <p class="about-item-text">
-                                Exploiting the power of the Language Server Protocol, Langium provides useful
-                                default implementations for most features. If you are in need of something special,
-                                you can override the defaults with your custom implementation.
-                            </p>
+                            <div class="item-text">
+                                <p>
+                                    Exploiting the power of the Language Server Protocol, Langium provides useful
+                                    default implementations for most features. If you are in need of something special,
+                                    you can override the defaults with your custom implementation.
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="about-item-container">
@@ -222,11 +232,13 @@
                                 _
                                 Versatile use
                             </h3>
-                            <p class="about-item-text">
-                                You can easily package a Langium-based DSL as a command line interface (CLI)
-                                to create a rich set of interconnected tools:
-                                validator, interpreter, code generators, service adapters, etc.
-                            </p>
+                            <div class="item-text">
+                                <p>
+                                    You can easily package a Langium-based DSL as a command line interface (CLI)
+                                    to create a rich set of interconnected tools:
+                                    validator, interpreter, code generators, service adapters, etc.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -388,13 +400,15 @@
                             class="text-center sm:text-left mt-10 text-lg font-medium text-gray-900 tracking-tight dark:text-gray-100">
                             _ Langium is clear
                         </h3>
-                        <p class="about-item-text sm:mt-10">
-                            Building a tool that uses an Xtext-based language server with VS Code or Theia means
-                            creating a hybrid technology stack where some parts are implemented in Java and others
-                            in TypeScript. Developing and maintaining such a mixed code base is more challenging for
-                            the engineers involved, and long-term maintenance is more difficult compared to Langium's
-                            coherent technology stack.
-                        </p>
+                        <div class="item-text sm:mt-10">
+                            <p>
+                                Building a tool that uses an Xtext-based language server with VS Code or Theia means
+                                creating a hybrid technology stack where some parts are implemented in Java and others
+                                in TypeScript. Developing and maintaining such a mixed code base is more challenging for
+                                the engineers involved, and long-term maintenance is more difficult compared to Langium's
+                                coherent technology stack.
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <div class="compare-item-container relative h-80 sm:h-120 sm:overflow-hidden">
@@ -406,15 +420,17 @@
                             class="text-center sm:text-left mt-10 text-lg font-medium text-gray-900 tracking-tight dark:text-gray-100">
                             _ Langium is simple
                         </h3>
-                        <p class="about-item-text sm:mt-10">
-                            Xtext is heavily based on the <a href="https://www.eclipse.org/modeling/emf/">Eclipse Modeling Framework (EMF)</a>.
-                            This can be an advantage if you want to integrate with other Eclipse modeling tools
-                            (e.g. <a class="external-link" href="https://www.eclipse.org/sirius/">Sirius</a>),
-                            but it can also be a burden due to its complexity. Langium uses the simplest possible solution
-                            to describe an AST (i.e. the parsed contents of a text document): TypeScript interfaces.
-                            By relying on the built-in language constructs, we avoid the additional abstraction
-                            layers and steep learning curve of a modeling framework.
-                        </p>
+                        <div class="item-text sm:mt-10">
+                            <p>
+                                Xtext is heavily based on the <a href="https://www.eclipse.org/modeling/emf/">Eclipse Modeling Framework (EMF)</a>.
+                                This can be an advantage if you want to integrate with other Eclipse modeling tools
+                                (e.g. <a class="external-link" href="https://www.eclipse.org/sirius/">Sirius</a>),
+                                but it can also be a burden due to its complexity. Langium uses the simplest possible solution
+                                to describe an AST (i.e. the parsed contents of a text document): TypeScript interfaces.
+                                By relying on the built-in language constructs, we avoid the additional abstraction
+                                layers and steep learning curve of a modeling framework.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -487,7 +503,7 @@
                     </a>
                 </div>
                 <div class="px-5">
-                    <a href="#">
+                    <a href="/imprint.html">
                         Imprint
                     </a>
                 </div>
