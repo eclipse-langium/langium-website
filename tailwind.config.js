@@ -5,10 +5,6 @@ module.exports = {
   purge: ['./public/**/*.html','./public/**/*.js'],
   darkMode: 'class',
   theme: {
-    fontFamily: {
-      sans: ['Menlo', 'sans-serif'],
-      'body': ['"Roboto Condensed"', 'sans-serif']
-    },
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
@@ -17,6 +13,10 @@ module.exports = {
       gray: colors.trueGray
     },
     extend: {
+      fontFamily: {
+        'mono': ['Menlo', 'ui-monospace', 'SFMono-Regular', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+        'body': ['"Roboto Condensed"', 'sans-serif']
+      },
       spacing:{
         '192':'48rem',
         '120':'30rem',
