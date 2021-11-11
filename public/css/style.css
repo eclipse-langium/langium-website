@@ -701,6 +701,11 @@ video {
   margin-right: auto;
 }
 
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
 .-mr-2 {
   margin-right: -0.5rem;
 }
@@ -735,10 +740,6 @@ video {
 
 .mb-6 {
   margin-bottom: 1.5rem;
-}
-
-.box-content {
-  box-sizing: content-box;
 }
 
 .block {
@@ -801,8 +802,8 @@ video {
   height: 9rem;
 }
 
-.h-44 {
-  height: 11rem;
+.h-64 {
+  height: 16rem;
 }
 
 .h-full {
@@ -815,6 +816,10 @@ video {
 
 .h-16 {
   height: 4rem;
+}
+
+.h-60 {
+  height: 15rem;
 }
 
 .w-auto {
@@ -895,10 +900,6 @@ video {
   flex-direction: column;
 }
 
-.flex-nowrap {
-  flex-wrap: nowrap;
-}
-
 .place-items-center {
   place-items: center;
 }
@@ -942,10 +943,6 @@ video {
 .divide-gray-50 > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-opacity: 1;
   border-color: rgba(250, 250, 250, var(--tw-divide-opacity));
-}
-
-.overflow-auto {
-  overflow: auto;
 }
 
 .overflow-hidden {
@@ -1074,10 +1071,6 @@ video {
 
 .pb-4 {
   padding-bottom: 1rem;
-}
-
-.pb-5 {
-  padding-bottom: 1.25rem;
 }
 
 .pt-20 {
@@ -1418,18 +1411,20 @@ video {
 }
 
 .feature-item-container {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+  position: relative;
+  display: flex;
   height: 100%;
-}
-
-@media (min-width: 640px) {
-  .feature-item-container {
-    min-width: 420px;
-  }
+  min-width: 420px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-width: 4px;
+  border-color: transparent;
 }
 
 .feature-item-content {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   box-sizing: border-box;
   height: 100%;
   width: 100%;
@@ -1439,8 +1434,8 @@ video {
   border-color: rgba(38, 136, 140, var(--tw-border-opacity));
   --tw-bg-opacity: 1;
   background-color: rgba(38, 136, 140, var(--tw-bg-opacity));
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
   padding-bottom: 1.5rem;
   --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
@@ -1456,6 +1451,11 @@ video {
 @media (min-width: 640px) {
   .feature-item-content {
     position: absolute;
+  }
+
+  .feature-item-content {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 }
 
@@ -1549,6 +1549,10 @@ video {
 
   .sm\:h-80 {
     height: 20rem;
+  }
+
+  .sm\:h-44 {
+    height: 11rem;
   }
 
   .sm\:h-120 {

@@ -21,7 +21,8 @@ module.exports = {
         '192':'48rem',
         '120':'30rem',
         'teaser': 'calc(100vh - 96px)',
-        'underline': '0.1px'
+        'underline': '0.1px',
+        '3/2': '150%'
       },
       minWidth: {
         'featureItem': '420px'
