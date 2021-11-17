@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
     <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#00b4b6">
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
@@ -23,9 +23,9 @@
         <header>
             <div class="flex justify-between items-center px-4 py-6 sm:px-6 md:space-x-10">
                 <div class="flex justify-start lg:w-0 lg:flex-1">
-                    <a href="index.html">
+                    <a href="../">
                         <span class="sr-only">Workflow</span>
-                        <img class="h-12 w-auto" src="./assets/Langium_Feder_vorn_links.svg" alt="">
+                        <img class="h-12 w-auto" src="../assets/Langium_Feder_vorn_links.svg" alt="">
                     </a>
                 </div>
                 <div class="-mr-2 -my-2 md:hidden">
@@ -42,7 +42,7 @@
                     </button>
                 </div>
                 <nav class="hidden md:flex items-center space-x-10 text-gray-1000 dark:text-gray-100 lg:px-12">
-                    <a href="/docs" class="nav-link-desktop">
+                    <a href="../docs" class="nav-link-desktop">
                         Documentation
                     </a>
                     <!-- <a href="#" class="nav-link-desktop">
@@ -53,7 +53,7 @@
                         Support
                     </a>
                     <a class='w-10 h-10' target="_blank" href="https://github.com/langium/langium">
-                        <img src="./assets/GitHub-Mark-Light-120px-plus.png" alt="GitHub" />
+                        <img src="../assets/GitHub-Mark-Light-120px-plus.png" alt="GitHub" />
                     </a>
                 </nav>
             </div>
@@ -126,7 +126,7 @@
                 <div class="pt-5 pb-6 px-5">
                     <div class="flex items-center justify-between">
                         <div>
-                            <img class="h-10 w-auto" src="./assets/Langium_Feder_vorn_links.svg" alt="Workflow">
+                            <img class="h-10 w-auto" src="../assets/Langium_Feder_vorn_links.svg" alt="Workflow">
                         </div>
                         <div class="-mr-2">
                             <button @click="isOpen = false" type="button" class="mobile-menu-btn p-2 inline-flex 
@@ -144,7 +144,7 @@
                     </div>
                     <div :class="{'hidden': !isOpen}" class="mt-6 mobile-menu">
                         <nav class="flex flex-col items-center dark:text-gray-200 text-gray-900">
-                            <a href="/docs" class="nav-link-mobile">
+                            <a href="../docs" class="nav-link-mobile">
                                 Documentation
                             </a>
                             <!-- <a href="#" class="nav-link-mobile">
@@ -154,7 +154,7 @@
                                 Support
                             </a>
                             <a class='w-10 h-10' target="_blank" href="https://github.com/langium/langium">
-                                <img src="./assets/GitHub-Mark-Light-120px-plus.png" alt="GitHub" />
+                                <img src="../assets/GitHub-Mark-Light-120px-plus.png" alt="GitHub" />
                             </a>
                         </nav>
                     </div>
