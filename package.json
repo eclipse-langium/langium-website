@@ -4,7 +4,7 @@
   "description": "Source code for langium.org",
   "private": true,
   "scripts": {
-    "start": "concurrently \"NODE_ENV=development tailwindcss -i ./src/style.css -o ./public/css/style.css --watch\" \"live-server public\"",
+    "start": "concurrently \"NODE_ENV=development tailwindcss -i ./src/style.css -o ./static/css/style.css --watch\" \"hugo server -D\"",
     "build": "NODE_ENV=production tailwindcss -i ./src/style.css -o ./public/css/style.css --minify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
