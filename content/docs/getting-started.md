@@ -1,7 +1,6 @@
 ---
 title: "Getting Started"
 date: 2021-11-17T14:06:59Z
-draft: true
 ---
 
 Before diving into Langium itself, let's get your environment ready for development:
