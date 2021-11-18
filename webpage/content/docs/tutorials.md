@@ -1,4 +1,10 @@
-# Tutorials
+---
+title: "Tutorials"
+weight: 1
+# geekdocFlatSection: false
+# geekdocToc: 6
+# geekdocHidden: false
+---
 
 In each of these tutorials we will take a closer look at a certain feature of Langium
 

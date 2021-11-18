@@ -1,18 +1,16 @@
 baseURL = "http://localhost"
-title = "Geekdocs"
+title = "Langium Documentation"
 theme = "hugo-geekdoc"
 
-pluralizeListTitles = false
-
-# Geekdoc required configuration
+# Required to get well formatted code blocks
 pygmentsUseClasses = true
 pygmentsCodeFences = true
 disablePathToLower = true
+enableGitInfo = true
 
 # Required if you want to render robots.txt template
 enableRobotsTXT = true
 
-# Needed for mermaid shortcodes
 [markup]
   [markup.goldmark.renderer]
     # Needed for mermaid shortcode
@@ -22,4 +20,52 @@ enableRobotsTXT = true
     endLevel = 9
 
 [taxonomies]
-   tag = "tags"
+  tag = "tags"
+
+[params]
+  # (Optional, default 6) Set how many table of contents levels to be showed on page.
+  # Use false to hide ToC, note that 0 will default to 6 (https://gohugo.io/functions/default/)
+  # You can also specify this parameter per page in front matter.
+  geekdocToC = 3
+
+  # (Optional, default static/brand.svg) Set the path to a logo for the Geekdoc
+  # relative to your 'static/' folder.
+  geekdocLogo = "assets/Feder.svg"
+
+  # (Optional, default none) Add a link to your Legal Notice page to the site footer.
+  # It can be either a remote url or a local file path relative to your content directory.
+  #geekdocLegalNotice = "https://blog.example.com/legal"
+
+  # (Optional, default none) Add a link to your Privacy Policy page to the site footer.
+  # It can be either a remote url or a local file path relative to your content directory.
+  #geekdocPrivacyPolicy = "/privacy"
+
+  # (Optional, default true) Add an anchor link to headlines.
+  #geekdocAnchor = true
+
+  # (Optional, default true) Copy anchor url to clipboard on click.
+  #geekdocAnchorCopy = true
+
+  # (Optional, default true) Enable or disable image lazy loading for images rendered
+  # by the 'img' shortcode.
+  #geekdocImageLazyLoading = true
+
+  # (Optional, default false) Set HTMl <base> to .Site.BaseURL if enabled. It might be required
+  # if a subdirectory is used within Hugos BaseURL.
+  # See https://developer.mozilla.org/de/docs/Web/HTML/Element/base.
+  #geekdocOverwriteHTMLBase = false
+
+  # (Optional, default false) Auto-decrease brightness of images and add a slightly grayscale to avoid
+  # bright spots while using the dark mode.
+  #geekdocDarkModeDim = false
+
+  # (Optional, default true) Display a "Back to top" link in the site footer.
+  #geekdocBackToTop = true
+
+  # (Optional, default false) Enable or disable adding tags for post pages automatically to the navigation sidebar.
+  #geekdocTagsToMenu = true
+
+  # (Optional, default 'title') Configure how to sort file-tree menu entries. Possible options are 'title', 'linktitle',
+  # 'date', 'publishdate', 'expirydate' or 'lastmod'. Every option can be used with a reverse modifier as well
+  # e.g. 'title_reverse'.
+  #geekdocFileTreeSortBy = "title"

@@ -4,8 +4,6 @@ date: 2021-11-17T14:06:59Z
 draft: true
 ---
 
-# Getting Started
-
 Before diving into Langium itself, let's get your environment ready for development:
 
 1. You have a working [Node environment](https://nodejs.org/en/download/) with version 12 or higher.
