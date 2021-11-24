@@ -65,7 +65,7 @@ _terminal_: A terminal is the smallest parseable part of a document. It usually 
 
 _token_: A token is a substring of the _document_ that matches a certain _terminal_. It contains information about which kind of _terminal_ it represents as well as its location in the document.
 
-For a full explanation of all terms we use throughout Langium, please refer to our [glossary](./glossary.md).
+For a full explanation of all terms we use throughout Langium, please refer to our [glossary](../glossary).
 
 ## Explaining the grammar
 
@@ -119,4 +119,4 @@ Greeting: 'Hello' person=[Person] '!';
 
 Like the previous rule, the `Greeting` starts with a keyword. With the `person` assignment we introduce the _cross reference_, indicated by the brackets `[]`. A cross reference will allow your grammar to reference other elements that are contained in your file or workspace. By default, Langium will try to resolve this cross reference by parsing an `ID` and looking for a `Person` whose `name` property matches the parsed `ID`.
 
-That finishes the short introduction to Langium! Feel free to play around with the grammar and use `npm run langium:generate` to regenerate the generated TypeScript files. You can continue with the [tutorials](./tutorials.md) or take a closer look at the [grammar](./features/grammar.md) and [abstract syntax tree](./features/ast.md) documentation.
+That finishes the short introduction to Langium! Feel free to play around with the grammar and use `npm run langium:generate` to regenerate the generated TypeScript files. You can continue with the [tutorials](../tutorials) or take a closer look at the [grammar](../features/grammar) and [abstract syntax tree](../features/ast) documentation.
