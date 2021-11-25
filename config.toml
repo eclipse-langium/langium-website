@@ -1,5 +1,5 @@
 baseURL = "/"
-title = "Langium Documentation"
+title = "Langium"
 theme = "hugo-geekdoc"
 
 # Required to get well formatted code blocks
@@ -30,7 +30,7 @@ enableRobotsTXT = true
 
   # (Optional, default static/brand.svg) Set the path to a logo for the Geekdoc
   # relative to your 'static/' folder.
-  geekdocLogo = "assets/Feder.svg"
+  geekdocLogo = "assets/nib.svg"
 
   # (Optional, default none) Add a link to your Legal Notice page to the site footer.
   # It can be either a remote url or a local file path relative to your content directory.
@@ -38,7 +38,7 @@ enableRobotsTXT = true
 
   # (Optional, default none) Add a link to your Privacy Policy page to the site footer.
   # It can be either a remote url or a local file path relative to your content directory.
-  geekdocPrivacyPolicy = "https://www.typefox.io/imprint-privacy/#privacy"
+  # geekdocPrivacyPolicy = "https://www.typefox.io/imprint-privacy/#privacy"
 
   geekdocRepo = "https://github.com/langium/langium-website"
   geekdocEditPath = "blob/main/"
