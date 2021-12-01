@@ -1454,7 +1454,8 @@ video {
 
 @media (min-width: 640px) {
   .feature-item-content {
-    position: absolute;
+    margin-left: 0px;
+    margin-right: 0px;
   }
 
   .feature-item-content {
