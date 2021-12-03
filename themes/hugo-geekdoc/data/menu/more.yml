@@ -1,5 +1,5 @@
 more:
-  - name: Download
+  - name: Get npm package
     ref: "https://www.npmjs.com/package/langium"
     external: true
     icon: "gdoc_download"

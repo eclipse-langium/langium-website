@@ -2,14 +2,14 @@
   "name": "langium-website",
   "version": "0.0.0",
   "description": "Source code for langium.org",
+  "author": "TypeFox",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "start": "concurrently \"NODE_ENV=development tailwindcss -i ./src/style.css -o ./static/css/style.css --watch\" \"hugo server -D -b `gp url 1313` --appendPort=false\"",
-    "build": "NODE_ENV=production tailwindcss -i ./src/style.css -o ./public/css/style.css --minify && hugo --gc --minify -b /",
+    "build": "NODE_ENV=production tailwindcss -i ./src/style.css -o ./static/css/style.css --minify && hugo --gc --minify -b /",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "TypeFox",
-  "license": "MIT",
   "devDependencies": {
     "concurrently": "^6.2.2",
     "hugo-extended": "^0.89.4",
