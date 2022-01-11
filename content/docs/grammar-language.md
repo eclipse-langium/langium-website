@@ -122,16 +122,104 @@ Fragments allow for sub-definition of terminal rules to be extracted. They are n
 
 ```
 terminal fragment CAPITAL_LETTER: ('A'..'Z');
-termnial fragment SMALL_LETTER: ('a'..'z');
+terminal fragment SMALL_LETTER: ('a'..'z');
 terminal WORD: (CAPITAL_LETTER|SMALL_LETTER)*;
 ```
 ## Parser Rules
 [TODO] INTRODUCTION ABOUT PARSER RULES
 ### Extended Backus-Naur Form Expressions
-#### Assignements
+Parser rules have access to a more restricted set of expressions compared to terminal rules. Parser and terminal rules share the following expressions:
+- Groups
+- Alternatives
+- Keywords
+- Rule calls
+
+Parser rules also have their own expressions as described below.
+#### Declaration
+A parser rule always starts with the name of the rule followed by an optional return type. If no return type is specified, the parser assumes that the object created has the type of the parser rule's name.
+```
+Person:
+    'person' name=ID;
+``` 
+In this example, the parser will create an object of type `Person`. This object will have a property `name` of type `ID` (defined by the terminal rule).
+
+[TODO] ADD SECTION ABOUT KEYWORDS
+#### Assignments
+There are three different ways to assign an expression (right side) to a property (left side).
+
+1. `=` is used for assigning **only one element** to a property
+    ```
+    Person:
+        'person' name=ID
+    ```
+    Here, the property `name` will only accept one expression of type `ID`
+2. `+=` is used to assign **multiple expressions** to a list property
+    ```
+    Paragraph:
+        'paragraph' (sentences+=STRING)+;
+    ```
+    [QUESTION] IS THIS DECLARATION VALID? OR SHOULD sentences BE ASSIGNED AN OTHER PARSER RULE INSTEAD OF A TERMINAL RULE?
+3. `?=` is used to assign a **value to a property of type boolean**. The value of the property of type `boolean` is set to `true` if the right part of the assignment is consume by the parser
+    ```
+    Employee:
+        'employee' name=ID (remote?='remote')?
+    ```
+    Here the value of the property `remote` will be set to true if the keyword `remote` appears in the declaration.
 #### Cross-reference
+[TODO] CHECK IN MORE DETAILS, I DON'T UNDERSTAND THE SYNTAX AND HOW IT'S IMPLEMENTED
 #### Unordered Groups
+By default, a parser rule has to be implemented in the exact order it is declared.
+```
+Person:
+    'person' name=ID age=INT
+```
+Here a `Person` object **needs** to first declare the property `name` then `age`
+``` 
+person Bob 25
+```
+will successfully create an object of type `Person` while
+```
+person 25 Bob
+```
+will throw an error.
+
+It is however possible to declared properties in an unordered fashion using the `&` operator
+```
+Person:
+    'person' name=ID & age=INT
+```
+will now allow `name` and `age` to be declared in any order.
+```
+person 25 Bob
+```
+will then successfully create an object of type `Person`.
+
+Cardinality (?,*,+ operators) also applies to unordered group. Please note that assignments with a cardinality of `+` or `*` have to appear continuously and cannot be interrupted by an other assignment and resumed later.
+```
+
+```
+[TODO] FIND GOOD EXAMPLE FOR CARDINALITY
 #### Simple Actions
+It is possible for a rule to return different types depending on declaration
+```
+FirstRule returns FirstType:
+    'firstKeyword' name=ID | SecondRule;
+
+SecondRule returns SecondType:
+    'secondKeyword' name=ID;
+```
+In the above example, we rely on a *rule call* to specify the return type. Actions allow to improve the readability of the grammar by explicitly defining the return type
+```
+RuleName returns FirstType:
+    'firstKeyword' name=ID | 'secondKeyword {SecondType} name=ID;
+```
+
+```
+PrimaryExpression returns Expression:
+	'(' Expression ')' |
+	{NumberLiteral} value=NUMBER |
+	{FunctionCall} func=[AbstractDefinition] ('(' args+=Expression (',' args+=Expression)* ')')?;
+```
 #### Unassigned Rule Calls
 #### Assigned Actions
 ### Syntactic Predicates
@@ -139,4 +227,3 @@ terminal WORD: (CAPITAL_LETTER|SMALL_LETTER)*;
 ## Data Types Rules
 ## Enum Rules
 ## Grammar Annotations
-
