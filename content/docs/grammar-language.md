@@ -221,9 +221,19 @@ PrimaryExpression returns Expression:
 	{FunctionCall} func=[AbstractDefinition] ('(' args+=Expression (',' args+=Expression)* ')')?;
 ```
 #### Unassigned Rule Calls
+Parser rules do not necessarily need to return an object, they can also refer to other parser rules which in turn will be responsible for returning the object.
+For example, in the Arithmetics example:
+```
+AbstractDefinition:
+	Definition | DeclaredParameter;
+```
+The parser rule `AbstractDefinition` will not create an object of type AbstractDefinition. Instead, it calls either the `Definition` or `DeclaredParameter` parser rule which will create an object of type Definition or DeclaredParameter respectively. 
 #### Assigned Actions
 ### Syntactic Predicates
 ## Hidden Terminal Symbols
+[QUESTION] THE XTEXT DOC SAYS THAT HIDDEN TERMINALS CAN BE ADDED TO SPECIFIC PARSER RULES. IS THIS VALID FOR LANGIUM? I COULDN'T MAKE IT WORK ON MY SETUP. 
 ## Data Types Rules
 ## Enum Rules
+[QUESTION] DOES LANGIUM SUPPORTS ENUM? PR#84 removed enum and added primitive instead
 ## Grammar Annotations
+[QUESTION] IS THAT IN THE LANGIUM GRAMMAR?
