@@ -1,7 +1,7 @@
 ---
 title: "The Grammar Language"
 ---
-
+[TODO] INTRODUCTION TEXT ABOUT THE GRAMMAR LANGUAGE
 
 ## Language Declaration
 
@@ -23,13 +23,13 @@ Lexing transforms a stream of character into a stream of tokens. Tokens are a se
 terminal STRING: /"[^"]*"|'[^']*'/;
 ```
 
-Here, the token `STRING` will match a stream of character surrounded by double quotes `""` or single quotes `''`.
+Here, the token `STRING` will match a stream of character surrounded by double quotes or single quotes.
 
 **The order in which terminal rules are defined is critical** as the lexer will always return the first match.
 
 ### Return Types
 
-A terminal rule returns a Typescript type. If no return type is specified then the terminal rule will return a `string` by default. 
+A terminal rule always returns an instance of a Typescript type. If no return type is specified then the terminal rule will return a `string` by default. 
 
 ```
 terminal INT returns number: /[0-9]+/;
@@ -45,7 +45,7 @@ The available return types in Langium are:
 [QUESTION] WHAT ARE ALL THE AVAILABLE RETURN TYPES?
 
 ### Extended Backus-Naur Form Expressions
-Terminal rules can be described using *regular expressions* or *Extended Backus-Naur Form*-like (EBNF) expressions.
+Terminal rules can be described using *regular expressions* or *Extended Backus-Naur Form*-like (EBNF) expressions similar to the [Xtext](https://www.eclipse.org/Xtext/) notation.
 #### Cardinalities
 Four different cardinalities can be defined for any expression:
 1. exactly one (no operator)
@@ -116,7 +116,17 @@ Tokens can be put in sequence specifying the order they have to appear
 terminal FLIGHTNUMBER: ('A'..'Z')('A'..'Z')('0'..'9')('0'..'9')('0'..'9')('0'...'9')?;
 ```
 In this example, the token `FLIGHTNUMBER` must start with two capital letters and followed by three of four digits.
+
+### Terminal Fragments
+Fragments allow for sub-definition of terminal rules to be extracted. They are not consumed by the lexer and have to be consumed by other terminal rules.
+
+```
+terminal fragment CAPITAL_LETTER: ('A'..'Z');
+termnial fragment SMALL_LETTER: ('a'..'z');
+terminal WORD: (CAPITAL_LETTER|SMALL_LETTER)*;
+```
 ## Parser Rules
+[TODO] INTRODUCTION ABOUT PARSER RULES
 ### Extended Backus-Naur Form Expressions
 #### Assignements
 #### Cross-reference
