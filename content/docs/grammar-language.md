@@ -6,10 +6,10 @@ The grammar language describes the syntax and structure of your language. The [L
 In the following, we describe the Langium syntax and document structure.
 ## Language Declaration
 
-A Langium grammar file always starts with a header which declares the name of the language. For example, a language named `LanguageName` would be declared with:
+A Langium grammar file always starts with a header which declares the name of the language. For example, a language named `MyLanguage` would be declared with:
 
 ```
-grammar LanguageName
+grammar MyLanguage
 ```
 
 Every grammar file has a `.langium` extension and needs to be referenced in `langium-config.json`. If you used the `langium-generator` to start your project then your language was automatically referenced in `langium-config.json`.
@@ -25,7 +25,7 @@ This will import **all grammar rules** from the imported grammar file. It is the
 [QUESTION] Is the above sentence true? Or is there a way to import only part of a grammar?
 ## Terminal Rules
 The first step in parsing your language, *lexing*, transforms a stream of characters into a stream of tokens. Tokens are a sequence of one or many characters which is matched by a *terminal rule*. The names of terminal rules are conventionally written in upper case. 
-The Langium parser is created using [Chevrotain](https://chevrotain.io/docs/) which has a built-in lexer based on *Javascript Regular Expressions*. However, Langium allows the use of [Extended Backus-Naur Form Expressions](#extended-backus-naur-form-expressions) and both expressions can be used conjointly in the same grammar.
+The Langium parser is created using [Chevrotain](https://chevrotain.io/docs/) which has a built-in lexer based on *Javascript Regular Expressions*. However, Langium allows the use of [Extended Backus-Naur Form Expressions](#extended-backus-naur-form-expressions) and both expressions can be used conjointly in the same grammar. The declaration of a terminal rule starts with the [keyword](#keywords) `terminal`:
 
 ```
 terminal ID: /[_a-zA-Z][\w_]*/;
@@ -67,17 +67,6 @@ A cardinality defines the number of elements in a given set. Four different card
 [QUESTION]Is it possible with EBNF to have a "range cardinality" similar to the {x,y} in regex?
 
 [QUESTION]Should we add examples of cardinalities here?
-#### Keywords
-[QUESTION] SHOULD THIS PART BE ONLY ABOUT THE RESERVED KEYWORDS? KEYWORDS USED FOR TERMINAL RULES ONLY?
-Keywords are terminal rules used by the Langium grammar itself. 
-- `grammar`
-- `import`
-- `entry`
-- `hidden`
-- `fragment`
-
-[QUESTION] WHAT ARE ALL THE KEYWORDS IN THE LANGIUM GRAMMAR AND SHOULD THEY BE EXPLAINED HERE OR IN THEIR RESPECTIVE SECTION?
-
 #### Character Range
 The operator `..` is used to declare a character range. It is equivalent to the operator `-`in regular expression.
 
@@ -142,6 +131,16 @@ terminal WORD: (CAPITAL_LETTER|SMALL_LETTER)*;
 ```
 ## Parser Rules
 [TODO] INTRODUCTION ABOUT PARSER RULES
+### Keywords
+[QUESTION] SHOULD THIS PART BE ONLY ABOUT THE RESERVED KEYWORDS? KEYWORDS USED FOR TERMINAL RULES ONLY?
+Keywords are terminal rules used by the Langium grammar itself. 
+- `grammar`
+- `import`
+- `entry`
+- `hidden`
+- `fragment`
+
+[QUESTION] WHAT ARE ALL THE KEYWORDS IN THE LANGIUM GRAMMAR AND SHOULD THEY BE EXPLAINED HERE OR IN THEIR RESPECTIVE SECTION?
 ### Extended Backus-Naur Form Expressions
 Parser rules have access to a more restricted set of expressions compared to terminal rules. Parser and terminal rules share the following expressions:
 - Groups
