@@ -24,13 +24,14 @@ This will import **all grammar rules** from the imported grammar file. It is the
 
 [QUESTION] Is the above sentence true? Or is there a way to import only part of a grammar?
 ## Terminal Rules
-Lexing transforms a stream of characters into a stream of tokens. Tokens are a sequence of one or many characters which is matched by a specific *terminal rule*. The names of terminal rules are conventionally written in upper case. The matching of terminal rules follows *regular expressions*.
+The first step in parsing your language, *lexing*, transforms a stream of characters into a stream of tokens. Tokens are a sequence of one or many characters which is matched by a *terminal rule*. The names of terminal rules are conventionally written in upper case. 
+The Langium parser is created using [Chevrotain](https://chevrotain.io/docs/) which has a built-in lexer based on *Javascript Regular Expressions*. However, Langium allows the use of [Extended Backus-Naur Form Expressions](#extended-backus-naur-form-expressions) and both expressions can be used conjointly in the same grammar.
 
 ```
-terminal STRING: /"[^"]*"|'[^']*'/;
+terminal ID: /[_a-zA-Z][\w_]*/;
 ```
 
-Here, the token `STRING` will match a stream of character surrounded by double quotes or single quotes.
+Here, the token `ID` will match a stream of character starting with the character '\_', a small letter, or a capital letter followed by sequence of zero or many ([cardinality](#cardinalities) *) alphanumeric characters ('\w') or '\_'.
 
 **The order in which terminal rules are defined is critical** as the lexer will always return the first match.
 
