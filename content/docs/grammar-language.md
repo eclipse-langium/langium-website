@@ -98,14 +98,24 @@ terminal HASHTAG: /#.+/;
 #### Until Token
 The operator `->` indicates that all characters should be consumed from the left token *until* the right token occurs. For example, the terminal rule for multi-line comment can be implemented as:
 
+[QUESTION] Is the matching greedy or lazy in this case? 
+
 ```
 terminal ML_COMMENT: '/*' -> '*/';
 ```
+
+There is no equivalent in regular expression for the until token.
+
+[QUESTION]At least no equivalent in regex I'm aware of or could find with a quick search...
 #### Negated Token
 
-It is possible to negate all tokens using the operator `!`
+It is possible to negate all tokens using the operator `!`, in regular expression the operator `^` is used for negation.
 ```
-terminal ML_COMMENT: '/*' (!'*/')* '/*'; 
+terminal BETWEEN_HASHES:'#' (!'#')* '#';
+```
+In regular expression:
+```
+terminal BETWEEN_HASHES: /#[^#]*#/;
 ```
 
 #### Rule Calls
