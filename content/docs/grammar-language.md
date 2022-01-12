@@ -190,13 +190,17 @@ There are three different ways to assign an expression (right side) to a propert
     Paragraph:
         'paragraph' (sentences+=STRING)+;
     ```
-    [QUESTION] IS THIS DECLARATION VALID? OR SHOULD sentences BE ASSIGNED AN OTHER PARSER RULE INSTEAD OF A TERMINAL RULE?
-3. `?=` is used to assign a **value to a property of type boolean**. The value of the property of type `boolean` is set to `true` if the right part of the assignment is consume by the parser
+    Here, the property `sentences` will accept one or many expressions matching the terminal rule `STRING`. The expressions belong to a single group and must not be interrupted by other expressions. The parsing of a document containing:
+    ```
+    paragraph "The expression group " 3 "was interrupted"
+    ```
+    will throw an error since the `STRING` expressions are not continuous. It is however possible to interrupt and resume a sequence of expressions by using [hidden terminal symbols](#hidden-terminal-symbols).
+3. `?=` is used to assign a **value to a property of type boolean**. The value of the property of type `boolean` is set to `true` if the right part of the assignment is consumed by the parser
     ```
     Employee:
         'employee' name=ID (remote?='remote')?
     ```
-    Here the value of the property `remote` will be set to true if the keyword `remote` appears in the declaration.
+    Here the value of the property `remote` will be set to true if the keyword `remote` appears in the document.
 #### Cross-reference
 [TODO] CHECK IN MORE DETAILS, I DON'T UNDERSTAND THE SYNTAX AND HOW IT'S IMPLEMENTED
 #### Unordered Groups
