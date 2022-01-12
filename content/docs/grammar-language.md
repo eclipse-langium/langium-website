@@ -6,7 +6,7 @@ The grammar language describes the syntax and structure of your language. The [L
 In the following, we describe the Langium syntax and document structure.
 ## Language Declaration
 
-A Langium grammar file always starts with a header which declares the name of the language
+A Langium grammar file always starts with a header which declares the name of the language. For example, a language named `LanguageName` would be declared with:
 
 ```
 grammar LanguageName
@@ -14,11 +14,17 @@ grammar LanguageName
 
 Every grammar file has a `.langium` extension and needs to be referenced in `langium-config.json`. If you used the `langium-generator` to start your project then your language was automatically referenced in `langium-config.json`.
 
-[TODO] ADD IMPORT OF OTHER GRAMMAR FILES
+### Import other grammar languages
+It is possible to reuse grammar rules from other `.langium` files by importing them into your grammar file.
 
+```
+import 'path/to/an/other/langium/grammar';
+```
+This will import **all grammar rules** from the imported grammar file. It is therefore crucial to ensure that there are no duplicate rules between the different grammar files.
+
+[QUESTION] Is the above sentence true? Or is there a way to import only part of a grammar?
 ## Terminal Rules
-
-Lexing transforms a stream of character into a stream of tokens. Tokens are a sequence of one or many characters which is matched by a specific *terminal rule*. The names of terminal rules are conventionally written in upper case. The matching of terminal rules follows *regular expressions*.
+Lexing transforms a stream of characters into a stream of tokens. Tokens are a sequence of one or many characters which is matched by a specific *terminal rule*. The names of terminal rules are conventionally written in upper case. The matching of terminal rules follows *regular expressions*.
 
 ```
 terminal STRING: /"[^"]*"|'[^']*'/;
