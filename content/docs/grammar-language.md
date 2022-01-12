@@ -147,15 +147,18 @@ terminal NAME: CAPITAL_LETTER SMALL_LETTER+;
 ## Parser Rules
 [TODO] INTRODUCTION ABOUT PARSER RULES
 ### Keywords
-[QUESTION] SHOULD THIS PART BE ONLY ABOUT THE RESERVED KEYWORDS? KEYWORDS USED FOR TERMINAL RULES ONLY?
-Keywords are terminal rules used by the Langium grammar itself. 
-- `grammar`
-- `import`
-- `entry`
-- `hidden`
-- `fragment`
+A parser rule that creates an object starts with a keyword. The keyword must match the regular expression `/\^?[_a-zA-Z][\w_]*/` and appear in the grammar file between single quotes.
 
-[QUESTION] WHAT ARE ALL THE KEYWORDS IN THE LANGIUM GRAMMAR AND SHOULD THEY BE EXPLAINED HERE OR IN THEIR RESPECTIVE SECTION?
+```
+Person:
+    'person' name=ID;
+```
+In this example, the keyword `person` indicates to the parser that an object of type `Person` must be parsed. A parser rule can have many keywords:
+```
+Person:
+    'person' name=ID 'age' age=INT;
+```
+[QUESTION] Are there keywords that are reserved for the Langium grammar ('grammar', 'terminal', 'fragment' ...)? Or can a rule "override" the use of those keywords?
 ### Extended Backus-Naur Form Expressions
 Parser rules have access to a more restricted set of expressions compared to terminal rules. Parser and terminal rules share the following expressions:
 - Groups
