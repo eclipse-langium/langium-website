@@ -160,7 +160,7 @@ Person:
 ```
 [QUESTION] Are there keywords that are reserved for the Langium grammar ('grammar', 'terminal', 'fragment' ...)? Or can a rule "override" the use of those keywords?
 ### Extended Backus-Naur Form Expressions
-Parser rules have access to a more restricted set of expressions compared to terminal rules. Parser and terminal rules share the following expressions:
+Parser rules have access to a more restricted set of EBNF expressions compared to terminal rules. Parser and terminal rules share the following expressions:
 - Groups
 - Alternatives
 - Keywords
@@ -173,7 +173,7 @@ A parser rule always starts with the name of the rule followed by an optional re
 Person:
     'person' name=ID;
 ``` 
-In this example, the parser will create an object of type `Person`. This object will have a property `name` of type `ID` (defined by the terminal rule).
+In this example, the parser will create an object of type `Person`. This object will have a property `name` which value and type must match the terminal rule `ID` (i.e. the property `name` is of type `string`).
 
 [TODO] ADD SECTION ABOUT KEYWORDS
 #### Assignments
@@ -184,7 +184,7 @@ There are three different ways to assign an expression (right side) to a propert
     Person:
         'person' name=ID
     ```
-    Here, the property `name` will only accept one expression of type `ID`
+    Here, the property `name` will only accept one expression matching the terminal rule `ID`
 2. `+=` is used to assign **multiple expressions** to a list property
     ```
     Paragraph:
