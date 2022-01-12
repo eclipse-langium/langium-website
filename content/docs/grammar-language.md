@@ -146,19 +146,7 @@ terminal NAME: CAPITAL_LETTER SMALL_LETTER+;
 ```
 ## Parser Rules
 [TODO] INTRODUCTION ABOUT PARSER RULES
-### Keywords
-A parser rule that creates an object starts with a keyword. The keyword must match the regular expression `/\^?[_a-zA-Z][\w_]*/` and appear in the grammar file between single quotes.
 
-```
-Person:
-    'person' name=ID;
-```
-In this example, the keyword `person` indicates to the parser that an object of type `Person` must be parsed. A parser rule can have many keywords:
-```
-Person:
-    'person' name=ID 'age' age=INT;
-```
-[QUESTION] Are there keywords that are reserved for the Langium grammar ('grammar', 'terminal', 'fragment' ...)? Or can a rule "override" the use of those keywords?
 ### Extended Backus-Naur Form Expressions
 Parser rules have access to a more restricted set of EBNF expressions compared to terminal rules. Parser and terminal rules share the following expressions:
 - Groups
@@ -175,7 +163,19 @@ Person:
 ``` 
 In this example, the parser will create an object of type `Person`. This object will have a property `name` which value and type must match the terminal rule `ID` (i.e. the property `name` is of type `string`).
 
-[TODO] ADD SECTION ABOUT KEYWORDS
+#### Keywords
+A parser rule that creates an object starts with a keyword. The keyword must match the regular expression `/\^?[_a-zA-Z][\w_]*/` and appear in the grammar file between single quotes.
+
+```
+Person:
+    'person' name=ID;
+```
+In this example, the keyword `person` indicates to the parser that an object of type `Person` must be parsed. A parser rule can have many keywords:
+```
+Person:
+    'person' name=ID 'age' age=INT;
+```
+[QUESTION] Are there keywords that are reserved for the Langium grammar ('grammar', 'terminal', 'fragment' ...)? Or can a rule "override" the use of those keywords?
 #### Assignments
 There are three different ways to assign an expression (right side) to a property (left side).
 
@@ -184,7 +184,7 @@ There are three different ways to assign an expression (right side) to a propert
     Person:
         'person' name=ID
     ```
-    Here, the property `name` will only accept one expression matching the terminal rule `ID`
+    Here, the property `name` will only accept one expression matching the terminal rule `ID`.
 2. `+=` is used to assign **multiple expressions** to a list property
     ```
     Paragraph:
