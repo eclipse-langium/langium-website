@@ -56,13 +56,17 @@ The available return types in Langium are:
 [QUESTION] What are the available return types?
 
 ### Extended Backus-Naur Form Expressions
-Terminal rules can be described using *regular expressions* or *Extended Backus-Naur Form*-like (EBNF) expressions similar to the [Xtext](https://www.eclipse.org/Xtext/) notation.
+Terminal rules can be described using *regular expressions* or *Extended Backus-Naur Form*-like (EBNF) expressions similar to the [Xtext](https://www.eclipse.org/Xtext/) notation. In this section, we describe which EBNF expressions are supported in Langium and their equivalent in *Javascript Regular Expressions* where possible.
 #### Cardinalities
-Four different cardinalities can be defined for any expression:
+A cardinality defines the number of elements in a given set. Four different cardinalities can be defined for any expression:
 1. exactly one (no operator)
 2. zero or one (operator ?)
 3. zero or many (operator *)
 4. one or many (operator +)
+
+[QUESTION]Is it possible with EBNF to have a "range cardinality" similar to the {x,y} in regex?
+
+[QUESTION]Should we add examples of cardinalities here?
 #### Keywords
 [QUESTION] SHOULD THIS PART BE ONLY ABOUT THE RESERVED KEYWORDS? KEYWORDS USED FOR TERMINAL RULES ONLY?
 Keywords are terminal rules used by the Langium grammar itself. 
