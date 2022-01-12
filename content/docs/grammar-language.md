@@ -68,19 +68,21 @@ A cardinality defines the number of elements in a given set. Four different card
 
 [QUESTION]Should we add examples of cardinalities here?
 #### Character Range
-The operator `..` is used to declare a character range. It is equivalent to the operator `-`in regular expression.
+The operator `..` is used to declare a character range. It is equivalent to the operator `-`in regular expression. It matches any character in between the left character and the right character (inclusive on both ends) depending on their UTF-16 code.
+
+[QUESTION] I could find where in the langium code base we parse this range. I assumed it would be based on String.prototype.charCodeAt() or something similar. Please correct if I'm wrong.
 
 ```
 terminal INT returns number: ('0'..'9')+;
 ```
 
-is equivalent to
+is equivalent to the regular expression:
 
 ```
 terminal INT returns number: /[0-9]+/;
 ```
 
-Here, INT is matched to one or more characters (by using the operand `+`) between '0' and '9' (inclusive).
+Here, INT is matched to one or more characters (by using the operand `+`, which defines a cardinality of 'one or many') between `0` and `9` (inclusive on both ends).
 
 #### Wildcard
 The operator `.` is used to match any character and is similar in regular expression.
