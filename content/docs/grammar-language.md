@@ -37,20 +37,23 @@ Here, the token `ID` will match a stream of character starting with the characte
 
 ### Return Types
 
-A terminal rule always returns an instance of a Typescript type. If no return type is specified then the terminal rule will return a `string` by default. 
+A terminal rule always returns an instance of a `Typescript primitive type`. If no return type is specified then the terminal rule will return a `string` by default. 
+
+[QUESTION] Is the return type always a primitive type?
 
 ```
+terminal ID: /[_a-zA-Z][\w_]*/;
 terminal INT returns number: /[0-9]+/;
 ```
 
-Here, the terminal rule `INT` will return an instance of `number`.
+Here, the terminal rule `ID` will return an instance of `string` while the terminal rule `INT` will return an instance of `number`.
+
 The available return types in Langium are: 
 - `string`
 - `number`
 - `boolean`
-- ...
-
-[QUESTION] WHAT ARE ALL THE AVAILABLE RETURN TYPES?
+- `bigint`
+[QUESTION] What are the available return types?
 
 ### Extended Backus-Naur Form Expressions
 Terminal rules can be described using *regular expressions* or *Extended Backus-Naur Form*-like (EBNF) expressions similar to the [Xtext](https://www.eclipse.org/Xtext/) notation.
