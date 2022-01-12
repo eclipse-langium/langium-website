@@ -82,22 +82,24 @@ is equivalent to the regular expression:
 terminal INT returns number: /[0-9]+/;
 ```
 
-Here, INT is matched to one or more characters (by using the operand `+`, which defines a cardinality of 'one or many') between `0` and `9` (inclusive on both ends).
+Here, `INT` is matched to one or more characters (by using the operand `+`, which defines a cardinality of 'one or many') between `0` and `9` (inclusive on both ends).
 
 #### Wildcard
 The operator `.` is used to match any character and is similar in regular expression.
+```
+terminal HASHTAG: '#'.+;
+```
+In this example, the terminal rule `HASHTAG` matches a sequence of character starting with `#` followed by one or many (cardinality +) characters.
 
-[TODO] FIND GOOD EXAMPLE WITH THE WILDCARD USED
-
+Equivalent in regular expression:
+```
+terminal HASHTAG: /#.+/;
+```
 #### Until Token
-The operator `->` indicates that all characters should be consumed from one token until a specific token occurs. For example, the terminal rule for multi-line comment can be implemented as:
+The operator `->` indicates that all characters should be consumed from the left token *until* the right token occurs. For example, the terminal rule for multi-line comment can be implemented as:
 
 ```
 terminal ML_COMMENT: '/*' -> '*/';
-```
-Regular expression equivalent:
-```
-terminal ML_COMMENT: /\/\*(.*?)\*\//;
 ```
 #### Negated Token
 
