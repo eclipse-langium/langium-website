@@ -121,8 +121,9 @@ terminal BETWEEN_HASHES: /#[^#]*#/;
 #### Rule Calls
 A terminal rule can implement other terminal rules. 
 ```
-terminal DOUBLE: INT '.' INT;
+terminal DOUBLE returns number: INT '.' INT;
 ```
+Note: it is easy to create conflict between terminal rules by using *terminal rule calls*. See [Data Type Rules](#data-type-rules) for further details.
 #### Alternatives
 It is possible to match several valid options. The terminal rule for white space can use alternatives as:
 ```
@@ -141,7 +142,7 @@ Fragments allow for sub-definition of terminal rules to be extracted. They are n
 ```
 terminal fragment CAPITAL_LETTER: ('A'..'Z');
 terminal fragment SMALL_LETTER: ('a'..'z');
-terminal WORD: (CAPITAL_LETTER|SMALL_LETTER)*;
+terminal NAME: CAPITAL_LETTER SMALL_LETTER+;
 ```
 ## Parser Rules
 [TODO] INTRODUCTION ABOUT PARSER RULES
@@ -261,7 +262,7 @@ The parser rule `AbstractDefinition` will not create an object of type AbstractD
 ### Syntactic Predicates
 ## Hidden Terminal Symbols
 [QUESTION] THE XTEXT DOC SAYS THAT HIDDEN TERMINALS CAN BE ADDED TO SPECIFIC PARSER RULES. IS THIS VALID FOR LANGIUM? I COULDN'T MAKE IT WORK ON MY SETUP. 
-## Data Types Rules
+## Data Type Rules
 ## Enum Rules
 [QUESTION] DOES LANGIUM SUPPORTS ENUM? PR#84 removed enum and added primitive instead
 ## Grammar Annotations
