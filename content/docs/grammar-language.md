@@ -202,7 +202,26 @@ There are three different ways to assign an expression (right side) to a propert
     ```
     Here the value of the property `remote` will be set to true if the keyword `remote` appears in the document.
 #### Cross-reference
-[TODO] CHECK IN MORE DETAILS, I DON'T UNDERSTAND THE SYNTAX AND HOW IT'S IMPLEMENTED
+With Langium, you can declare cross-references directly in the grammar.
+```
+Person:
+    'person' name=ID;
+Greeting:
+    'Hello' person=[Person:ID] '!';
+```
+The `Person` in square brackets does not refer to a parser rule `Person` but instead refers to an object of type `Person`. It will successfully parse a document like:
+```
+person Bob
+Hello Bob !
+```
+but will fail to parse:
+```
+person Bob
+Hello Sara !
+```
+because a `Person` object with the ID of 'Sara' has not been instantiated.
+
+[QUESTION] I failed to reference an instance with using something else than ID. Reading teh Xtext doc and the langium-grammar it seems like it is possible but I couldn't figure out how...
 #### Unordered Groups
 By default, a parser rule has to be implemented in the exact order it is declared.
 ```
