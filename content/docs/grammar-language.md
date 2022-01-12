@@ -1,8 +1,9 @@
 ---
 title: "The Grammar Language"
 ---
-[TODO] INTRODUCTION TEXT ABOUT THE GRAMMAR LANGUAGE
+The grammar language describes the syntax and structure of your language. The [Langium grammar langium](https://github.com/langium/langium/blob/main/packages/langium/src/grammar/langium-grammar.langium) is implemented using Langium itself and therefore follows the same syntactic rules as any language created with Langium.
 
+In the following, we describe the Langium syntax and document structure.
 ## Language Declaration
 
 A Langium grammar file starts with a header which declares the name of the language
@@ -229,6 +230,7 @@ AbstractDefinition:
 ```
 The parser rule `AbstractDefinition` will not create an object of type AbstractDefinition. Instead, it calls either the `Definition` or `DeclaredParameter` parser rule which will create an object of type Definition or DeclaredParameter respectively. 
 #### Assigned Actions
+
 ### Syntactic Predicates
 ## Hidden Terminal Symbols
 [QUESTION] THE XTEXT DOC SAYS THAT HIDDEN TERMINALS CAN BE ADDED TO SPECIFIC PARSER RULES. IS THIS VALID FOR LANGIUM? I COULDN'T MAKE IT WORK ON MY SETUP. 
