@@ -6,13 +6,13 @@ The grammar language describes the syntax and structure of your language. The [L
 In the following, we describe the Langium syntax and document structure.
 ## Language Declaration
 
-A Langium grammar file starts with a header which declares the name of the language
+A Langium grammar file always starts with a header which declares the name of the language
 
 ```
 grammar LanguageName
 ```
 
-Every grammar file have the file extension `.langium` and needs to be referenced in `langium-config.json`
+Every grammar file has a `.langium` extension and needs to be referenced in `langium-config.json`. If you used the `langium-generator` to start your project then your language was automatically referenced in `langium-config.json`.
 
 [TODO] ADD IMPORT OF OTHER GRAMMAR FILES
 
