@@ -144,6 +144,15 @@ terminal fragment CAPITAL_LETTER: ('A'..'Z');
 terminal fragment SMALL_LETTER: ('a'..'z');
 terminal NAME: CAPITAL_LETTER SMALL_LETTER+;
 ```
+
+### Hidden Terminal Rules
+The parser will try to match every character in the document to a terminal rules. It is therefore necessary to specify which characters or sequence of characters need to be ignored during parsing. Generally, you would want to ignore whitespaces and comments. This is achieved by adding the keyword `hidden` in front of the keyword `terminal`. These *hidden terminal rules* are global and will be valid for all parser rules in the document.
+```
+hidden terminal WS: /\s+/;
+hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
+hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
+```
+[QUESTION] The Xtext doc says that hidden terminals can be added to specific parser rules. Is this valid for Langium? I couldn't make it work on my test project.
 ## Parser Rules
 [TODO] INTRODUCTION ABOUT PARSER RULES
 
@@ -295,8 +304,7 @@ Addition:
 
 [TODO] Add part about syntax leading to unwanted elements in the tree.
 ### Syntactic Predicates
-## Hidden Terminal Symbols
-[QUESTION] THE XTEXT DOC SAYS THAT HIDDEN TERMINALS CAN BE ADDED TO SPECIFIC PARSER RULES. IS THIS VALID FOR LANGIUM? I COULDN'T MAKE IT WORK ON MY SETUP. it doesn't work so needs to be declared as a 'global' token
+
 ## Data Type Rules
 ## Enum Rules
 [QUESTION] DOES LANGIUM SUPPORTS ENUM? PR#84 removed enum and added primitive instead
