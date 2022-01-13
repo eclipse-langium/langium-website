@@ -304,8 +304,29 @@ Addition:
 
 [TODO] Add part about syntax leading to unwanted elements in the tree.
 ### Syntactic Predicates
+Sometimes it is difficult to describe a problem without an ambiguous grammar. We can guide the parser through the grammar language by introducing *syntactic predicates*.
+In parser generator, a classical example of such ambiguous grammar is the *dangling else problem*. A simple `if-then else` statement is unambiguous:
+```
+if conditionA then statementA else statementB
+```
+A problem arises when we have to deal with nested if-then else statements:
+```
+if conditionA then if conditionB then statementA else statementB 
+```
+The `else` clause could either belong to the first or the second if statement.
 
+The parser needs to be guided in order to parse the conditional statement correctly. This is done by using *syntactic predicates* with the operator `=>` in front of the `else` keyword:
+```
+ConditionalStatement:
+    'if' '(' condition=BooleanExpression ')'
+    then=Statement
+    (=>'else' else=Statement)?
+``` 
+When the parser encounter the `=>` operator, it will look for the `else` keyword. If it is present, the parser will prioritize that part of the input without trying to match the same token sequence.
+
+In some cases you need to use a syntactic predicate in front of more complex rules. This can increase the lookahead and slow down the parser. Often times, looking only at the first token is enough to disambiguate between different inputs. This can be achieved by using the *first token set predicate* operator `->`.
 ## Data Type Rules
+
 ## Enum Rules
 [QUESTION] DOES LANGIUM SUPPORTS ENUM? PR#84 removed enum and added primitive instead
 ## Grammar Annotations
