@@ -223,7 +223,7 @@ because a `Person` object with the ID of 'Sara' has not been instantiated even t
 
 [QUESTION] I failed to reference an instance with using something else than ID. Reading the Xtext doc and the langium-grammar it seems like it is possible but I couldn't figure out how...
 #### Unordered Groups
-[NOTE] Unordered group are currently unsupported but seems like it's being worked on. Let's consider the following as something that could be added when the feature is available.
+[NOTE] Unordered group are currently not supported but seems like it's being worked on. I think this is still valuable info that could be added to the documentation at a later stage if needed.
 
 By default, a parser rule has to be implemented in the exact order it is declared.
 ```
@@ -276,7 +276,24 @@ AbstractDefinition:
 ```
 The parser rule `AbstractDefinition` will not create an object of type AbstractDefinition. Instead, it calls either the `Definition` or `DeclaredParameter` parser rule which will create an object of type Definition or DeclaredParameter respectively. 
 #### Assigned Actions
+The parser is built using Chevrotain which implements a LL(k) parsing algorithm (left-to-right). By definition, a LL(k) grammar cannot have rules containing left recursion.
 
+Consider the following: 
+```
+Addition:
+    Addition '+' Addition | '(' Addition ')' | value=INT;
+```
+The parser rule `Addition` is left-recursive and will not be parsable. We can go around this issue by *left-factoring* the rule, *i.e.* by factoring out the common left-factor. We introduce a new rule `Expression`:
+```
+Expression:
+    '(' Addition ')' | value=INT;
+
+Addition:
+    Expression ('+' Expression)*;
+```
+[NOTE] Contrary to the Xtext doc, I had to had `value=` for the code to compile, otherwise is throws a `RangeError: Maximum call stack size exceeded`. Any idea why?
+
+[TODO] Add part about syntax leading to unwanted elements in the tree.
 ### Syntactic Predicates
 ## Hidden Terminal Symbols
 [QUESTION] THE XTEXT DOC SAYS THAT HIDDEN TERMINALS CAN BE ADDED TO SPECIFIC PARSER RULES. IS THIS VALID FOR LANGIUM? I COULDN'T MAKE IT WORK ON MY SETUP. it doesn't work so needs to be declared as a 'global' token
