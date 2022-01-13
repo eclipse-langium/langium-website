@@ -269,7 +269,7 @@ RuleName returns FirstType:
 We improved the readability by explicitly declaring the return type inside curly brackets.
 #### Unassigned Rule Calls
 Parser rules do not necessarily need to return an object, they can also refer to other parser rules which in turn will be responsible for returning the object.
-For example, in the [Arithmetics example]():
+For example, in the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium):
 ```
 AbstractDefinition:
 	Definition | DeclaredParameter;
@@ -279,7 +279,7 @@ The parser rule `AbstractDefinition` will not create an object of type AbstractD
 
 ### Syntactic Predicates
 ## Hidden Terminal Symbols
-[QUESTION] THE XTEXT DOC SAYS THAT HIDDEN TERMINALS CAN BE ADDED TO SPECIFIC PARSER RULES. IS THIS VALID FOR LANGIUM? I COULDN'T MAKE IT WORK ON MY SETUP. 
+[QUESTION] THE XTEXT DOC SAYS THAT HIDDEN TERMINALS CAN BE ADDED TO SPECIFIC PARSER RULES. IS THIS VALID FOR LANGIUM? I COULDN'T MAKE IT WORK ON MY SETUP. it doesn't work so needs to be declared as a 'global' token
 ## Data Type Rules
 ## Enum Rules
 [QUESTION] DOES LANGIUM SUPPORTS ENUM? PR#84 removed enum and added primitive instead
