@@ -326,8 +326,12 @@ When the parser encounter the `=>` operator, it will look for the `else` keyword
 
 In some cases you need to use a syntactic predicate in front of more complex rules. This can increase the lookahead and slow down the parser. Often times, looking only at the first token is enough to disambiguate between different inputs. This can be achieved by using the *first token set predicate* operator `->`.
 ## Data Type Rules
+Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and therefore are context-dependent, are allowed to use hidden terminal rules, can avoid conflicts with terminal rules.
 
-## Enum Rules
-[QUESTION] DOES LANGIUM SUPPORTS ENUM? PR#84 removed enum and added primitive instead
-## Grammar Annotations
-[QUESTION] IS THAT IN THE LANGIUM GRAMMAR?
+The following example from the [domain model example]() avoids for the `QualifiedName` data type rule to conflict with the terminal rule `ID`.
+```
+QualifiedName returns string:
+    ID ('.' ID)*;
+```
+Data type rules need to specify a primitive return type.
+## Model
