@@ -209,7 +209,7 @@ Person:
 Greeting:
     'Hello' person=[Person:ID] '!';
 ```
-The `Person` in square brackets does not refer to a parser rule `Person` but instead refers to an object of type `Person`. It will successfully parse a document like:
+The `Person` in square brackets does not refer to the parser rule `Person` but instead refers to an object of type `Person`. It will successfully parse a document like:
 ```
 person Bob
 Hello Bob !
@@ -219,26 +219,28 @@ but will fail to parse:
 person Bob
 Hello Sara !
 ```
-because a `Person` object with the ID of 'Sara' has not been instantiated.
+because a `Person` object with the ID of 'Sara' has not been instantiated even though 'Sara' is a valid `ID`.
 
-[QUESTION] I failed to reference an instance with using something else than ID. Reading teh Xtext doc and the langium-grammar it seems like it is possible but I couldn't figure out how...
+[QUESTION] I failed to reference an instance with using something else than ID. Reading the Xtext doc and the langium-grammar it seems like it is possible but I couldn't figure out how...
 #### Unordered Groups
+[NOTE] Unordered group are currently unsupported but seems like it's being worked on. Let's consider the following as something that could be added when the feature is available.
+
 By default, a parser rule has to be implemented in the exact order it is declared.
 ```
 Person:
     'person' name=ID age=INT
 ```
-Here a `Person` object **needs** to first declare the property `name` then `age`
-``` 
+Here a `Person` object **needs** to first declare the property `name` then `age`.
+```
 person Bob 25
 ```
-will successfully create an object of type `Person` while
+will successfully be parsed to an object of type `Person` while
 ```
 person 25 Bob
 ```
 will throw an error.
 
-It is however possible to declared properties in an unordered fashion using the `&` operator
+However, it is possible to declare a group of properties in an unordered fashion using the `&` operator
 ```
 Person:
     'person' name=ID & age=INT
@@ -250,34 +252,24 @@ person 25 Bob
 will then successfully create an object of type `Person`.
 
 Cardinality (?,*,+ operators) also applies to unordered group. Please note that assignments with a cardinality of `+` or `*` have to appear continuously and cannot be interrupted by an other assignment and resumed later.
-```
-
-```
-[TODO] FIND GOOD EXAMPLE FOR CARDINALITY
 #### Simple Actions
 It is possible for a rule to return different types depending on declaration
 ```
-FirstRule returns FirstType:
-    'firstKeyword' name=ID | SecondRule;
+RuleOne returns TypeOne:
+    'keywordOne' name=ID | RuleTwo;
 
-SecondRule returns SecondType:
-    'secondKeyword' name=ID;
+RuleTwo returns TypeTwo:
+    'keywordTwo' name=ID;
 ```
-In the above example, we rely on a *rule call* to specify the return type. Actions allow to improve the readability of the grammar by explicitly defining the return type
+In the above example, we rely on a *rule call* to specify the return type. With more complex rules, the readability will be highly degraded. *Actions* allow to improve the readability of the grammar by explicitly defining the return type
 ```
 RuleName returns FirstType:
-    'firstKeyword' name=ID | 'secondKeyword {SecondType} name=ID;
+    'firstKeyword' name=ID | 'secondKeyword' {SecondType} name=ID;
 ```
-
-```
-PrimaryExpression returns Expression:
-	'(' Expression ')' |
-	{NumberLiteral} value=NUMBER |
-	{FunctionCall} func=[AbstractDefinition] ('(' args+=Expression (',' args+=Expression)* ')')?;
-```
+We improved the readability by explicitly declaring the return type inside curly brackets.
 #### Unassigned Rule Calls
 Parser rules do not necessarily need to return an object, they can also refer to other parser rules which in turn will be responsible for returning the object.
-For example, in the Arithmetics example:
+For example, in the [Arithmetics example]():
 ```
 AbstractDefinition:
 	Definition | DeclaredParameter;
