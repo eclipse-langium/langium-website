@@ -300,7 +300,7 @@ Expression:
 Addition:
     Expression ('+' Expression)*;
 ```
-[NOTE] Contrary to the Xtext doc, I had to had `value=` for the code to compile, otherwise is throws a `RangeError: Maximum call stack size exceeded`. Any idea why?
+[NOTE] Contrary to the Xtext doc, I had to add `value=` for the code to compile, otherwise is throws a `RangeError: Maximum call stack size exceeded`. Any idea why?
 
 [TODO] Add part about syntax leading to unwanted elements in the tree.
 ### Syntactic Predicates
@@ -322,11 +322,11 @@ ConditionalStatement:
     then=Statement
     (=>'else' else=Statement)?
 ``` 
-When the parser encounter the `=>` operator, it will look for the `else` keyword. If it is present, the parser will prioritize that part of the input without trying to match the same token sequence.
+When the parser encounters the `=>` operator, it will look for the `else` keyword. If it is present, the parser will prioritize that part of the input without trying to match the same token sequence.
 
-In some cases you need to use a syntactic predicate in front of more complex rules. This can increase the lookahead and slow down the parser. Often times, looking only at the first token is enough to disambiguate between different inputs. This can be achieved by using the *first token set predicate* operator `->`.
+Using the *syntactic predicate operator* `=>` on complex rules with many tokens can increase the lookahead and therefore slow down the parser. Often times, disambiguation can be achieved by looking only at the first token. To do so, the *first token predicate* operator `->` can be used instead.
 ## Data Type Rules
-Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and therefore are context-dependent, are allowed to use hidden terminal rules, can avoid conflicts with terminal rules.
+Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and therefore are context-dependent, are allowed to use hidden terminal rules, can avoid conflicts with terminal rules. 
 
 The following example from the [domain model example]() avoids for the `QualifiedName` data type rule to conflict with the terminal rule `ID`.
 ```
