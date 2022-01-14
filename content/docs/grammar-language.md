@@ -334,4 +334,11 @@ QualifiedName returns string:
     ID ('.' ID)*;
 ```
 Data type rules need to specify a primitive return type.
-## Model
+## The Model Object
+ The parser will create objects for valid *parser rules* which will be stored in a *model object*. The model object contains arrays of the different objects group by type. In Langium, you define which parsed objects need to be exported into the *model object* by defining a special parser rule starting with the keyword `entry`.
+
+ ```
+ entry Model:
+    (persons+=Person | greetings+=Greeting)*;
+ ```
+The *model object* of type `Model` will have two properties:  an array of objects of type `Person` and a second one of objects of types `Greeting`.
