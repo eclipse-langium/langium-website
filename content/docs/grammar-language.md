@@ -1,7 +1,7 @@
 ---
 title: "The Grammar Language"
 ---
-The grammar language describes the syntax and structure of your language. The [Langium grammar langium](https://github.com/langium/langium/blob/main/packages/langium/src/grammar/langium-grammar.langium) is implemented using Langium itself and therefore follows the same syntactic rules as any language created with Langium.
+The grammar language describes the syntax and structure of your language. The [Langium grammar langium](https://github.com/langium/langium/blob/main/packages/langium/src/grammar/langium-grammar.langium) is implemented using Langium itself and therefore follows the same syntactic rules as any language created with Langium. The grammar language will define the structure of the *abstract syntax tree* (AST) which in Langium is a collection of Javascript objects describing their properties and how they are linked to each other.
 
 In the following, we describe the Langium syntax and document structure.
 ## Language Declaration
