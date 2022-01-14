@@ -22,7 +22,7 @@ import 'path/to/an/other/langium/grammar';
 This will import **all grammar rules** from the imported grammar file. It is therefore crucial to ensure that there are no duplicate rules between the different grammar files.
 
 ## Terminal Rules
-The first step in parsing your language, *lexing*, transforms a stream of characters into a stream of tokens. Tokens are a sequence of one or many characters which is matched by a *terminal rule*. The names of terminal rules are conventionally written in upper case. 
+The first step in parsing your language, *lexing*, transforms a stream of characters into a stream of tokens. Tokens are a sequence of one or many characters which is matched by a *terminal rule*, creating a atomic symbols. The names of terminal rules are conventionally written in upper case. 
 
 The Langium parser is created using [Chevrotain](https://github.com/chevrotain/chevrotain) which has a built-in lexer based on *Javascript Regular Expressions*. However, Langium allows the use of [Extended Backus-Naur Form Expressions](#extended-backus-naur-form-expressions) and both expressions can be used conjointly in the same grammar. 
 
@@ -136,7 +136,7 @@ hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
 ```
 
 ## Parser Rules
-[TODO] INTRODUCTION ABOUT PARSER RULES
+While [terminal rules](#terminal-rules) indicate to the lexer what sequence of characters are valid tokens, *parser rules* indicate to the parser what sequence of tokens are valid. Parser rules lay the structure of objects to be created by the parser and result in the creation of the *abstract syntax tree* which represents the syntactic structure of your language. In Langium, parser rules are also responsible for defining the type of objects to be parsed.
 
 ### Extended Backus-Naur Form Expressions
 Parser rules have access to a more restricted set of EBNF expressions compared to terminal rules. Parser and terminal rules share the following expressions:
