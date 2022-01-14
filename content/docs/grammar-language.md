@@ -311,7 +311,8 @@ Addition:
     Expression ('+' Expression)*;
 ```
 
-[TODO] Add part about syntax leading to unwanted elements in the tree.
+[NOTE] I left out the part regarding `tree rewrite actions` as I think it could be part of a more advanced documentation part on the AST/CST. I can add it if we think it belongs here.
+
 ### Syntactic Predicates
 Sometimes it is difficult to describe a problem without an ambiguous grammar. We can guide the parser through the grammar language by introducing *syntactic predicates*.
 In parser generator, a classical example of such ambiguous grammar is the *dangling else problem*. A simple `if-then else` statement is unambiguous:
@@ -345,11 +346,26 @@ QualifiedName returns string:
 ```
 Data type rules need to specify a primitive return type.
 
-## The Model Object
- The parser will create objects for valid *parser rules* which will be stored in a *model object*. The model object contains arrays of the different objects grouped by type. In Langium, you define which parsed objects need to be exported into the *model object* by defining a special parser rule starting with the keyword `entry`.
-
+## The Entry Rule
+The *entry rule* is a parser rule that defines the starting point of the parsing step. The *entry rule* starts with the keyword `entry` and matches other parser rules.
  ```
  entry Model:
     (persons+=Person | greetings+=Greeting)*;
  ```
-The *model object* of type `Model` will have two properties:  an array of objects of type `Person` and a second one of objects of types `Greeting`.
+In this example, the *entry rule* `Model` defines a group of alternatives. The parser will go through the input document and try to parse a `Person` or a `Greeting` object and add it to the array `persons` or `greetings`, respectively. Thanks to the grouping and the cardinality of zero or many (`*`), the parser will go through the document until all inputs have been consumed.
+
+Not all parser rules need to be registered in the parser rule.
+```
+entry Model:
+    (persons+=Person | greetings+=Greeting)*;
+
+Person:
+    'person' name=ID address=Address;
+
+Greeting:
+    'Hello' person=[Person] '!';
+
+Address:
+    street=STRING city=ID postcode=INT;
+```
+We expended the `Person` parser rule to include a property `address` which matches the parser rule `Address`. We decided that an `Address` will never be present in the input document on its own and will always be parsed in relation to a `Person`. It is therefore not necessary to include an array of `Address` inside of the entry rule.
