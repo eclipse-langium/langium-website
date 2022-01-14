@@ -326,7 +326,7 @@ When the parser encounters the `=>` operator, it will look for the `else` keywor
 
 Using the *syntactic predicate operator* `=>` on complex rules with many tokens can increase the lookahead and therefore slow down the parser. Often times, disambiguation can be achieved by looking only at the first token. To do so, the *first token predicate* operator `->` can be used instead.
 ## Data Type Rules
-Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and therefore are context-dependent, are allowed to use hidden terminal rules, can avoid conflicts with terminal rules. 
+Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and therefore are context-dependent, and are allowed to use hidden terminal rules. Contrary to terminal rules, they cannot use *regular expressions* to match a stream of character and have to compose with terminal rules.
 
 The following example from the [domain model example]() avoids for the `QualifiedName` data type rule to conflict with the terminal rule `ID`.
 ```
