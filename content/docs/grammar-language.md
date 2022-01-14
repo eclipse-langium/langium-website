@@ -24,7 +24,7 @@ This will import **all grammar rules** from the imported grammar file. It is the
 ## Terminal Rules
 The first step in parsing your language, *lexing*, transforms a stream of characters into a stream of tokens. Tokens are a sequence of one or many characters which is matched by a *terminal rule*. The names of terminal rules are conventionally written in upper case. 
 
-The Langium parser is created using [Chevrotain](https://chevrotain.io/docs/) which has a built-in lexer based on *Javascript Regular Expressions*. However, Langium allows the use of [Extended Backus-Naur Form Expressions](#extended-backus-naur-form-expressions) and both expressions can be used conjointly in the same grammar. 
+The Langium parser is created using [Chevrotain](https://github.com/chevrotain/chevrotain) which has a built-in lexer based on *Javascript Regular Expressions*. However, Langium allows the use of [Extended Backus-Naur Form Expressions](#extended-backus-naur-form-expressions) and both expressions can be used conjointly in the same grammar. 
 
 The declaration of a terminal rule starts with the keyword `terminal`:
 ```
@@ -216,7 +216,11 @@ There are three different ways to assign an expression (right side) to a propert
     Here the value of the property `remote` will be set to true if the keyword `remote` appears in the document.
 
 #### Cross-reference
-With Langium, you can declare *cross-references* directly in the grammar. 
+With Langium, you can declare *cross-references* directly in the grammar. *Cross-reference* allows to reference an object of a given type. The syntax is:
+```
+property=[Type:TOKEN]
+```
+The `property` will be a reference to an object of type `Type` identified by the token `TOKEN`. If the `TOKEN` is omitted, the parser assumes that it is matching the terminal rule `ID`.
 ```
 Person:
     'person' name=ID;
@@ -235,7 +239,6 @@ Hello Sara !
 ```
 because a `Person` object with the ID of 'Sara' has not been instantiated even though 'Sara' is a valid `ID`.
 
-[QUESTION] I failed to reference an instance with using something else than ID. Reading the Xtext doc and the langium-grammar it seems like it is possible but I couldn't figure out how...
 #### Unordered Groups
 [NOTE] Unordered group are currently not supported but seems like it's being worked on. I think this is still valuable info that could be added to the documentation at a later stage if needed.
 
@@ -266,6 +269,7 @@ person 25 Bob
 will then successfully create an object of type `Person`.
 
 Cardinality (?,*,+ operators) also applies to unordered group. Please note that assignments with a cardinality of `+` or `*` have to appear continuously and cannot be interrupted by an other assignment and resumed later.
+
 #### Simple Actions
 It is possible for a rule to return different types depending on declaration
 ```
@@ -275,12 +279,12 @@ RuleOne returns TypeOne:
 RuleTwo returns TypeTwo:
     'keywordTwo' name=ID;
 ```
-In the above example, we rely on a *rule call* to specify the return type. With more complex rules, the readability will be highly degraded. *Actions* allow to improve the readability of the grammar by explicitly defining the return type
+In the above example, we rely on a *rule call* to specify the return type. With more complex rules, the readability will be highly impacted. *Actions* allow to improve the readability of the grammar by explicitly defining the return type. *Actions* are declared inside of curly brackets `{}`:
 ```
-RuleName returns FirstType:
-    'firstKeyword' name=ID | 'secondKeyword' {SecondType} name=ID;
+RuleName returns TypeOne:
+    'keywordOne' name=ID | 'keywordTwo' {TypeTwo} name=ID;
 ```
-We improved the readability by explicitly declaring the return type inside curly brackets.
+
 #### Unassigned Rule Calls
 Parser rules do not necessarily need to return an object, they can also refer to other parser rules which in turn will be responsible for returning the object.
 For example, in the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium):
@@ -288,9 +292,10 @@ For example, in the [Arithmetics example](https://github.com/langium/langium/blo
 AbstractDefinition:
 	Definition | DeclaredParameter;
 ```
-The parser rule `AbstractDefinition` will not create an object of type AbstractDefinition. Instead, it calls either the `Definition` or `DeclaredParameter` parser rule which will create an object of type Definition or DeclaredParameter respectively. 
+The parser rule `AbstractDefinition` will not create an object of type AbstractDefinition. Instead, it calls either the `Definition` or `DeclaredParameter` parser rule which will be responsible for creating an object of a given type (or call other parser rules if they are unassigned rule calls themselves). 
+
 #### Assigned Actions
-The parser is built using Chevrotain which implements a LL(k) parsing algorithm (left-to-right). By definition, a LL(k) grammar cannot have rules containing left recursion.
+The parser is built using [Chevrotain](https://github.com/chevrotain/chevrotain) which implements a LL(k) parsing algorithm (left-to-right). By definition, a LL(k) grammar cannot have rules containing left recursion.
 
 Consider the following: 
 ```
@@ -305,7 +310,6 @@ Expression:
 Addition:
     Expression ('+' Expression)*;
 ```
-[NOTE] Contrary to the Xtext doc, I had to add `value=` for the code to compile, otherwise is throws a `RangeError: Maximum call stack size exceeded`. Any idea why?
 
 [TODO] Add part about syntax leading to unwanted elements in the tree.
 ### Syntactic Predicates
@@ -330,6 +334,7 @@ ConditionalStatement:
 When the parser encounters the `=>` operator, it will look for the `else` keyword. If it is present, the parser will prioritize that part of the input without trying to match the same token sequence.
 
 Using the *syntactic predicate operator* `=>` on complex rules with many tokens can increase the lookahead and therefore slow down the parser. Often times, disambiguation can be achieved by looking only at the first token. To do so, the *first token predicate* operator `->` can be used instead.
+
 ## Data Type Rules
 Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and therefore are context-dependent, and are allowed to use hidden terminal rules. Contrary to terminal rules, they cannot use *regular expressions* to match a stream of character and have to compose with terminal rules.
 
@@ -339,8 +344,9 @@ QualifiedName returns string:
     ID ('.' ID)*;
 ```
 Data type rules need to specify a primitive return type.
+
 ## The Model Object
- The parser will create objects for valid *parser rules* which will be stored in a *model object*. The model object contains arrays of the different objects group by type. In Langium, you define which parsed objects need to be exported into the *model object* by defining a special parser rule starting with the keyword `entry`.
+ The parser will create objects for valid *parser rules* which will be stored in a *model object*. The model object contains arrays of the different objects grouped by type. In Langium, you define which parsed objects need to be exported into the *model object* by defining a special parser rule starting with the keyword `entry`.
 
  ```
  entry Model:
