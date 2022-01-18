@@ -357,7 +357,7 @@ The *entry rule* is a parser rule that defines the starting point of the parsing
  ```
 In this example, the *entry rule* `Model` defines a group of alternatives. The parser will go through the input document and try to parse a `Person` or a `Greeting` object and add it to the array `persons` or `greetings`, respectively. Thanks to the grouping and the cardinality of zero or many (`*`), the parser will go through the document until all inputs have been consumed.
 
-Not all parser rules need to be registered in the parser rule.
+Not all parser rules need to be registered in the entry parser rule.
 ```
 entry Model:
     (persons+=Person | greetings+=Greeting)*;
