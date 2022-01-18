@@ -116,7 +116,7 @@ Tokens can be put in sequence specifying the order they have to appear
 ```
 terminal FLIGHT_NUMBER: ('A'..'Z')('A'..'Z')('0'..'9')('0'..'9')('0'..'9')('0'...'9')?;
 ```
-In this example, the token `FLIGHT_NUMBER` **must** start with two capital letters and followed by three of four digits.
+In this example, the token `FLIGHT_NUMBER` **must** start with two capital letters and followed by three or four digits.
 
 ### Terminal Fragments
 Fragments allow for sub-definition of terminal rules to be extracted. They are not consumed by the lexer and have to be consumed by other terminal rules.
