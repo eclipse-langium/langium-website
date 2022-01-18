@@ -86,7 +86,10 @@ The operator `->` indicates that all characters should be consumed from the left
 ```
 terminal ML_COMMENT: '/*' -> '*/';
 ```
-There is no direct equivalent in regular expression for the until token.
+Langium will transform the until token into the regular expression `[\s\S]*?` which matches any character non-greedily:
+```
+terminal ML_COMMENT: /\/*[\s\S]*?\*\//;
+``` 
 
 #### Negated Token
 It is possible to negate all tokens using the operator `!`, in regular expression the operator `^` is used for negation.
