@@ -223,7 +223,7 @@ With Langium, you can declare *cross-references* directly in the grammar. A *cro
 ```
 property=[Type:TOKEN]
 ```
-The `property` will be a reference to an object of type `Type` identified by the token `TOKEN`. If the `TOKEN` is omitted, the parser assumes that it is matching the terminal rule `ID`.
+The `property` will be a reference to an object of type `Type` identified by the token `TOKEN`. If the `TOKEN` is omitted, the parser will use the terminal or data type rule associated with the `name` assignment of the `Type` rule.
 ```
 Person:
     'person' name=ID;
