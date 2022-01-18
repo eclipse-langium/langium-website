@@ -219,7 +219,7 @@ There are three different ways to assign an expression (right side) to a propert
     Here the value of the property `remote` will be set to `true` if the keyword `remote` was successfully parsed as a part of the rule call.
 
 #### Cross-reference
-With Langium, you can declare *cross-references* directly in the grammar. *Cross-reference* allows to reference an object of a given type. The syntax is:
+With Langium, you can declare *cross-references* directly in the grammar. A *cross-reference* allows to reference an object of a given type. The syntax is:
 ```
 property=[Type:TOKEN]
 ```
