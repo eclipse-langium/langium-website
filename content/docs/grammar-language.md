@@ -317,7 +317,7 @@ Addition:
 [NOTE] I left out the part regarding `tree rewrite actions` as I think it could be part of a more advanced documentation part on the AST/CST. I can add it if we think it belongs here.
 
 ## Data Type Rules
-Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and therefore are context-dependent, and are allowed to use hidden terminal rules. Contrary to terminal rules, they cannot use *regular expressions* to match a stream of character and have to compose with terminal rules.
+Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and therefore are context-dependent, and are allowed to use hidden terminal rules. Contrary to terminal rules, they cannot use *regular expressions* to match a stream of character and have to be composed of terminal rules and keywords.
 
 The following example from the [domain model example]() avoids for the `QualifiedName` data type rule to conflict with the terminal rule `ID`.
 ```
