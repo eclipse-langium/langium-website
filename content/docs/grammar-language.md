@@ -106,7 +106,7 @@ A terminal rule can implement other terminal rules.
 ```
 terminal DOUBLE returns number: INT '.' INT;
 ```
-Note that it is easy to create conflict between terminal rules by using *terminal rule calls*. See [Data Type Rules](#data-type-rules) for further details.
+Note that it is easy to create conflicts between terminal rules when using *terminal rule calls*. See [Data Type Rules](#data-type-rules) for further details.
 
 #### Alternatives
 It is possible to match several valid options. The terminal rule `STRING` can use alternatives to match a sequence of characters between double quotes `""` or single quotes `''`:
