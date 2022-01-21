@@ -282,7 +282,7 @@ RuleOne returns TypeOne:
 RuleTwo returns TypeTwo:
     'keywordTwo' name=ID;
 ```
-In the above example, we rely on a *rule call* to specify the return type. With more complex rules, the readability will be highly impacted. *Actions* allow to improve the readability of the grammar by explicitly defining the return type. *Actions* are declared inside of curly brackets `{}`:
+In the above example, we rely on a *rule call* to specify the return type. With more complex rules, the readability will be highly impacted. *Actions* allow to improve the readability of the grammar by explicitly defining the return type. *Actions* are declared inside of curly braces `{}`:
 ```
 RuleName returns TypeOne:
     'keywordOne' name=ID | 'keywordTwo' {TypeTwo} name=ID;
