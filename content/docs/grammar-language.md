@@ -30,7 +30,7 @@ The declaration of a terminal rule starts with the keyword `terminal`:
 ```
 terminal ID: /[_a-zA-Z][\w_]*/;
 ```
-Here, the token `ID` will match a stream of character starting with the character '\_', a small letter, or a capital letter followed by sequence of zero or many ([cardinality](#cardinalities) *) alphanumeric characters ('\w') or '\_'.
+Here, the token `ID` will match a stream of characters starting with the character '\_', a small letter, or a capital letter followed by a sequence of zero or many ([cardinality](#cardinalities) *) alphanumeric characters ('\w') or '\_'.
 
 **The order in which terminal rules are defined is critical** as the lexer will always return the first match.
 
