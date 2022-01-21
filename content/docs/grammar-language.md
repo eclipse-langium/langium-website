@@ -131,7 +131,7 @@ terminal NAME: CAPITAL_LETTER SMALL_LETTER+;
 In this example, the lexer will not transform a single capital or small letter into a valid token but will match a sequence of one capital letter followed by one or many small letters.
 
 ### Hidden Terminal Rules
-The parser tries to match every character in the document to a terminal rules. It is therefore necessary to specify which characters or sequence of characters need to be ignored during parsing. Generally, you would want to ignore whitespaces and comments. This is achieved by adding the keyword `hidden` in front of the keyword `terminal` when defining a *terminal rule*. These *hidden terminal rules* are global and will be valid for all parser rules in the document.
+The lexer tries to match every character in the document to a terminal rule or a keyword. It is therefore necessary to specify which characters or sequence of characters need to be ignored during lexing and parsing. Generally, you would want to ignore whitespaces and comments. This is achieved by adding the keyword `hidden` in front of the keyword `terminal` when defining a *terminal rule*. These *hidden terminal rules* are global and will be valid for all parser rules in the document.
 ```
 hidden terminal WS: /\s+/;
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
