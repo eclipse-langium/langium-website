@@ -1,18 +1,17 @@
 ---
 title: "The Grammar Language"
 ---
-The grammar language describes the syntax and structure of your language. The [Langium grammar language](https://github.com/langium/langium/blob/main/packages/langium/src/grammar/langium-grammar.langium) is implemented using Langium itself and therefore follows the same syntactic rules as any language created with Langium. The grammar language will define the structure of the *abstract syntax tree* (AST) which in Langium is a collection of Javascript objects describing their properties and how they are linked to each other.
+The grammar language describes the syntax and structure of your language. The [Langium grammar language](https://github.com/langium/langium/blob/main/packages/langium/src/grammar/langium-grammar.langium) is implemented using Langium itself and therefore follows the same syntactic rules as any language created with Langium. The grammar language will define the structure of the *abstract syntax tree* (AST) which in Langium is a collection of *TypeScript types* describing the content of a parsed document and organized hierarchically. The individual nodes of the tree are then represented *at runtime* with JavaScript objects.
 
 In the following, we describe the Langium syntax and document structure.
 ## Language Declaration
-A Langium grammar file always starts with a header which declares the name of the language.  For example, a language named `MyLanguage` would be declared with:
+An *entry* Langium grammar file (i.e. a grammar which contains an [entry rule](#the-entry-rule)) always starts with a header which declares the name of the language. For example, a language named `MyLanguage` would be declared with:
 
 ```
 grammar MyLanguage
 ```
-Note that this is not the case for grammar files that are meant to be reused by other grammar files. In this case, the `grammar` declaration can be omitted.
 
-Every grammar file has a `.langium` extension and needs to be referenced in `langium-config.json`. If you used the `langium-generator` to start your project then your language was automatically referenced in `langium-config.json`.
+Every grammar file has a `.langium` extension and the *entry grammar file* needs to be referenced in `langium-config.json`. If you used the `langium-generator` to start your project then your language was automatically referenced in `langium-config.json`.
 
 ### Import of other grammar languages
 It is possible to reuse grammar rules from other `.langium` files by importing them into your own grammar file.
@@ -20,6 +19,8 @@ It is possible to reuse grammar rules from other `.langium` files by importing t
 import 'path/to/an/other/langium/grammar';
 ```
 This will import **all grammar rules** from the imported grammar file. It is therefore crucial to ensure that there are no duplicate rules between the different grammar files.
+
+Contrary to *entry grammars*, imported grammars do not need to start with the keyword `grammar`.
 
 ## Terminal Rules
 The first step in parsing your language, *lexing*, transforms a stream of characters into a stream of tokens. A token is a sequence of one or many characters which is matched by a *terminal rule*, creating an atomic symbol. The names of terminal rules are conventionally written in upper case. 
@@ -92,7 +93,7 @@ terminal ML_COMMENT: /\/*[\s\S]*?\*\//;
 ``` 
 
 #### Negated Token
-It is possible to negate all tokens using the operator `!`, in regular expression the operator `^` is used for negation.
+It is possible to negate all tokens using the operator `!`, in regular expression the operator `^` is used for negation within a character class.
 ```
 terminal BETWEEN_HASHES:'#' (!'#')* '#';
 ```
@@ -109,7 +110,11 @@ terminal DOUBLE returns number: INT '.' INT;
 Note that it is easy to create conflicts between terminal rules when using *terminal rule calls*. See [Data Type Rules](#data-type-rules) for further details.
 
 #### Alternatives
-It is possible to match several valid options. The terminal rule `STRING` can use alternatives to match a sequence of characters between double quotes `""` or single quotes `''`:
+It is possible to match several valid options by using the pipe operator `|`. The terminal rule `STRING` can use alternatives to match a sequence of characters between double quotes `""` or single quotes `''`:
+```
+terminal STRING: '"' !('"')* '"' | ''' !(''')* '''; 
+```
+In regular expression, alternatives are also possible with the pipe operator `|`:
 ```
 terminal STRING: /"[^"]*"|'[^']*'/;
 ```
@@ -142,7 +147,7 @@ hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
 While [terminal rules](#terminal-rules) indicate to the lexer what sequence of characters are valid tokens, *parser rules* indicate to the parser what sequence of tokens are valid. Parser rules lay the structure of objects to be created by the parser and result in the creation of the *abstract syntax tree* which represents the syntactic structure of your language. In Langium, parser rules are also responsible for defining the type of objects to be parsed.
 
 ### Extended Backus-Naur Form Expressions
-Parser rules have access to a more restricted set of EBNF expressions compared to terminal rules. Parser and terminal rules share the following expressions:
+Only a subset of the EBNF expressions described above can be used within parser rules. Parser and terminal rules share the following expressions:
 - Groups
 - Alternatives
 - Keywords
@@ -151,34 +156,49 @@ Parser rules have access to a more restricted set of EBNF expressions compared t
 Parser rules also have their own expressions as described below.
 
 #### Declaration
-A parser rule always starts with the name of the rule followed by an optional return type. If no return type is specified, the parser assumes that the object to be created has the type of the parser rule's name.
+A parser rule always starts with the name of the rule followed by a semicolon.
 ```
 Person:
     'person' name=ID;
-``` 
+```
 In this example, the parser will create an object of type `Person`. This object will have a property `name` which value and type must match the terminal rule `ID` (i.e. the property `name` is of type `string` and cannot start with a digit or special character).
 
+By default, the parser will create an object with a type corresponding to the parser rule name. It is possible to override this behavior by explicitly defining the type of the object to be created. This is done by adding the keyword `returns`, followed by the type, after the parser rule name:
+```
+Person returns OtherType:
+    'person' name=ID;
+```
+The parser rule `Person` will now lead to the creation of objects of type `OtherType` instead of `Person`.
+
 #### Keywords
+Keywords are *inline terminals* which need to match the terminal `STRING` as defined by he Langium grammar. This means that a keyword can be a sequence of one or many arbitrary characters surrounded by single or double quotes.
 Keywords are meant to guide the parser in defining what type of object needs to be parsed.
-A keyword must match the regular expression `/\^?[_a-zA-Z][\w_]*/` and appear in the grammar file between single quotes `''`.
 
 Consider the following:
 ```
-Person:
+Student:
     name=ID;
 
-City:
+Teacher:
     name=ID;
-```
-The parser will not be able to differentiate between the parsing of `Person` or `City` if it encounters a token matching the terminal rule `ID`. We can include *keywords* to remove the ambiguity:
-```
-Person:
-    'person' name=ID;
 
-City:
-    'city' name=ID;
+Person:
+    Student | Teacher;
 ```
-Now the parser is able to differentiate between the two parser rules and will successfully parse objects of type `Person` and `City`.
+In this example, a `Person` can either be a `Student` or a `Teacher`. This grammar is ambiguous because the parser rules `Student` and `Teacher` are identical. The parser will not be able to differentiate between the parser rules for `Student` and `Teacher` when trying to parse a `Person`. 
+Keywords can help removing such ambiguity and guide the parser in defining if a `Student` or `Teacher` needs to be parsed.
+We can add a keyword to the parser rule `Student`, `Teacher`, or to both of them:
+```
+Student:
+    'student' name=ID;
+
+Teacher:
+    'teacher' name=ID;
+
+Person:
+    Student | Teacher;
+```
+Now the ambiguity is resolved and the parser is able to differentiate between the two parser rules.
 
 Parser rules can have many keywords:
 ```
@@ -198,16 +218,23 @@ There are three different ways to assign an expression (right side) to a propert
 
 2. `+=` is used to assign **multiple expressions** to a list property
     ```
-    Paragraph:
-        'paragraph' (sentences+=STRING)+;
+    Contact:
+        addresses+=STRING addresses+=STRING;
     ```
-    Here, the property `sentences` will accept one or many expressions matching the terminal rule `STRING`. The expressions belong to a single group and must not be interrupted by other expressions. The parsing of a document containing:
+    Here, the list property `addresses` will accept two expressions matching the terminal rule `STRING`.
+
+    If the assignment has a cardinality of `+` or `*`, then the expressions belong to a single group and must not be interrupted by other expressions.
+    ```
+    Paragraph:
+        'paragraph' (sentences+=STRING)+ id=INT;
+    ```
+    Here, the property `sentences` will accept one or many expressions matching the terminal rule `STRING` followed by an `INT`. The expressions belong to a single group and must not be interrupted by other expressions. The parsing of a document containing:
     ```
     paragraph "The expression group " 3 "was interrupted"
     ```
     will throw an error since the `STRING` expressions are not continuous. It is however possible to interrupt and resume a sequence of expressions by using [hidden terminal symbols](#hidden-terminal-symbols):
     ```
-    paragraph "expression one" /* comment */ "expression two"
+    paragraph "expression one" /* comment */ "expression two" 3
     ```
     The above example will be successfully parsed.
 
@@ -216,14 +243,14 @@ There are three different ways to assign an expression (right side) to a propert
     Employee:
         'employee' name=ID (remote?='remote')?
     ```
-    Here the value of the property `remote` will be set to `true` if the keyword `remote` was successfully parsed as a part of the rule call.
+    Here the value of the property `remote` will be set to `true` if the keyword `remote` was successfully parsed as a part of the rule call. If the keyword `remote` is not consumed, the property `remote` is set to `undefined`.
 
 #### Cross-reference
 With Langium, you can declare *cross-references* directly in the grammar. A *cross-reference* allows to reference an object of a given type. The syntax is:
 ```
 property=[Type:TOKEN]
 ```
-The `property` will be a reference to an object of type `Type` identified by the token `TOKEN`. If the `TOKEN` is omitted, the parser will use the terminal or data type rule associated with the `name` assignment of the `Type` rule.
+The `property` will be a reference to an object of type `Type` identified by the token `TOKEN`. If the `TOKEN` is omitted, the parser will use the terminal or data type rule associated with the `name` assignment of the `Type` rule. If no such rule exists, then the token is mandatory.
 ```
 Person:
     'person' name=ID;
@@ -243,7 +270,7 @@ Hello Sara !
 will result in an error message since the cross reference resolution will fail because a `Person` object with the name 'Sara' has not been defined, even though 'Sara' is a valid `ID`.
 
 #### Unordered Groups
-[NOTE] Unordered group are currently not supported but seems like it's being worked on. I think this is still valuable info that could be added to the documentation at a later stage if needed.
+*Unordered groups are not supported in the current version of Langium, please refere to [this issue](https://github.com/langium/langium/issues/314) for further information*
 
 By default, a parser rule has to be implemented in the exact order it is declared.
 ```
@@ -273,6 +300,15 @@ will then successfully create an object of type `Person`.
 
 Cardinality (?,*,+ operators) also applies to unordered group. Please note that assignments with a cardinality of `+` or `*` have to appear continuously and cannot be interrupted by an other assignment and resumed later.
 
+#### Unassigned Rule Calls
+Parser rules do not necessarily need to create an object, they can also refer to other parser rules which in turn will be responsible for returning the object.
+For example, in the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium):
+```
+AbstractDefinition:
+	Definition | DeclaredParameter;
+```
+The parser rule `AbstractDefinition` will not create an object of type AbstractDefinition. Instead, it calls either the `Definition` or `DeclaredParameter` parser rule which will be responsible for creating an object of a given type (or call other parser rules if they are unassigned rule calls themselves). 
+
 #### Simple Actions
 It is possible for a rule to return different types depending on declaration
 ```
@@ -285,17 +321,8 @@ RuleTwo returns TypeTwo:
 In the above example, we rely on a *rule call* to specify the return type. With more complex rules, the readability will be highly impacted. *Actions* allow to improve the readability of the grammar by explicitly defining the return type. *Actions* are declared inside of curly braces `{}`:
 ```
 RuleName returns TypeOne:
-    'keywordOne' name=ID | 'keywordTwo' {TypeTwo} name=ID;
+    'keywordOne' name=ID | {TypeTwo} 'keywordTwo' name=ID;
 ```
-
-#### Unassigned Rule Calls
-Parser rules do not necessarily need to return an object, they can also refer to other parser rules which in turn will be responsible for returning the object.
-For example, in the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium):
-```
-AbstractDefinition:
-	Definition | DeclaredParameter;
-```
-The parser rule `AbstractDefinition` will not create an object of type AbstractDefinition. Instead, it calls either the `Definition` or `DeclaredParameter` parser rule which will be responsible for creating an object of a given type (or call other parser rules if they are unassigned rule calls themselves). 
 
 #### Tree-Rewriting Actions
 The parser is built using [Chevrotain](https://github.com/chevrotain/chevrotain) which implements a LL(k) parsing algorithm (left-to-right). Conceptually, a LL(k) grammar cannot have rules containing left recursion.
@@ -313,8 +340,7 @@ Expression:
 Addition:
     Expression ('+' Expression)*;
 ```
-
-[NOTE] I left out the part regarding `tree rewrite actions` as I think it could be part of a more advanced documentation part on the AST/CST. I can add it if we think it belongs here.
+Unfortunately, *left-factoring* does not come without consequences and can lead to the generation of unwanted nodes. It is possible to "clean" the tree by using *Tree-Rewriting Actions*. Please refer to [this blog post](https://www.typefox.io/blog/parsing-expressions-with-xtext) for further details.
 
 ## Data Type Rules
 Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and therefore are context-dependent, and are allowed to use hidden terminal rules. Contrary to terminal rules, they cannot use *regular expressions* to match a stream of character and have to be composed of terminal rules and keywords.
