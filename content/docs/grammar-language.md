@@ -298,7 +298,7 @@ AbstractDefinition:
 The parser rule `AbstractDefinition` will not create an object of type AbstractDefinition. Instead, it calls either the `Definition` or `DeclaredParameter` parser rule which will be responsible for creating an object of a given type (or call other parser rules if they are unassigned rule calls themselves). 
 
 #### Tree-Rewriting Actions
-The parser is built using [Chevrotain](https://github.com/chevrotain/chevrotain) which implements a LL(k) parsing algorithm (left-to-right). By definition, a LL(k) grammar cannot have rules containing left recursion.
+The parser is built using [Chevrotain](https://github.com/chevrotain/chevrotain) which implements a LL(k) parsing algorithm (left-to-right). Conceptually, a LL(k) grammar cannot have rules containing left recursion.
 
 Consider the following: 
 ```
