@@ -102,7 +102,7 @@ terminal BETWEEN_HASHES: /#[^#]*#/;
 ```
 
 #### Rule Calls
-A terminal rule can implement other terminal rules. 
+A terminal rule can include other terminal rules in its definition.
 ```
 terminal DOUBLE returns number: INT '.' INT;
 ```
