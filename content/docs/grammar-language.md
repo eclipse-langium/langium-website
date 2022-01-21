@@ -35,7 +35,7 @@ Here, the token `ID` will match a stream of characters starting with the charact
 **The order in which terminal rules are defined is critical** as the lexer will always return the first match.
 
 ### Return Types
-A terminal rule returns an instance of a `Typescript primitive type`. If no return type is specified then the terminal rule will return a `string` by default. 
+A terminal rule returns an instance of a _TypeScript primitive type_. If no return type is specified, the terminal rule will return a `string` by default. 
 ```
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal INT returns number: /[0-9]+/;
