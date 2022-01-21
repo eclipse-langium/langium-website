@@ -240,7 +240,7 @@ but the following:
 person Bob
 Hello Sara !
 ```
-will result in an error message since the cross reference resolution will fail because a `Person` object with the ID of 'Sara' has not been instantiated even though 'Sara' is a valid `ID`.
+will result in an error message since the cross reference resolution will fail because a `Person` object with the name 'Sara' has not been defined, even though 'Sara' is a valid `ID`.
 
 #### Unordered Groups
 [NOTE] Unordered group are currently not supported but seems like it's being worked on. I think this is still valuable info that could be added to the documentation at a later stage if needed.
