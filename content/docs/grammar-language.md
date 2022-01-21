@@ -22,7 +22,7 @@ import 'path/to/an/other/langium/grammar';
 This will import **all grammar rules** from the imported grammar file. It is therefore crucial to ensure that there are no duplicate rules between the different grammar files.
 
 ## Terminal Rules
-The first step in parsing your language, *lexing*, transforms a stream of characters into a stream of tokens. Tokens are a sequence of one or many characters which is matched by a *terminal rule*, creating a atomic symbols. The names of terminal rules are conventionally written in upper case. 
+The first step in parsing your language, *lexing*, transforms a stream of characters into a stream of tokens. A token is a sequence of one or many characters which is matched by a *terminal rule*, creating an atomic symbol. The names of terminal rules are conventionally written in upper case. 
 
 The Langium parser is created using [Chevrotain](https://github.com/chevrotain/chevrotain) which has a built-in lexer based on *Javascript Regular Expressions*. However, Langium allows the use of [Extended Backus-Naur Form Expressions](#extended-backus-naur-form-expressions) and both expressions can be used conjointly in the same grammar. 
 
