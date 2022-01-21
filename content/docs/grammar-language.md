@@ -60,7 +60,7 @@ A cardinality defines the number of elements in a given set. Four different card
 4. one or many (operator `+`)
 
 #### Character Range
-The operator `..` is used to declare a character range. It is equivalent to the operator `-` in regular expression. It matches any character in between the left character and the right character (inclusive on both ends).
+The operator `..` is used to declare a character range. It is equivalent to the operator `-` within a character class in a regular expression. It matches any character in between the left character and the right character (inclusive on both ends).
 ```
 terminal INT returns number: ('0'..'9')+;
 ```
