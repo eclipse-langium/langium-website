@@ -189,7 +189,7 @@ protected getGlobalScope(referenceType: string): Scope {
 Now, when we call either `createScope` or `getGlobalScope` from the `ScopeProvider` service, the call will be made from teh `ArithmeticsScopeProvider` instead of the `DefaultScopeProvider`. Functions that were not overridden will still be called from `DefaultScopeProvider` via inheritance.
 
 ## Default Services
-Langium come pre-packed with a set of services which will handle the most usual features of your language and the LSP. The following gives a brief overview of these default services and their dependencies.
+Langium comes pre-packed with a set of services which will handle the most usual features of your language and the LSP. The following gives a brief overview of these default services and their dependencies.
 
 ### DefaultSharedModule
 The `DefaultSharedModule` contains services shared between all languages.
