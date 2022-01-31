@@ -1,16 +1,16 @@
 ---
 title: "Configuration via Services"
 ---
-Langium makes possible the configuration of most aspects of your language and Language Server Protocol (LSP) via a set of `Services`. Those services are organized into `Modules` which are essentially mappings from a service name to its implementation.
+Langium supports the configuration of most aspects of your language and language server via a set of `Services`. Those services are organized into `Modules`, which are essentially mappings from a service name to its implementation.
 
 We can separate modules into two main categories:
-1. ***Shared modules*** which contain services which are common across all languages.
+1. ***Shared modules*** which contain services that are shared across all languages.
 2. ***Language specific modules*** which contain services specific to one language. 
 
 ## Shared Modules
-The *shared modules* contain services shared across all languages. They include :
-* The `ServiceRegistry` which is responsible for registering and getting the different services.
-* The `Connection` service which holds information about the connection between the client and the server.
+The *shared modules* contain services shared across all languages:
+* The `ServiceRegistry` is responsible for registering and accessing the different services.
+* The `Connection` service holds information about the connection between client and server.
 * Services to handle `Langium Documents` and `Text Documents`.
 * Implementations of the `AstReflection` service (one implementation per language) to access the structure of the AST.
 
@@ -24,12 +24,12 @@ The *language specific modules* contain all services which are specific to one l
 * Services to handle document and syntax validation.
 
 ## Customization
-The entry point to services customization is found in the `src/language-server/...-module.ts` file, where '...' is the name of your language. There, you can register new services or override the default implementation of services. Langium implements the *Inversion of Control* pattern via *Dependency Injection* which promotes loosely-coupled architecture, maintainability and extensibility.
+The entry point to services customization is found in the `src/language-server/...-module.ts` file, where '...' is the name of your language. There, you can register new services, or override the default implementation of services. Langium implements the *Inversion of Control* pattern via *Dependency Injection*, which promotes loosely-coupled architectures, maintainability, and extensibility.
 
-For the following sections, we will use the [arithmetics example](https://github.com/langium/langium/tree/main/examples/arithmetics) to describe the procedure for adding or replacing services. Note that all notation containing *Arithmetics* should be understood as being specific to the language named *Arithmetics* and should be replaced with your own language name.
+For the following sections, we will use the [arithmetics example](https://github.com/langium/langium/tree/main/examples/arithmetics) to describe the procedure for adding or replacing services. Note that all names prefixed with *Arithmetics* should be understood as being specific to the language named *Arithmetics*, and in your project those services' names will be prefixed with your own language name.
 
 ### Adding New Services
-To add services which are not implemented by default by Langium, we first need to edit the type `ArithmeticsAddedService`.
+To add services which are not available by default in Langium, e.g. application specific ones, we first need to edit the type `ArithmeticsAddedService`.
 A language with no added services would have the type `ArithmeticsAddedService` declared as:
 ```Typescript
 export type ArithmeticsAddedServices = {}
@@ -59,7 +59,7 @@ export type ArithmeticsAddedServices = {
 }
 ```
 
-Now that we have declared our new services inside of the `ArithmeticsAddedServices` type, we need to specify to the module how we want them to be implemented. To do so, we need to modify the `ArithmeticsModule`:
+Now that we have declared our new services inside of the `ArithmeticsAddedServices` type definition, we need to specify to the module how we want them to be implemented. To do so, we need to update the `ArithmeticsModule`:
 ```Typescript
 export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServices & ArithmeticsAddedServices> = {
     validation: {
@@ -67,9 +67,9 @@ export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServic
     }
 };
 ```
-In the `ArithmeticsModule`, we map a property with the name of our service (here `ArithmeticsValidator`) to a concrete implementation of the service. This means that every time we need to call the service named "ArithmeticsValidator", a new instance of the class `ArithmeticsValidator` will be created. 
+In the `ArithmeticsModule` singleton instance, we map a property with the name of our service (here `ArithmeticsValidator`) to a concrete implementation of the service. This means that every time we need to call the service named "ArithmeticsValidator", a new instance of the class `ArithmeticsValidator` will be created. 
 
-The `ArithmeticsValidator` service does not depend on other services, and no argument is passed during the instantiation of the class. If you implement a service which depends on other service, you need to pass all services from the `ServiceRegistry` as an argument to the arrow function such as:
+The `ArithmeticsValidator` service does not depend on other services, and no argument is passed during the instantiation of the class. If you implement a service that depends on other services, the constructor of your service should expect `<yourDslName>Services` as argument. The initializer function can expect that object as argument and pass it to your services constructor, such as:
 ```Typescript
 export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServices & ArithmeticsAddedServices> = {
     ServiceWithDependencies = (services) => new ServiceClass(services);
@@ -186,13 +186,13 @@ protected getGlobalScope(referenceType: string): Scope {
     return new SimpleScope(this.indexManager.allElements(referenceType));
 }
 ```
-Now, when we call either `createScope` or `getGlobalScope` from the `ScopeProvider` service, the call will be made from teh `ArithmeticsScopeProvider` instead of the `DefaultScopeProvider`. Functions that were not overridden will still be called from `DefaultScopeProvider` via inheritance.
+Now, when we call either `createScope` or `getGlobalScope` from the `ScopeProvider` service, the call will be made from the `ArithmeticsScopeProvider` instead of the `DefaultScopeProvider`. Functions that were not overridden will still be called from `DefaultScopeProvider` via inheritance.
 
 ## Default Services
-Langium come pre-packed with a set of services which will handle the most usual features of your language and the LSP. The following gives a brief overview of these default services and their dependencies.
+Langium comes with a set of services that implement basic features of your language tooling. The following gives a brief overview of those default services and their dependencies.
 
 ### DefaultSharedModule
-The `DefaultSharedModule` contains services shared between all languages.
+The `DefaultSharedModule` provides services shared among all languages.
 #### ServiceRegistry
 The `ServiceRegistry`service is the core of the service pattern and is responsible for registering and accessing all services.
 #### Connection
@@ -226,32 +226,32 @@ The `IndexManager` service is responsible for keeping metadata about symbols and
 The `AstReflection` service is responsible for accessing the structure of the AST. It is shared between all languages and operates on the superset of types of those languages.
 
 ### DefaultModule
-The `DefaultModule` contains services specific to one unique language. These are the basic services such as configuring the parser or the LSP.
+The `DefaultModule` contributes services specific to one unique language. Those are the basic services such as the parser and the particular language server services.
 #### GrammarConfig
 #### GrammarConfig
 The `GrammarConfig` service is responsible for extracting specific information from the `Grammar`. By default, the `GrammarConfig` service extracts rules for multiline comments.
 
 *Dependencies:* [Grammar](#grammar)
 #### LangiumParser
-The `LangiumParser` service is responsible for creating the parser. It extracts information from the grammar and creates the parser using Chevrotain.
+The `LangiumParser` service is set up by inspecting the rules and definitions in the grammar. The implementation is based on [Chevrotain](https://chevrotain.io/docs/).
 
 *Dependencies:* [Grammar](#grammar) | [TokenBuilder](#tokenbuilder) | [LanguageMetaData](#languagemetadata) | [Linker](#linker) | [ValueConverter](#valueconverter)
 #### ValueConverter
-The `ValueConverter` service is responsible for converting an input into its correct primitive type. The parser parses the input file as a collection of strings which need to be converted to their respective type.
+The `ValueConverter` service is responsible for converting string values into corresponding types.
 #### TokenBuilder
 The `TokenBuilder` service is responsible for creating an array of `TokenType` from the grammar file.
 #### CompletionProvider
-The `CompletionProvider` service is responsible for handling a *Completion Request* at a given cursor position. When a *Completion Request* is submitted by the client to the server, the `CompletionProvider` will create a `CompletionList` of all possible `CompletionItem` to be presented in the editor. The `CompletionProvider` service computes a new `CompletionList` after every typing.
+The `CompletionProvider` service is responsible for handling a *LSP Completion Request* at a given cursor position. When a *LSP Completion Request* is submitted by the client to the server, the `CompletionProvider` will create a `CompletionList` of all possible `CompletionItem` to be presented in the editor. The `CompletionProvider` service computes a new `CompletionList` after every typing.
 
 *Dependencies:* [ScopeProvider](#scopeprovider) | [RuleInterpreter](#ruleinterpreter) | [Grammar](#grammar)
 #### RuleInterpreter
 The `RuleInterpreter` service is used by the `CompletionProvider` service to identify any `AbstractElement` that could be present at a given cursor position. The parser uses the best-fitting grammar rule for a given text input. However, if there are multiple rules that could be applied, only one of them will be successfully parsed. The `RuleInterpreter` service solves this issue by returning **all** possible features that could be applied at a cursor position.
 #### DocumentSymbolProvider
-The `DocumentSymbolProvider` service is responsible for handling a *Document Symbols Request*. The `DocumentSymbolProvider` is used to return a hierarchy of all symbols found in a document as an array of `DocumentSymbol`. 
+The `DocumentSymbolProvider` service is responsible for handling a *LSP Document Symbols Request*. The `DocumentSymbolProvider` is used to return a hierarchy of all symbols found in a document as an array of `DocumentSymbol`. 
 
 *Dependencies:* [NameProvider](#nameprovider)
 #### HoverProvider
-The `HoverProvider` service is responsible for handling a *Hover Request* at a given text document position. By default, Langium implements the possibility to generate tooltips with the content of a multiline comment while hovering a symbol.
+The `HoverProvider` service is responsible for handling a *LSP Hover Request* at a given text document position. By default, Langium implements the possibility to generate tooltips with the content of a multiline comment while hovering a symbol.
 
 *Dependencies:* [References](#references)
 #### FoldingRangeProvider
@@ -293,7 +293,7 @@ The `NameProvider` service is responsible for getting the name of a given `AstNo
 
 *Dependencies:* [NameProvider](#nameprovider) | [AstNodeDescriptionProvider](#astnodedescriptionprovider)
 #### References
-The `References` service is responsible for finding all references to the target node.
+The `References` service is responsible for finding all references to some target node, as e.g. offered in VS Code's text editors.
 
 *Dependencies:* [NameProvider](#nameprovider) | [IndexManager](#indexmanager) | [AstNodeLocator](#astnodelocator)
 #### JsonSerializer
@@ -310,11 +310,11 @@ The `ValidationRegistry` service manages a set of `ValidationCheck` that are def
 *Dependencies:* [AstReflection](#astreflection)
 
 ### LanguageGeneratedModule
-The `LanguageGeneratedModule` contains services specific to the grammar of a given language. They are automatically generated by Langium and should not be modified.
+The `LanguageGeneratedModule` contributes language specific services. It is automatically (re)generated by Langium and should not be modified manually.
 #### Grammar
-The `Grammar` service holds a collection of terminal and parser rules defined by the language grammar.
+The `Grammar` service provides information on the lexer and parser rules defined in the language grammar.
 #### LanguageMetaData
-The `LanguageMetaData` service holds metadata about the language.
+The `LanguageMetaData` service contributes metadata about the language.
 ```typescript
 export interface LanguageMetaData {
     languageId: string;
