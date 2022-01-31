@@ -118,4 +118,4 @@ Greeting: 'Hello' person=[Person] '!';
 
 Like the previous rule, the `Greeting` starts with a keyword. With the `person` assignment we introduce the _cross reference_, indicated by the brackets `[]`. A cross reference will allow your grammar to reference other elements that are contained in your file or workspace. By default, Langium will try to resolve this cross reference by parsing an `ID` and looking for a `Person` whose `name` property matches the parsed `ID`.
 
-That finishes the short introduction to Langium! Feel free to play around with the grammar and use `npm run langium:generate` to regenerate the generated TypeScript files. You can continue with the [tutorials](../tutorials) or take a closer look at the [grammar](../features/grammar) and [abstract syntax tree](../features/ast) documentation.
+That finishes the short introduction to Langium! Feel free to play around with the grammar and use `npm run langium:generate` to regenerate the generated TypeScript files. You can continue with the [tutorials](../tutorials) or take a closer look at the [grammar](../grammar-language) documentation.
