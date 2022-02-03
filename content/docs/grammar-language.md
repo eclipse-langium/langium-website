@@ -175,7 +175,7 @@ In contrast, an assigned rule call such as `parameter=DeclaredParameter` means t
 #### Unordered Groups
 *Unordered groups are not supported in the current version of Langium. Please refer to [this issue](https://github.com/langium/langium/issues/314) for further information.*
 
-In regular groups, expressions must occur in the exact order as they are declared.
+In regular groups, expressions must occur in the exact order they are declared.
 ```
 Person:
     'person' name=ID age=INT
