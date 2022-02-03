@@ -103,7 +103,7 @@ Person:
 In this example, the rule `Person` must start with the `person` keyword followed by an `ID` token and an instance of the `Address` rule.
 
 #### Alternatives
-It is possible to match one of multiple valid options by using the pipe operator `|`. The already mentioned `Model` example specifies to parse either `Person` or `Greeting` inside the parentheses:
+It is possible to match one of multiple valid options by using the pipe operator `|`. The already mentioned `Model` example specifies to parse either `Person` or `Greeting`, zero or many times (cardinality *):
 ```
 entry Model:
     (persons+=Person | greetings+=Greeting)*;
