@@ -266,6 +266,70 @@ QualifiedName returns string:
 ```
 Data type rules need to specify a primitive return type.
 
+### Rule Fragments
+If you are facing repetitive patterns in your grammar definition, you can take advantage of *Rule Fragments* to improve the grammar's maintainability.
+```
+Student:
+    'student' firstName=ID lastName=ID address=STRING phoneNumber=STRING grades=Grades;
+Teacher:
+    'teacher' firstName=ID lastName=ID address=STRING phoneNumber=STRING classes=Classes;
+TechnicalStaff:
+    'tech' firstName=ID lastName=ID address=STRING phoneNumber=STRING;
+```
+The parser rules Student, Teacher, and TechnicalStaff partly share the same syntax. 
+If, for example, the assignment for `phoneNumber` had to be updated, we would need to make changes everywhere the `phoneNumber` assignment was used. 
+We can introduce *Rule Fragments* to extract similar patterns and improve maintainability:
+```
+fragment Details:
+    firstName=ID lastName=ID address=STRING phoneNumber=STRING;
+
+Student:
+    'student' Details grades=Grades;
+Teacher:
+    'teacher' Details classes=Classes;
+TechnicalStaff:
+    'tech' Details;
+```
+
+Fragment rules are not part of the AST and will therefore never create an object, instead they can be understood as being textually inserted where they are referenced.
+
+### Guarded Rules
+It may be useful to group parser rules with small variations inside of a single parser rule. Given the following example:
+```
+entry Model:
+    element+=RootElement;
+
+RootElement returns Element:
+    isPublic?='public'?
+    'element' name=ID '{'
+        elements+=Element*
+    '}';
+
+Element:
+    'element' name=ID '{'
+        elements+=Element*
+    '}';
+```
+The only difference between `RootElement` and `Element` is that the former has the boolean property `isPublic`. 
+We can refactor the grammar so that only `Element` is present in the grammar with a *Guard* that will determine what syntax should be used by the parser:
+```
+entry Model:
+    element+=Element<true>;
+
+Element<isRoot>:
+	<isRoot> isPublic+='public'? 
+	'element' name=ID '{'
+		elements+=Element<false>*
+	'}'
+	|
+	'element' name=ID '{'
+		elements+=Element<false>*
+	'}';
+```
+`Element` has the guard `isPublic`, which will determine which of the two alternatives should be matched by the parser. 
+If `isRoot` is set to `true`, then the first alternative is matched. Otherwise, the second alternative will apply. 
+The *entry rule* `Model` sets the value of `isRoot` to `true` with `element+=Element<true>`, while `isRoot` is set to `false` inside of the `Element<isRoot>` parser rule with `elements+=Element<false>`.
+
 ### More Examples
 
 Not all parser rules need to be mentioned in the entry rule, as shown in this example:
