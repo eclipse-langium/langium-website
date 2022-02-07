@@ -118,7 +118,7 @@ MyService: () => new MyNewServiceClass()
 ```
 Now, every call to `MyService` will create an instance of `MyNewServiceClass` instead of `DefaultServiceClass`.
 
-In real scenarios, it is not recommend to completely replace a service. Instead, it is possible to extend a class and override only specific parts of it. Let's take a look at the `ArithmeticsModule` from the [arithmetics example](https://github.com/langium/langium/tree/main/examples/arithmetics).
+In most cases, it is not necessary to completely replace a service. Instead, it is possible to extend a class and override only specific parts of it. Let's take a look at the `ArithmeticsModule` from the [arithmetics example](https://github.com/langium/langium/tree/main/examples/arithmetics).
 
 ```Typescript
 export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServices & ArithmeticsAddedServices> = {
