@@ -142,10 +142,13 @@
     margin-bottom: 0.5em;
   }
 
-  .gdoc-markdown h2, h3, h4 {
+  .gdoc-markdown h3, h4 {
     margin-top: 1.5em;
   }
 
+  .gdoc-markdown h2 {
+    margin-top: 2.0em;
+  }
   .gdoc-markdown p {
     margin-block-start: 0px;
   }
