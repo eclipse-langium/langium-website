@@ -16,12 +16,9 @@ The *shared modules* contain services shared across all languages:
 
 ## Language Specific Modules
 The *language specific modules* contain all services which are specific to one language:
-* Services to build the `parser` for a specific language.
-* Services to handle *LSP requests*.
-* Services to retrieve information from a given AST.
-* Services to manage references during linking and inside of documents.
-* Serialization and deserialization of objects to JSON.
-* Services to handle document and syntax validation.
+* Services for [LSP features](#language-server-protocol)
+* Services involved in the document lifecycle (future documentation)
+* Utility services
 
 ## Customization
 If you used the [Yeoman generator](https://www.npmjs.com/package/generator-langium), the entry point to services customization is found in the `src/language-server/...-module.ts` file, where '...' is the name of your language. There, you can register new services, or override the default implementation of services. Langium implements the *Inversion of Control* principle via *Dependency Injection* pattern, which promotes loosely-coupled architectures, maintainability, and extensibility.
@@ -180,136 +177,26 @@ export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServic
 };
 ```
 
-## Default Services
-Langium comes with a set of services that implement basic features of your language tooling. The following gives a brief overview of those default services and their dependencies.
+## Language Server Protocol
+If you want to modify aspects of the Language Server, this section will help you find the relevant service for handling a given LSP request.
 
-### DefaultSharedModule
-The `DefaultSharedModule` provides services shared among all languages.
-#### ServiceRegistry
-The `ServiceRegistry`service is the core of the service pattern and is responsible for registering and accessing all services.
-#### Connection
-The `Connection` service is responsible for handling the communication between the client and the server.
-#### LangiumDocuments
-The `LangiumDocuments` service maps Langium documents to their corresponding URI. It also manages the Map by adding, getting, or removing Langium documents.
-
-*Dependencies:* [TextDocuments](#textdocuments) | [TextDocumentFactory](#textdocumentfactory) | [LangiumDocumentFactory](#langiumdocumentfactory)
-#### LangiumDocumentFactory
-The `LangiumDocumentFactory` service is responsible for creating Langium documents from a `TextDocument`, a `string`, or a `model`.
-
-*Dependencies:* [ServiceRegistry](#serviceregistry)
-#### DocumentBuilder
-The `DocumentBuilder` is responsible for building and updating Langium documents.
-
-*Dependencies:* [Connection](#connection) | [LangiumDocuments](#langiumdocuments) | [IndexManager](#indexmanager) | [ServiceRegistry](#serviceregistry)
-#### TextDocuments
-The `TextDocuments` service manages simple text documents.
-#### TextDocumentFactory
-The `TextDocumentFactory` is responsible for creating `TextDocument` instances and reading their content.
-
-*Dependencies:* [ServiceRegistry](#serviceregistry)
-#### IndexManager
-The `IndexManager` service is responsible for keeping metadata about symbols and cross-references in the workspace. It is used to look up symbols in the global scope, mostly during linking and completion.
-
-*Dependencies:* [ServiceRegistry](#serviceregistry) | [AstReflection](#astreflection) | [LangiumDocuments](#langiumdocuments)
-
-### LanguageGeneratedSharedModule
-
-#### AstReflection
-The `AstReflection` service supports type checking of AST elements at runtime. It is shared between all languages and operates on the superset of types of those languages.
-
-### DefaultModule
-The `DefaultModule` contributes services specific to one unique language. Those are the basic services such as the parser and the particular language server services.
-#### GrammarConfig
-The `GrammarConfig` service is responsible for extracting specific information from the `Grammar`. 
-
-*Dependencies:* [Grammar](#grammar)
-#### LangiumParser
-The `LangiumParser` service is set up by inspecting the rules and definitions in the grammar. The implementation is based on [Chevrotain](https://chevrotain.io/docs/).
-
-*Dependencies:* [Grammar](#grammar) | [TokenBuilder](#tokenbuilder) | [LanguageMetaData](#languagemetadata) | [Linker](#linker) | [ValueConverter](#valueconverter)
-#### ValueConverter
-The `ValueConverter` service is responsible for converting string values into corresponding types.
-#### TokenBuilder
-The `TokenBuilder` service is responsible for creating an array of `TokenType` from the grammar file.
 #### CompletionProvider
-The `CompletionProvider` service is responsible for handling a *LSP Completion Request* at a given cursor position. When a *LSP Completion Request* is submitted by the client to the server, the `CompletionProvider` will create a `CompletionList` of all possible `CompletionItem` to be presented in the editor. The `CompletionProvider` service computes a new `CompletionList` after every typing.
+The `CompletionProvider` service is responsible for handling a [LSP Completion Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion) at a given cursor position. When a *LSP Completion Request* is submitted by the client to the server, the `CompletionProvider` will create a `CompletionList` of all possible `CompletionItem` to be presented in the editor. The `CompletionProvider` service computes a new `CompletionList` after every typing.
 
-*Dependencies:* [ScopeProvider](#scopeprovider) | [RuleInterpreter](#ruleinterpreter) | [Grammar](#grammar)
-#### RuleInterpreter
-The `RuleInterpreter` service is used by the `CompletionProvider` service to identify any `AbstractElement` that could be present at a given cursor position. The parser uses the best-fitting grammar rule for a given text input. However, if there are multiple rules that could be applied, only one of them will be successfully parsed. The `RuleInterpreter` service solves this issue by returning **all** possible features that could be applied at a cursor position.
 #### DocumentSymbolProvider
-The `DocumentSymbolProvider` service is responsible for handling a *LSP Document Symbols Request*. The `DocumentSymbolProvider` is used to return a hierarchy of all symbols found in a document as an array of `DocumentSymbol`. 
+The `DocumentSymbolProvider` service is responsible for handling a [LSP Document Symbols Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol). The `DocumentSymbolProvider` is used to return a hierarchy of all symbols found in a document as an array of `DocumentSymbol`. 
 
-*Dependencies:* [NameProvider](#nameprovider)
 #### HoverProvider
-The `HoverProvider` service is responsible for handling a *LSP Hover Request* at a given text document position. By default, Langium implements the possibility to generate tooltips with the content of a multiline comment while hovering a symbol.
+The `HoverProvider` service is responsible for handling a [LSP Hover Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover) at a given text document position. By default, Langium implements the possibility to generate tooltips with the content of a multiline comment while hovering a symbol.
 
-*Dependencies:* [References](#references)
 #### FoldingRangeProvider
-The `FoldingRangeProvider` service is responsible for handling a *Folding Range Request*. This service identifies all the blocks that can be folded in a document.
+The `FoldingRangeProvider` service is responsible for handling a [Folding Range Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_foldingRange). This service identifies all the blocks that can be folded in a document.
 
-*Dependencies:* [GrammarConfig](#grammarconfig)
 #### ReferenceFinder
-The `ReferenceFinder` service is responsible for handling a *Find References Request*. This service is used to find all references to a given symbol inside of a document.
+The `ReferenceFinder` service is responsible for handling a [Find References Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_references). This service is used to find all references to a given symbol inside of a document.
 
-*Dependencies:* [NameProvider](#nameprovider) | [References](#references)#### GoToResolver
 #### DocumentHighlighter
-The `DocumentHighlighter` service is responsible for handling a *Document Highlights Request*. This service will find all references to a symbol at a given position (via the `References` service) and highlight all these references in a given document.
+The `DocumentHighlighter` service is responsible for handling a [Document Highlights Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentHighlight). This service will find all references to a symbol at a given position (via the `References` service) and highlight all these references in a given document.
 
-*Dependencies:* [References](#references) | [NameProvider](#nameprovider)
 #### RenameHandler
-The `RenameHandler` service is responsible for handling a *Rename Request* or a *Prepare Rename Request*. First, the service will check the validity of the *Prepare Rename Request*. If the request is valid, the service will find all references to the selected symbol inside of a document and replace all occurrences with the new value.
-
-*Dependencies:* [ReferenceFinder](#referencefinder) | [References](#references) | [NameProvider](#nameprovider)
-#### AstNodeLocator
-The `AstNodeLocator` is responsible for finding a particular `AstNode` based on its location inside of a document.
-#### AstNodeDescriptionProvider
-The `AstNodeDescriptionProvider` is responsible for creating a description for a given `AstNode`. By default the description includes the `node`, its `name`, `type`, and `path`, as well as the `documentUri` of the document where the `AstNode` is located. This service is used during indexing to create `AstNodeDescription` for each node. This is the relevant hook for customization of language specific indexing and add more info to the index, which might later be consumed by other services.
-
-*Dependencies:* [AstNodeLocator](#astnodelocator) | [NameProvider](#nameprovider)
-#### ReferenceDescriptionProvider
-The `ReferenceDescriptionProvider` is responsible for creating a description for a given reference. By default the description includes the `sourceUri`, `sourcePath`, `targetUri`, `targetPath`, `segment`, and if the reference is `local`.
-
-*Dependencies:* [Linker](#linker) | [AstNodeLocator](#astnodelocator)
-#### Linker
-The `Linker` service is responsible for resolving cross-references in the AST.
-
-*Dependencies:* [AstReflection](#astreflection) | [LangiumDocuments](#langiumdocuments) | [ScopeProvider](#scopeprovider) | [AstNodeLocator](#astnodelocator)
-#### NameProvider
-The `NameProvider` service is responsible for getting the name of a given `AstNode`. If the `AstNode` does not have a name, the `NameProvider` returns `undefined`.
-#### ScopeProvider
-
-*Dependencies:* [AstReflection](#astreflection) | [IndexManager](#indexmanager)
-#### ScopeComputation
-
-*Dependencies:* [NameProvider](#nameprovider) | [AstNodeDescriptionProvider](#astnodedescriptionprovider)
-#### References
-The `References` service is responsible for finding all references to some target node, as e.g. offered in VS Code's text editors.
-
-*Dependencies:* [NameProvider](#nameprovider) | [IndexManager](#indexmanager) | [AstNodeLocator](#astnodelocator)
-#### JsonSerializer
-The `JsonSerializer` service is responsible for serializing and deserializing JSON. It is used by Langium to serialize and parse the grammar.
-
-*Dependencies:* [Linker](#linker)
-#### DocumentValidator
-The `DocumentValidator` service is responsible for validating an entire document.
-
-*Dependencies:* [ValidationRegistry](#validationregistry)
-#### ValidationRegistry
-The `ValidationRegistry` service manages a set of `ValidationCheck` that are defined inside of a `Validator` service.
-
-*Dependencies:* [AstReflection](#astreflection)
-
-### LanguageGeneratedModule
-The `LanguageGeneratedModule` contributes language specific services. It is automatically (re)generated by Langium and should not be modified manually.
-#### Grammar
-The `Grammar` service provides information on the lexer and parser rules defined in the language grammar.
-#### LanguageMetaData
-The `LanguageMetaData` service contributes metadata about the language.
-```typescript
-export interface LanguageMetaData {
-    languageId: string;
-    fileExtensions: string[];
-    caseInsensitive: boolean;
-}
-```
+The `RenameHandler` service is responsible for handling a [Rename Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_rename) or a [Prepare Rename Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_prepareRename). First, the service will check the validity of the *Prepare Rename Request*. If the request is valid, the service will find all references to the selected symbol inside of a document and replace all occurrences with the new value.
