@@ -182,7 +182,7 @@ export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServic
 If you want to modify aspects of the Language Server, this section will help you find the relevant service for handling a given LSP request.
 
 #### CompletionProvider
-The `CompletionProvider` service is responsible for handling a [Completion Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion) at a given cursor position. When a *Completion Request* is submitted by the client to the server, the `CompletionProvider` will create a `CompletionList` of all possible `CompletionItem` to be presented in the editor. The `CompletionProvider` service computes a new `CompletionList` after every typing.
+The `CompletionProvider` service is responsible for handling a [Completion Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion) at a given cursor position. When a *Completion Request* is submitted by the client to the server, the `CompletionProvider` will create a `CompletionList` of all possible `CompletionItem` to be presented in the editor. The `CompletionProvider` service computes a new `CompletionList` after each keystroke.
 
 #### DocumentSymbolProvider
 The `DocumentSymbolProvider` service is responsible for handling a [Document Symbols Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol). The `DocumentSymbolProvider` is used to return a hierarchy of all symbols found in a document as an array of `DocumentSymbol`. 
