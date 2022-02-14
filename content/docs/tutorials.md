@@ -1,6 +1,6 @@
 ---
 title: "Tutorials"
-weight: 1
+weight: 1000
 ---
 
 _WORK IN PROGRESS:_ These tutorials are yet to be written. If you want to help, [visit the website repository](https://github.com/langium/langium-website).
