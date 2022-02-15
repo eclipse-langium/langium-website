@@ -1,5 +1,6 @@
 ---
 title: "Getting Started"
+weight: 0
 ---
 
 Before diving into Langium itself, let's get your environment ready for development:
