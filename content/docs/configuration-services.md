@@ -2,34 +2,33 @@
 title: "Configuration via Services"
 weight: 200
 ---
-Langium supports the configuration of most aspects of your language and language server via a set of *Services*. Those services are organized into *Modules*, which are essentially mappings from a service name to its implementation.
 
-We can separate modules into two main categories:
-1. ***Shared modules*** which contain services that are shared across all languages.
-2. ***Language specific modules*** which contain services specific to one language. 
+Langium supports the configuration of most aspects of your language and language server via a set of *services*. Those services are configured by *modules*, which are essentially mappings from a service name to its implementation.
 
-## Shared Modules
-The *shared modules* contain services shared across all languages:
-* The `ServiceRegistry` is responsible for registering and accessing the different services.
-* The `Connection` service sends messages to the client and register message handlers for incoming messages.
-* Services to handle *Langium Documents* and *Text Documents*.
-* Implementations of the `AstReflection` service (one implementation per language) to access the structure of the AST.
+We can separate services and modules into two main categories:
 
-## Language Specific Modules
-The *language specific modules* contain all services which are specific to one language:
+#### Shared Services
+The *shared services* are services that are shared across all Langium languages. In many applications there is only one Langium language, but the overall structure of the services is the same.
+* The `ServiceRegistry` is responsible for registering and accessing the different languages and their services.
+* The `Connection` service is used in a language server context; it sends messages to the client and registers message handlers for incoming messages.
+* The `AstReflection` service provides access the structure of the AST types.
+* Shared services involved in the document lifecycle (future documentation)
+
+#### Language Specific Services
+The *language specific services* are services specific to one Langium language and isolated from other languages.
 * Services for [LSP features](#language-server-protocol)
 * Services involved in the document lifecycle (future documentation)
-* Utility services
+* Utility services (e.g. `References`, `JsonSerializer`)
 
 ## Customization
-If you used the [Yeoman generator](https://www.npmjs.com/package/generator-langium), the entry point to services customization is found in the `src/language-server/...-module.ts` file, where '...' is the name of your language. There, you can register new services, or override the default implementation of services. Langium implements the *Inversion of Control* principle via *Dependency Injection* pattern, which promotes loosely-coupled architectures, maintainability, and extensibility.
+If you have used the [Yeoman generator](https://www.npmjs.com/package/generator-langium), the entry point to services customization is found in the `src/language-server/...-module.ts` file, where '...' is the name of your language. There you can register new services or override the default implementations of services. Langium implements the *Inversion of Control* principle via the *Dependency Injection* pattern, which promotes loosely-coupled architectures, maintainability, and extensibility.
 
 For the following sections, we will use the [arithmetics example](https://github.com/langium/langium/tree/main/examples/arithmetics) to describe the procedure for replacing or adding services. Note that all names prefixed with *Arithmetics* should be understood as being specific to the language named *Arithmetics*, and in your project those services' names will be prefixed with your own language name.
 
-Please note that it is *not mandatory* to implement all custom code via dependency injection. The main reason for using dependency injection is when your custom code *depends* on other services.
+Please note that it is *not mandatory* to implement all custom code via dependency injection. The main reason for using dependency injection is when your custom code *depends* on other services. In many cases you can use plain functions instead of service classes to implement your application logic.
 
 ### Overriding and Extending Services
-Thanks to the *inversion of control* via *dependency injection*, your can change the behavior of a service or add to its functionality in one place without having to modify every piece of code that depends on the service to be overridden or extended.
+Thanks to the dependency injection pattern used in Langium, your can change the behavior of a service or add to its functionality in one place without having to modify every piece of code that depends on the service to be overridden or extended.
 
 The [arithmetics example](https://github.com/langium/langium/tree/main/examples/arithmetics) provides a custom implementation of the `ScopeProvider` service, which overrides functionalities from the default implementation `DefaultScopeProvider`.
 
@@ -42,48 +41,50 @@ export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServic
     }
 };
 ```
-In the `ArithmeticsModule` singleton instance, we map a property with the name of our service (here `ScopeProvider`) to a concrete implementation of the service. This means that every time we need to call the service named *ScopeProvider*, a new instance of the class `ArithmeticsScopeProvider` will be created instead of the default implementation `DefaultScopeProvider`. 
+In the `ArithmeticsModule` singleton instance, we map a property with the name of our service (here `ScopeProvider`) to a concrete implementation of the service. This means that the first time we access the service named `ScopeProvider`, a new instance of the class `ArithmeticsScopeProvider` will be created instead of the default implementation `DefaultScopeProvider`. The provided factory function is invoked only once, which means that all services are handled as singletons.
 
-In order to successfully override an existing service, the property name (here `ScopeProvider`) must match exactly that of the default implementation. A list of default services can be found [here](#default-services).
+In order to successfully override an existing service, the property name (here `ScopeProvider`) must match exactly that of the default implementation.
 
 The `ArithmeticsScopeProvider` overrides two methods from `DefaultScopeProvider`:
 ```TypeScript
 export class ArithmeticsScopeProvider extends DefaultScopeProvider {
 
     protected createScope(elements: Stream<AstNodeDescription>, outerScope: Scope): Scope {
-        return new SimpleScope(elements, outerScope, { caseInsensitive: true });
+        return new StreamScope(elements, outerScope, { caseInsensitive: true });
     }
 
     protected getGlobalScope(referenceType: string): Scope {
-        return new SimpleScope(this.indexManager.allElements(referenceType), undefined, { caseInsensitive: true });
+        return new StreamScope(this.indexManager.allElements(referenceType), undefined, { caseInsensitive: true });
     }
 
 }
 ```
-The functions `createScope` and `getGlobalScope` are already defined in `DefaultScopeProvider` but needed to be overridden to add the option `{caseInsensitive: true}`. This is achieved through inheritance. By using the keyword `extends`, `ArithmeticsScopeProvider` inherits from `DefaultScopeProvider`, which means that it can access properties and methods as well as override methods declared in the parent class.
+The functions `createScope` and `getGlobalScope` are already defined in `DefaultScopeProvider` but needed to be overridden to add the option `{caseInsensitive: true}`. This is achieved through inheritance: By using the keyword `extends`, `ArithmeticsScopeProvider` inherits from `DefaultScopeProvider`, which means that it can access properties and methods as well as override methods declared in the superclass.
 
 In the `DefaultScopeProvider`, those two methods are declared as:
 ```Typescript
 protected createScope(elements: Stream<AstNodeDescription>, outerScope: Scope): Scope {
-    return new SimpleScope(elements, outerScope);
+    return new StreamScope(elements, outerScope);
 }
 
 protected getGlobalScope(referenceType: string): Scope {
-    return new SimpleScope(this.indexManager.allElements(referenceType));
+    return new StreamScope(this.indexManager.allElements(referenceType));
 }
 ```
 
 Now, when we call either `createScope` or `getGlobalScope` from the `ScopeProvider` service, the call will be made from the `ArithmeticsScopeProvider` instead of the `DefaultScopeProvider`. Functions that were not overridden will still be called from `DefaultScopeProvider` via inheritance.
 
+Of course it is also possible to replace the default implementation with a completely separate one that does not inherit from the default service class.
+
 ### Adding New Services
 To add services that are not available by default in Langium, e.g. application specific ones, we first need to edit the type `ArithmeticsAddedService`.
-By default, the langium generator adds a validator service where you can implement validation rules specific to your language. New services are added as *type properties* following the pattern `Property name: Property Type`:
+By default, the Yeoman-based generator adds a validator service where you can implement validation rules specific to your language. New services are added as properties to the type declaration:
 ```Typescript
 export type ArithmeticsAddedServices = {
     ArithmeticsValidator: ArithmeticsValidator
 }
 ```
-`ArithmeticsAddedService` type now has a property `ArithmeticsValidator` of type `ArithmeticsValidator`.
+The `ArithmeticsAddedService` type now has a property `ArithmeticsValidator` of type `ArithmeticsValidator`.
 
 For the sake of organization and clarity, the services can be nested inside of other properties acting as "groups":
 ```Typescript
@@ -110,7 +111,7 @@ export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServic
     }
 };
 ```
-Similarly to [overridden services](#overriding-and-extending-services), a call to the `ArithmeticsValidator` property will create a new instance of the class `ArithmeticsValidator`.
+Similarly to [overridden services](#overriding-and-extending-services), the first access to the `ArithmeticsValidator` property will create a new instance of the class `ArithmeticsValidator`.
 
 The `ArithmeticsValidator` service does not depend on other services, and no argument is passed during the instantiation of the class. If you implement a service that depends on other services, the constructor of your service should expect `<yourDslName>Services` as argument. The initializer function can expect that object as argument and pass it to your services constructor, such as:
 ```Typescript
@@ -120,12 +121,12 @@ export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServic
 ```
 The services which `ServiceClass` depends on need to be registered in the constructor:
 ```Typescript
-export class ServiceClass{
-    readonly serviceOne: ServiceOne;
-    readonly serviceTwo: ServiceTwo;
-    readonly serviceN: ServiceN;
+export class ServiceClass {
+    private readonly serviceOne: ServiceOne;
+    private readonly serviceTwo: ServiceTwo;
+    private readonly serviceN: ServiceN;
 
-    constructor(services: ArithmeticsServices){
+    constructor(services: ArithmeticsServices) {
         this.serviceOne = services.ServiceOne;
         this.serviceTwo = services.Group.ServiceTwo;
         this.serviceN = services.Group.SubGroup.ServiceN;
@@ -139,7 +140,7 @@ The `ArithmeticsValidator` needs to be registered inside of the `ValidationRegis
 
 Briefly, `ArithmeticsValidator` implements two checks, `checkDivByZero` and `checkNormalisable`:
 ```Typescript
-    export class ArithmeticsValidator {
+export class ArithmeticsValidator {
     checkDivByZero(binExpr: BinaryExpression, accept: ValidationAcceptor): void {
         ...
     }
@@ -149,13 +150,13 @@ Briefly, `ArithmeticsValidator` implements two checks, `checkDivByZero` and `che
     }
 }
 ``` 
-These two new checks need to be registered inside of the `ValidationRegistry`. Instead of directly modifying `ValidationRegistry` inside of the Langium code base, we extend `ValidationRegistry` with `ArithmeticsValidationRegistry` to implement our new functionalities:
+These two new checks need to be registered inside of the `ValidationRegistry`. We extend `ValidationRegistry` with `ArithmeticsValidationRegistry` to implement our new functionalities:
 ```Typescript
 export class ArithmeticsValidationRegistry extends ValidationRegistry {
     constructor(services: ArithmeticsServices) {
         super(services);
         const validator = services.validation.ArithmeticsValidator;
-        const checks: LangiumGrammarChecks = {
+        const checks: ArithmeticsChecks = {
             BinaryExpression: validator.checkDivByZero,
             Definition: validator.checkNormalisable
         };
@@ -163,7 +164,7 @@ export class ArithmeticsValidationRegistry extends ValidationRegistry {
     }
 }
 ```
-Inside of the `ArithmeticsValidationRegistry`, we call our `ArithmeticsValidator` via the `ServiceRegistry` with `const validator = services.validation.ArithmeticsValidator` which will create a new instance of `ArithmeticsValidator`. Then, we declare the `checks` to be registered and register them inside of the registry via the function `register` which is declared in the parent class. The `ArithmeticsValidationRegistry` only adds functionality to the `ValidationRegistry` but does not override any functionality from it.
+Inside of the `ArithmeticsValidationRegistry`, we obtain our `ArithmeticsValidator` with `const validator = services.validation.ArithmeticsValidator`, which will create a new instance of `ArithmeticsValidator`. Then we declare the `checks` to be registered and register them inside of the registry via the function `register` which is declared in the superclass. The `ArithmeticsValidationRegistry` only adds validation checks to the `ValidationRegistry`, but does not override any functionality from it.
 
 The implementation of `ArithmeticsValidationRegistry` needs to be registered in `ArithmeticsModule`. The complete `ArithmeticsModule` is:
 ```Typescript
@@ -182,13 +183,13 @@ export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServic
 If you want to modify aspects of the Language Server, this section will help you find the relevant service for handling a given LSP request.
 
 #### CompletionProvider
-The `CompletionProvider` service is responsible for handling a [LSP Completion Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion) at a given cursor position. When a *LSP Completion Request* is submitted by the client to the server, the `CompletionProvider` will create a `CompletionList` of all possible `CompletionItem` to be presented in the editor. The `CompletionProvider` service computes a new `CompletionList` after every typing.
+The `CompletionProvider` service is responsible for handling a [Completion Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion) at a given cursor position. When a *Completion Request* is submitted by the client to the server, the `CompletionProvider` will create a `CompletionList` of all possible `CompletionItem` to be presented in the editor. The `CompletionProvider` service computes a new `CompletionList` after each keystroke.
 
 #### DocumentSymbolProvider
-The `DocumentSymbolProvider` service is responsible for handling a [LSP Document Symbols Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol). The `DocumentSymbolProvider` is used to return a hierarchy of all symbols found in a document as an array of `DocumentSymbol`. 
+The `DocumentSymbolProvider` service is responsible for handling a [Document Symbols Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_documentSymbol). The `DocumentSymbolProvider` is used to return a hierarchy of all symbols found in a document as an array of `DocumentSymbol`. 
 
 #### HoverProvider
-The `HoverProvider` service is responsible for handling a [LSP Hover Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover) at a given text document position. By default, Langium implements the possibility to generate tooltips with the content of a multiline comment while hovering a symbol.
+The `HoverProvider` service is responsible for handling a [Hover Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_hover) at a given text document position. By default, Langium implements tooltips with the content of the preceding multiline comment when hovering a symbol.
 
 #### FoldingRangeProvider
 The `FoldingRangeProvider` service is responsible for handling a [Folding Range Request](https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_foldingRange). This service identifies all the blocks that can be folded in a document.

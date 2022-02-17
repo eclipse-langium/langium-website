@@ -63,7 +63,7 @@ hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
 While [terminal rules](#terminal-rules) indicate to the lexer what sequence of characters are valid tokens, *parser rules* indicate to the parser what sequence of tokens are valid. Parser rules lay the structure of objects to be created by the parser and result in the creation of the *abstract syntax tree* (AST) which represents the syntactic structure of your language. In Langium, parser rules are also responsible for defining the type of objects to be parsed.
 
 ### Declaration
-A parser rule always starts with the name of the rule followed by a semicolon.
+A parser rule always starts with the name of the rule followed by a colon.
 ```
 Person:
     'person' name=ID;
@@ -327,7 +327,7 @@ Element<isRoot>:
 		elements+=Element<false>*
 	'}';
 ```
-`Element` has the guard `isPublic`, which will determine which of the two alternatives should be matched by the parser. 
+`Element` has the guard `isRoot`, which will determine which of the two alternatives should be matched by the parser. 
 If `isRoot` is set to `true`, then the first alternative is matched. Otherwise, the second alternative will apply. 
 The *entry rule* `Model` sets the value of `isRoot` to `true` with `element+=Element<true>`, while `isRoot` is set to `false` inside of the `Element<isRoot>` parser rule with `elements+=Element<false>`.
 
