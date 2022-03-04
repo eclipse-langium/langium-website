@@ -72,12 +72,12 @@ For a full explanation of all terms we use throughout Langium, please refer to o
 Here's the grammar that parses the previous text snippet:
 
 ```
-grammar HelloWorld hidden(WS)
+grammar HelloWorld
 
-terminal WS: /\s+/;
+hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
 
-Model: (persons+=Person | greetings+=Greeting)*;
+entry Model: (persons+=Person | greetings+=Greeting)*;
 
 Person:
     'person' name=ID;
@@ -89,23 +89,23 @@ Greeting:
 Let's go through this one by one:
 
 ```
-grammar HelloWorld hidden(WS)
+grammar HelloWorld
 ```
 
-Before we tell Langium anything about our grammar contents, we first need to give it a name - in this case it's `HelloWorld`. The `langium-cli` will pick this up to prefix any generated classes with this name. Additionally we define here which terminals we want to hide from our parser. This will make more sense once we go to the next step.
+Before we tell Langium anything about our grammar contents, we first need to give it a name - in this case it's `HelloWorld`. The `langium-cli` will pick this up to prefix any generated services with this name.
 
 ```
-terminal WS: /\s+/;
+hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w]*/;
 ```
 
-Here we define our two needed terminals for this grammar: The whitespace `WS` and identifier `ID` terminals. Terminals parse a part of our document by matching it against their regular expression. The `WS` terminal parses any whitespace characters with the regex `/\s+/`. This allows us consume whitespaces in our document. As the terminal is referenced by the grammar as a hidden terminal, the parser will parse any whitespace and discard the results. That way, we don't have to care about how many whitespaces a user uses in their document. Secondly, we define our `ID` terminal. As per its regex, it parses any string that starts with an underscore or letter and continues with any amount of characters that match the `\w` regex token. It will match `Alice`, `_alice`, or `_al1c3` but not `4lice` or `#alice`. Langium is using the JS regex dialect for terminal definitions.
+Here we define our two needed terminals for this grammar: The whitespace `WS` and identifier `ID` terminals. Terminals parse a part of our document by matching it against their regular expression. The `WS` terminal parses any whitespace characters with the regex `/\s+/`. This allows us consume whitespaces in our document. As the terminal is declared as `hidden`, the parser will parse any whitespace and discard the results. That way, we don't have to care about how many whitespaces a user uses in their document. Secondly, we define our `ID` terminal. It parses any string that starts with an underscore or letter and continues with any amount of characters that match the `\w` regex token. It will match `Alice`, `_alice`, or `_al1c3` but not `4lice` or `#alice`. Langium is using the JS regex dialect for terminal definitions.
 
 ```
-Model: (persons+=Person | greetings+=Greeting)*;
+entry Model: (persons+=Person | greetings+=Greeting)*;
 ```
 
-The `Model` parser rule is the entry point to our grammar. Parsing always starts with the entry rule. Here we define a repeating group of alternatives: `persons+=Person | greetings+=Greeting`. This will always try to parse either a `Person` or a `Greeting` and add it to the respective list of `persons` or `greetings` in the `Model` object. Since the alternative is wrapped in a repeating group `*`, the parser will continue until all input has been consumed. 
+The `Model` parser rule is the `entry` point to our grammar. Parsing always starts with the `entry` rule. Here we define a repeating group of alternatives: `persons+=Person | greetings+=Greeting`. This will always try to parse either a `Person` or a `Greeting` and add it to the respective list of `persons` or `greetings` in the `Model` object. Since the alternative is wrapped in a repeating group `*`, the parser will continue until all input has been consumed. 
 
 ```
 Person: 'person' name=ID;
@@ -117,6 +117,6 @@ The `Person` rule starts off with the `'person'` keyword. Keywords are like term
 Greeting: 'Hello' person=[Person] '!';
 ```
 
-Like the previous rule, the `Greeting` starts with a keyword. With the `person` assignment we introduce the _cross reference_, indicated by the brackets `[]`. A cross reference will allow your grammar to reference other elements that are contained in your file or workspace. By default, Langium will try to resolve this cross reference by parsing an `ID` and looking for a `Person` whose `name` property matches the parsed `ID`.
+Like the previous rule, the `Greeting` starts with a keyword. With the `person` assignment we introduce the _cross reference_, indicated by the brackets `[]`. A cross reference will allow your grammar to reference other elements that are contained in your file or workspace. By default, Langium will try to resolve this cross reference by parsing the terminal that is associated with its `name` property. In this case, we are looking for a `Person` whose `name` property matches the parsed `ID`.
 
 That finishes the short introduction to Langium! Feel free to play around with the grammar and use `npm run langium:generate` to regenerate the generated TypeScript files. You can continue with the [tutorials](../tutorials) or take a closer look at the [grammar](../grammar-language) documentation.
