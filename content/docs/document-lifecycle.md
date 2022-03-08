@@ -15,17 +15,20 @@ A `LangiumDocument` goes through seven different states during its lifecycle:
 The following diagram depicts how the `DocumentBuilder` processes `LangiumDocument`s depending on their state. More details about each step of the lifecycle can be found below.
 {{<mermaid>}}
 graph TD;
-DocumentBuilder(DocumentBuilder) --> Parsed{Parsed}
-DocumentBuilder --> IndexedContent{IndexedContent}
-DocumentBuilder --> Processed{Processed}
-DocumentBuilder --> Linked{Linked}
-DocumentBuilder --> IndexedReferences{IndexedReferences}
+N(LangiumDocumentFactory) -.-|Creation of LangiumDocuments| C{{Parsed}}
 
-Parsed -->|Indexing of the AST| IC{IndexedContent}
-IndexedContent -->|Pre-processing| P{Processed}
-Processed -->|Linking| L{Linked}
-Linked -->|Indexing of cross-references| IR{IndexedReferences}
-IndexedReferences -->|Validation| V{Validated}
+A(DocumentBuilder) -->|Indexing of the AST| D(IndexManager) -.- E{{IndexedContent}}
+A -->|Pre-processing| F(ScopeComputation) -.- G{{Processed}}
+A -->|Linking| H(Linker) -.- I{{Linked}}
+A -->|Indexing of cross-references| J(IndexManager) -.- K{{IndexedReferences}} 
+A -->|Validation| L(DocumentValidator) -.- M{{Validated}}
+
+click N "./#creation-of-langiumdocuments"
+click D "./#indexing-of-the-ast"
+click F "./#pre-processing"
+click H "./#linking"
+click J "./#indexing-of-cross-references"
+click L "./#validation"
 {{</mermaid>}}
 
 ## Creation of LangiumDocuments
