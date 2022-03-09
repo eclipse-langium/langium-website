@@ -294,7 +294,7 @@ TechnicalStaff:
 
 Fragment rules are not part of the AST and will therefore never create an object, instead they can be understood as being textually inserted where they are referenced.
 
-### Guarded Rules
+### Guard Conditions
 It may be useful to group parser rules with small variations inside of a single parser rule. Given the following example:
 ```
 entry Model:
@@ -312,24 +312,36 @@ Element:
     '}';
 ```
 The only difference between `RootElement` and `Element` is that the former has the boolean property `isPublic`. 
-We can refactor the grammar so that only `Element` is present in the grammar with a *Guard* that will determine what syntax should be used by the parser:
+We can refactor the grammar so that only `Element` is present in the grammar with a *guard condition* that will determine which concrete syntax should be used by the parser:
 ```
 entry Model:
     element+=Element<true>;
 
 Element<isRoot>:
-	<isRoot> isPublic+='public'? 
-	'element' name=ID '{'
-		elements+=Element<false>*
-	'}'
-	|
+	(<isRoot> isPublic?='public')? 
 	'element' name=ID '{'
 		elements+=Element<false>*
 	'}';
 ```
-`Element` has the guard `isRoot`, which will determine which of the two alternatives should be matched by the parser. 
-If `isRoot` is set to `true`, then the first alternative is matched. Otherwise, the second alternative will apply. 
+`Element` has the guard `isRoot`, which will determine whether the optional group containing the `isPublic` property is allowed to be parsed.
+
 The *entry rule* `Model` sets the value of `isRoot` to `true` with `element+=Element<true>`, while `isRoot` is set to `false` inside of the `Element<isRoot>` parser rule with `elements+=Element<false>`.
+
+In general, a guard condition on a group decides whether the parser is allowed to parse the group or not depending on the result of the evaluated condition. Logical operations can be applied, such as `&` (and), `|` (or) and `!` (not) to fine-tune the exact conditions in which the group is supposed to be parsed.
+
+Additionally, guard conditions can also be used inside of alternatives. See the following example:
+```
+entry Model:
+    element+=Element<true>;
+
+Element<isRoot>:
+	(<isRoot> 'root' | <!isRoot> 'element') name=ID '{'
+		elements+=Element<false>*
+	'}';
+```
+
+The parser will always exclude alternatives whose guard conditions evaluate to `false`. All other alternatives remain possible options for the parser to choose from.
+
 
 ### More Examples
 
