@@ -1,5 +1,5 @@
 ---
-title: "Grammar Language"
+title: "The Grammar Language"
 weight: 100
 ---
 The grammar language describes the syntax and structure of your language. The [Langium grammar language](https://github.com/langium/langium/blob/main/packages/langium/src/grammar/langium-grammar.langium) is implemented using Langium itself and therefore follows the same syntactic rules as any language created with Langium. The grammar language will define the structure of the *abstract syntax tree* (AST) which in Langium is a collection of *TypeScript types* describing the content of a parsed document and organized hierarchically. The individual nodes of the tree are then represented with JavaScript objects at runtime.
@@ -70,9 +70,9 @@ Person:
 ```
 In this example, the parser will create an object of type `Person`. This object will have a property `name` which value and type must match the terminal rule `ID` (i.e. the property `name` is of type `string` and cannot start with a digit or special character).
 
-By default, the parser will create an object with a type corresponding to the parser rule name. It is possible to override this behavior by explicitly defining the type of the object to be created. This is done by adding the keyword `returns`, followed by the type, after the parser rule name:
+By default, the parser will create an object with an inferred type corresponding to the parser rule name. It is possible to override this behavior by explicitly defining the type of the object to be created. This is done by adding the keyword `returns` followed by a separately declared type, or the keyword `infers` followed by the name of the type to be inferred for this rule (more about this [in the next chapter](../ast-types)):
 ```
-Person returns OtherType:
+Person infers OtherType:
     'person' name=ID;
 ```
 The parser rule `Person` will now lead to the creation of objects of type `OtherType` instead of `Person`.
@@ -207,17 +207,28 @@ Cardinality (?,*,+ operators) also applies to unordered group. Please note that 
 #### Simple Actions
 It is possible for a rule to return different types depending on declaration
 ```
+interface TypeOne {
+    name: string
+}
 RuleOne returns TypeOne:
     'keywordOne' name=ID | RuleTwo;
 
+interface TypeTwo extends TypeOne {}
 RuleTwo returns TypeTwo:
     'keywordTwo' name=ID;
 ```
-In the above example, we rely on a *rule call* to specify the return type. With more complex rules, the readability will be highly impacted. *Actions* allow to improve the readability of the grammar by explicitly defining the return type. *Actions* are declared inside of curly braces `{}`:
+A rule call is one of the ways to specify the return type. With more complex rules, the readability will be highly impacted. *Actions* allow to improve the readability of the grammar by explicitly defining the return type. Actions are declared inside of curly braces `{}`:
 ```
-RuleName returns TypeOne:
+RuleOne returns TypeOne:
     'keywordOne' name=ID | {TypeTwo} 'keywordTwo' name=ID;
 ```
+
+The example above requires that the return types `TypeOne` and `TypeTwo` are declared separately (see [the next chapter](../ast-types)). If the type returned by the action is created on-the-fly, the keyword `infer` needs to be added:
+```
+RuleOne infers TypeOne:
+    'keywordOne' name=ID | {infer TypeTwo} 'keywordTwo' name=ID;
+```
+Now both `TypeOne` and `TypeTwo` are inferred from the rule definition. Note that we use the keyword `infers` (declarative) for the grammar rule, but `infer` (imperative) for the action.
 
 #### Tree-Rewriting Actions
 The parser is built using [Chevrotain](https://github.com/chevrotain/chevrotain) which implements a LL(k) parsing algorithm (left-to-right). Conceptually, a LL(k) grammar cannot have rules containing left recursion.
@@ -300,7 +311,7 @@ It may be useful to group parser rules with small variations inside of a single 
 entry Model:
     element+=RootElement;
 
-RootElement returns Element:
+RootElement infers Element:
     isPublic?='public'?
     'element' name=ID '{'
         elements+=Element*
