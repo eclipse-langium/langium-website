@@ -69,6 +69,16 @@
       --footer-link-color: #ffcc5c;
       --footer-link-color-visited: #ffcc5c;
     }
+
+    .edgePath .path{
+      stroke: #000000 !important;
+    }
+
+    .node rect,
+    .node polygon {
+      fill: var(--header-font-color) !important;
+      stroke: #000000 !important;
+    }
   }
   
   /* Dark mode theming */
@@ -134,6 +144,16 @@
       --footer-font-color: #ffffff;
       --footer-link-color: rgb(213, 104, 231);
       --footer-link-color-visited: rgb(213, 104, 231);
+    }
+
+    .edgePath .path{
+      stroke: var(--body-font-color) !important;
+    }
+
+    .node rect,
+    .node polygon {
+      fill: var(--header-font-color) !important;
+      stroke: var((--body-font-color)) !important;
     }
   }
 
