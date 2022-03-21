@@ -14,7 +14,10 @@ A `LangiumDocument` goes through seven different states during its lifecycle:
 6. `Validated` when the document has been validated by the `DocumentValidator`.
 7. `Changed` when the document has been modified.
 
-State 1 is the initial state after creation of a document, and states 2 to 6 are part of its build process. The following diagram depicts how the `DocumentBuilder` processes `LangiumDocument`s depending on their state. More details about each step of the lifecycle can be found below.
+State 1 is the initial state after creation of a document, and states 2 to 6 are part of its build process. State 7 is a final state used to mark the document as invalid due to a change in the source text.
+
+The following diagram depicts how the `DocumentBuilder` processes `LangiumDocument`s depending on their state. More details about each step of the lifecycle can be found below.
+
 {{<mermaid>}}
 graph TD;
 N(LangiumDocumentFactory) -.-|Creation of LangiumDocuments| C{{Parsed}}
@@ -67,7 +70,9 @@ This phase is executed on documents with the state `IndexedContent` and unites a
 
 By default, the pre-processing consists of gathering all symbols of the AST (both local and exported), done by the `ScopeComputation` service. Metadata of the gathered symbols are represented with `AstNodeDescription` like in the [initial indexing phase](#indexing-of-symbols). These metadata are attached to the `LangiumDocument` in a multi-map structure that associates a (possibly empty) set of symbol descriptions to each container node of the AST, called the *precomputed scopes*. These are used in the linking phase to construct the actual *scope* of a cross-reference, i.e. all possible symbols that are reachable. A symbol in the precomputed scopes is reachable from a specific cross-reference if it is associated with a direct or indirect container of that reference. Symbols associated to the root node are reachable from the whole AST, while symbols associated with an inner node are reachable from the respective sub-tree.
 
-The default implementation of the `ScopeComputation` service attaches the description of every symbol to its direct container. This means that the container holds information about which named nodes are nested inside of it. You can override this default behavior to change the position where a symbol is reachable, or to change the name by which it can be referenced. It is even possible to associate the same symbol to multiple container nodes, possibly with different names, to control precisely where and how references to it can be resolved. However, keep in mind that you cannot access any cross-references in this phase. More complex, context-dependent scope mechanisms can be implemented in the `ScopeProvider` (see below).
+The default implementation of the `ScopeComputation` service attaches the description of every symbol to its direct container. This means that the container holds information about which named nodes are nested inside of it. You can override this default behavior to change the position where a symbol is reachable, or to change the name by which it can be referenced. It is even possible to associate the same symbol to multiple container nodes, possibly with different names, to control precisely where and how references to it can be resolved. However, keep in mind that you cannot access any cross-references in this phase. More complex, context-dependent scope mechanisms can be implemented in the `ScopeProvider` (see [next section](#linking)).
+
+The *"Domainmodel"* example includes a [customization of scopes precomputation](https://github.com/langium/langium/blob/main/examples/domainmodel/src/language-server/domain-model-scope.ts) where every *entity* contained in a *package declaration* is exposed using its *qualified name*, that is the concatenation of the package name and entity name separated with `.` (similar to Java).
 
 In languages with a type system, you would typically implement computation of types in a second pre-processing step in order to make type information available in the document. How that is done heavily depends on the kind of type system, so there is no default implementation for it.
 
