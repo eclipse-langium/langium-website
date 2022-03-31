@@ -65,7 +65,7 @@ _terminal_: A terminal is the smallest parseable part of a document. It usually 
 
 _token_: A token is a substring of the _document_ that matches a certain _terminal_. It contains information about which kind of _terminal_ it represents as well as its location in the document.
 
-For a full explanation of all terms we use throughout Langium, please refer to our [glossary](../glossary).
+For a full explanation of all terms we use throughout Langium, please refer to our [glossary](/docs/glossary/).
 
 ## Explaining the grammar
 
