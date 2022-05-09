@@ -1,5 +1,5 @@
-/public/
-/static/css/
+/documentation/public/
+/documentation/static/css/
 node_modules/
 .DS_Store
 .hugo_build.lock

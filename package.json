@@ -6,8 +6,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "concurrently \"NODE_ENV=development tailwindcss -i ./src/style.css -o ./static/css/style.css --watch\" \"hugo server -D -b `gp url 1313` --appendPort=false\"",
-    "build": "NODE_ENV=production tailwindcss -i ./src/style.css -o ./static/css/style.css --minify && hugo --gc --minify -b /",
+    "start": "concurrently \"NODE_ENV=development tailwindcss -i ./documentation/tailwind/style.css -o ./documentation/static/css/style.css --watch\" \"hugo server -D -b `gp url 1313` -s documentation --appendPort=false\"",
+    "build": "NODE_ENV=production tailwindcss -i ./documentation/tailwind/style.css -o ./documentation/static/css/style.css --minify && hugo --gc --minify -b / -s documentation",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
