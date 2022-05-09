@@ -1,9 +1,0 @@
-more:
-  - name: Get npm Package
-    ref: "https://www.npmjs.com/package/langium"
-    external: true
-    icon: "gdoc_download"
-  - name: "View Source"
-    ref: "https://github.com/langium/langium"
-    external: true
-    icon: "gdoc_github"

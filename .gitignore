@@ -1,6 +1,6 @@
-/documentation/public/
-/documentation/static/css/
-/documentation/resources/
+/public/
+/hugo/static/css/
+/hugo/resources/
 node_modules/
 .DS_Store
 .hugo_build.lock
