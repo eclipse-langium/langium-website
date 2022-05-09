@@ -9,8 +9,8 @@
     "start": "concurrently \"NODE_ENV=development npm run build:tailwind:dev\" \"npm run build:hugo:dev\"",
     "build": "NODE_ENV=production npm run build:tailwind && npm run build:hugo",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:hugo": "hugo --gc --minify -b / -s hugo -d ../public",
-    "build:hugo:dev": "hugo server -D -b `gp url 1313` -s hugo -d ../public --appendPort=false",
+    "build:hugo": "hugo --configDir ./hugo --gc --minify -b / -s hugo -d ../public",
+    "build:hugo:dev": "hugo server --configDir ./hugo -D -b `gp url 1313` -s hugo -d ../public --appendPort=false",
     "build:tailwind": "tailwindcss -c ./tailwind/tailwind.config.js -i ./tailwind/style.css -o ./hugo/static/css/style.css --minify",
     "build:tailwind:dev": "tailwindcss -c ./tailwind/tailwind.config.js -i ./tailwind/style.css -o ./hugo/static/css/style.css --watch"
   },
