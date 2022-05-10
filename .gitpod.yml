@@ -1,6 +1,6 @@
 tasks:
   - init: npm install
-    command: npm start
+    command: npm run start:gitpod
 ports:
   - port: 1313
     onOpen: open-browser
