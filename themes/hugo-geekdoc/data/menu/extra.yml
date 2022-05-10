@@ -1,0 +1,5 @@
+header:
+  - name: GitHub
+    ref: https://github.com/langium/langium
+    icon: gdoc_github
+    external: true
