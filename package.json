@@ -12,8 +12,8 @@
     "build:hugo": "hugo --config config.toml --gc --minify -b / -s hugo -d ../public",
     "build:hugo:dev": "hugo server --config config.toml -D -b `gp url 1313` -s hugo -d ../public --appendPort=false",
     "build:hugo:clean": "rm -rf public",
-    "build:tailwind": "tailwindcss -c ./tailwind/tailwind.config.js -i ./tailwind/style.css -o ./hugo/static/css/style.css --minify",
-    "build:tailwind:dev": "tailwindcss -c ./tailwind/tailwind.config.js -i ./tailwind/style.css -o ./hugo/static/css/style.css --watch"
+    "build:tailwind": "tailwindcss -i ./tailwind/style.css -o ./hugo/static/css/style.css --minify -c ./tailwind/tailwind.config.js",
+    "build:tailwind:dev": "tailwindcss -i ./tailwind/style.css -o ./hugo/static/css/style.css --watch -c ./tailwind/tailwind.config.js"
   },
   "devDependencies": {
     "concurrently": "^6.2.2",
