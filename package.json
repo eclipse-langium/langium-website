@@ -11,9 +11,9 @@
     "build": "npm run build:tailwind && npm run build:hugo:clean && npm run build:hugo",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:hugo:clean":   "rm -rf public",
-    "build:hugo":         "NODE_ENV=production  hugo        --config ./config.toml    -b /              -s hugo -d ../public --themesDir ./themes --gc --minify    ",
-    "build:hugo:dev":     "NODE_ENV=development hugo server --config ./config.toml -D -b localhost:1313 -s hugo -d ../public --themesDir ./themes --appendPort=false",
-    "build:hugo:gitpod":  "NODE_ENV=development hugo server --config ./config.toml -D -b `gp url 1313`  -s hugo -d ../public --themesDir ./themes --appendPort=false",
+    "build:hugo":         "NODE_ENV=production  hugo        --config ./config.toml    -b /              -s hugo -d ../public --gc --minify    ",
+    "build:hugo:dev":     "NODE_ENV=development hugo server --config ./config.toml -D -b localhost:1313 -s hugo -d ../public --appendPort=false",
+    "build:hugo:gitpod":  "NODE_ENV=development hugo server --config ./config.toml -D -b `gp url 1313`  -s hugo -d ../public --appendPort=false",
     "build:tailwind":     "NODE_ENV=production  tailwindcss -i ./tailwind/style.css -o ./hugo/static/css/style.css -c ./tailwind/tailwind.config.js --minify",
     "build:tailwind:dev": "NODE_ENV=development tailwindcss -i ./tailwind/style.css -o ./hugo/static/css/style.css -c ./tailwind/tailwind.config.js --watch "
   },
