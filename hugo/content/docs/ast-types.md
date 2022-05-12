@@ -139,8 +139,6 @@ interface Y {
 ```
 
 ## Controlling the AST with Actions
-// TODO: check Irina's comments on actions part.
-
 The AST node types can also be controlled through [actions](../grammar-language/#simple-actions). Actions can be used to improve the readability of more complex grammar and can use both inferred and declared type.
 
 In the following grammar:
