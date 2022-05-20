@@ -147,8 +147,9 @@ interface B extends AstNode {
 ### Simple Actions
 Actions can be used to infer the type of the AST node **inside** of a parser rule. This can be viewed as *syntactic sugar* and can increase readability of the grammar.
 ```
-X: {infer A} 'A' name=ID 
-    | {infer B} 'B' name=ID count=INT;
+X: 
+    {infer A} 'A' name=ID 
+  | {infer B} 'B' name=ID count=INT;
 
 // is equivalent to:
 X: A | B;
@@ -171,7 +172,7 @@ interface B extends AstNode {
 ### Assigned actions
 Actions can also be used to control the structure of AST node types. This is a more advanced topic, and we recommend getting familiar with the rest of the documentation before diving into this section.
 
-Let's consider two different grammars simplified from the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium). These grammars are designed to parse a document containing a single addition.
+Let's consider two different grammars derived from the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium). These grammars are designed to parse a document containing a single definition comprised of a name and an expression assignment, with an expression being an indefinite length of additions or a numerical value.
 
 The first one does not use assigned actions:
 ```
@@ -208,8 +209,6 @@ Expression:
 
 Addition infers Expression:
     Expression ({infer Addition.left=current} '+' right=Expression)*;
-
-A infers E: E ({infer A.left=current} '+' right=Expression)*;
 ```
 Parsing the same document now leads to this AST:
 {{<mermaid>}}
@@ -224,7 +223,7 @@ left_right --> left_right_{1}
 {{</mermaid>}}
 
 ## Declared Types
-Because types inference takes into account every entity of a parser rule, even the smallest changes update the inferred types. This can lead to an unexpected type system and incorrect behavior of services that depend on it. To minimize the risk of introducing breaking changes when modifying the grammar, we recommend to use *declared types*. This is especially true for more mature and complex languages where a stable type system is key and breaking changes introduced by inferred types can be hard to detect. Declared types allow the user to **fix** the type of parser and rely on the power of validation errors to detect breaking changes.
+Because type inference takes into account every entity of a parser rule, even the smallest changes can update the inferred types. This can lead to an unexpected type system and incorrect behavior of services that depend on it. To minimize the risk of introducing breaking changes when modifying the grammar, we recommend to use *declared types*. This is especially true for more mature and complex languages where a stable type system is key and breaking changes introduced by inferred types can be hard to detect. Declared types allow the user to **fix** the type of the parser rules and rely on the power of validation errors to detect breaking changes.
 
 Let's look at the example from the previous section:
 ```
@@ -315,12 +314,14 @@ interface B {
     count: number
 }
 
-X: {A} 'A' name=ID | {B} 'B' name=ID count=INT;
+X: 
+    {A} 'A' name=ID 
+  | {B} 'B' name=ID count=INT;
 ```
 Note the absence of the keyword `infer`, contrary to [actions inferring types](#simple-actions).
 
 ## Refactoring Dummy Rules
-*Dummy rules* are parser rules that are not reachable from the entry rule of the grammar. Despite the fact that they do not participate in the parsing process, they still influence the shape of the AST. They infer types in the same fashion as any other parser rule with type inference. However, because dummy rules are exempt from validation check they are prone to introduce breaking changes. We strongly advise against using dummy rules, but instead replacing them with *declared types*.
+*Dummy rules* are parser rules that are not reachable from the entry rule of the grammar. Despite the fact that they do not participate in the parsing process, they still influence the shape of the AST. They infer types in the same fashion as any other parser rule with type inference. However, because dummy rules are exempt from validation checks they are prone to introduce breaking changes. For this reason, we strongly advise using declared types instead of dummy rules.
 
 Let's look at two dummy rules:
 ```
