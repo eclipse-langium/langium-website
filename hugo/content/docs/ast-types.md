@@ -12,7 +12,7 @@ To minimize the chance of breaking changes, Langium introduces *declared types* 
 In the following, we detail how grammar rules shape the AST via inference and declaration.
 
 ## Inferred Types
-*Inferred types* result from letting Langium infer the types of AST nodes from the grammar rules. With this approach, since the user has minimal control over the types produced, it is common to introduce breaking changes. Let's have a look a how various rules shape the AST:
+*Inferred types* result from letting Langium infer the types of AST nodes from the grammar rules. Let's have a look at how various rules shape the AST:
 
 ### Parser Rules
 The simplest way to write a parser rule is as follows:
@@ -37,7 +37,7 @@ interface MyType extends AstNode {
 ```
 Please note that an `interface X` is no longer present in the AST.
 
-It is important to understand that the name of the parser rule and the name of the type it infers work on two separate abstraction levels. The name of the parser rule is used at the *parsing level* where types are ignored and only the parsing rule is considered, while the name of the type is used at the *types level* where both the type and the parser rule play a role. This means that the name of the type can be changed without affecting the parsing of the rule, and that the name of the rule can be changed without affecting the AST.
+It is important to understand that the name of the parser rule and the name of the type it infers work on two separate abstraction levels. The name of the parser rule is used at the *parsing level* where types are ignored and only the parsing rule is considered, while the name of the type is used at the *types level* where both the type and the parser rule play a role. This means that the name of the type can be changed without affecting the parsing rules hierarchy, and that the name of the rule can be changed - if it explicitly infers or returns a given type - without affecting the AST.
 
 By inferring types within the grammar, it is also possible to define several parser rules creating the same AST node type. For example, the following grammar has two rules `X` and `Y` inferring a single AST node type `MyType`:
 ```
@@ -91,7 +91,7 @@ There are three available kinds of [assignments](../grammar-language/#assignment
 3. `?=` for assigning a **boolean** to a property, resulting in the property's type to be a `boolean`.
 
 ```
-X: name=ID numbers+=INT (numbers+=INT)* isValid?='valid';
+X: name=ID numbers+=INT (numbers+=INT)* isValid?='valid'?;
 
 // generates:
 interface X extends AstNode {
@@ -147,7 +147,8 @@ interface B extends AstNode {
 ### Simple Actions
 Actions can be used to infer the type of the AST node **inside** of a parser rule. This can be viewed as *syntactic sugar* and can increase readability of the grammar.
 ```
-X: {infer A} 'A' name=ID | {infer B} 'B' name=ID count=INT;
+X: {infer A} 'A' name=ID 
+    | {infer B} 'B' name=ID count=INT;
 
 // is equivalent to:
 X: A | B;
@@ -167,8 +168,63 @@ interface B extends AstNode {
 }
 ```
 
+### Assigned actions
+Actions can also be used to control the structure of AST node types. This is a more advanced topic, and we recommend getting familiar with the rest of the documentation before diving into this section.
+
+Let's consider two different grammars simplified from the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium). These grammars are designed to parse a document containing a single addition.
+
+The first one does not use assigned actions:
+```
+Definition: 
+    'def' name=ID ':' expr=Expression;
+
+Expression:
+    '(' Addition ')' | value=NUMBER;
+
+Addition infers Expression:
+    left=Expression ('+' right=Expression)*;
+```
+When parsing a document containing `def x: (1 + 1) + 1`, this is the shape of the AST:
+{{<mermaid>}}
+graph TD;
+expr((expr)) --> left((left))
+expr --> right((right))
+left --> left_left((left))
+left --> left_right((right))
+right --> right_right((right))
+left_left --> left_left_v{1}
+left_right --> left_right_{1}
+right_right --> right_right_v{1}
+{{</mermaid>}}
+We can see that the nested `right -> right` property in the tree is counter-intuitive and we would like to remove one level of nesting from the tree. 
+
+This can be done by reworking the grammar and adding an assigned action:
+```
+Definition: 
+    'def' name=ID ':' expr=Addition ';';
+
+Expression:
+    '(' Addition ')' | value=NUMBER;
+
+Addition infers Expression:
+    Expression ({infer Addition.left=current} '+' right=Expression)*;
+
+A infers E: E ({infer A.left=current} '+' right=Expression)*;
+```
+Parsing the same document now leads to this AST:
+{{<mermaid>}}
+graph TD;
+expr((expr)) --> left((left))
+expr --> right((right))
+left --> left_left((left))
+left --> left_right((right))
+right --> right_v{1}
+left_left --> left_left_v{1}
+left_right --> left_right_{1}
+{{</mermaid>}}
+
 ## Declared Types
-To minimize the risk of introducing breaking changes when modifying the grammar, we recommend to use *declared types*. This is especially true for more mature and complex languages where a stable type system is key and breaking changes introduced by inferred types can be hard to detect. Declared types allow the user to **fix** the type of parser and rely on the power of validation errors to detect breaking changes.
+Because types inference takes into account every entity of a parser rule, even the smallest changes update the inferred types. This can lead to an unexpected type system and incorrect behavior of services that depend on it. To minimize the risk of introducing breaking changes when modifying the grammar, we recommend to use *declared types*. This is especially true for more mature and complex languages where a stable type system is key and breaking changes introduced by inferred types can be hard to detect. Declared types allow the user to **fix** the type of parser and rely on the power of validation errors to detect breaking changes.
 
 Let's look at the example from the previous section:
 ```
@@ -184,7 +240,7 @@ interface MyType {
 X returns MyType: name=ID;
 Y returns MyType: name=ID count=INT;
 ```
-We now explicitly declare `MyType` directly in the grammar with the keyword `interface`. The parser rules `X` and `Y` creating Ast nodes of type `MyType` need to explicitly declare the type of the AST node they create with the keyword `returns`.
+We now explicitly declare `MyType` directly in the grammar with the keyword `interface`. The parser rules `X` and `Y` creating AST nodes of type `MyType` need to explicitly declare the type of the AST node they create with the keyword `returns`.
 
 Contrary to [inferred types](#inferred-types), all properties must be explicitly declared in order to be valid inside of a parser rule. The following syntax:
 ```
@@ -192,7 +248,7 @@ Z returns MyType: name=ID age=INT;
 ```
 will throw the following validation error `A property 'age' is not expected` because the declaration of `MyType` does not include the property `age`. In short, *declared types* add a layer of safety via validation to the grammar that prevents mismatches between the generated AST types and what the user expects.
 
-However, a declared type can extend another type:
+A declared type can also extend another declared type:
 ```
 interface MyType {
     name: string
@@ -240,11 +296,11 @@ interface C {
     count: number
 }
 
-A returns A: reference=[B:ID] array+=B (array+=B)* alternative=(B | C);
+X returns A: reference=[B:ID] array+=Y (array+=Y)* alternative=(Y | Z);
 
-B returns B: 'B' name=ID;
+Y returns B: 'Y' name=ID;
 
-C returns C: 'C' name=ID count=INT;
+Z returns C: 'Z' name=ID count=INT;
 ```
 
 ### Actions
@@ -261,11 +317,10 @@ interface B {
 
 X: {A} 'A' name=ID | {B} 'B' name=ID count=INT;
 ```
-
-### Assigned Actions
+Note the absence of the keyword `infer`, contrary to [actions inferring types](#simple-actions).
 
 ## Refactoring Dummy Rules
-*Dummy rules* are parser rules that are not reachable from the entry rule of the grammar. Despite the fact that they do not participate in the parsing process, they still influence the shape of the AST. They infer types in the same fashion as any other parser rule with type inference. However, because dummy rules are exempt from validation check they are prone to introduce breaking changes. We strongly advise against using dummy rules and instead replace them with *declared types* wherever possible.
+*Dummy rules* are parser rules that are not reachable from the entry rule of the grammar. Despite the fact that they do not participate in the parsing process, they still influence the shape of the AST. They infer types in the same fashion as any other parser rule with type inference. However, because dummy rules are exempt from validation check they are prone to introduce breaking changes. We strongly advise against using dummy rules, but instead replacing them with *declared types*.
 
 Let's look at two dummy rules:
 ```
@@ -277,65 +332,8 @@ The first one is inferring a type alias, and the second one an interface. They a
 ```
 type X = A | B;
 
-interface A {
-    name: string
-}
-
-interface B {
-    name: string
-    count: number
-}
-
 interface Y {
     name: string
 }
 ```
 This way, a layer of safety is introduced and the risk of breaking changes is greatly reduced.
-
-## Controlling the AST with Actions
-The AST node types can also be controlled through [actions](../grammar-language/#simple-actions). Actions can be used to improve the readability of more complex grammar and can use both inferred and declared type.
-
-In the following grammar:
-```
-X: {A} 'A' name=ID | {infer B} 'B' name=ID;
-```
-`{A}` and `{infer B}` are both actions. The first one uses the declared type 'A' (which needs to be explicitly declared in the grammar), while the second one infers the type 'B'. The parser rule 'X' generates an AST node of type `A` if the keyword 'A' is consumed and an AST node of type `B` if the keyword 'B' is consumed.
-
-Actions can also be used to guide the structure of an AST node as described [here](../grammar-language/#tree-rewriting-actions). Following the same example, we first take a look at the parser rule 'Addition' without the use of action: 
-```
-Addition:
-    left=SimpleExpression ('+' right=SimpleExpression)*;
-
-SimpleExpression:
-    '(' Addition ')' | value=INT;
-
-// generates:
-export interface Addition extends SimpleExpression {
-    readonly $container: Addition;
-    right: SimpleExpression
-}
-
-export interface SimpleExpression extends Addition {
-    readonly $container: Addition;
-    value: number
-}
-```
-
-```
-Addition returns Addition:
-    SimpleExpression ({infer Addition.left=current} '+' right=SimpleExpression)*;
-
-SimpleExpression: 
-    '(' Addition ')' | value=INT;
-
-// generates:
-export interface Addition extends SimpleExpression {
-    readonly $container: Addition;
-    left: SimpleExpression
-    right: SimpleExpression
-}
-export interface SimpleExpression extends Addition {
-    readonly $container: Addition;
-    value: number
-}
-```
