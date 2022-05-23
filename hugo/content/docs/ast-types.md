@@ -185,7 +185,7 @@ Expression:
 Addition infers Expression:
     left=Expression ('+' right=Expression)*;
 ```
-When parsing a document containing `def x: (1 + 1) + 1`, this is the shape of the AST:
+When parsing a document containing `def x: (1 + 2) + 3`, this is the shape of the AST:
 {{<mermaid>}}
 graph TD;
 expr((expr)) --> left((left))
@@ -194,8 +194,8 @@ left --> left_left((left))
 left --> left_right((right))
 right --> right_right((right))
 left_left --> left_left_v{1}
-left_right --> left_right_{1}
-right_right --> right_right_v{1}
+left_right --> left_right_{2}
+right_right --> right_right_v{3}
 {{</mermaid>}}
 We can see that the nested `right -> right` property in the tree is counter-intuitive and we would like to remove one level of nesting from the tree. 
 
@@ -217,9 +217,9 @@ expr((expr)) --> left((left))
 expr --> right((right))
 left --> left_left((left))
 left --> left_right((right))
-right --> right_v{1}
+right --> right_v{3}
 left_left --> left_left_v{1}
-left_right --> left_right_{1}
+left_right --> left_right_{2}
 {{</mermaid>}}
 
 ## Declared Types
