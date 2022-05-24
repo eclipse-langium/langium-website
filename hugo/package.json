@@ -1,0 +1,13 @@
+{
+  "name": "langium-website-hugo",
+  "version": "0.0.0",
+  "description": "Source code for langium.org",
+  "author": "TypeFox",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build":        "cross-env NODE_ENV=production  hugo        --config ./config.toml    -b /              -d ../public --gc --minify    ",
+    "watch":        "cross-env NODE_ENV=development hugo server --config ./config.toml -D -b localhost:1313 -d ../public --appendPort=false",
+    "watch:gitpod": "cross-env NODE_ENV=development hugo server --config ./config.toml -D -b `gp url 1313` -d ../public --appendPort=false"
+  }
+}

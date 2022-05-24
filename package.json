@@ -5,16 +5,21 @@
     "license": "MIT",
     "private": true,
     "scripts": {
-      "dev":        "concurrently \"npm run dev --workspace website\"",
-      "dev:gitpod": "concurrently \"npm run dev:gitpod --workspace website\"",
+      "watch":         "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch        --workspace hugo\" \"npm run watch --workspace tailwind\"",
+      "watch:gitpod":  "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
       "build": "npm run clean && npm run build --workspaces",
-      "clean": "rm -rf public"
+      "clean": "shx rm -rf public"
     },
     "devDependencies": {
-      "concurrently": "^6.2.2"
+      "concurrently": "^6.2.2",
+      "cross-env": "^7.0.3",
+      "hugo-extended": "^0.89.4",
+      "shx": "^0.3.4",
+      "tailwindcss": "^2.2.16"
     },
     "workspaces": [
-      "website"
+      "hugo",
+      "tailwind"
     ]
   }
   
