@@ -1,26 +1,25 @@
 {
-  "name": "langium-website",
-  "version": "0.0.0",
-  "description": "Source code for langium.org",
-  "author": "TypeFox",
-  "license": "MIT",
-  "private": true,
-  "scripts": {
-    "start":        "concurrently \"npm run build:tailwind:dev\" \"npm run build:hugo:dev\"",
-    "start:gitpod": "concurrently \"npm run build:tailwind:dev\" \"npm run build:hugo:gitpod\"",
-    "build": "npm run build:tailwind && npm run build:hugo:clean && npm run build:hugo",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:hugo:clean":   "rm -rf public",
-    "build:hugo":         "NODE_ENV=production  hugo        --config ./config.toml    -b /              -s hugo -d ../public --gc --minify    ",
-    "build:hugo:dev":     "NODE_ENV=development hugo server --config ./config.toml -D -b localhost:1313 -s hugo -d ../public --appendPort=false",
-    "build:hugo:gitpod":  "NODE_ENV=development hugo server --config ./config.toml -D -b `gp url 1313`  -s hugo -d ../public --appendPort=false",
-    "build:tailwind":     "NODE_ENV=production  tailwindcss -i ./tailwind/style.css -o ./hugo/static/css/style.css -c ./tailwind/tailwind.config.js --minify",
-    "build:tailwind:dev": "NODE_ENV=development tailwindcss -i ./tailwind/style.css -o ./hugo/static/css/style.css -c ./tailwind/tailwind.config.js --watch "
-  },
-  "devDependencies": {
-    "concurrently": "^6.2.2",
-    "hugo-extended": "^0.89.4",
-    "live-server": "^1.1.0",
-    "tailwindcss": "^2.2.16"
+    "name": "langium-website-project",
+    "description": "Source code for langium.org",
+    "author": "TypeFox",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+      "watch":         "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch        --workspace hugo\" \"npm run watch --workspace tailwind\"",
+      "watch:gitpod":  "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
+      "build": "npm run clean && npm run build --workspaces",
+      "clean": "shx rm -rf public"
+    },
+    "devDependencies": {
+      "concurrently": "^6.2.2",
+      "cross-env": "^7.0.3",
+      "hugo-extended": "^0.89.4",
+      "shx": "^0.3.4",
+      "tailwindcss": "^2.2.16"
+    },
+    "workspaces": [
+      "hugo",
+      "tailwind"
+    ]
   }
-}
+  

@@ -41,7 +41,7 @@ enableRobotsTXT = true
   # geekdocPrivacyPolicy = "https://www.typefox.io/imprint-privacy/#privacy"
 
   geekdocRepo = "https://github.com/langium/langium-website"
-  geekdocEditPath = "blob/main/content"
+  geekdocEditPath = "blob/main/hugo/content"
 
   # (Optional, default true) Add an anchor link to headlines.
   #geekdocAnchor = true

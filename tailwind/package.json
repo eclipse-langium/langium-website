@@ -1,0 +1,12 @@
+{
+  "name": "langium-website-tailwind",
+  "version": "0.0.0",
+  "description": "Source code for langium.org",
+  "author": "TypeFox",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "cross-env NODE_ENV=production  tailwindcss -i ./style.css -o ../public/css/style.css -c ./tailwind.config.js --minify",
+    "watch": "cross-env NODE_ENV=development tailwindcss -i ./style.css -o ../public/css/style.css -c ./tailwind.config.js --watch "
+  }
+}
