@@ -5,7 +5,7 @@ weight: 200
 
 When AST nodes are created during the parsing of a document, they are given a type. The language grammar dictates the shape of those types and how they might be related to each other. There are two ways by which Langium derives AST types from the grammar, by **[inference](#inferred-types)** and by **[declaration](#declared-types)**.
 
-*Inference* is the default behavior in Langium. During the generation of the AST types, Langium infers the possible types directly from the grammar rules. While this a powerful approach for simple languages and prototypes, it is not recommended for more mature languages since minimal changes in the grammar can easily lead to breaking changes.
+*Inference* is the default behavior in Langium. During the generation of the AST types, Langium infers the possible types directly from the grammar rules. While this is a powerful approach for simple languages and prototypes, it is not recommended for more mature languages since minimal changes in the grammar can easily lead to breaking changes.
 
 To minimize the chance of breaking changes, Langium introduces *declared types* where the AST types are explicitly defined by the user in the grammar via a *TypeScript-like* syntax.
 
@@ -19,13 +19,13 @@ The simplest way to write a parser rule is as follows:
 ```
 X: name=ID;
 ```
-With this syntax, Langium will **infer** the type of the AST node to be generated when parsing the rule. By convention, the type of the AST node will be named after the name of the rule, resulting in this **TypeScript's interface** in the AST:
+With this syntax, Langium will **infer** the type of the AST node to be generated when parsing the rule. By convention, the type of the AST node will be named after the name of the rule, resulting in this **TypeScript interface** in the AST:
 ```
 interface X extends AstNode {
     name: string
 }
 ```
-It is however possible to control the naming of the interface by using the following syntax:
+It is also possible to control the naming of the interface by using the following syntax:
 ```
 X infers MyType: name=ID;
 ```
@@ -53,7 +53,7 @@ interface MyType extends AstNode {
 ```
 
 ### Terminal Rules
-Terminal rules are linked to built-in types in the AST. They do not result in AST types on their own but determine the type of properties in AST types inferred from parser rule:
+Terminal rules are linked to built-in types in the AST. They do not result in AST types on their own but determine the type of properties in AST types inferred from a parser rule:
 ```
 terminal INT returns number: /[0-9]+/;
 terminal ID returns string: /[a-zA-Z_][a-zA-Z0-9_]*/;
@@ -69,7 +69,7 @@ interface X extends AstNode {
 The property `name` is of type `string` because the terminal rule `ID` is linked to the built-in type `string`, and the property `count` is of type `number` because the terminal rule `INT` is linked to the built-in type `number`.
 
 ### Data type rules
-Data type rules are similar to terminal rules in the sense that they determine the type of properties in AST types inferred from a parser rules. However, they lead to the creation of type aliases for built-in types in the AST:
+Data type rules are similar to terminal rules in the sense that they determine the type of properties in AST types inferred from parser rules. However, they lead to the creation of type aliases for built-in types in the AST:
 ```
 QualifiedName returns string: ID '.' ID;
 
@@ -105,7 +105,7 @@ The right side of an assignment can be any of the following:
 * A terminal rule or a data type rule, which results in the type of the property to be a built-in type.
 * A parser rule, which results is the type of the property to be the type of the parser rule.
 * A cross-reference, which results in the type of the property to be a *Reference* to the type of the cross-reference.
-* An alternative of all the above, which results in the type of the property to be a type union of all the types in the alternative.
+* An alternative, which results in the type of the property to be a type union of all the types in the alternative.
 
 ```
 X: 'x' name=ID;
@@ -124,7 +124,7 @@ interface Y extends AstNode {
 ```
 
 ### Unassigned Rule Calls
-A parser rule does not necessarily need to have assignment, but can also only contain *unassigned rule calls*. These kind of rules can be used to change the types' hierarchy.
+A parser rule does not necessarily need to have assignments. It may also contain only *unassigned rule calls*. These kind of rules can be used to change the types' hierarchy.
 ```
 X: A | B;
 
@@ -145,7 +145,7 @@ interface B extends AstNode {
 ```
 
 ### Simple Actions
-Actions can be used to infer the type of the AST node **inside** of a parser rule. This can be viewed as *syntactic sugar* and can increase readability of the grammar.
+Actions can be used to infer the type of the AST node **inside** of a parser rule. They can be viewed as *syntactic sugar* and can increase readability of the grammar.
 ```
 X: 
     {infer A} 'A' name=ID 
@@ -170,7 +170,7 @@ interface B extends AstNode {
 ```
 
 ### Assigned actions
-Actions can also be used to control the structure of AST node types. This is a more advanced topic, and we recommend getting familiar with the rest of the documentation before diving into this section.
+Actions can also be used to control the structure of AST node types. This is a more advanced topic, so we recommend getting familiar with the rest of the documentation before diving into this section.
 
 Let's consider two different grammars derived from the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium). These grammars are designed to parse a document containing a single definition comprised of a name and an expression assignment, with an expression being an indefinite length of additions or a numerical value.
 
@@ -223,7 +223,7 @@ left_right --> left_right_{2}
 {{</mermaid>}}
 
 ## Declared Types
-Because type inference takes into account every entity of a parser rule, even the smallest changes can update the inferred types. This can lead to an unexpected type system and incorrect behavior of services that depend on it. To minimize the risk of introducing breaking changes when modifying the grammar, we recommend to use *declared types*. This is especially true for more mature and complex languages where a stable type system is key and breaking changes introduced by inferred types can be hard to detect. Declared types allow the user to **fix** the type of the parser rules and rely on the power of validation errors to detect breaking changes.
+Because type inference takes into account every entity of a parser rule, even the smallest changes can update the inferred types. This can lead to an unexpected type system and incorrect behavior of services that depend on it. To minimize the risk of introducing breaking changes when modifying the grammar, we recommend to use *declared types*. This is especially true for more mature and complex languages, where a stable type system is key and breaking changes introduced by inferred types can be hard to detect. Declared types allow the user to **fix** the type of the parser rules and rely on the power of validation errors to detect breaking changes.
 
 Let's look at the example from the previous section:
 ```
@@ -329,12 +329,14 @@ X : A | B;
 
 Y: name=ID;
 ```
-The first one is inferring a type alias, and the second one an interface. They are similar to parser rules explained in the [previous section](#inferred-types) but they are not reachable from the entry rule of the grammar. They should be replaced with **declared types** as follows:
+The first one is inferring a type alias, and the second one an interface. They are similar to parser rules explained in the [previous section](#inferred-types), but they are not reachable from the entry rule of the grammar. They should be replaced with **declared types** as follows:
 ```
 type X = A | B;
 
 interface Y {
     name: string
 }
+
+Y returns Y: name=ID;
 ```
 This way, a layer of safety is introduced and the risk of breaking changes is greatly reduced.
