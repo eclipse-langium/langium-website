@@ -318,7 +318,7 @@ X:
     {A} 'A' name=ID 
   | {B} 'B' name=ID count=INT;
 ```
-Note the absence of the keyword `infer`, contrary to [actions inferring types](#simple-actions).
+Note the absence of the keyword `infer` compared to [actions which infer a type](#simple-actions).
 
 ## Refactoring Dummy Rules
 *Dummy rules* are parser rules that are not reachable from the entry rule of the grammar. Despite the fact that they do not participate in the parsing process, they still influence the shape of the AST. They infer types in the same fashion as any other parser rule with type inference. However, because dummy rules are exempt from validation checks they are prone to introduce breaking changes. For this reason, we strongly advise using declared types instead of dummy rules.
