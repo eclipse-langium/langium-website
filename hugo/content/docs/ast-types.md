@@ -199,7 +199,7 @@ right_right --> right_right_v{3}
 {{</mermaid>}}
 We can see that the nested `right -> right` property in the tree is counter-intuitive and we would like to remove one level of nesting from the tree. 
 
-This can be done by reworking the grammar and adding an assigned action:
+This can be done by refactoring the grammar and adding an assigned action:
 ```
 Definition: 
     'def' name=ID ':' expr=Addition ';';
