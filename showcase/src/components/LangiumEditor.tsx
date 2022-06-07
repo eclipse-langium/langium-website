@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { MonacoLanguageClientWrapper, getMonacoCss } from 'monaco-editor-comp/bundle';
 import { buildWorkerDefinition } from "monaco-editor-workers";
-buildWorkerDefinition('./assets/monaco-editor-workers/workers', window.location.href, false);
+buildWorkerDefinition('./workers', window.location.href, false);
 
 const style = document.createElement('style');
 style.innerHTML = getMonacoCss();

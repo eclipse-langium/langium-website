@@ -2,6 +2,15 @@
   "name": "langium-website-showcase",
   "version": "0.0.0",
   "private": true,
+  "watch": {
+    "build": {
+      "patterns": [
+        "./src"
+      ],
+      "extensions": "ts,tsx,css",
+      "quiet": false
+    }
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
@@ -19,7 +28,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run copy-workers",
+    "copy-workers": "export $(cat .env | xargs) && mkdir -p $BUILD_PATH/workers && cp ./node_modules/monaco-editor-workers/dist/workers/* $BUILD_PATH/workers",
+    "watch": "npm-watch",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -40,5 +51,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "npm-watch": "^0.11.0"
   }
 }
