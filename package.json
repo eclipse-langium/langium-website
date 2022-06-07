@@ -19,7 +19,8 @@
     },
     "workspaces": [
       "hugo",
-      "tailwind"
+      "tailwind",
+      "showcase"
     ]
   }
   
