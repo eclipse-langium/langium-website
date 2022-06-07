@@ -3,16 +3,16 @@ title: "Langium Overview"
 weight: 50
 ---
 
-In this chapter you'll get a closer look at the tasks that Langium aims to simplify when creating a custom domain specific language.
-As a fully featured language engineering framework, Langium supports you from parsing a string into a semantic representation of your model up until your interpreter or code generator.
+In this chapter you'll get a closer look at the tasks that Langium aims to simplify when creating a custom language.
+As a fully featured language engineering framework, Langium supports you from parsing a string into a domain model up until your interpreter or code generator.
 
-To get from the first to the last step, you would have to solve a whole lot of other challenges, such as coding your semantic model, building a workspace management system, designing a linking system and providing editor support. With that in mind, Langium provides out-of-the-box solutions for these problems, with the ability to fine-tune every part of it to fit your domain requirements.
+To get from the first to the last step, you would have to solve a whole lot of other challenges, such as coding your [domain model](#semantic-models), designing a [linking system](#cross-references-and-linking), building a [workspace management](#workspace-management) system and providing [editor support](#editing-support). With that in mind, Langium provides out-of-the-box solutions for these problems, with the ability to fine-tune every part of it to fit your domain requirements.
 
 ## Language Parsing
 
-Virtually all programming languages and most domain specific languages (DSL) are context-free (link). While regular languages can be parsed using regular expressions, context-free languages allow for a higher degree of freedom, i.e. they are more powerful than regular languages. In turn, parsing context-free languages requires a more sophisticated parser.
+Virtually all programming languages and most domain specific languages (DSL) are [context-free](https://en.wikipedia.org/wiki/Context-free_language). While [regular languages](https://en.wikipedia.org/wiki/Regular_language) can be parsed using regular expressions (RegExp), context-free languages allow for a higher degree of freedom, i.e. they are more powerful than regular languages. In turn, parsing context-free languages requires a more sophisticated parser.
 
-To define a custom language, users of Langium interact with a high level presentation of their context-free grammar using the Langium grammar language (link to documentation), in a similar fashion to EBNF. In addition to defining the syntax of your language, it allows you to embed semantic information about your model.
+To define a custom language, users of Langium interact with a high level presentation of their context-free grammar using the [Langium grammar language](../grammar-language), in a similar fashion to EBNF. In addition to defining the syntax of your language, it allows you to embed semantic information about your model.
 
 ## Semantic Models
 
@@ -54,12 +54,12 @@ x = 3; // References the `x` defined in the previous line
 
 ```ts
 if (something) {
-    let x = 42;
+    let y = 42;
 }
-x = 3; // Cannot link, `x` isn't in a visible scope
+y = 3; // Cannot link, `y` isn't in a visible scope
 ```
 
-The same occurs in Langium. To enable more complex scoping behavior, you can create a custom domain scoping. For example, common object oriented languages need a more involved scoping mechanism to resolve references to fields and methods of a class:
+The same occurs in Langium. To enable more complex scoping behavior, you can create a custom domain scoping. For example, common object oriented.languages need a more involved scoping mechanism to resolve references to fields and methods of a class:
 
 ```ts
 class X {
@@ -74,14 +74,14 @@ Aside from those domain specific scoping rules, parsing and resolving cross refe
 
 ## Workspace Management
 
-Like with normal programming, domain logic written in your DSL will be split across multiple files to facilitate ease of use and maintenance efforts. This is also possible using Langium, which performs workspace management for you.
+Like with common modularized programming languages, domain logic written in your DSL will usually be split across multiple files to facilitate ease of use and maintenance efforts. This is also possible using Langium, which performs workspace management for you.
 
-When running a Langium based language in a [language server](), all files matching your DSL id will automatically be picked up and processed. In addition, any changes to these files will be processed as well.
+When running a Langium based language in a [language server](https://microsoft.github.io/language-server-protocol/), all files in your workspace matching your DSL id will automatically be picked up and processed. In addition, any changes in your workspace will be handled as well. Dealing with added, changed or deleted files in a workspace with multiple hundreds of files can become complicated and decrease performance drastically if not done correctly. Langium employs heuristics to only invalidate and recompute what is actually necessary.
 
 The workspace management also keeps track of the global scope. This allows users of your DSL to reference elements across files within the same workspace.
 
 ## Editing Support
 
-Langium does not only provide support for dealing with your language in isolation. The framework is deeply integrated with the [language server protocol]() (LSP). This allows Langium based languages to easily interact with common IDEs and editors with LSP support, including Visual Studio Code, Eclipse, IntelliJ and many more.
+Langium does not only provide support for dealing with your language in isolation. The framework is deeply integrated with the [language server protocol](https://microsoft.github.io/language-server-protocol/) (LSP). This allows Langium based languages to easily interact with common IDEs and editors with LSP support, including Visual Studio Code, Eclipse, IntelliJ and many more.
 
 The LSP includes commonly used language features, allowing for deep IDE integration without binding your language to a single IDE. Langium offers out-of-the-box support for most of these language features, with additional extension points for your domain specific requirements. This includes code completion, custom validations/diagnostics, finding references, formatting and more.
