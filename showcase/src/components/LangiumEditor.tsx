@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { MonacoLanguageClientWrapper, getMonacoCss } from 'monaco-editor-comp/bundle';
 import { buildWorkerDefinition } from "monaco-editor-workers";
-buildWorkerDefinition('./assets/monaco-editor-workers/workers', window.location.href + '../..', false);
+buildWorkerDefinition('./assets/monaco-editor-workers/workers', window.location.href, false);
 
 const style = document.createElement('style');
 style.innerHTML = getMonacoCss();
@@ -11,7 +11,7 @@ export interface LangiumEditorProps {
 
 }
 
-export const LangiumEditor: React.FC<LangiumEditorProps> = ({}) => {
+export const LangiumEditor: React.FC<LangiumEditorProps> = () => {
     const ref = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const client = new MonacoLanguageClientWrapper("id");
@@ -31,5 +31,5 @@ export const LangiumEditor: React.FC<LangiumEditorProps> = ({}) => {
         window.addEventListener('resize', listener);
         return () => window.removeEventListener('resize', listener);
     }, []);
-    return <div ref={ref} style={{height: "100%"}}/>;
+    return <div ref={ref} className="langium-editor"/>;
 };
