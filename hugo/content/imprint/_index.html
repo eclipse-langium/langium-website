@@ -1,0 +1,109 @@
+---
+title: "imprint"
+date: 2021-11-17T14:06:59Z
+draft: false
+type: _default
+layout: index
+geekdocHidden: true
+---
+## Imprint
+<p class="pt-10 text-center px-12 lg:px-52">
+    Langium.org is administered by
+    <br /> <br />
+    <span class="text-emeraldLangium font-bold lg:text-xl">
+        TypeFox GmbH
+    </span>
+    <br /><br />
+    Managing Directors: Daniel Dietrich, Dr. Miro Spönemann
+    <br />
+    Am Germaniahafen 1
+    <br />
+    24143 Kiel
+    <br />
+    HRB 17385, Amtsgericht Kiel
+    <br /><br />
+    VAT-ID : DE304247102
+    <br /><br />
+    Phone: +49 431 99026870
+    <br />
+    Email: contact@typefox.io
+</p>
+<p class="pt-10 text-center px-12 lg:px-52">
+    Responsible for all content according to § 18 (1) (MStV): TypeFox GmbH, Am Germaniahafen 1, 24143 Kiel
+    <br />
+    Authorized to represent: Herr Dr. Miro Spönemann & Herr Daniel Dietrich
+</p>
+<h2 class="text-center text-2xl tracking-tight sm:text-3xl lg:text-4xl mt-20">
+    Disclaimer
+</h2>
+<p class="pt-10 lg:text-center px-12 lg:px-52">
+    <span class="text-emeraldLangium font-bold lg:text-xl">
+        Liability for content
+    </span>
+    <br /><br />
+    As a service provider we are responsible according to § 7 paragraph 1 of TMG
+    for own contents on these pages under the general laws. According to § § 8 to 10 TMG
+    we are not obliged as a service provider to monitor transmitted or stored foreign information
+    or to investigate circumstances that indicate illegal activity. Obligations to remove or block
+    the use of information under the general laws remain unaffected. However, a relevant liability is
+    only possible from the date of knowledge of a specific infringement. Upon notification of such violations,
+    we will remove the content immediately.
+</p>
+<p class="pt-10 lg:text-center px-12 lg:px-52 mb-10">
+    <span class="text-emeraldLangium font-bold lg:text-xl">
+        Liability for links
+    </span>
+    <br /><br />
+    This site contains links to external websites over which we have no control. Therefore we can not
+    accept any responsibility for their content. The respective provider or operator of the pages is always
+    responsible for the contents of any Linked Site. The linked sites were checked at the time of linking for
+    possible violations of law. Illegal contents were at the time of linking. A permanent control of the linked
+    pages is unreasonable without concrete evidence of a violation. Upon notification of violations, we will
+    remove such links immediately.
+</p>
+<!-- Mobile Menu -->
+<div x-show="isOpen" x-transition:enter="transition duration-200 ease-out transform"
+    x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+    x-transition:leave="transition ease-in duration-100 transform"
+    x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+    class="absolute top-0 inset-x-0 p-2 transform origin-top-right md:hidden">
+    <div
+        class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white dark:bg-gray-900 divide-y-2 divide-gray-50">
+        <div class="pt-5 pb-6 px-5">
+            <div class="flex items-center justify-between">
+                <div>
+                    <img class="h-10 w-auto" src="../assets/langium_logo_w_nib.svg" alt="Workflow">
+                </div>
+                <div class="-mr-2">
+                    <button @click="isOpen = false" type="button" class="mobile-menu-btn p-2 inline-flex 
+                    items-center justify-center 
+                    text-gray-900 dark:text-gray-200
+                    hover:text-gray-1000">
+                        <span class="sr-only">Close menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div :class="{'hidden': !isOpen}" class="mt-6 mobile-menu">
+                <nav class="flex flex-col items-center dark:text-gray-200 text-gray-900">
+                    <a href="../docs" class="nav-link-mobile">
+                        Documentation
+                    </a>
+                    <!-- <a href="#" class="nav-link-mobile">
+            Playground
+        </a> -->
+                    <a href="https://www.typefox.io/language-engineering/" class="nav-link-mobile">
+                        Support
+                    </a>
+                    <a class='w-10 h-10' target="_blank" href="https://github.com/langium/langium">
+                        <img src="../assets/GitHub-Mark-Light-120px-plus.png" alt="GitHub" />
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
