@@ -1,58 +1,33 @@
 {
-  "name": "langium-website-showcase",
-  "version": "0.0.0",
-  "private": true,
-  "watch": {
-    "build": {
-      "patterns": [
-        "./src"
-      ],
-      "extensions": "ts,tsx,css,html",
-      "quiet": false
+    "name": "langium-website-showcase",
+    "version": "0.3.0",
+    "private": true,
+    "type": "module",
+    "main": "index.html",
+    "scripts": {
+        "clean": "npx shx rm -rf ../public/showcase/libs",
+        "copy-lc-comp": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ./node_modules/monaco-editor-comp/bundle ../public/showcase/libs/monaco-editor-comp",
+        "copy-monaco-workers": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ./node_modules/monaco-editor-workers/dist ../public/showcase/libs/monaco-editor-workers",
+        "copy-monaco-editor": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ./node_modules/monaco-editor ../public/showcase/libs/monaco-editor",
+        "copy-index": "npx shx mkdir -p ../public/showcase && npx shx cp -fr ./index.html ../public/showcase/index.html",
+        "build": "npm run clean && npm run copy-index && npm run copy-lc-comp && npm run copy-monaco-workers && npm run copy-monaco-editor",
+        "start": "http-server --port 20002 ../public/showcase",
+        "watch": "npm-watch"
+    },
+    "devDependencies": {
+        "http-server": "^14.1.0",
+        "npm-watch": "^0.11.0"
+    },
+    "watch": {
+        "build": {
+            "patterns": [
+                "."
+            ],
+            "extensions": "json,html",
+            "quiet": false
+        }
+    },
+    "dependencies": {
+        "monaco-editor-comp": "^0.3.1-next.3"
     }
-  },
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.11.38",
-    "@types/react": "^18.0.12",
-    "@types/react-dom": "^18.0.5",
-    "monaco-editor-comp": "^0.3.1-next.1",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.7.3",
-    "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build && npm run copy-workers",
-    "copy-workers": "export $(cat .env | xargs) && mkdir -p $BUILD_PATH/workers && cp ./node_modules/monaco-editor-workers/dist/workers/* $BUILD_PATH/workers",
-    "watch": "npm-watch",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "npm-watch": "^0.11.0"
-  }
 }
