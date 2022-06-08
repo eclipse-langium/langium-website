@@ -6,9 +6,9 @@
     "main": "index.html",
     "scripts": {
         "clean": "npx shx rm -rf ../public/showcase/libs",
-        "copy-lc-comp": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ./node_modules/monaco-editor-comp/bundle ../public/showcase/libs/monaco-editor-comp",
-        "copy-monaco-workers": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ./node_modules/monaco-editor-workers/dist ../public/showcase/libs/monaco-editor-workers",
-        "copy-monaco-editor": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ./node_modules/monaco-editor ../public/showcase/libs/monaco-editor",
+        "copy-lc-comp": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ../node_modules/monaco-editor-comp/bundle ../public/showcase/libs/monaco-editor-comp",
+        "copy-monaco-workers": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ../node_modules/monaco-editor-workers/dist ../public/showcase/libs/monaco-editor-workers",
+        "copy-monaco-editor": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ../node_modules/monaco-editor ../public/showcase/libs/monaco-editor",
         "copy-index": "npx shx mkdir -p ../public/showcase && npx shx cp -fr ./static/* ../public/showcase",
         "build": "npm run clean && npm run copy-index && npm run copy-lc-comp && npm run copy-monaco-workers && npm run copy-monaco-editor",
         "start": "http-server --port 20002 ../public/showcase",
