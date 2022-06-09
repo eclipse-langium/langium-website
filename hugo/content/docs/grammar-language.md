@@ -174,7 +174,6 @@ The parser rule `AbstractDefinition` will not create an object of type AbstractD
 In contrast, an assigned rule call such as `parameter=DeclaredParameter` means that an object is created in the current parser rule and assigns the reult of the `DeclaredParameter` parser rule to the specified property `parameter` of that object.
 
 #### Unordered Groups
-*Unordered groups are not supported in the current version of Langium. Please refer to [this issue](https://github.com/langium/langium/issues/314) for further information.*
 
 In regular groups, expressions must occur in the exact order they are declared.
 ```
