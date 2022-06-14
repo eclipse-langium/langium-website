@@ -35,49 +35,12 @@
 
 <body class='bg-white dark:bg-gray-900 font-mono'>
     <div x-data="{ isOpen: true }" class="relative bg-white dark:bg-gray-900">
-        <header>
-            <div class="flex justify-between items-center px-4 py-6 sm:px-6 md:space-x-10">
-                <div class="flex justify-start lg:w-0 lg:flex-1">
-                    <a href="/#">
-                        <span class="sr-only">Workflow</span>
-                        <img class="h-12 w-auto" src="/assets/langium_logo_w_nib.svg" alt="">
-                    </a>
-                </div>
-                <div class="-mr-2 -my-2 md:hidden">
-                    <button type="button" @click="isOpen = true"
-                        class="dark:text-gray-100 rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-1000 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-                        aria-expanded="false">
-                        <span class="sr-only">Open menu</span>
-                        <!-- Heroicon name: outline/menu -->
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
-                <nav class="hidden md:flex items-center space-x-10 text-gray-1000 dark:text-gray-100 lg:px-12">
-                    <a href="/docs/" class="nav-link-desktop">
-                        Documentation
-                    </a>
-                    <!-- <a href="#" class="nav-link-desktop">
-                        Playground
-                    </a> -->
-                    <a href="https://www.typefox.io/language-engineering/"
-                        class="nav-link-desktop text-emeraldLangium dark:text-emeraldLangium">
-                        Support
-                    </a>
-                    <a class='w-10 h-10' target="_blank" href="https://github.com/langium/langium">
-                        <img src="/assets/GitHub-Mark-Light-120px-plus.png" alt="GitHub" />
-                    </a>
-                </nav>
-            </div>
-        </header>
+        {{ partial "langium-header" }}
         <main>
             {{.Content}}
            <div class="flex gap-10 flex-wrap justify-center mt-5 mx-5 "> 
-            {{range .Pages.ByWeight}}
-                <div class=" rounded-lg border shadow-md bg-gray-800 border-gray-600 max-w-[300px] relative">
+            {{range where .Pages.ByWeight ".Params.draft" false}}
+                <div class=" rounded-lg border shadow-md bg-gray-800 border-gray-600 max-w-[300px] relative overflow-hidden">
                     <a href="{{.Params.url}}">
                         <img src="{{.Params.img}}" class="object-fill min-h-[300px]"/>
                     </a>
@@ -95,6 +58,7 @@
             {{end}}
             </div>
         </main>
+        {{ partial "langium-footer" }}
         <!-- Mobile Menu -->
         <div x-show="isOpen" x-transition:enter="transition duration-200 ease-out transform"
             x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"

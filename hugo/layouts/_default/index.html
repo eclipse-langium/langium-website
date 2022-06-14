@@ -43,16 +43,13 @@
         {{ partial "langium-header" }}
 
         <main>
-           {{.Content}}
+            {{.Content}}
 
             {{ if .Params.showCommunity }}
-            {{ partial "langium-community" }}
+                {{ partial "langium-community" }}
             {{ end }}
-
-            {{ partial "langium-footer" }}
-
         </main>
-
+        {{ partial "langium-footer" }}
         {{ partial "langium-mobile-menu" }}
     </div>
     <script>
