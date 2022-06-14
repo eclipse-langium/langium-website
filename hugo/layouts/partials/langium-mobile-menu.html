@@ -1,0 +1,49 @@
+<!-- Mobile Menu -->
+<div x-show="isOpen" x-transition:enter="transition duration-200 ease-out transform"
+x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+x-transition:leave="transition ease-in duration-100 transform"
+x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+class="absolute top-0 inset-x-0 p-2 transform origin-top-right md:hidden">
+<div
+    class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white dark:bg-gray-900 divide-y-2 divide-gray-50">
+    <div class="pt-5 pb-6 px-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <img class="h-10 w-auto" src="/assets/langium_logo_w_nib.svg" alt="Workflow">
+            </div>
+            <div class="-mr-2">
+                <button @click="isOpen = false" type="button" class="mobile-menu-btn p-2 inline-flex 
+                           items-center justify-center 
+                           text-gray-900 dark:text-gray-200
+                           hover:text-gray-1000">
+                    <span class="sr-only">Close menu</span>
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div :class="{'hidden': !isOpen}" class="mt-6 mobile-menu">
+            <nav class="flex flex-col items-center dark:text-gray-200 text-gray-900">
+                <a href="/docs/" class="nav-link-mobile">
+                    Documentation
+                </a>
+                <!-- <a href="#" class="nav-link-mobile">
+                    Playground
+                </a> -->
+                <a href="/showcase/" class="nav-link-mobile">
+                    Showcase
+                </a>
+                <a href="https://www.typefox.io/language-engineering/" class="nav-link-mobile">
+                    Support
+                </a>
+                <a class='w-10 h-10' target="_blank" href="https://github.com/langium/langium">
+                    <img src="/assets/GitHub-Mark-Light-120px-plus.png" alt="GitHub" />
+                </a>
+            </nav>
+        </div>
+    </div>
+</div>
+</div>
