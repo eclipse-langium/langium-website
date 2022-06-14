@@ -5,8 +5,13 @@
     "license": "MIT",
     "private": true,
     "scripts": {
+<<<<<<< HEAD
       "watch":         "concurrently -c blue,green -k -n tailwind,hugo \"npm run watch --workspace tailwind\" \"npm run watch --workspace hugo\"",
       "watch:gitpod":  "concurrently -c blue,green -k -n tailwind,hugo \"npm run watch --workspace tailwind\" \"npm run watch:gitpod --workspace hugo\"",
+=======
+      "watch":         "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch        --workspace hugo\" \"npm run watch --workspace tailwind\"",
+      "watch:gitpod":  "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
+>>>>>>> f354abfa2e4cdf168263f11874f68c46723d9a00
       "build": "npm run clean && npm run build --workspaces",
       "clean": "shx rm -rf public"
     },
