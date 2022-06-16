@@ -1,0 +1,23 @@
+{{/* Describes pages w/ lists of items, like the showcase */}}
+{{ define "main" }}
+{{ .Content }}
+<div class="flex gap-10 flex-wrap justify-center mt-5 mx-5 "> 
+{{range where .Pages.ByWeight ".Params.draft" false}}
+    <div class=" rounded-lg border shadow-md bg-gray-800 border-gray-600 max-w-[300px] relative overflow-hidden">
+        <a href="{{.Params.url}}">
+            <img src="{{.Params.img}}" class="object-fill min-h-[300px]"/>
+        </a>
+        <div class="py-5 text-white">
+            <h2 class="text-center text-xl">{{.Title}}</h2>
+            <ul class="pt-5 px-5 mb-[3.5rem]">
+                <span>Features:</span>
+                {{range first 5 .Params.features}}
+                    <li class="text-sm italic py-2 px-2">{{.}}</li>
+                {{end}}
+            </ul>
+            <a href="{{.Params.url}}" class="border py-2 px-5 rounded-[0.2rem] border-emeraldLangium bg-emeraldLangium block text-center absolute bottom-5 left-1/2 transform -translate-x-1/2 min-w-max">Go to example</a>
+        </div>
+    </div>
+{{end}}
+</div>
+{{ end }}
