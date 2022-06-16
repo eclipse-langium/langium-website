@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "cross-env NODE_ENV=production  tailwindcss -i ./style.css -o ../public/css/style.css -c ./tailwind.config.js --minify",
-    "watch": "cross-env NODE_ENV=development tailwindcss -i ./style.css -o ../public/css/style.css -c ./tailwind.config.js --watch "
+    "build": "cross-env NODE_ENV=production  tailwindcss -i ./style.css -o ../hugo/static/css/style.css -c ./tailwind.config.js --minify",
+    "watch": "cross-env NODE_ENV=development tailwindcss -i ./style.css -o ../hugo/static/css/style.css -c ./tailwind.config.js --watch "
   }
 }
