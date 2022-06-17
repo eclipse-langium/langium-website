@@ -5,22 +5,22 @@
     "license": "MIT",
     "private": true,
     "scripts": {
-      "watch":         "concurrently -c blue,green -k -n tailwind,hugo \"npm run watch --workspace tailwind\" \"npm run watch --workspace hugo\"",
-      "watch:gitpod":  "concurrently -c blue,green -k -n tailwind,hugo \"npm run watch --workspace tailwind\" \"npm run watch:gitpod --workspace hugo\"",
-      "build": "npm run clean && npm run build --workspaces",
-      "clean": "shx rm -rf public"
+        "watch": "concurrently -c blue,green -k -n tailwind,hugo \"npm run watch --workspace tailwind\" \"npm run watch --workspace hugo\"",
+        "watch:gitpod": "concurrently -c blue,green -k -n tailwind,hugo \"npm run watch --workspace tailwind\" \"npm run watch:gitpod --workspace hugo\"",
+        "build": "npm run clean && npm run build --workspaces",
+        "clean": "shx rm -rf public"
     },
     "devDependencies": {
-      "concurrently": "^6.2.2",
-      "cross-env": "^7.0.3",
-      "hugo-extended": "^0.89.4",
-      "shx": "^0.3.4",
-      "tailwindcss": "^2.2.16"
+        "@tailwindcss/line-clamp": "^0.4.0",
+        "concurrently": "^6.2.2",
+        "cross-env": "^7.0.3",
+        "hugo-extended": "^0.89.4",
+        "shx": "^0.3.4",
+        "tailwindcss": "^2.2.16"
     },
     "workspaces": [
-      "hugo",
-      "tailwind",
-      "showcase"
+        "hugo",
+        "tailwind",
+        "showcase"
     ]
-  }
-  
+}

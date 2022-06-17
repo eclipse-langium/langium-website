@@ -46,5 +46,7 @@ module.exports = {
         textDecoration: ['dashed']  
     }
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/line-clamp')
+  ],
 }
