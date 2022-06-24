@@ -23,25 +23,56 @@
     <div id="monaco-editor-root"></div>
 
     <script type="module">
-        import { getMonacoCss, MonacoLanguageClientWrapper } from '../libs/monaco-editor-comp/index.js';
+        import { getMonacoCss, MonacoEditorLanguageClientWrapper } from '../libs/monaco-editor-comp/index.js';
         import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
-        
+
         buildWorkerDefinition('../libs/monaco-editor-workers/workers', import.meta.url, false);
         const style = document.createElement("style");
         style.innerHTML = getMonacoCss();
         document.head.appendChild(style);
-        
-        const client = new MonacoLanguageClientWrapper(42);
+
+        const client = new MonacoEditorLanguageClientWrapper(42);
         const editorConfig = client.getEditorConfig();
-        editorConfig.codeOriginal = [ `{
-    "$schema": "http://json.schemastore.org/coffeelint",
-    "line_endings": "unix"
-}`, 'json' ];
+        editorConfig.setMainLanguageId('statemachine');
+        editorConfig.setMainCode(`
+statemachine TrafficLight
+
+events
+    switchCapacity
+    next
+
+initialState PowerOff
+
+state PowerOff
+    switchCapacity => RedLight
+end
+
+state RedLight
+    switchCapacity => PowerOff
+    next => GreenLight
+end
+
+state YellowLight
+    switchCapacity => PowerOff
+    next => RedLight
+end
+
+state GreenLight
+    switchCapacity => PowerOff
+    next => YellowLight
+end
+`);
         editorConfig.theme = 'vs-dark';
-        editorConfig.webSocketOptions.wsHost = "localhost";
-        editorConfig.webSocketOptions.wsPort = 3000;
-        editorConfig.webSocketOptions.wsPath = "sampleServer";
+
         editorConfig.useLanguageClient = true;
+        editorConfig.lcConfigOptions = {
+            useWebSocket: false,
+            wsSecured: false,
+            wsHost: "localhost",
+            wsPort: "3000",
+            wsPath: "sampleServer",
+            workerURL: "../libs/worker/serverWorker-es.js"
+        };
 
         client.startEditor(document.getElementById("monaco-editor-root"));
 
