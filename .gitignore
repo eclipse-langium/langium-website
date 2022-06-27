@@ -5,3 +5,4 @@ node_modules/
 .hugo_build.lock
 
 showcase/dist
+showcase/static/libs

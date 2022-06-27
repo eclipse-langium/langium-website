@@ -3,27 +3,25 @@
     "private": true,
     "main": "index.html",
     "scripts": {
-        "clean": "npx shx rm -rf ../public/showcase/libs && npx shx rm -rf ./dist",
-        "copy:comp": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ../node_modules/monaco-editor-comp/bundle ../public/showcase/libs/monaco-editor-comp",
-        "copy:monaco-workers": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ../node_modules/monaco-editor-workers/dist ../public/showcase/libs/monaco-editor-workers",
-        "copy:monaco-editor": "npx shx mkdir -p ../public/showcase/libs && npx shx cp -fr ../node_modules/monaco-editor ../public/showcase/libs/monaco-editor",
+        "prepare": "npx shx rm -rf ./static/libs && npm run build:worker && npm run copy:monaco-editor-comp && npm run copy:monaco-workers",
+        "clean": "npx shx rm -rf ../public/showcase/libs ./dist",
+        "copy:monaco-editor-comp": "npx shx mkdir -p ./static/libs && npx shx cp -fr ../node_modules/monaco-editor-comp/bundle ./static/libs/monaco-editor-comp",
+        "copy:monaco-workers": "npx shx mkdir -p ./static/libs && npx shx cp -fr ../node_modules/monaco-editor-workers/dist ./static/libs/monaco-editor-workers",
         "copy:worker": "npx shx mkdir -p ../public/showcase/libs/worker && npx shx cp -fr ./dist/worker/serverWorker-es.js ../public/showcase/libs/worker",
-        "copy:index": "npx shx mkdir -p ../public/showcase && npx shx cp -fr ./static/* ../public/showcase",
+        "copy:app": "npx shx mkdir -p ../public/showcase/ && npx shx cp -fr ./static/* ../public/showcase",
         "compile": "npx tsc -b",
-        "build:worker": "webpack",
-        "build": "npm run clean && npm run compile && npm run build:worker && npm run copy:index && npm run copy:worker && npm run copy:comp && npm run copy:monaco-workers && npm run copy:monaco-editor",
+        "build:worker": "vite -c vite.config.worker.ts build",
+        "build": "npm run clean && npm run compile && npm run prepare && npm run copy:app",
         "start": "http-server --port 20002 ../public/showcase",
-        "watch": "npm-watch"
+        "watch": "npm-watch",
+        "dev": "vite --debug"
     },
     "devDependencies": {
         "http-server": "^14.1.0",
         "npm-watch": "^0.11.0",
         "typescript": "4.7.4",
-        "ts-loader": "^9.3.0",
-        "source-map-loader": "^3.0.1",
-        "webpack-cli": "^4.9.2",
-        "os-browserify": "^0.3.0",
-        "path-browserify": "^1.0.1"
+        "vite": "^2.9.13",
+        "@esbuild-plugins/node-modules-polyfill": "^0.1.4"
     },
     "watch": {
         "build": {
