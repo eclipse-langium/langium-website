@@ -11,11 +11,7 @@ const config = defineConfig({
             },
             output: {
                 esModule: true
-            },
-            external: [
-                //'monaco-editor',
-                //'monaco-editor-comp'
-            ]
+            }
         },
         commonjsOptions: {
             include: [/langium/]

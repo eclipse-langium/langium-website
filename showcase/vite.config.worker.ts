@@ -14,7 +14,7 @@ const config = defineConfig({
             entry: path.resolve(__dirname, 'src/serverWorker.ts'),
             name: 'serverWorker',
             fileName: (format) => `serverWorker-${format}.js`,
-            formats: ['es']
+            formats: ['es', 'iife']
         },
         outDir: 'static/libs/worker',
         emptyOutDir: false,

@@ -63,17 +63,19 @@ end
         editorConfig.theme = 'vs-dark';
 
         editorConfig.useLanguageClient = true;
+        editorConfig.useWebSocket = false;
+
         //const workerURL = new URL(import.meta.env.DEV ? '../../src/serverWorker.ts' : '../libs/worker/serverWorker-es.js', import.meta.url);
+        //const workerURL = new URL('../../src/serverWorker.ts', import.meta.url);
+        //const workerURL = new URL('../libs/worker/serverWorker-iife.js', import.meta.url);
         const workerURL = new URL('../libs/worker/serverWorker-es.js', import.meta.url);
         console.log(workerURL.href);
-        editorConfig.lcConfigOptions = {
-            useWebSocket: false,
-            wsSecured: false,
-            wsHost: "localhost",
-            wsPort: "3000",
-            wsPath: "sampleServer",
-            workerURL: workerURL.href
-        };
+
+        const worker = new Worker(workerURL, {
+            type: 'module',
+            name: 'LS'
+        });
+        client.setWorker(worker);
 
         client.startEditor(document.getElementById("monaco-editor-root"));
 

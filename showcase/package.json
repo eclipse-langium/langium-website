@@ -20,7 +20,7 @@
         "http-server": "^14.1.0",
         "npm-watch": "^0.11.0",
         "typescript": "4.7.4",
-        "vite": "^2.9.13",
+        "vite": "2.9.6",
         "@esbuild-plugins/node-modules-polyfill": "^0.1.4"
     },
     "watch": {
@@ -35,6 +35,6 @@
     "dependencies": {
         "langium": "../../langium/packages/langium",
         "vscode-languageserver": "8.0.1",
-        "monaco-editor-comp": "0.4.0"
+        "monaco-editor-comp": "0.4.1-dev.0"
     }
 }
