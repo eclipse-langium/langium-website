@@ -17,19 +17,16 @@
 
 <body>
     <div id="monaco-editor-root"></div>
-
     <script type="module">
         import { MonacoEditorLanguageClientWrapper } from '../libs/monaco-editor-comp/index.js';
         import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
-        //import { MonacoEditorLanguageClientWrapper } from 'monaco-editor-comp';
-        //import { buildWorkerDefinition } from "monaco-editor-workers";
 
-        buildWorkerDefinition('../libs/monaco-editor-workers/workers', import.meta.url, false);
+        buildWorkerDefinition('../libs/monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
         MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
         MonacoEditorLanguageClientWrapper.addCodiconTtf();
 
-        const client = new MonacoEditorLanguageClientWrapper(42);
+        const client = new MonacoEditorLanguageClientWrapper('42');
         const editorConfig = client.getEditorConfig();
         editorConfig.setMainLanguageId('statemachine');
         editorConfig.setMainCode(`
@@ -65,17 +62,15 @@ end
         editorConfig.useLanguageClient = true;
         editorConfig.useWebSocket = false;
 
-        //const workerURL = new URL(import.meta.env.DEV ? '../../src/serverWorker.ts' : '../libs/worker/serverWorker-es.js', import.meta.url);
-        //const workerURL = new URL('../../src/serverWorker.ts', import.meta.url);
-        //const workerURL = new URL('../libs/worker/serverWorker-iife.js', import.meta.url);
-        const workerURL = new URL('../libs/worker/serverWorker-es.js', import.meta.url);
+        const devMode = import.meta.env === undefined ? false : import.meta.env.DEV;
+        const workerURL = new URL(devMode ? '../../src/language-server/main-browser.ts' : '../libs/worker/serverWorker-es.js', import.meta.url);
         console.log(workerURL.href);
 
-        const worker = new Worker(workerURL, {
+        const lsWorker = new Worker(workerURL.href, {
             type: 'module',
             name: 'LS'
         });
-        client.setWorker(worker);
+        client.setWorker(lsWorker);
 
         client.startEditor(document.getElementById("monaco-editor-root"));
 

@@ -1,17 +1,10 @@
 import path from 'path';
 import { defineConfig } from 'vite';
-import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
 
 const config = defineConfig({
     build: {
-        rollupOptions: {
-            plugins: [
-                // Enable rollup polyfills for production
-                rollupNodePolyFill()
-            ]
-        },
         lib: {
-            entry: path.resolve(__dirname, 'src/serverWorker.ts'),
+            entry: path.resolve(__dirname, 'src/language-server/main-browser.ts'),
             name: 'serverWorker',
             fileName: (format) => `serverWorker-${format}.js`,
             formats: ['es', 'iife']
