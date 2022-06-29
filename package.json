@@ -7,10 +7,11 @@
   "scripts": {
     "watch": "concurrently -c gray,blue -k -n hugo,tailwind,showcase \"npm run watch        --workspace hugo\" \"npm run watch --workspace tailwind\" \"npm run watch --workspace showcase\"",
     "watch:gitpod": "concurrently -c gray,blue -k -n hugo,tailwind,showcase \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\" \"npm run watch --workspace showcase\"",
-    "build": "npm run clean && npm run build --workspaces",
+    "build": "npm run clean && npm run build --workspace=hugo --workspace=tailwind --workspace=showcase",
     "clean": "shx rm -rf public"
   },
   "devDependencies": {
+    "@tailwindcss/line-clamp": "^0.4.0",
     "concurrently": "^6.2.2",
     "cross-env": "^7.0.3",
     "hugo-extended": "^0.89.4",
