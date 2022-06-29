@@ -8,7 +8,7 @@
         "copy:monaco-workers": "npx shx mkdir -p ./static/libs && npx shx cp -fr ../node_modules/monaco-editor-workers/dist ./static/libs/monaco-editor-workers",
         "copy:worker": "npx shx mkdir -p ../public/showcase/libs/worker && npx shx cp -fr ./dist/worker/serverWorker-es.js ../public/showcase/libs/worker",
         "copy:app": "npx shx mkdir -p ../public/showcase/ && npx shx cp -fr ./static/* ../public/showcase",
-        "compile": "npx tsc -b",
+        "compile": "tsc -b",
         "build:worker": "vite -c vite.config.worker.ts build",
         "prepare:dev": "npx shx rm -rf ./static/libs && npm run build:worker && npm run copy:monaco-editor-comp && npm run copy:monaco-workers",
         "build": "npm run clean && npm run compile && npm run prepare:dev && npm run copy:app",
