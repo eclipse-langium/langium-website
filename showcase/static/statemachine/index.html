@@ -29,7 +29,41 @@
         const client = new MonacoEditorLanguageClientWrapper('42');
         const editorConfig = client.getEditorConfig();
         editorConfig.setMainLanguageId('statemachine');
-        editorConfig.setMainCode(`
+        editorConfig.setMonarchTokensProvider({
+            keywords: [
+                'actions', 'commands', 'end', 'events', 'initialState', 'state', 'statemachine'
+            ],
+
+            // The main tokenizer for our languages
+            tokenizer: {
+                root: [
+                    // identifiers and keywords
+                    [/[a-z_$][\w$]*/, {
+                        cases: {
+                            '@keywords': 'keyword',
+                            '@default': 'identifier'
+                        }
+                    }],
+
+                    // whitespace
+                    { include: '@whitespace' }
+                ],
+
+                comment: [
+                    [/[^\/*]+/, 'comment'],
+                    [/\/\*/, 'comment', '@push'],    // nested comment
+                    ["\\*/", 'comment', '@pop'],
+                    [/[\/*]/, 'comment']
+                ],
+
+                whitespace: [
+                    [/[ \t\r\n]+/, 'white'],
+                    [/\/\*/, 'comment', '@comment'],
+                    [/\/\/.*$/, 'comment'],
+                ]
+            }
+        });
+        editorConfig.setMainCode(`// Create your own statemachine here!
 statemachine TrafficLight
 
 events
