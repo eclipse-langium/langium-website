@@ -32,7 +32,7 @@
         }
     },
     "dependencies": {
-        "langium": "0.5.0-next.f2b3802",
+        "langium-statemachine-dsl": "0.5.0-next.f2b3802",
         "vscode-languageserver": "8.0.1",
         "monaco-editor-comp": "0.4.1-dev.0"
     }

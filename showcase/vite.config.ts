@@ -14,7 +14,7 @@ const config = defineConfig({
             }
         },
         commonjsOptions: {
-            include: [/langium/]
+            include: [/langium/, /langium-statemachine-dsl/]
         },
         outDir: path.resolve(__dirname, 'dist/vite')
     },

@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 const config = defineConfig({
     build: {
         lib: {
-            entry: path.resolve(__dirname, 'src/language-server/main-browser.ts'),
+            entry: path.resolve(__dirname, 'src/main.ts'),
             name: 'serverWorker',
             fileName: (format) => `serverWorker-${format}.js`,
             formats: ['es', 'iife']
@@ -12,7 +12,7 @@ const config = defineConfig({
         outDir: 'static/libs/worker',
         emptyOutDir: false,
         commonjsOptions: {
-            include: [/langium/]
+            include: [/langium/, /langium-statemachine-dsl/]
         }
     }
 });
