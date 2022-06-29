@@ -9,7 +9,7 @@
         "copy:worker": "npx shx mkdir -p ../public/showcase/libs/worker && npx shx cp -fr ./dist/worker/serverWorker-es.js ../public/showcase/libs/worker",
         "copy:app": "npx shx mkdir -p ../public/showcase/ && npx shx cp -fr ./static/* ../public/showcase",
         "compile": "tsc -b",
-        "build:worker": "vite -c vite.config.worker.ts build",
+        "build:worker": "esbuild ./src/main.ts --bundle --outfile=./static/libs/worker/serverWorker-es.js",
         "prepare:dev": "npx shx rm -rf ./static/libs && npm run build:worker && npm run copy:monaco-editor-comp && npm run copy:monaco-workers",
         "build": "npm run clean && npm run compile && npm run prepare:dev && npm run copy:app",
         "start": "http-server --port 20002 ../public/showcase",
@@ -17,6 +17,7 @@
         "dev": "vite --debug"
     },
     "devDependencies": {
+        "esbuild": "0.14.47",
         "http-server": "^14.1.0",
         "npm-watch": "^0.11.0",
         "typescript": "4.7.4",
