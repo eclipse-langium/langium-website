@@ -82,7 +82,7 @@ function init(size) {
         // Content opacity animation
         function opacityPartsAnimation(name) {
             const el = document.querySelector('#' + name);
-            el.style.opacity = '0.0';
+            if(el && el.style) el.style.opacity = '0.0';
             gsap.to(el, {
                 opacity: 1.0,
                 duration: 5.0,
@@ -122,7 +122,7 @@ function init(size) {
                     start: '40px bottom'
                 }
             }, additionalProps);
-            el.style.opacity = 0.0;
+            if(el && el.style) el.style.opacity = 0.0;
             gsap.to(el, props);
         }
         const textParts = document.querySelectorAll('.animText');
