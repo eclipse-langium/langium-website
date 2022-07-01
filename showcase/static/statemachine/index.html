@@ -49,7 +49,7 @@
 </head>
 
 <body class="dark dark:bg-gray-900 font-mono">
-    <div class="wrapper">
+    <div class="wrapper dark:bg-gray-900">
     <header class="relative dark:bg-gray-900 font-mono">
         <div class="flex justify-between items-center px-4 py-6 sm:px-6 md:space-x-10">
             <div class="flex justify-start lg:w-0 lg:flex-1">
@@ -93,7 +93,26 @@
     </header>
 
     <div class="dark:bg-gray-900" id="monaco-editor-root"></div>
+
+    <footer class="flex dark:text-gray-100 justify-center items-center mt-6 mb-6">
+        <div class="border-r-2 dark:border-gray-100 px-5">
+            <a href="https://www.typefox.io/imprint-privacy/#privacy">
+                Privacy Policy
+            </a>
+        </div>
+        <div class="border-r-2 dark:border-gray-100 px-5">
+            <a href="https://www.typefox.io/imprint-privacy/#copyright">
+                Copyright
+            </a>
+        </div>
+        <div class="px-5">
+            <a href="/imprint">
+                Imprint
+            </a>
+        </div>
+    </footer>
     </div>
+
     <script type="module">
         import { MonacoEditorLanguageClientWrapper } from '../libs/monaco-editor-comp/index.js';
         import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
