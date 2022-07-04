@@ -4,7 +4,7 @@ title: "Documentation"
 
 Langium is an open source language engineering tool with first-class support for the Language Server Protocol, written in TypeScript and running in Node.js.
 
-Learn how to [get started](./getting-started) with Langium, [what you can do with it](./tutorials) and how to apply it in your project.
+Learn what [Langium is all about](./langium-overview), how to [get started](./getting-started) with Langium, [what you can do with it](./tutorials) and how to apply it in your project.
 
 ## Want to contribute?
 
