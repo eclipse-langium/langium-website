@@ -18,7 +18,7 @@ In this chapter, you'll get a closer look at the requirements developers usually
 - [Semantic models](#semantic-models)
 - [Cross references and linking](#cross-references-and-linking)
 - [Workspace management](#workspace-management)
-- [Editor support](#editing-support)
+- [Editing support](#editing-support)
 
 Langium provides out-of-the-box solutions for these problems, with the ability to fine-tune every part of it to fit your domain requirements.
 
@@ -32,7 +32,7 @@ Based on the grammar, Langium is then able to construct a parser which transform
 
 ## Semantic Models
 
-Langium grammars are not only used to parse your language, but also to generate a semantic model for your Language as TypeScript interfaces. When a program in your language is then parsed, the generated AST will be automatically produced using these interfaces. The following language snippet parses a simple object { name: 'John' }.
+Langium grammars are not only used to parse your language, but also to generate a semantic model for your Language as TypeScript interfaces. When a program in your language is then parsed, the generated AST will be automatically produced using these interfaces. The following language snippet parses a simple object `{ name: 'John' }`.
 
 ```ts
 Person:
@@ -41,7 +41,7 @@ Person:
 ;
 ```
 
-To interact with this object in a type safe manner, the `langium-cli` tool generates TypeScript type definitions from its parser rule. The `Person` parser rule generates the following interface:
+To interact with the semantic model in a type safe manner, the `langium-cli` tool generates TypeScript type definitions from your parser rules. The `Person` parser rule generates the following interface:
 
 ```ts
 interface Person {
@@ -96,7 +96,7 @@ The workspace management also keeps track of the global scope. This allows users
 
 The Langium framework is deeply integrated with the [language server protocol](https://microsoft.github.io/language-server-protocol/) (LSP). The LSP aims to reduce integration efforts when designing a language by providing an interface that all IDEs can use to provide editing support. This allows Langium based languages to easily interact with common IDEs and editors with LSP support, including Visual Studio Code, Eclipse, IntelliJ and many more.
 
-The LSP includes commonly used language features, such as code completion, custom validations/diagnostics, finding references, formatting and many more. This allowing for deep IDE integration without binding your language to a single IDE. Langium offers out-of-the-box support for most of these language features, with additional extension points for your domain specific requirements.
+The LSP includes commonly used language features, such as code completion, custom validations/diagnostics, finding references, formatting and many more. This allows for deep IDE integration without binding your language to a single IDE. Langium offers out-of-the-box support for most of these language features, with additional extension points for your domain specific requirements.
 
 ## Try it out!
 
