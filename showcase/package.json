@@ -8,10 +8,10 @@
         "copy:monaco-workers": "npx shx mkdir -p ./static/libs && npx shx cp -fr ../node_modules/monaco-editor-workers/dist ./static/libs/monaco-editor-workers",
         "copy:worker": "npx shx mkdir -p ../public/showcase/libs/worker && npx shx cp -fr ./dist/worker/serverWorker.js ../public/showcase/libs/worker",
         "copy:app": "npx shx mkdir -p ../public/showcase/ && npx shx cp -fr ./static/* ../public/showcase",
-        "compile": "tsc -b",
-        "build:worker": "esbuild ./src/main.ts --bundle --format=iife --outfile=./static/libs/worker/serverWorker.js",
-        "prepare:dev": "npx shx rm -rf ./static/libs && npm run build:worker && npm run copy:monaco-editor-comp && npm run copy:monaco-workers",
-        "build": "npm run clean && npm run compile && npm run prepare:dev && npm run copy:app",
+        "build:worker:vite": "npx vite -c vite.config.worker.ts build",
+        "build:worker:esbuild": "esbuild ./src/main.ts --bundle --format=iife --outfile=./static/libs/worker/serverWorker.js",
+        "prepare:dev": "npx shx rm -rf ./static/libs && npm run build:worker:vite && npm run copy:monaco-editor-comp && npm run copy:monaco-workers",
+        "build": "npm run clean && npm run prepare:dev && npm run copy:app",
         "start": "http-server --port 20002 ../public/showcase",
         "watch": "npm-watch",
         "dev": "vite --debug"
@@ -21,7 +21,7 @@
         "http-server": "^14.1.0",
         "npm-watch": "^0.11.0",
         "typescript": "4.7.4",
-        "vite": "2.9.6"
+        "vite": "^3.0.2"
     },
     "watch": {
         "build": {

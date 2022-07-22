@@ -192,8 +192,7 @@ end
         editorConfig.useLanguageClient = true;
         editorConfig.useWebSocket = false;
 
-        const devMode = import.meta.env === undefined ? false : import.meta.env.DEV;
-        const workerURL = new URL(devMode ? '../../src/language-server/main-browser.ts' : '../libs/worker/serverWorker.js', import.meta.url);
+        const workerURL = new URL('../libs/worker/serverWorker.js', import.meta.url);
         console.log(workerURL.href);
 
         const lsWorker = new Worker(workerURL.href, {
