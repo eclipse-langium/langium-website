@@ -8,7 +8,7 @@ weight: 400
 A `LangiumDocument` goes through seven different states during its lifecycle:
 1. `Parsed` when an AST has been generated from the content of the document.
 2. `IndexedContent` when the AST nodes have been processed by the `IndexManager`.
-3. `Processed` when the pre-processing steps have been completed.
+3. `ComputedScopes` when local scopes have been prepared by the `ScopeComputation`.
 4. `Linked` when the `Linker` has resolved cross-references.
 5. `IndexedReferences` when the references have been indexed by the `IndexManager`.
 6. `Validated` when the document has been validated by the `DocumentValidator`.
@@ -23,14 +23,14 @@ graph TD;
 N(LangiumDocumentFactory) -.-|Creation of LangiumDocuments| C{{Parsed}}
 
 A(DocumentBuilder) -->|Indexing of symbols| D(IndexManager) -.- E{{IndexedContent}}
-A -->|Pre-processing| F(ScopeComputation) -.- G{{Processed}}
+A -->|Computing scopes| F(ScopeComputation) -.- G{{ComputedScopes}}
 A -->|Linking| H(Linker) -.- I{{Linked}}
 A -->|Indexing of cross-references| J(IndexManager) -.- K{{IndexedReferences}} 
 A -->|Validation| L(DocumentValidator) -.- M{{Validated}}
 
 click N "./#creation-of-langiumdocuments"
 click D "./#indexing-of-symbols"
-click F "./#pre-processing"
+click F "./#computing-scopes"
 click H "./#linking"
 click J "./#indexing-of-cross-references"
 click L "./#validation"
@@ -54,7 +54,7 @@ Symbols are AST nodes that can be identified with a *name* and hence can be refe
 
 Indexing of the exported symbols of an AST is executed on documents with the state `Parsed`. The default `AstNodeDescriptionProvider` service creates an `AstNodeDescription` for the root node (i.e. the node created by parsing the entry rule) and each named `AstNode` directly descending from the root node. This `AstNodeDescription` contains the `type` of the node, its identifier (i.e. the `name` property), the URI of the document where the node is located, and the location of the node inside of the document. The generated set of `AstNodeDescription`s makes symbols from a `LangiumDocument` accessible to other documents in the same workspace.
 
-The default `AstNodeDescriptionProvider` can be overridden to change the selection of exported symbols, or to export them with different names than the plain value of their `name` property. However, keep in mind that you cannot access any cross-references in this phase because that requires the document state to be at least `Processed`, which happens later in the build process.
+The default `AstNodeDescriptionProvider` can be overridden to change the selection of exported symbols, or to export them with different names than the plain value of their `name` property. However, keep in mind that you cannot access any cross-references in this phase because that requires the document state to be at least `ComputedScopes`, which happens later in the build process.
 
 Once the initial indexing is done, the document's state is set to `IndexedContent`.
 
@@ -65,18 +65,18 @@ B --> C(<b>NameProvider</b><br><br><i>resolves the name of an AstNode</i>)
 B --> D(<b>AstNodeLocator</b><br><br><i>gets the path of an AstNode</i>)
 {{</mermaid>}}
 
-## Pre-processing
-This phase is executed on documents with the state `IndexedContent` and unites all necessary steps that need to be done **prior to** resolving cross-references.
+## Computing Scopes
+This phase is executed on documents with the state `IndexedContent` and is required to complete **prior to** resolving cross-references.
 
-By default, the pre-processing consists of gathering all symbols of the AST (both local and exported), done by the `ScopeComputation` service. Metadata of the gathered symbols are represented with `AstNodeDescription` like in the [initial indexing phase](#indexing-of-symbols). These metadata are attached to the `LangiumDocument` in a multi-map structure that associates a (possibly empty) set of symbol descriptions to each container node of the AST, called the *precomputed scopes*. These are used in the linking phase to construct the actual *scope* of a cross-reference, i.e. all possible symbols that are reachable. A symbol in the precomputed scopes is reachable from a specific cross-reference if it is associated with a direct or indirect container of that reference. Symbols associated to the root node are reachable from the whole AST, while symbols associated with an inner node are reachable from the respective sub-tree.
+Local scope computation consists of gathering all symbols contained in the AST, done by the `ScopeComputation` service. Metadata of the gathered symbols are represented with `AstNodeDescription` like in the [initial indexing phase](#indexing-of-symbols). These metadata are attached to the `LangiumDocument` in a multi-map structure that associates a (possibly empty) set of symbol descriptions to each container node of the AST, called the *precomputed scopes*. These are used in the linking phase to construct the actual *scope* of a cross-reference, i.e. all possible symbols that are reachable. A symbol in the precomputed scopes is reachable from a specific cross-reference if it is associated with a direct or indirect container of that reference. Symbols associated to the root node are reachable from the whole AST, while symbols associated with an inner node are reachable from the respective sub-tree.
 
 The default implementation of the `ScopeComputation` service attaches the description of every symbol to its direct container. This means that the container holds information about which named nodes are nested inside of it. You can override this default behavior to change the position where a symbol is reachable, or to change the name by which it can be referenced. It is even possible to associate the same symbol to multiple container nodes, possibly with different names, to control precisely where and how references to it can be resolved. However, keep in mind that you cannot access any cross-references in this phase. More complex, context-dependent scope mechanisms can be implemented in the `ScopeProvider` (see [next section](#linking)).
 
 The *"Domainmodel"* example includes a [customization of scopes precomputation](https://github.com/langium/langium/blob/main/examples/domainmodel/src/language-server/domain-model-scope.ts) where every *entity* contained in a *package declaration* is exposed using its *qualified name*, that is the concatenation of the package name and entity name separated with `.` (similar to Java).
 
-In languages with a type system, you would typically implement computation of types in a second pre-processing step in order to make type information available in the document. How that is done heavily depends on the kind of type system, so there is no default implementation for it.
+In languages with a type system, you would typically implement computation of types in an additional pre-processing step in order to make type information available in the document. This additional step can be registered to run after scope computation with the `onBuildPhase` method of `DocumentBuilder`. How types are computed heavily depends on the kind of type system, so there is no default implementation for it.
 
-After all pre-processing steps have been completed, the document's state is set to `Processed`.
+Once local scopes are computed and attached to the document, the document's state is set to `ComputedScopes`.
 
 {{<mermaid>}}
 graph LR;
@@ -86,13 +86,13 @@ C --> D(<b>AstNodeLocator</b><br><br><i>gets the path of an AstNode</i>)
 {{</mermaid>}}
 
 ## Linking
-Once all pre-processing steps are complete, cross-references are resolved via the `Linker` service. The `Linker` retrieves all cross-references in a `LangiumDocument` and tries to resolve them. Reference resolution consists of three main steps:
+Once local scopes have been prepared, cross-references are resolved via the `Linker` service. The `Linker` retrieves all cross-references in a `LangiumDocument` and tries to resolve them. Reference resolution consists of three main steps:
 
  1. Query the `ScopeProvider` to obtain a *scope*. A scope describes all symbols that are reachable from the AST node holding the cross-reference.
  2. In the obtained scope, find the description of a symbol whose name matches the identifier given at the cross-reference.
  3. Load the AST node for that description. The AST node is given either directly (for a local symbol) or indirectly though a path string (for a symbol exported from another document).
 
-The default implementation of the `ScopeProvider` service creates a hierarchical scope by traveling from the given cross-reference via its container nodes up to the root of the AST, and collecting symbol descriptions from the precomputed scopes (created in the preceding [pre-processing phase](#pre-processing)). The symbols are filtered to match the type of the cross-reference target. Symbols that are closer to the cross-reference *shadow* those that are further above in the AST, which means they have higher priority to be chosen as cross-reference targets.  As the last resort, the global scope computed in the [initial indexing phase](#indexing-of-symbols) is included in the hierarchical scope. Symbols that cannot be found locally are looked up in the global scope.
+The default implementation of the `ScopeProvider` service creates a hierarchical scope by traveling from the given cross-reference via its container nodes up to the root of the AST, and collecting symbol descriptions from the precomputed scopes (created in the [preceding phase](#computing-scopes)). The symbols are filtered to match the type of the cross-reference target. Symbols that are closer to the cross-reference *shadow* those that are further above in the AST, which means they have higher priority to be chosen as cross-reference targets.  As the last resort, the global scope computed in the [initial indexing phase](#indexing-of-symbols) is included in the hierarchical scope. Symbols that cannot be found locally are looked up in the global scope.
 
 The `ScopeProvider` can be overridden to implement complex scenarios for scoping and cross-reference resolution. Since cross-references can be linked *lazily* in this phase, it is possible to create a scope for a cross-reference depending on the resolved target of another cross-reference.
 
