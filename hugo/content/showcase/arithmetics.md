@@ -1,10 +1,15 @@
 ---
 title: "Arithmetics"
 weight: 300
+type: langium
+layout: showcase-page
 url: "/showcase/arithmetics"
 img: "/assets/office.jpg"
 description: Description for the arithmetics example.
 geekdochidden: true
+noMain: true
 draft: true
 ---
-Showcase page for the arithmetics example
+{{< monaco-maincode >}}
+// TODO implement arithmetics example
+{{< /monaco-maincode >}}

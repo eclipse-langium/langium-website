@@ -1,0 +1,69 @@
+<script type="module">
+    import { MonacoEditorLanguageClientWrapper } from '../libs/monaco-editor-comp/index.js';
+    import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
+
+    buildWorkerDefinition('../libs/monaco-editor-workers/workers', new URL('', window.location.href).href, false);
+
+    MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
+    MonacoEditorLanguageClientWrapper.addCodiconTtf();
+
+    const client = new MonacoEditorLanguageClientWrapper('42');
+    const editorConfig = client.getEditorConfig();
+    editorConfig.setMainLanguageId('statemachine');
+    editorConfig.setMonarchTokensProvider({
+        keywords: [
+            'actions', 'commands', 'end', 'events', 'initialState', 'state', 'statemachine'
+        ],
+
+        // The main tokenizer for our languages
+        tokenizer: {
+            root: [
+                // identifiers and keywords
+                [/[a-z_$][\w$]*/, {
+                    cases: {
+                        '@keywords': 'keyword',
+                        '@default': 'identifier'
+                    }
+                }],
+
+                // whitespace
+                { include: '@whitespace' }
+            ],
+
+            comment: [
+                [/[^\/*]+/, 'comment'],
+                [/\/\*/, 'comment', '@push'],    // nested comment
+                ["\\*/", 'comment', '@pop'],
+                [/[\/*]/, 'comment']
+            ],
+
+            whitespace: [
+                [/[ \t\r\n]+/, 'white'],
+                [/\/\*/, 'comment', '@comment'],
+                [/\/\/.*$/, 'comment'],
+            ]
+        }
+    });
+    // use inner content for main code, 
+    // stripping off leading & trailing quotes from hugo
+    const mainCode = `{{ .Inner }}`.replace(/^"/, '').replace(/"$/, '');
+    editorConfig.setMainCode(mainCode);
+    editorConfig.theme = 'vs-dark';
+
+    editorConfig.useLanguageClient = true;
+    editorConfig.useWebSocket = false;
+
+    const devMode = import.meta.env === undefined ? false : import.meta.env.DEV;
+    const workerURL = new URL(devMode ? '../../src/language-server/main-browser.ts' : '../libs/worker/serverWorker.js', import.meta.url);
+    console.log(workerURL.href);
+
+    const lsWorker = new Worker(workerURL.href, {
+        type: 'classic',
+        name: 'LS'
+    });
+    client.setWorker(lsWorker);
+
+    client.startEditor(document.getElementById("monaco-editor-root"));
+
+    window.addEventListener("resize", () => client.updateLayout());
+</script>
