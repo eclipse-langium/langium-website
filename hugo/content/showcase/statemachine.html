@@ -1,3 +1,16 @@
+---
+title: "State Machine"
+weight: 100
+type: langium
+layout: showcase-page
+url: "/showcase/statemachine"
+img: "/assets/Langium_Statemachine.svg"
+description: A language that captures the functionality of a state machine. Demonstrated by modeling a traffic light.
+geekdochidden: true
+draft: false
+noMain: true
+---
+
 <script type="module">
     import { MonacoEditorLanguageClientWrapper } from '../libs/monaco-editor-comp/index.js';
     import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
@@ -44,10 +57,33 @@
             ]
         }
     });
-    // use inner content for main code, 
-    // stripping off leading & trailing quotes from hugo
-    const mainCode = `{{ .Inner }}`.replace(/^"/, '').replace(/"$/, '');
-    editorConfig.setMainCode(mainCode);
+    editorConfig.setMainCode(`// Create your own statemachine here!
+statemachine TrafficLight
+
+events
+    switchCapacity
+    next
+
+initialState PowerOff
+
+state PowerOff
+    switchCapacity => RedLight
+end
+
+state RedLight
+    switchCapacity => PowerOff
+    next => GreenLight
+end
+
+state YellowLight
+    switchCapacity => PowerOff
+    next => RedLight
+end
+
+state GreenLight
+    switchCapacity => PowerOff
+    next => YellowLight
+end`);
     editorConfig.theme = 'vs-dark';
 
     editorConfig.useLanguageClient = true;
