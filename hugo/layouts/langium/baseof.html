@@ -1,35 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <title>{{ .Title }}</title>
-    <meta name="viewport" content="width=device-width">
-    <meta charset="utf-8">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="description"
-        content="{{ .Description }}">
-    <meta property="og:description"
-        content="{{ .Description }}">
-    <meta property="og:image" content="{{ .Params.socialImage }}">
-    <meta property="og:site_name" content="Langium">
-    <meta property="og:title" content="{{ .Title }}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://langium.org">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:description"
-        content="{{ .Description }}">
-    <meta name="twitter:image" content="{{ .Params.socialImage }}">
-    <!--meta name="twitter:site" content="@langium_org"-->
-    <meta name="twitter:title" content="{{ .Title }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/nib.svg">
-    <link rel="icon" type="image/svg+xml" href="/assets/nib.svg">
-	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/32px.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/16px.png">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#00b4b6">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap" rel="stylesheet">
+    {{ partial "langium-head" }}
 </head>
 {{/* Default is mono font, but use the regular font in special cases, like for the imprint page */}}
 {{ $extraBodyClass := `font-mono` }}
@@ -37,34 +9,25 @@
     {{ $extraBodyClass = `dark:text-gray-100` }}
 {{ end }}
 <body class='bg-white dark:bg-gray-900 {{ $extraBodyClass }}'>
-    <div x-data="{ isOpen: false }" class="relative bg-white dark:bg-gray-900">
+    <div x-data="{ isOpen: false }" class="wrapper relative bg-white dark:bg-gray-900">
 
         {{ partial "langium-header" }}
 
+        {{/* Drop main block for showcase pages */}}
+        {{ if .Params.noMain }}
+        {{ else }}
         <main>
+        {{ end }}
             {{/* Further layouts will extend from this one by defining the 'main' block */}}
             {{ block "main" . }}
             {{ end }}
+        {{ if .Params.noMain }}
+        {{ else }}
         </main>
+        {{ end }}
         {{ partial "langium-footer" }}
         {{ partial "langium-mobile-menu" }}
     </div>
-    <script>
-        // try {
-        //     if (!('theme' in localStorage)) {
-        //         localStorage.theme = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
-        //     }
-        //     if (localStorage.theme === 'dark') {
-        //         document.querySelector('html').classList.add('dark');
-        //     }
-        // } catch (_) {
-        // }        
-    </script>
-    <script defer src="https://unpkg.com/alpinejs@3.4.2/dist/cdn.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/Draggable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/ScrollToPlugin.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/ScrollTrigger.min.js"></script>
-    <script src="/index.js"></script>
+    {{ partial "langium-scripts" }}
 </body>
 </html>

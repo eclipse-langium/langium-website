@@ -1,0 +1,24 @@
+{{ define "main" }}
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    #monaco-editor-root {
+        flex-grow: 1;
+    }
+</style>
+<div class="wrapper relative bg-white dark:bg-gray-900">
+    <div class="dark:bg-gray-900" id="monaco-editor-root"></div>
+</div>
+{{ .Content }}
+{{ end }}
