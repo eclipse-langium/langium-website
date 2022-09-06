@@ -12,7 +12,7 @@ noMain: true
 ---
 
 <script type="module">
-    import { MonacoEditorLanguageClientWrapper } from '../libs/monaco-editor-comp/index.js';
+    import { MonacoEditorLanguageClientWrapper } from '../libs/monaco-editor-wrapper/index.js';
     import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
 
     buildWorkerDefinition('../libs/monaco-editor-workers/workers', new URL('', window.location.href).href, false);
@@ -90,7 +90,7 @@ end`);
     editorConfig.useWebSocket = false;
 
     const devMode = import.meta.env === undefined ? false : import.meta.env.DEV;
-    const workerURL = new URL(devMode ? '../../src/language-server/main-browser.ts' : '../libs/worker/serverWorker.js', import.meta.url);
+    const workerURL = new URL(devMode ? '../../src/language-server/main-browser.ts' : '../libs/worker/statemachineServerWorker.js', import.meta.url);
     console.log(workerURL.href);
 
     const lsWorker = new Worker(workerURL.href, {

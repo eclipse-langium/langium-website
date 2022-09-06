@@ -5,9 +5,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "watch": "concurrently -c gray,blue -k -n hugo,tailwind,showcase \"npm run watch --workspace hugo\" \"npm run watch --workspace tailwind\" \"npm run watch --workspace showcase\"",
-    "watch:gitpod": "concurrently -c gray,blue -k -n hugo,tailwind,showcase \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\" \"npm run watch --workspace showcase\"",
-    "build": "npm run clean && npm run build --workspace=tailwind --workspace=showcase --workspace=hugo",
+    "watch": "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch --workspace hugo\" \"npm run watch --workspace tailwind\"",
+    "watch:gitpod": "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
+    "build": "npm run clean && npm run build --workspace=tailwind --workspace=hugo",
     "clean": "shx rm -rf public"
   },
   "devDependencies": {
@@ -20,11 +20,10 @@
   },
   "workspaces": [
     "hugo",
-    "tailwind",
-    "showcase"
+    "tailwind"
   ],
   "volta": {
-    "node": "16.15.1",
-    "npm": "8.12.2"
+    "node": "16.17.0",
+    "npm": "8.15.0"
   }
 }
