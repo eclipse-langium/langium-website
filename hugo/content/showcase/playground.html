@@ -12,48 +12,147 @@ noMain: true
 ---
 
 <script type="module">
-    import { MonacoEditorLanguageClientWrapper } from '../libs/monaco-editor-wrapper/index.js';
-    import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
+  import { MonacoEditorLanguageClientWrapper } from "../libs/monaco-editor-wrapper/index.js";
+  import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
 
-    buildWorkerDefinition('../libs/monaco-editor-workers/workers', new URL('', window.location.href).href, false);
+  buildWorkerDefinition(
+    "../libs/monaco-editor-workers/workers",
+    new URL("", window.location.href).href,
+    false
+  );
 
-    MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
-    MonacoEditorLanguageClientWrapper.addCodiconTtf();
+  MonacoEditorLanguageClientWrapper.addMonacoStyles("monaco-editor-styles");
+  MonacoEditorLanguageClientWrapper.addCodiconTtf();
 
-    const client = new MonacoEditorLanguageClientWrapper('left');
+  const divRoot = document.getElementById("monaco-editor-root");
+  const style = "width:50%; display:inline-block; height: 100%";
+  const leftEditor = document.createElement("div");
+  leftEditor.setAttribute("style", style);
+  const rightEditor = document.createElement("div");
+  rightEditor.setAttribute("style", style);
+  divRoot.appendChild(leftEditor);
+  divRoot.appendChild(rightEditor);
+
+  function setupEditor(domElement, name, syntax, content, worker, clientCallBack) {
+    const client = new MonacoEditorLanguageClientWrapper(name);
+
     const editorConfig = client.getEditorConfig();
-    editorConfig.setMainLanguageId('langium');
-    editorConfig.setMonarchTokensProvider({
-        keywords: [
-            'bigint','boolean','current','Date','entry','extends','false','fragment','grammar','hidden','import','infer','infers','interface','number','returns','string','terminal','true','type','with'
-        ],
-        operators: [
-            '->',',',';',':','!','?','?=','.','..','@','*','&','+','+=','<','=','=>','>','|'
-        ],
-        symbols:  /->|,|;|:|!|\?|\?=|\.|\.\.|\(|\)|\[|\[\]|\]|\{|\}|@|\*|&|\+|\+=|<|=|=>|>|\|/,
+    editorConfig.setMainLanguageId(name);
+    editorConfig.setMonarchTokensProvider(syntax);
 
-        tokenizer: {
-            initial: [
-                { regex: /\/(?![*+?])(?:[^\r\n\[/\\]|\\.|\[(?:[^\r\n\]\\]|\\.)*\])+\//, action: {"token":"string"} },
-                { regex: /\^?[_a-zA-Z][\w_]*/, action: { cases: { '@keywords': {"token":"keyword"}, '@default': {"token":"ID"} }} },
-                { regex: /"[^"]*"|'[^']*'/, action: {"token":"string"} },
-                { include: '@whitespace' },
-                { regex: /@symbols/, action: { cases: { '@operators': {"token":"operator"}, '@default': {"token":""} }} },
-            ],
-            whitespace: [
-                { regex: /\s+/, action: {"token":"white"} },
-                { regex: /\/\*/, action: {"token":"comment","next":"@comment"} },
-                { regex: /\/\/[^\n\r]*/, action: {"token":"comment"} },
-            ],
-            comment: [
-                { regex: /[^\/\*]+/, action: {"token":"comment"} },
-                { regex: /\*\//, action: {"token":"comment","next":"@pop"} },
-                { regex: /[\/\*]/, action: {"token":"comment"} },
-            ],
-        }
+    editorConfig.setMainCode(content);
+    editorConfig.theme = "vs-dark";
+
+    editorConfig.useLanguageClient = true;
+    editorConfig.useWebSocket = false;
+
+    const workerURL = new URL(worker, import.meta.url);
+
+    const lsWorker = new Worker(workerURL.href, {
+      type: "classic",
+      name: "LS",
     });
+    client.setWorker(lsWorker);
 
-    editorConfig.setMainCode(`grammar Statemachine
+    clientCallBack(client);
+
+    client.startEditor(domElement);
+    window.addEventListener("resize", () => client.updateLayout());
+  }
+
+  //setup left Langium editor and right user editor
+  setupEditor(
+    leftEditor,
+    "langium",
+    {
+      keywords: [
+        "bigint",
+        "boolean",
+        "current",
+        "Date",
+        "entry",
+        "extends",
+        "false",
+        "fragment",
+        "grammar",
+        "hidden",
+        "import",
+        "infer",
+        "infers",
+        "interface",
+        "number",
+        "returns",
+        "string",
+        "terminal",
+        "true",
+        "type",
+        "with",
+      ],
+      operators: [
+        "->",
+        ",",
+        ";",
+        ":",
+        "!",
+        "?",
+        "?=",
+        ".",
+        "..",
+        "@",
+        "*",
+        "&",
+        "+",
+        "+=",
+        "<",
+        "=",
+        "=>",
+        ">",
+        "|",
+      ],
+      symbols:
+        /->|,|;|:|!|\?|\?=|\.|\.\.|\(|\)|\[|\[\]|\]|\{|\}|@|\*|&|\+|\+=|<|=|=>|>|\|/,
+
+      tokenizer: {
+        initial: [
+          {
+            regex:
+              /\/(?![*+?])(?:[^\r\n\[/\\]|\\.|\[(?:[^\r\n\]\\]|\\.)*\])+\//,
+            action: { token: "string" },
+          },
+          {
+            regex: /\^?[_a-zA-Z][\w_]*/,
+            action: {
+              cases: {
+                "@keywords": { token: "keyword" },
+                "@default": { token: "ID" },
+              },
+            },
+          },
+          { regex: /"[^"]*"|'[^']*'/, action: { token: "string" } },
+          { include: "@whitespace" },
+          {
+            regex: /@symbols/,
+            action: {
+              cases: {
+                "@operators": { token: "operator" },
+                "@default": { token: "" },
+              },
+            },
+          },
+        ],
+        whitespace: [
+          { regex: /\s+/, action: { token: "white" } },
+          { regex: /\/\*/, action: { token: "comment", next: "@comment" } },
+          { regex: /\/\/[^\n\r]*/, action: { token: "comment" } },
+        ],
+        comment: [
+          { regex: /[^\/\*]+/, action: { token: "comment" } },
+          { regex: /\*\//, action: { token: "comment", next: "@pop" } },
+          { regex: /[\/\*]/, action: { token: "comment" } },
+        ],
+      },
+    },
+    `grammar Statemachine
 
 entry Statemachine:
     'statemachine' name=ID
@@ -84,31 +183,8 @@ terminal STRING: /"[^"]*"|'[^']*'/;
 
 hidden terminal ML_COMMENT: /\\/\\*[\\s\\S]*?\\*\\//;
 hidden terminal SL_COMMENT: /\\/\\/[^\\n\\r]*/;
-`);
-    editorConfig.theme = 'vs-dark';
-
-    editorConfig.useLanguageClient = true;
-    editorConfig.useWebSocket = false;
-
-    const workerURL = new URL('../libs/worker/playgroundServerWorker.js', import.meta.url);
-    console.log(workerURL.href, import.meta.url);
-
-    const lsWorker = new Worker(workerURL.href, {
-        type: 'classic',
-        name: 'LS'
-    });
-    client.setWorker(lsWorker);
-
-    const divRoot = document.getElementById("monaco-editor-root");
-    const style = "width:50%; display:inline-block; height: 100%";
-    const leftEditor = document.createElement('div');
-    leftEditor.setAttribute("style", style);
-    const rightEditor = document.createElement('div');
-    rightEditor.setAttribute("style", style);
-    divRoot.appendChild(leftEditor);
-    divRoot.appendChild(rightEditor);
-
-    client.startEditor(leftEditor);
-
-    window.addEventListener("resize", () => client.updateLayout());
+`,
+    "../libs/worker/langiumServerWorker.js",
+    (client) => {}
+  );
 </script>
