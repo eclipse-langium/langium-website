@@ -12,16 +12,18 @@
     "build:worker/statemachine": "esbuild ../node_modules/langium-statemachine-dsl/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/statemachineServerWorker.js",
     "build:worker/playground-langium": "esbuild ./content/showcase/playground/langium-worker.ts --bundle --format=iife --outfile=./static/showcase/libs/worker/langiumServerWorker.js",
     "build:worker/playground-user": "esbuild ./content/showcase/playground/user-worker.ts --bundle --format=iife --outfile=./static/showcase/libs/worker/userServerWorker.js",
-    "build:static": "npm run clean && npm run build:worker/statemachine && npm run build:worker/playground-langium && npm run build:worker/playground-user && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers",
+    "build:worker/playground-common": "esbuild ./content/showcase/playground/common.ts --bundle --format=esm --outfile=./static/showcase/libs/worker/common.js",
+    "build:static": "npm run clean && npm run build:worker/statemachine && npm run build:worker/playground-common && npm run build:worker/playground-langium && npm run build:worker/playground-user && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers",
     "build":        "npm run build:static && cross-env NODE_ENV=production  hugo        --config ./config.toml    -b /              -d ../public --gc --minify    ",
     "watch":        "npm run build:static && cross-env NODE_ENV=development hugo server --config ./config.toml -D -b localhost:1313 -d ../public --appendPort=false",
     "watch:gitpod": "npm run build:static && cross-env NODE_ENV=development hugo server --config ./config.toml -D -b `gp url 1313` -d ../public --appendPort=false"
   },
   "devDependencies": {
     "esbuild": "^0.15.7",
+    "langium": "0.5.0-next.52ab085",
     "langium-statemachine-dsl": "0.5.0-next.f2b3802",
     "vscode-languageserver": "8.0.2",
-    "monaco-editor-wrapper": "1.0.0",
+    "monaco-editor-wrapper": "1.1.0-next.0",
     "monaco-editor-workers": "0.34.2"
   }
 }

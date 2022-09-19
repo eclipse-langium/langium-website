@@ -1,10 +1,11 @@
 import { DocumentState, startLanguageServer, EmptyFileSystem, createLangiumGrammarServices } from 'langium';
-import { BrowserMessageReader, createConnection } from 'vscode-languageserver/browser';
-import { ByPassingMessageWriter, PlaygroundWrapper } from './common';
+import { createConnection, DiagnosticSeverity } from 'vscode-languageserver/browser';
+import { ByPassingMessageReader, ByPassingMessageWriter, PlaygroundWrapper } from './common';
 
 /* browser specific setup code */
-const messageReader = new BrowserMessageReader(self);
-const messageWriter = new ByPassingMessageWriter(self, new PlaygroundWrapper());
+const messageWrapper = new PlaygroundWrapper();
+const messageReader = new ByPassingMessageReader(self, messageWrapper);
+const messageWriter = new ByPassingMessageWriter(self, messageWrapper);
 
 const connection = createConnection(messageReader, messageWriter);
 
@@ -12,12 +13,13 @@ const connection = createConnection(messageReader, messageWriter);
 const { shared } = createLangiumGrammarServices({ connection, ...EmptyFileSystem });
 
 // by pass other messages that are required to make the playground work
-shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Changed, () => messageWriter.byPassWrite({type: 'changing'}));
+shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Parsed, () => messageWriter.byPassWrite({type: 'changing'}));
 shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, ([document]) => {
-    if(document.diagnostics && document.diagnostics.length > 0) {
+    const errors = (document.diagnostics??[]).filter(d => d.severity === DiagnosticSeverity.Error);
+    if(errors.length > 0) {
         return messageWriter.byPassWrite({
             type: 'error',
-            errors: document.diagnostics
+            errors
         });
     }
     return messageWriter.byPassWrite({
