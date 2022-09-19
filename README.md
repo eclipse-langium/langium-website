@@ -4,4 +4,6 @@ This repository contains the assets required to build the Langium website and do
 
 Our setup uses TailwindCSS to build the styles which are then copied into the Hugo installation, from which our website is finally built.
 
-Please look into the sub folders [hugo/](hugo/README.md), [tailwind/](tailwind/README.md) and [showcase/](showcase/README.md) for more details.
+Please look into the sub folders [hugo/](hugo/README.md) and [tailwind/](tailwind/README.md).
+
+You can find the `showcase/` folder [hugo/content/showcase](here).

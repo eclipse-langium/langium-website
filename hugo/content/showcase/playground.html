@@ -1,0 +1,105 @@
+---
+title: "Playground"
+weight: 0
+type: langium
+layout: showcase-page
+url: "/showcase/playground"
+img: "/assets/Langium_Statemachine.svg"
+description: Write your own language on the left and try out your own language edtor on the right.
+geekdochidden: true
+draft: false
+noMain: true
+---
+
+<script type="module">
+    import { MonacoEditorLanguageClientWrapper } from '../libs/monaco-editor-wrapper/index.js';
+    import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
+
+    buildWorkerDefinition('../libs/monaco-editor-workers/workers', new URL('', window.location.href).href, false);
+
+    MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
+    MonacoEditorLanguageClientWrapper.addCodiconTtf();
+
+    const client = new MonacoEditorLanguageClientWrapper('left');
+    const editorConfig = client.getEditorConfig();
+    editorConfig.setMainLanguageId('langium');
+    editorConfig.setMonarchTokensProvider({
+        keywords: [
+            'bigint','boolean','current','Date','entry','extends','false','fragment','grammar','hidden','import','infer','infers','interface','number','returns','string','terminal','true','type','with'
+        ],
+        operators: [
+            '->',',',';',':','!','?','?=','.','..','@','*','&','+','+=','<','=','=>','>','|'
+        ],
+        symbols:  /->|,|;|:|!|\?|\?=|\.|\.\.|\(|\)|\[|\[\]|\]|\{|\}|@|\*|&|\+|\+=|<|=|=>|>|\|/,
+
+        tokenizer: {
+            initial: [
+                { regex: /\/(?![*+?])(?:[^\r\n\[/\\]|\\.|\[(?:[^\r\n\]\\]|\\.)*\])+\//, action: {"token":"string"} },
+                { regex: /\^?[_a-zA-Z][\w_]*/, action: { cases: { '@keywords': {"token":"keyword"}, '@default': {"token":"ID"} }} },
+                { regex: /"[^"]*"|'[^']*'/, action: {"token":"string"} },
+                { include: '@whitespace' },
+                { regex: /@symbols/, action: { cases: { '@operators': {"token":"operator"}, '@default': {"token":""} }} },
+            ],
+            whitespace: [
+                { regex: /\s+/, action: {"token":"white"} },
+                { regex: /\/\*/, action: {"token":"comment","next":"@comment"} },
+                { regex: /\/\/[^\n\r]*/, action: {"token":"comment"} },
+            ],
+            comment: [
+                { regex: /[^\/\*]+/, action: {"token":"comment"} },
+                { regex: /\*\//, action: {"token":"comment","next":"@pop"} },
+                { regex: /[\/\*]/, action: {"token":"comment"} },
+            ],
+        }
+    });
+
+    editorConfig.setMainCode(`grammar Statemachine
+
+entry Statemachine:
+    'statemachine' name=ID
+    ('events' events+=Event+)?
+    ('commands'    commands+=Command+)?
+    'initialState' init=[State]
+    states+=State*;
+
+Event:
+    name=ID;
+
+Command:
+    name=ID;
+
+State:
+    'state' name=ID
+        ('actions' '{' actions+=[Command]+ '}')?
+        transitions+=Transition*
+    'end';
+
+Transition:
+    event=[Event] '=>' state=[State];
+
+hidden terminal WS: /\s+/;
+terminal ID: /[_a-zA-Z][\w_]*/;
+terminal INT returns number: /[0-9]+/;
+terminal STRING: /"[^"]*"|'[^']*'/;
+
+hidden terminal ML_COMMENT: /\\/\\*[\\s\\S]*?\\*\\//;
+hidden terminal SL_COMMENT: /\\/\\/[^\\n\\r]*/;
+`);
+    editorConfig.theme = 'vs-dark';
+
+    editorConfig.useLanguageClient = true;
+    editorConfig.useWebSocket = false;
+
+    const workerURL = new URL('../libs/worker/playgroundServerWorker.js', import.meta.url);
+    console.log(workerURL.href, import.meta.url);
+
+    const lsWorker = new Worker(workerURL.href, {
+        type: 'classic',
+        name: 'LS'
+    });
+    client.setWorker(lsWorker);
+
+    client.startEditor(document.getElementById("monaco-editor-root"));
+
+    window.addEventListener("resize", () => client.updateLayout());
+</script>
