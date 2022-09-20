@@ -10,7 +10,9 @@ geekdochidden: true
 draft: false
 noMain: true
 ---
-
+<link rel="preload" as="script" href="../libs/worker/common.js"/>
+<link rel="preload" as="script" href="../libs/worker/langiumServerWorker.js"/>
+<link rel="preload" as="script" href="../libs/worker/userServerWorker.js"/>
 <script type="module">
   import { MonacoEditorLanguageClientWrapper } from "../libs/monaco-editor-wrapper/index.js";
   import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
