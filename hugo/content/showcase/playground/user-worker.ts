@@ -11,8 +11,6 @@ messageReader.listenByPass(message => {
     if(message.type === 'validated') {
         const connection = createConnection(messageReader, messageWriter);
         const { shared } = createServicesForGrammar({grammar: message.grammar, sharedModule: {lsp: {Connection: connection}}});
-        connection.onDidChangeWatchedFiles = (handler) => { return {dispose() {}} };
-        debugger
         startLanguageServer(shared);
     }
 });

@@ -16,6 +16,8 @@ import {
   LangiumMonarchContent,
   StateMachineInitialContent,
 } from "./data";
+import { generateMonarch } from "./monarch-generator";
+import { createServicesForGrammar } from 'langium/lib/grammar/grammar-util';
 
 export { BrowserMessageReader, BrowserMessageWriter };
 
@@ -107,7 +109,8 @@ export class ByPassingMessageReader<T>
     this._messageListener = (event: MessageEvent) => {
       const unwrapped = wrapper.unwrap(event.data);
       if (unwrapped) {
-        return this._onByPass.fire(unwrapped);
+        this._onByPass.fire(unwrapped);
+        return;
       }
       this._onData.fire(event.data);
     };
@@ -221,18 +224,23 @@ export function setupPlayground(
     (worker) => new ByPassingMessageWriter(worker, messageWrapper)
   );
 
-  langium.out.listenByPass(message => {
+  langium.out.listenByPass(async message => {
+    if(message.type !== "validated") {
+      return;
+    }
+      //const { Grammar } = createServicesForGrammar({grammar: message.grammar});
+      const syntax = null;//generateMonarch(Grammar, 'user');
       const userDefined = setupEditor(
         rightEditor,
-        "user",
-        null,
+        'user',
+        syntax,
         StateMachineInitialContent,
         "../../libs/worker/userServerWorker.js",
         () => monacoFactory("user"),
         (worker) => new ByPassingMessageReader(worker, messageWrapper),
         (worker) => new ByPassingMessageWriter(worker, messageWrapper)
       );
-      userDefined.in.byPassWrite(message);
+      await userDefined.in.byPassWrite(message);
   });
 
 
