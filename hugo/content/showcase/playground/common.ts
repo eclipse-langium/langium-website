@@ -17,7 +17,7 @@ import {
   StateMachineInitialContent,
 } from "./data";
 import { generateMonarch } from "./monarch-generator";
-import { createServicesForGrammar } from 'langium/lib/grammar/grammar-util';
+import { createServicesForGrammar } from "langium/lib/grammar/grammar-util";
 
 export { BrowserMessageReader, BrowserMessageWriter };
 
@@ -75,17 +75,17 @@ export class PlaygroundWrapper implements MessageWrapper<PlaygroundMessage> {
     return { jsonrpc: "2.0", result: wrapped };
   }
   unwrap(message: Message): PlaygroundMessage | null {
-    if(typeof message === 'object' && 'result' in message) {
-        const parsed = message.result;
-        if (
-          parsed &&
-          typeof parsed === "object" &&
-          "type" in parsed &&
-          parsed["type"] === MagicTypeString &&
-          "message" in parsed
-        ) {
-          return parsed["message"] as PlaygroundMessage;
-        }
+    if (typeof message === "object" && "result" in message) {
+      const parsed = message.result;
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        "type" in parsed &&
+        parsed["type"] === MagicTypeString &&
+        "message" in parsed
+      ) {
+        return parsed["message"] as PlaygroundMessage;
+      }
     }
     return null;
   }
@@ -119,7 +119,7 @@ export class ByPassingMessageReader<T>
   }
 
   public listen(callback: DataCallback): Disposable {
-    return this._onData.event(x => callback(x as any));
+    return this._onData.event((x) => callback(x as any));
   }
 
   public listenByPass(callback: MessageCallback<T>): Disposable {
@@ -141,8 +141,14 @@ export class ByPassingMessageWriter<T> extends BrowserMessageWriter {
 }
 
 export interface MonacoConnection {
-  reader: MessageReader;
-  writer: MessageWriter;
+  reader: ByPassingMessageReader<PlaygroundMessage>;
+  writer: ByPassingMessageWriter<PlaygroundMessage>;
+}
+
+export interface MonacoEditorResult {
+  out: ByPassingMessageReader<PlaygroundMessage>;
+  in: ByPassingMessageWriter<PlaygroundMessage>;
+  dispose: () => Promise<void>;
 }
 
 export interface MonacoConfig {
@@ -159,6 +165,7 @@ export interface MonacoClient {
   setWorker(worker: Worker, connection: MonacoConnection): void;
   startEditor(domElement: HTMLElement): void;
   updateLayout(): void;
+  dispose(): Promise<void>;
 }
 
 export function setupEditor(
@@ -191,13 +198,14 @@ export function setupEditor(
     type: "classic",
     name: "LS",
   });
-  const result = {
+  const result: MonacoEditorResult = {
     out: readerFactory(worker),
     in: writerFactory(worker),
+    dispose: () => client.dispose(),
   };
   client.setWorker(worker, {
     reader: result.out,
-    writer: result.in
+    writer: result.in,
   });
 
   client.startEditor(domElement);
@@ -224,24 +232,24 @@ export function setupPlayground(
     (worker) => new ByPassingMessageWriter(worker, messageWrapper)
   );
 
-  langium.out.listenByPass(async message => {
-    if(message.type !== "validated") {
+  let right: MonacoEditorResult | null = null;
+  langium.out.listenByPass(async (message) => {
+    if (message.type !== "validated") {
       return;
     }
-      //const { Grammar } = createServicesForGrammar({grammar: message.grammar});
-      const syntax = null;//generateMonarch(Grammar, 'user');
-      const userDefined = setupEditor(
-        rightEditor,
-        'user',
-        syntax,
-        StateMachineInitialContent,
-        "../../libs/worker/userServerWorker.js",
-        () => monacoFactory("user"),
-        (worker) => new ByPassingMessageReader(worker, messageWrapper),
-        (worker) => new ByPassingMessageWriter(worker, messageWrapper)
-      );
-      await userDefined.in.byPassWrite(message);
+    await right?.dispose();
+    const { Grammar } = createServicesForGrammar({ grammar: message.grammar });
+    const syntax = generateMonarch(Grammar, "user");
+    right = setupEditor(
+      rightEditor,
+      "user",
+      syntax,
+      StateMachineInitialContent,
+      "../../libs/worker/userServerWorker.js",
+      () => monacoFactory("user"),
+      (worker) => new ByPassingMessageReader(worker, messageWrapper),
+      (worker) => new ByPassingMessageWriter(worker, messageWrapper)
+    );
+    await right.in.byPassWrite(message);
   });
-
-
 }
