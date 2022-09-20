@@ -5,7 +5,6 @@ import {
   Disposable,
   Emitter,
   MessageReader,
-  MessageWriter,
 } from "vscode-languageserver";
 import {
   BrowserMessageReader,
@@ -244,12 +243,14 @@ export function setupPlayground(
       content = monacoInternalBuffer.getValueInRange(monacoInternalBuffer.getRangeAt(0, monacoInternalBuffer.getLength()));
       await userDefined.editor.dispose();
     }
-    //const { Grammar } = createServicesForGrammar({ grammar: message.grammar });
-    //const syntax = generateMonarch(Grammar, "user");
+    
+    const { Grammar } = createServicesForGrammar({ grammar: message.grammar });
+    const syntax = generateMonarch(Grammar, "user");
+
     userDefined = setupEditor(
       rightEditor,
       "user",
-      null,
+      syntax,
       content,
       "../../libs/worker/userServerWorker.js",
       () => monacoFactory("user"),

@@ -1,5 +1,4 @@
 import * as langium from "langium";
-import { stream } from "langium/src/utils/stream";
 import {
   getTerminalParts,
   isCommentTerminal,
@@ -7,32 +6,142 @@ import {
   isTerminalRule,
   terminalRegex,
   TerminalRule,
+  escapeRegExp,
+  stream,
 } from "langium";
-  
-  /**
-   * Generates a Monarch highlighting grammar file's contents, based on the passed Langium grammar
-   * @param grammar Langium grammar to use in generating this Monarch syntax highlighting file content
-   * @param config Langium Config to also use during generation
-   * @returns Generated Monarch syntax highlighting file content
-   */
-  export function generateMonarch(grammar: langium.Grammar, id: string) {
+
+/**
+ * Monarch Language Definition, describes aspects & token categories of target language
+ */
+interface LanguageDefinition {
+  readonly name: string;
+  readonly keywords: string[];
+  readonly operators: string[];
+  readonly symbols: string[];
+  readonly tokenPostfix: string;
+}
+
+/**
+ * Monarch Tokenizer, consists of an object that defines states.
+ */
+interface Tokenizer {
+  states: State[];
+}
+
+/**
+ * Name of a State
+ */
+type StateName = string;
+
+/**
+ * Each state is defined as an array of rules which are used to match the input
+ * Rules can be regular, or other States whose rules we should include in this state
+ */
+interface State {
+  name: StateName;
+  rules: Array<Rule | State>;
+}
+
+/**
+ * A rule that matches input. Can have either an action, or an array of cases.
+ */
+interface RegexRule {
+  regex: RegExp | string;
+  action: Action | Case[];
+}
+
+interface IncludeRule {
+  include: string;
+}
+
+type Rule = RegexRule | IncludeRule;
+
+/**
+ * A case that selects a specific action by matching a guard pattern
+ */
+interface Case {
+  guard: string;
+  action: Action;
+}
+
+/**
+ * Determines whether a given object is a Rule instance
+ * @param obj Object to check
+ * @returns Whether this object is a Rule
+ */
+function isRegexRule(obj: State | Rule): obj is RegexRule {
+  return (
+    (obj as RegexRule).regex !== undefined &&
+    (obj as RegexRule).action !== undefined
+  );
+}
+
+function isIncludeRule(obj: State | Rule): obj is IncludeRule {
+  return (obj as IncludeRule).include !== undefined;
+}
+
+/**
+ * Name of a token type, such as 'string'
+ */
+type Token = string;
+
+/**
+ * Token class to be used for CSS rendering, such as 'keyword', 'component', or 'type.identifer'
+ */
+type TokenClass = string;
+
+/**
+ * Next state that proceeds from an action, can also be a pop or a push of the current state (like for nested block comments)
+ */
+type NextState = StateName | "@pop" | "@push";
+
+/**
+ * An action performed when a rule (or a case) matches token.
+ * It can determine the token class, as well whether to push/pop a tokenizer state
+ */
+interface Action {
+  token?: Token;
+  tokenClass?: TokenClass;
+  next?: NextState;
+  cases?: { [name: string]: Action };
+  // other more advanced states omitted...
+}
+
+/**
+ * Abstract representation of a Monarch grammar file
+ */
+interface MonarchGrammar {
+  readonly languageDefinition: LanguageDefinition;
+  readonly tokenizer: Tokenizer;
+}
+
+/**
+ * Generates a Monarch highlighting grammar file's contents, based on the passed Langium grammar
+ * @param grammar Langium grammar to use in generating this Monarch syntax highlighting file content
+ * @param config Langium Config to also use during generation
+ * @returns Generated Monarch syntax highlighting file content
+ */
+export function generateMonarch(grammar: langium.Grammar, id: string) {
   const symbols = getSymbols(grammar);
   const regex = /[{}[\]()]/;
   const operators = symbols.filter((s) => !regex.test(s));
 
   // build absract monarch grammar representation
-  const monarchGrammar: IMonarchLanguage = {
+  const monarchGrammar: MonarchGrammar = {
     languageDefinition: {
+      name: id, // identifier for generating the grammar export
       keywords: getKeywords(grammar),
       operators,
       symbols,
       tokenPostfix: "." + id, // category appended to all tokens
     },
-    tokenizer: getTokenizerStates(grammar)
+    tokenizer: {
+      states: getTokenizerStates(grammar),
+    },
   };
 
   // return concrete monarch grammar representation
-  return monarchGrammar;
+  return prettyPrint(monarchGrammar);
 }
 
 /**
@@ -40,11 +149,151 @@ import {
  * @param grammar Langium grammar to source tokenizer states from
  * @returns Array of tokenizer states
  */
-function getTokenizerStates(grammar: langium.Grammar): ITokens {
+function getTokenizerStates(grammar: langium.Grammar): State[] {
+  // initial state, name is arbitrary, just needs to come first
+  const initialState: State = {
+    name: "initial",
+    rules: getTerminalRules(grammar),
+  };
+
+  const whitespaceState: State = {
+    name: "whitespace",
+    rules: getWhitespaceRules(grammar),
+  };
+
+  const commentState: State = {
+    name: "comment",
+    rules: getCommentRules(grammar),
+  };
+
+  // order the following additional rules, to prevent
+  // comment sequences being classified as symbols
+
+  // add include for the whitespace state
+  initialState.rules.push(whitespaceState);
+
+  // add operator & symbol case handling
+  initialState.rules.push({
+    regex: "@symbols",
+    action: [
+      {
+        guard: "@operators",
+        action: { token: "operator" },
+      },
+      // by default, leave the symbol alone
+      {
+        guard: "@default",
+        action: { token: "" },
+      },
+    ],
+  });
+
+  return [initialState, whitespaceState, commentState];
+}
+
+/**
+ * Pretty prints a monarch grammar into a concrete form, suitable for writing to a file
+ * @param monarchGrammar Grammar to pretty print
+ * @returns Monarch grammar in concrete form
+ */
+function prettyPrint(monarchGrammar: MonarchGrammar) {
+  const name = monarchGrammar.languageDefinition.name;
+
+  const languages = prettyPrintLangDef(monarchGrammar.languageDefinition);
+  const tokenizer = prettyPrintTokenizer(monarchGrammar.tokenizer);
   return {
-    keywords: getTerminalRules(grammar),
-    whitespace: getWhitespaceRules(grammar),
-    comment: getCommentRules(grammar)
+    ...languages,
+    ...tokenizer
+  };
+}
+
+/**
+ * Generates an entry for a language definition, given a name (token category) and values
+ * @param name Category of language definition to add
+ * @param values Values to add under the given category
+ * @returns GeneratorNode containing this printed language definition entry
+ */
+function genLanguageDefEntry(name: string, values: string[]) {
+  return { [name]: values };
+}
+
+/**
+ * Pretty prints the language definition portion of a Monarch grammar
+ * @param languageDef LanguageDefinition to pretty print
+ */
+function prettyPrintLangDef(
+  languageDef: LanguageDefinition,
+) {
+  const keywords = genLanguageDefEntry("keywords", languageDef.keywords);
+  const operators = genLanguageDefEntry("operators", languageDef.operators);
+  const symbols = { symbols: new RegExp(languageDef.symbols.map(escapeRegExp).join("|"))}
+  return {
+    ...keywords,
+    ...operators,
+    ...symbols
+  };
+}
+
+/**
+ * Pretty prints the tokenizer portion of a Monarch grammar file
+ * @param tokenizer Tokenizer portion to print out
+ */
+function prettyPrintTokenizer(tokenizer: Tokenizer) {
+  const result = tokenizer.states
+    .map((s) => prettyPrintState(s))
+    .reduce((lhs, rhs) => ({ ...lhs, ...rhs }), {});
+  return {
+    tokenizer: result,
+  };
+}
+
+/**
+ * Pretty prints a tokenizer state, composed of various rules
+ * @param state Tokenizer state to pretty print
+ */
+function prettyPrintState(state: State) {
+  return {
+    [state.name]: state.rules.map((r) => prettyPrintRule(r)),
+  };
+}
+
+/**
+ * Pretty prints a Rule.
+ * This can either be a literal rule to match w/ an action, or a reference to a state to include here
+ * @param ruleOrState Rule to pretty print. If it's a state, we include that state's contents implicitly within this context.
+ * @returns Generator node containing this printed rule
+ */
+function prettyPrintRule(ruleOrState: Rule | State): Rule {
+  if (isRegexRule(ruleOrState)) {
+    return {
+      regex:
+        ruleOrState.regex instanceof RegExp
+          ? ruleOrState.regex
+          : new RegExp(ruleOrState.regex),
+      action: prettyPrintAction(ruleOrState.action),
+    };
+  } else if (isIncludeRule(ruleOrState)) {
+    return ruleOrState;
+  } else {
+    // include another state by name, implicitly includes all of its contents
+    return { include: `@${ruleOrState.name}` };
+  }
+}
+
+/**
+ * Pretty prints the action of a Rule
+ * @param action Action to print. Can have several keywords to control what the state machine should do next.
+ * @returns Action in concrete form
+ */
+function prettyPrintAction(action: Action | Case[]): Action {
+  if (!Array.isArray(action)) {
+    return action;
+  } else {
+    const cases: { [name: string]: Action } = {};
+    action.forEach((a) => {
+      cases[a.guard] = prettyPrintAction(a.action);
+    });
+    return { cases };
   }
 }
 
@@ -66,31 +315,13 @@ function getMonarchTokenName(rule: TerminalRule): string {
   }
 }
 
-
-export interface IAction {
-	// an action is either a group of actions
-	group?: FuzzyAction[]
-
-	// or a function that returns a fresh action
-	test?: (id: string, matches: string[], state: string, eos: boolean) => FuzzyAction
-	case_values?: FuzzyAction[]
-
-	// or it is a declarative action with a token value and various other attributes
-	token?: string
-	tokenSubst?: boolean
-	next?: string
-	nextEmbedded?: string
-	bracket?: MonarchBracket
-	log?: string
-	switchTo?: string
-	goBack?: number
-	transform?: (states: string[]) => string[]
-
-	parser?: IMonarchParserAction
-}
-
-function getWhitespaceRules(grammar: langium.Grammar): IMonarchLanguageRule[] {
-  const rules: IMonarchLanguageRule[] = [];
+/**
+ * Gets whitespace rules from the langium grammar. Includes starting comment sequence.
+ * @param grammar Langium grammar to extract whitespace rules from
+ * @returns Array of Monarch whitespace rules
+ */
+function getWhitespaceRules(grammar: langium.Grammar): Rule[] {
+  const rules: Rule[] = [];
   for (const rule of grammar.rules) {
     if (isTerminalRule(rule) && isRegexToken(rule.definition)) {
       const regex = new RegExp(terminalRegex(rule));
@@ -109,7 +340,7 @@ function getWhitespaceRules(grammar: langium.Grammar): IMonarchLanguageRule[] {
       if (part.start !== "" && part.end !== "" && isCommentTerminal(rule)) {
         // state-based comment rule, only add push to jump into it
         rules.push({
-          regex: new RegExp(part.start.replace("/", "\\/")),
+          regex: part.start.replace("/", "\\/"),
           action: { token: tokenName, next: "@" + tokenName },
         });
       } else {
@@ -130,8 +361,8 @@ function getWhitespaceRules(grammar: langium.Grammar): IMonarchLanguageRule[] {
  * @param grammar Langium grammar to extract comment rules from
  * @returns Array of Monarch comment rules
  */
-function getCommentRules(grammar: langium.Grammar): IMonarchLanguageRule[] {
-  const rules: IMonarchLanguageRule[] = [];
+function getCommentRules(grammar: langium.Grammar): Rule[] {
+  const rules: Rule[] = [];
   for (const rule of grammar.rules) {
     if (
       isTerminalRule(rule) &&
@@ -175,8 +406,8 @@ function getCommentRules(grammar: langium.Grammar): IMonarchLanguageRule[] {
  * @param grammar Grammar to get non-comment terminals from
  * @returns Array of Rules to add to a Monarch tokenizer state
  */
-function getTerminalRules(grammar: langium.Grammar): IMonarchLanguageRule[] {
-  const rules: IMonarchLanguageRule[] = [];
+function getTerminalRules(grammar: langium.Grammar): Rule[] {
+  const rules: Rule[] = [];
   for (const rule of grammar.rules) {
     if (
       isTerminalRule(rule) &&
@@ -192,8 +423,8 @@ function getTerminalRules(grammar: langium.Grammar): IMonarchLanguageRule[] {
 
       const tokenName = getMonarchTokenName(rule);
       // default action...
-      let action: IMonarchLanguageAction | any[] = { token: tokenName };
-/*
+      let action: Action | Case[] = { token: tokenName };
+
       if (getKeywords(grammar).some((keyword) => regex.test(keyword))) {
         // this rule overlaps with at least one keyword
         // add case so keywords aren't tagged incorrectly as this token type
@@ -208,9 +439,9 @@ function getTerminalRules(grammar: langium.Grammar): IMonarchLanguageRule[] {
           },
         ];
       }
-*/
+
       rules.push({
-        regex: new RegExp(rule.definition.regex),
+        regex: rule.definition.regex,
         action,
       });
     }
@@ -268,189 +499,4 @@ function collectElementKeywords(
   } else if (langium.isKeyword(element)) {
     keywords.add(element.value);
   }
-}
-
-export interface IMonarchLanguage {
-	/** map from string to ILanguageRule[] */
-	tokenizer: ITokens
-	/** is the language case insensitive? */
-	ignoreCase?: boolean
-	/** is the language unicode-aware? (i.e., /\u{1D306}/) */
-	unicode?: boolean
-	/** if no match in the tokenizer assign this token class */
-	defaultToken?: string
-	/** for example [['{','}','delimiter.curly']] */
-	brackets?: IMonarchLanguageBracket[]
-	/** start symbol in the tokenizer (by default the first entry is used) */
-	start?: string
-
-	[attr: string]: any
-}
-
-/**
- * A rule is either a regular expression and an action
- * 		shorthands: [reg,act] == { regex: reg, action: act}
- *		and       : [reg,act,nxt] == { regex: reg, action: act{ next: nxt }}
- */
-export type IShortMonarchLanguageRule1 = [string | RegExp, IMonarchLanguageAction]
-
-export type IShortMonarchLanguageRule2 = [string | RegExp, IMonarchLanguageAction, string]
-
-export interface IExpandedMonarchLanguageRule {
-	/** match tokens */
-	regex?: string | RegExp
-	/** action to take on match */
-	action?: IMonarchLanguageAction
-
-	/** or an include rule. include all rules from the included state */
-	include?: string
-}
-
-export type IMonarchLanguageRule = IShortMonarchLanguageRule1
-	| IShortMonarchLanguageRule2
-	| IExpandedMonarchLanguageRule
-
-
-export type IMonarchParserAction = {
-	open?: string[] | string
-	close?: string[] | string
-	start?: string[] | string
-	end?: string[] | string
-}
-
-/**
- * An action is either an array of actions...
- * ... or a case statement with guards...
- * ... or a basic action with a token value.
- */
-export type IShortMonarchLanguageAction = string
-
-export interface IExpandedMonarchLanguageAction {
-	/** array of actions for each parenthesized match group */
-	group?: IMonarchLanguageAction[]
-	/** map from string to ILanguageAction */
-	cases?: Object
-	/** token class (ie. css class) (or "@brackets" or "@rematch") */
-	token?: string
-	/** Directs how the parser will nest your tokens. */
-	parser?: IMonarchParserAction
-	/** the next state to push, or "@push", "@pop", "@popall" */
-	next?: string
-	/** switch to this state */
-	switchTo?: string
-	/** go back n characters in the stream */
-	goBack?: number
-	/** @open or @close */
-	bracket?: string
-	/** switch to embedded language (using the mimetype) or get out using "@pop" */
-	nextEmbedded?: string
-	/** log a message to the browser console window */
-	log?: string
-}
-
-export type IMonarchLanguageAction = IShortMonarchLanguageAction
-	| IExpandedMonarchLanguageAction
-	| (IShortMonarchLanguageAction | IExpandedMonarchLanguageAction)[]
-
-/** This interface can be shortened as an array, ie. ['{','}','delimiter.curly'] */
-export interface IMonarchLanguageBracket {
-	/** open bracket */
-	open: string
-	/** closing bracket */
-	close: string
-	/** token class */
-	token: string
-}
-
-// Internal/compiled type definitions
-
-export const enum MonarchBracket {
-	None = 0,
-	Open = 1,
-	Close = -1
-}
-
-export interface ILexerMin {
-	ignoreCase: boolean
-	unicode: boolean
-	defaultToken: string
-	stateNames: { [stateName: string]: any }
-	[attr: string]: any
-}
-
-export interface ITokens { [stateName: string]: IMonarchLanguageRule[] }
-
-export interface ILexer extends ILexerMin {
-	maxStack: number
-	start: string | null
-	ignoreCase: boolean
-	unicode: boolean
-	tokenTypes: Set<string>
-	tokenizer: ITokens;
-	brackets: IBracket[]
-}
-
-export interface IBracket {
-	token: string
-	open: string
-	close: string
-}
-
-export type FuzzyAction = IAction | string
-
-export interface IRule {
-	regex: RegExp
-	action: FuzzyAction
-	matchOnlyAtLineStart: boolean
-	name: string
-}
-
-export interface IAction {
-	// an action is either a group of actions
-	group?: FuzzyAction[]
-
-	// or a function that returns a fresh action
-	test?: (id: string, matches: string[], state: string, eos: boolean) => FuzzyAction
-	case_values?: FuzzyAction[]
-
-	// or it is a declarative action with a token value and various other attributes
-	token?: string
-	tokenSubst?: boolean
-	next?: string
-	nextEmbedded?: string
-	bracket?: MonarchBracket
-	log?: string
-	switchTo?: string
-	goBack?: number
-	transform?: (states: string[]) => string[]
-
-	parser?: IMonarchParserAction
-}
-
-export interface IBranch {
-	name: string
-	value: FuzzyAction
-	test?: (id: string, matches: string[], state: string, eos: boolean) => boolean
-}
-
-export interface IAction {
-	// an action is either a group of actions
-	group?: FuzzyAction[]
-
-	// or a function that returns a fresh action
-	test?: (id: string, matches: string[], state: string, eos: boolean) => FuzzyAction
-	case_values?: FuzzyAction[]
-
-	// or it is a declarative action with a token value and various other attributes
-	token?: string
-	tokenSubst?: boolean
-	next?: string
-	nextEmbedded?: string
-	bracket?: MonarchBracket
-	log?: string
-	switchTo?: string
-	goBack?: number
-	transform?: (states: string[]) => string[]
-
-	parser?: IMonarchParserAction
 }
