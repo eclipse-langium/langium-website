@@ -47,16 +47,38 @@ export type PlaygroundMessage =
   | PlaygroundError
   | PlaygroundOK;
 
-export interface Message {
-  jsonrpc: string;
-  result: any;
+export interface MessageBase {
+  jsonrpc: '2.0';
 }
 
-const MagicTypeString = "PlaygroundMagic";
-interface Wrapper {
-  type: typeof MagicTypeString;
-  message: PlaygroundMessage;
+export interface Request extends MessageBase {
+  method: string;
+  params?: any[];
+  id: string;
 }
+
+export interface ResponseOK extends MessageBase {
+  result: any;
+  id: string;
+}
+
+export interface ResponseError extends MessageBase {
+  error: any;
+  id: string;
+}
+
+export interface Notification extends MessageBase {
+  method: string;
+  params?: any[];
+}
+
+export function isNotification(msg: Message): msg is Notification {
+  return !msg['id'] && msg['method'];
+}
+
+type Message = Request|ResponseError|ResponseOK|Notification;
+
+const MagicAction = "PlaygroundMagic";
 
 export interface MessageWrapper<T> {
   wrap(message: T): Message;
@@ -67,24 +89,15 @@ export type MessageCallback<T> = (data: T) => void;
 
 export class PlaygroundWrapper implements MessageWrapper<PlaygroundMessage> {
   wrap(message: PlaygroundMessage): Message {
-    const wrapped = {
-      type: MagicTypeString,
-      message,
-    };
-    return { jsonrpc: "2.0", result: wrapped };
+    return { 
+      jsonrpc: "2.0",
+      method: MagicAction,
+      params: [message]
+    } as Notification;
   }
   unwrap(message: Message): PlaygroundMessage | null {
-    if (typeof message === "object" && "result" in message) {
-      const parsed = message.result;
-      if (
-        parsed &&
-        typeof parsed === "object" &&
-        "type" in parsed &&
-        parsed["type"] === MagicTypeString &&
-        "message" in parsed
-      ) {
-        return parsed["message"] as PlaygroundMessage;
-      }
+    if(isNotification(message) && message.method === MagicAction) {
+      return message.params![0] as PlaygroundMessage;
     }
     return null;
   }
