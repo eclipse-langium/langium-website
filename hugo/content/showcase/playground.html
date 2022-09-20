@@ -25,18 +25,20 @@ noMain: true
   MonacoEditorLanguageClientWrapper.addMonacoStyles("monaco-editor-styles");
   MonacoEditorLanguageClientWrapper.addCodiconTtf();
 
-  const divRoot = document.getElementById("monaco-editor-root");
-  const style = "width:50%; display:inline-block; height: 100%";
-  const leftEditor = document.createElement("div");
-  leftEditor.setAttribute("style", style);
-  const rightEditor = document.createElement("div");
-  rightEditor.setAttribute("style", style);
-  divRoot.appendChild(leftEditor);
-  divRoot.appendChild(rightEditor);
+  addEventListener('load', function() {
+    const divRoot = document.getElementById("monaco-editor-root");
+    const style = "width:50%; display:inline-block; height: 100%";
+    const leftEditor = document.createElement("div");
+    leftEditor.setAttribute("style", style);
+    const rightEditor = document.createElement("div");
+    rightEditor.setAttribute("style", style);
+    divRoot.appendChild(leftEditor);
+    divRoot.appendChild(rightEditor);
 
-  setupPlayground(
-    (name) => new MonacoEditorLanguageClientWrapper(name),
-    leftEditor,
-    rightEditor
-  );
+    setupPlayground(
+      (name) => new MonacoEditorLanguageClientWrapper(name),
+      leftEditor,
+      rightEditor
+    );
+  });
 </script>
