@@ -148,11 +148,12 @@ export interface MonacoConnection {
 export interface MonacoEditorResult {
   out: ByPassingMessageReader<PlaygroundMessage>;
   in: ByPassingMessageWriter<PlaygroundMessage>;
-  dispose: () => Promise<void>;
+  editor: MonacoClient;
 }
 
 export interface MonacoConfig {
-  setMainCode(conent: string): void;
+  getMainCode(): string;
+  setMainCode(code: string): void;
   setMainLanguageId(name: string): void;
   setMonarchTokensProvider(monarch: any): void;
   theme: string;
@@ -201,7 +202,7 @@ export function setupEditor(
   const result: MonacoEditorResult = {
     out: readerFactory(worker),
     in: writerFactory(worker),
-    dispose: () => client.dispose(),
+    editor: client
   };
   client.setWorker(worker, {
     reader: result.out,
@@ -209,7 +210,6 @@ export function setupEditor(
   });
 
   client.startEditor(domElement);
-  window.addEventListener("resize", () => client.updateLayout());
 
   return result;
 }
@@ -232,24 +232,36 @@ export function setupPlayground(
     (worker) => new ByPassingMessageWriter(worker, messageWrapper)
   );
 
-  let right: MonacoEditorResult | null = null;
+  let userDefined: MonacoEditorResult | null = null;
   langium.out.listenByPass(async (message) => {
     if (message.type !== "validated") {
       return;
     }
-    await right?.dispose();
-    const { Grammar } = createServicesForGrammar({ grammar: message.grammar });
-    const syntax = generateMonarch(Grammar, "user");
-    right = setupEditor(
+    let content = StateMachineInitialContent;
+    if(userDefined) {
+      //TODO a little cheat until the API is exposed
+      const monacoInternalBuffer = userDefined.editor['editor'].getModel()._buffer;
+      content = monacoInternalBuffer.getValueInRange(monacoInternalBuffer.getRangeAt(0, monacoInternalBuffer.getLength()));
+      await userDefined.editor.dispose();
+    }
+    //const { Grammar } = createServicesForGrammar({ grammar: message.grammar });
+    //const syntax = generateMonarch(Grammar, "user");
+    userDefined = setupEditor(
       rightEditor,
       "user",
-      syntax,
-      StateMachineInitialContent,
+      null,
+      content,
       "../../libs/worker/userServerWorker.js",
       () => monacoFactory("user"),
       (worker) => new ByPassingMessageReader(worker, messageWrapper),
       (worker) => new ByPassingMessageWriter(worker, messageWrapper)
     );
-    await right.in.byPassWrite(message);
+    window['waka'] = 
+    await userDefined.in.byPassWrite(message);
+  });
+
+  window.addEventListener("resize", () => {
+    userDefined?.editor.updateLayout();
+    langium.editor.updateLayout();
   });
 }
