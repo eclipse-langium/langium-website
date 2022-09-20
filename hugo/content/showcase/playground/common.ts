@@ -166,6 +166,7 @@ export interface MonacoClient {
   startEditor(domElement: HTMLElement): void;
   updateLayout(): void;
   dispose(): Promise<void>;
+  getMainCode(): string;
 }
 
 export function setupEditor(
@@ -238,9 +239,7 @@ export function setupPlayground(
     }
     let content = StateMachineInitialContent;
     if(userDefined) {
-      //TODO a little cheat until the API is exposed
-      const monacoInternalBuffer = userDefined.editor['editor'].getModel()._buffer;
-      content = monacoInternalBuffer.getValueInRange(monacoInternalBuffer.getRangeAt(0, monacoInternalBuffer.getLength()));
+      content = userDefined.editor.getMainCode();
       await userDefined.editor.dispose();
     }
     
@@ -257,7 +256,7 @@ export function setupPlayground(
       (worker) => new ByPassingMessageReader(worker, messageWrapper),
       (worker) => new ByPassingMessageWriter(worker, messageWrapper)
     );
-    window['waka'] = 
+
     await userDefined.in.byPassWrite(message);
   });
 
