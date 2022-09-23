@@ -225,7 +225,13 @@ left_right --> left_right_{2}
 {{</mermaid>}}
 
 ## Declared Types
-Because type inference takes into account every entity of a parser rule, even the smallest changes can update the inferred types. This can lead to an unexpected type system and incorrect behavior of services that depend on it. To minimize the risk of introducing breaking changes when modifying the grammar, we recommend to use *declared types*. This is especially true for more mature and complex languages, where a stable type system is key and breaking changes introduced by inferred types can be hard to detect. Declared types allow the user to **fix** the type of the parser rules and rely on the power of validation errors to detect breaking changes.
+Because type inference takes into account every entity of a parser rule, even the smallest changes can update your inferred types. This can lead to an unexpected type system and incorrect behavior of services that depend on it. To minimize the risk of introducing breaking changes when modifying the grammar, we have introduced *declared types* as a new feature.
+
+It's important to keep in mind that while declared types can improve your grammars, they are a *bleeding edge feature and still being developed*. In most cases, especially for early language designs, letting the type inference take care of generating your types will be your best choice. As your language starts to mature, it may then be of interest to fix parts of your grammar using the declared system. However, you should always double check that you're getting the semantic model you expect afterwards!
+
+With that aside, declared types can be *especially* helpful for more mature and complex languages, where a stable type system is key and breaking changes introduced by inferred types can be hard to detect. Declared types allow the user to **fix** the type of the parser rules and rely on the power of validation errors to detect breaking changes.
+
+
 
 Let's look at the example from the previous section:
 ```
