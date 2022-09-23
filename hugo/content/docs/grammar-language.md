@@ -26,7 +26,11 @@ Contrary to *entry grammars*, imported grammars do not need to start with the ke
 ## Terminal Rules
 The first step in parsing your language is *lexing*, which transforms a stream of characters into a stream of tokens. A token is a sequence of one or many characters which is matched by a *terminal rule*, creating an atomic symbol. The names of terminal rules are conventionally written in upper case. 
 
-The Langium parser is created using [Chevrotain](https://github.com/chevrotain/chevrotain) which has a built-in lexer based on [Javascript Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions). However, Langium allows the use of [Extended Backus-Naur Form Expressions](#extended-backus-naur-form-terminals) and both expressions can be used conjointly in the same grammar.
+The Langium parser is created using [Chevrotain](https://github.com/chevrotain/chevrotain) which has a built-in lexer based on [Javascript Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions). 
+
+Langium also allows the use of [Extended Backus-Naur Form (EBNF) Expressions](#extended-backus-naur-form-terminals) for terminals, but we *highly* recommend that you write your terminals using Regular Expressions instead. EBNF expressions are internally translated by langium into Regular Expressions, as they are intended to allow porting Xtext grammars into Langium grammars -- given their similarity.
+
+With that said, both types of expressions can be used jointly in the same grammar.
 
 The declaration of a terminal rule starts with the keyword `terminal`:
 ```
@@ -426,7 +430,12 @@ The above example will be successfully parsed.
 ## More on Terminal Rules
 
 ### Extended Backus-Naur Form Terminals
-Terminal rules can be described using *regular expressions* or *EBNF expressions*. The latter form is very similar to [parser rules](#extended-backus-naur-form-expressions), which are described above. In this section, we describe which EBNF expressions are supported for terminals and their equivalent in *Javascript Regular Expressions* where possible.
+
+*For full disclosure, we recommend using regular expressions when writing your terminals, as EBNF expressions are translated to regular expressions internally anyways. EBNF support is primarily intended for supporting grammars that were originally written in Xtext, but are being ported to Langium.*
+
+As mentioned earlier, terminal rules can be described using *regular expressions* or *EBNF expressions*.
+
+EBNF expressions are very similar to [parser rules](#extended-backus-naur-form-expressions), which are described above. In this section, we describe which EBNF expressions are supported for terminals and their equivalent in *Javascript Regular Expressions* where possible.
 
 #### Terminal Groups
 Tokens can be put in sequence specifying the order they have to appear:
@@ -478,14 +487,24 @@ terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 ``` 
 
 #### Negated Token
-It is possible to negate all tokens using the operator `!`, in regular expression the operator `^` is used for negation within a character class.
+It is possible to negate tokens using the operator `!`. In Xtext, this allows recognizing the *complement* of a set of characters (or anything 'but' what is listed in the negation), very much akin to a negated character class in regular expressions. For example, the following terminal would recognize zero or more characters between two # symbols.
 ```
 terminal BETWEEN_HASHES:'#' (!'#')* '#';
 ```
-In regular expression:
+
+This also works as expected when you use alternation in Xtext, `!('#'|'@')`, to recognize anything but `#` or `@`.
+
+*However, this works differently in Langium!* Instead of recognizing characters that are *not* in the set, it instead produces a negative lookahead. I.e., it does *not* consume tokens, but instead is a 'guard' for what the following expression can recognize. If you want to recognize a word that doesn't start with `no`, then you could write it in EBNF like so:
 ```
-terminal BETWEEN_HASHES: /#[^#]*#/;
+terminal NONO: (!'no')('a'..'z'|'A'..'Z')+;
 ```
+
+This would correspond to the following regular expression:
+```
+terminal NONO: /(?!no)[a-zA-Z]+/;
+```
+
+This is *very* important to keep in mind if you're porting a grammar from Xtext, as Langium's interpretation of negated tokens deviates from that of Xtext.
 
 #### Terminal Rule Calls
 A terminal rule can include other terminal rules in its definition.
