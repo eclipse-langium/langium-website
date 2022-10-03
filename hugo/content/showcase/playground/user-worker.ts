@@ -10,7 +10,12 @@ const messageWriter = new ByPassingMessageWriter(self, messageWrapper);
 messageReader.listenByPass(message => {
     if(message.type === 'validated') {
         const connection = createConnection(messageReader, messageWriter);
-        const { shared } = createServicesForGrammar({grammar: message.grammar, sharedModule: {lsp: {Connection: () => connection}}});
+        const { shared } = createServicesForGrammar({
+            grammar: message.grammar, 
+            sharedModule: {
+                lsp: { Connection: () => connection}
+            }
+        });
         startLanguageServer(shared);
     }
 });

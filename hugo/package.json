@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "clean": "npx shx rm -rf ./static/showcase",
-    "copy:monaco-editor-wrapper": "npx shx cp -fr ./node_modules/monaco-editor-wrapper/bundle ./static/showcase/libs/monaco-editor-wrapper",
+    "copy:monaco-editor-wrapper": "npx shx cp -fr ../node_modules/monaco-editor-wrapper/bundle ./static/showcase/libs/monaco-editor-wrapper",
     "copy:monaco-workers": "npx shx cp -fr ../node_modules/monaco-editor-workers/dist/ ./static/showcase/libs/monaco-editor-workers",
     "build:worker/statemachine": "esbuild ../node_modules/langium-statemachine-dsl/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/statemachineServerWorker.js",
     "build:worker/playground-langium": "esbuild ./content/showcase/playground/langium-worker.ts --bundle --format=iife --outfile=./static/showcase/libs/worker/langiumServerWorker.js",
