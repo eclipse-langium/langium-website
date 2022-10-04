@@ -1,22 +1,21 @@
 ---
 title: "Playground"
 weight: 0
-type: langium
-layout: showcase-page
-url: "/showcase/playground"
-img: "/assets/Langium_Statemachine.svg"
+type: playground
+layout: index
+url: "/playground"
 description: Write your own language on the left and try out your own language edtor on the right.
-geekdochidden: true
+geekdochidden: false
 draft: false
 noMain: true
 ---
-<link rel="preload" as="script" href="../libs/worker/common.js"/>
-<link rel="preload" as="script" href="../libs/worker/langiumServerWorker.js"/>
-<link rel="preload" as="script" href="../libs/worker/userServerWorker.js"/>
+<link rel="preload" as="script" href="./libs/worker/common.js"/>
+<link rel="preload" as="script" href="./libs/worker/langiumServerWorker.js"/>
+<link rel="preload" as="script" href="./libs/worker/userServerWorker.js"/>
 <script type="module">
-  import { MonacoEditorLanguageClientWrapper } from "../libs/monaco-editor-wrapper/index.js";
-  import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
-  import { setupPlayground } from "../libs/worker/common.js";
+  import { MonacoEditorLanguageClientWrapper } from "../showcase/libs/monaco-editor-wrapper/index.js";
+  import { buildWorkerDefinition } from "../showcase/libs/monaco-editor-workers/index.js";
+  import { setupPlayground } from "./libs/worker/common.js";
 
   buildWorkerDefinition(
     "../libs/monaco-editor-workers/workers",
