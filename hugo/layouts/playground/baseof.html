@@ -3,10 +3,9 @@
 <head>
     {{ partial "langium-head" }}
     <style>
-        html, body {
+        html, body, .overlay, .editing-area {
             margin: 0;
             padding: 0;
-            width: 100%;
             height: 100%;
         }
     
@@ -14,6 +13,22 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+        }
+
+        .overlay, .editing-area {
+            position: absolute;
+            width: 50%;
+            top: 0;
+        }
+
+        .overlay {
+            display: none;
+            cursor: not-allowed;
+            z-index: 1000;
+            text-align: center;
+            font-size: 4rem;
+            color: white;
+            background-color: rgba(23,23,23,0.75);
         }
     
         #monaco-editor-root {

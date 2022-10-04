@@ -48,7 +48,7 @@ export type PlaygroundMessage =
   | PlaygroundOK;
 
 export interface MessageBase {
-  jsonrpc: '2.0';
+  jsonrpc: "2.0";
 }
 
 export interface Request extends MessageBase {
@@ -73,10 +73,10 @@ export interface Notification extends MessageBase {
 }
 
 export function isNotification(msg: Message): msg is Notification {
-  return !msg['id'] && msg['method'];
+  return !msg["id"] && msg["method"];
 }
 
-type Message = Request|ResponseError|ResponseOK|Notification;
+type Message = Request | ResponseError | ResponseOK | Notification;
 
 const MagicAction = "PlaygroundMagic";
 
@@ -89,14 +89,14 @@ export type MessageCallback<T> = (data: T) => void;
 
 export class PlaygroundWrapper implements MessageWrapper<PlaygroundMessage> {
   wrap(message: PlaygroundMessage): Message {
-    return { 
+    return {
       jsonrpc: "2.0",
       method: MagicAction,
-      params: [message]
+      params: [message],
     } as Notification;
   }
   unwrap(message: Message): PlaygroundMessage | null {
-    if(isNotification(message) && message.method === MagicAction) {
+    if (isNotification(message) && message.method === MagicAction) {
       return message.params![0] as PlaygroundMessage;
     }
     return null;
@@ -161,6 +161,7 @@ export interface MonacoEditorResult {
   out: ByPassingMessageReader<PlaygroundMessage>;
   in: ByPassingMessageWriter<PlaygroundMessage>;
   editor: MonacoClient;
+  overlay: HTMLElement;
 }
 
 export interface MonacoConfig {
@@ -171,6 +172,7 @@ export interface MonacoConfig {
   theme: string;
   useLanguageClient: boolean;
   useWebSocket: boolean;
+  setMonacoEditorOptions(monacoEditorOptions: Record<string, unknown>): void;
 }
 
 export interface MonacoClient {
@@ -194,6 +196,14 @@ export function setupEditor(
 ) {
   domElement.childNodes.forEach((c) => domElement.removeChild(c));
 
+  const overlay = document.createElement('div');
+  overlay.classList.add('overlay');
+  domElement.appendChild(overlay);
+
+  const editingArea = document.createElement('div');
+  editingArea.classList.add('editing-area');
+  domElement.appendChild(editingArea);
+
   const client = monacoFactory();
 
   const editorConfig = client.getEditorConfig();
@@ -215,24 +225,89 @@ export function setupEditor(
   const result: MonacoEditorResult = {
     out: readerFactory(worker),
     in: writerFactory(worker),
-    editor: client
+    editor: client,
+    overlay
   };
   client.setWorker(worker, {
     reader: result.out,
     writer: result.in,
   });
 
-  client.startEditor(domElement);
+  client.startEditor(editingArea);
 
   return result;
 }
+
+interface ActionRequest {
+  message: PlaygroundMessage;
+  element: HTMLElement;
+  monacoFactory: (name: string) => MonacoClient;
+  editor: MonacoEditorResult|null;
+}
+
+type Action = (params: ActionRequest) => Promise<MonacoEditorResult|null>;
+type Actions = Record<PlaygroundMessageType, Action>;
+
+const messageWrapper = new PlaygroundWrapper();
+
+const PlaygroundActions: Actions = {
+  changing: async ({ message, editor }) => {
+    if(message.type != "changing" || !editor) {
+      return editor;
+    }
+    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
+    editor.overlay.style.display = 'inline-block';
+    return Promise.resolve(editor);
+  },
+  error: async ({ message, editor }) => {
+    if(message.type != "error" || !editor) {
+      return editor;
+    }
+    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
+    editor.overlay.style.display = 'inline-block';
+    return Promise.resolve(editor);
+  },
+  validated: async ({ message, element, monacoFactory, editor }): Promise<MonacoEditorResult|null> => {
+    if(message.type != "validated") {
+      return editor;
+    }
+
+    let content = StateMachineInitialContent;
+    if (editor) {
+      content = editor.editor.getMainCode();
+      await editor.editor.dispose();
+    }
+
+    const { Grammar } = createServicesForGrammar({ grammar: message.grammar });
+    const syntax = generateMonarch(Grammar, "user");
+
+    editor = setupEditor(
+      element,
+      "user",
+      syntax,
+      content,
+      "../../libs/worker/userServerWorker.js",
+      () => monacoFactory("user"),
+      (worker) => new ByPassingMessageReader(worker, messageWrapper),
+      (worker) => new ByPassingMessageWriter(worker, messageWrapper)
+    );
+
+    editor.overlay.style.display = 'none';
+    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: false});
+
+    await editor.in.byPassWrite(message);
+
+    return editor;
+  },
+};
+
+let userDefined: MonacoEditorResult | null = null;
 
 export function setupPlayground(
   monacoFactory: (name: string) => MonacoClient,
   leftEditor: HTMLElement,
   rightEditor: HTMLElement
 ) {
-  const messageWrapper = new PlaygroundWrapper();
 
   const langium = setupEditor(
     leftEditor,
@@ -245,32 +320,13 @@ export function setupPlayground(
     (worker) => new ByPassingMessageWriter(worker, messageWrapper)
   );
 
-  let userDefined: MonacoEditorResult | null = null;
   langium.out.listenByPass(async (message) => {
-    if (message.type !== "validated") {
-      return;
-    }
-    let content = StateMachineInitialContent;
-    if(userDefined) {
-      content = userDefined.editor.getMainCode();
-      await userDefined.editor.dispose();
-    }
-    
-    const { Grammar } = createServicesForGrammar({ grammar: message.grammar });
-    const syntax = generateMonarch(Grammar, "user");
-
-    userDefined = setupEditor(
-      rightEditor,
-      "user",
-      syntax,
-      content,
-      "../../libs/worker/userServerWorker.js",
-      () => monacoFactory("user"),
-      (worker) => new ByPassingMessageReader(worker, messageWrapper),
-      (worker) => new ByPassingMessageWriter(worker, messageWrapper)
-    );
-
-    await userDefined.in.byPassWrite(message);
+    userDefined = await PlaygroundActions[message.type]({
+      message,
+      element: rightEditor,
+      monacoFactory,
+      editor: userDefined
+    });
   });
 
   window.addEventListener("resize", () => {
