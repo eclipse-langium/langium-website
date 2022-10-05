@@ -161,7 +161,7 @@ export interface MonacoEditorResult {
   out: ByPassingMessageReader<PlaygroundMessage>;
   in: ByPassingMessageWriter<PlaygroundMessage>;
   editor: MonacoClient;
-  overlay: HTMLElement;
+  overlay(visible: boolean): void;
 }
 
 export interface MonacoConfig {
@@ -196,9 +196,25 @@ export function setupEditor(
 ) {
   domElement.childNodes.forEach((c) => domElement.removeChild(c));
 
-  const overlay = document.createElement('div');
-  overlay.classList.add('overlay');
-  domElement.appendChild(overlay);
+  const overlayElement = document.createElement('div');
+  overlayElement.classList.add('overlay');
+  overlayElement.classList.add('hidden');
+  domElement.appendChild(overlayElement);
+
+  function overlay(visible: boolean): void {
+    let elements = domElement.querySelectorAll('.overlay');
+    while(elements.length > 1) {
+      elements[0].remove();
+      elements = domElement.querySelectorAll('.overlay');
+    } 
+    if(elements.length === 1) {
+      if(visible) {
+        elements.forEach(e => e.classList.remove('hidden'));
+      } else {
+        elements.forEach(e => e.classList.add('hidden'));
+      }
+    }
+  }
 
   const editingArea = document.createElement('div');
   editingArea.classList.add('editing-area');
@@ -256,7 +272,7 @@ const PlaygroundActions: Actions = {
       return editor;
     }
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
-    editor.overlay.style.display = 'inline-block';
+    editor.overlay(true);
     return Promise.resolve(editor);
   },
   error: async ({ message, editor }) => {
@@ -264,7 +280,7 @@ const PlaygroundActions: Actions = {
       return editor;
     }
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
-    editor.overlay.style.display = 'inline-block';
+    editor.overlay(true);
     return Promise.resolve(editor);
   },
   validated: async ({ message, element, monacoFactory, editor }): Promise<MonacoEditorResult|null> => {
@@ -292,7 +308,7 @@ const PlaygroundActions: Actions = {
       (worker) => new ByPassingMessageWriter(worker, messageWrapper)
     );
 
-    editor.overlay.style.display = 'none';
+    editor.overlay(false);
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: false});
 
     await editor.in.byPassWrite(message);
