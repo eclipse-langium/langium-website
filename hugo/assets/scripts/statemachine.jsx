@@ -7,4 +7,4 @@ function Hello() {
     </div>
   );
 }
-ReactDOM.render(<Hello/>,document.getElementById('show'));
+ReactDOM.render(<Hello/>,document.getElementById('showcase'));
