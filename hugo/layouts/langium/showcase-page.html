@@ -25,7 +25,7 @@
         border-right: 1px solid #fff;
     }
     
-    .preview {
+    .preview-window {
         width: 50%;
         height: 100%;
         float: right;
@@ -50,8 +50,7 @@
             <div class="dark:bg-gray-900" id="monaco-editor-root"></div>
         </div>
     </div>
-    <div class="preview">
-        <div id="showcase"></div>
+    <div class="preview-window" id="preview">
     </div>
 </div>
 
@@ -63,7 +62,7 @@
 {{- $jsFile := resources.Get .Params.file| resources.ExecuteAsTemplate "page.js" . | babel -}}
 <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-<script src="{{ $jsFile.RelPermalink }}"></script>
+<script type="module" src="{{ $jsFile.RelPermalink }}"></script>
 {{ end }}
 
 {{ end }}

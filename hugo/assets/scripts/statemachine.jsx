@@ -1,10 +1,14 @@
+
 function Hello() {
   const [count, setCount] = React.useState(0);
 
   return (
-    <div>
-     Hello World!
+    <div className="placeholder-wrapper">
+     <div className='placeholder'>
+      Preview coming soon
+     </div>
     </div>
   );
 }
-ReactDOM.render(<Hello/>,document.getElementById('showcase'));
+
+ReactDOM.render(React.createElement(Hello), document.getElementById('preview'));
