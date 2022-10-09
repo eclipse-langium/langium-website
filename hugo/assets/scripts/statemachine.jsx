@@ -1,7 +1,5 @@
 
-function Hello() {
-  const [count, setCount] = React.useState(0);
-
+function Preview() {
   return (
     <div className="placeholder-wrapper">
      <div className='placeholder'>
@@ -11,4 +9,4 @@ function Hello() {
   );
 }
 
-ReactDOM.render(React.createElement(Hello), document.getElementById('preview'));
+ReactDOM.render(React.createElement(Preview), document.getElementById('preview'));
