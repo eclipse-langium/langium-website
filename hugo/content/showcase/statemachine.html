@@ -5,9 +5,9 @@ type: langium
 layout: showcase-page
 url: "/showcase/statemachine"
 img: "/assets/Langium_Statemachine.svg"
+file: "scripts/statemachine.jsx"
 description: A language that captures the functionality of a state machine. Demonstrated by modeling a traffic light.
 geekdochidden: true
-file: "scripts/statemachine.jsx"
 draft: false
 noMain: true
 ---
@@ -25,8 +25,9 @@ noMain: true
     }
 
     .placeholder:hover {
-        box-shadow: rgba(100, 100, 111, 0.2) 0px 5px 36px 0px;
+        box-shadow: rgba(38, 136, 140, 0.2) 0px 0px 26px 0px;
     }
+
     .placeholder-wrapper {
         display: flex;
         width: 100%;
@@ -127,4 +128,5 @@ end`);
     client.startEditor(document.getElementById("monaco-editor-root"));
 
     window.addEventListener("resize", () => client.updateLayout());
+      
 </script>

@@ -59,10 +59,10 @@
 {{ .Content }}
 
 {{ if .Params.file }}
-{{- $jsFile := resources.Get .Params.file| resources.ExecuteAsTemplate "page.js" . | babel -}}
-<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-<script type="module" src="{{ $jsFile.RelPermalink }}"></script>
+    {{- $jsFile := resources.Get .Params.file| resources.ExecuteAsTemplate "page.js" . | babel -}}
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script type="module" src="{{ $jsFile.RelPermalink }}"></script>
 {{ end }}
 
 {{ end }}

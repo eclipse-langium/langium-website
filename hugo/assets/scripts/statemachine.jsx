@@ -3,7 +3,7 @@ function Preview() {
   return (
     <div className="placeholder-wrapper">
      <div className='placeholder'>
-      Preview coming soon
+      Preview not available
      </div>
     </div>
   );
