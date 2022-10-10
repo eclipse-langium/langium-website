@@ -86,29 +86,16 @@ export const LangiumMonarchContent = {
   },
 };
 
-export const LangiumInitialContent = `grammar Statemachine
+export const LangiumInitialContent = `grammar HelloWorld
 
-entry Statemachine:
-    'statemachine' name=ID
-    ('events' events+=Event+)?
-    ('commands'    commands+=Command+)?
-    'initialState' init=[State]
-    states+=State*;
+entry Model:
+    (persons+=Person | greetings+=Greeting)*;
 
-Event:
-    name=ID;
+Person:
+    'person' name=ID;
 
-Command:
-    name=ID;
-
-State:
-    'state' name=ID
-        ('actions' '{' actions+=[Command]+ '}')?
-        transitions+=Transition*
-    'end';
-
-Transition:
-    event=[Event] '=>' state=[State];
+Greeting:
+    'Hello' person=[Person:ID] '!';
 
 hidden terminal WS: /\\s+/;
 terminal ID: /[_a-zA-Z][\\w_]*/;
@@ -119,29 +106,9 @@ hidden terminal ML_COMMENT: /\\/\\*[\\s\\S]*?\\*\\//;
 hidden terminal SL_COMMENT: /\\/\\/[^\\n\\r]*/;
 `;
 
-export const StateMachineInitialContent = `statemachine TrafficLight
+export const StateMachineInitialContent = `person John
+person Jane
 
-events
-    switchCapacity
-    next
-
-initialState PowerOff
-
-state PowerOff
-    switchCapacity => RedLight
-end
-
-state RedLight
-    switchCapacity => PowerOff
-    next => GreenLight
-end
-
-state YellowLight
-    switchCapacity => PowerOff
-    next => RedLight
-end
-
-state GreenLight
-    switchCapacity => PowerOff
-    next => YellowLight
-end`;
+Hello John!
+Hello Jane!
+`;
