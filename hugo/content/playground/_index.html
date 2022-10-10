@@ -1,0 +1,45 @@
+---
+title: "Playground"
+weight: 0
+type: playground
+layout: index
+url: "/playground"
+description: Write your own language on the left and try out your own language edtor on the right.
+geekdochidden: false
+draft: false
+noMain: true
+---
+<link rel="preload" as="script" href="./libs/worker/common.js"/>
+<link rel="preload" as="script" href="./libs/worker/langiumServerWorker.js"/>
+<link rel="preload" as="script" href="./libs/worker/userServerWorker.js"/>
+<script type="module">
+  import { MonacoEditorLanguageClientWrapper } from "../showcase/libs/monaco-editor-wrapper/index.js";
+  import { buildWorkerDefinition } from "../showcase/libs/monaco-editor-workers/index.js";
+  import { setupPlayground } from "./libs/worker/common.js";
+
+  buildWorkerDefinition(
+    "../libs/monaco-editor-workers/workers",
+    new URL("", window.location.href).href,
+    false
+  );
+
+  MonacoEditorLanguageClientWrapper.addMonacoStyles("monaco-editor-styles");
+  MonacoEditorLanguageClientWrapper.addCodiconTtf();
+
+  addEventListener('load', function() {
+    const divRoot = document.getElementById("monaco-editor-root");
+    const style = "width:50%; display:inline-block; height: 100%";
+    const leftEditor = document.createElement("div");
+    leftEditor.setAttribute("style", style);
+    const rightEditor = document.createElement("div");
+    rightEditor.setAttribute("style", style);
+    divRoot.appendChild(leftEditor);
+    divRoot.appendChild(rightEditor);
+
+    setupPlayground(
+      (name) => new MonacoEditorLanguageClientWrapper(name),
+      leftEditor,
+      rightEditor
+    );
+  });
+</script>

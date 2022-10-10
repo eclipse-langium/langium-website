@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    {{ partial "langium-head" }}
+    <style>
+        html, body, .overlay, .editing-area {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+    
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .overlay, .editing-area {
+            position: absolute;
+            width: 50%;
+            top: 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .overlay {
+            cursor: not-allowed;
+            z-index: 1000;
+            text-align: center;
+            font-size: 4rem;
+            color: white;
+            background-color: rgba(23,23,23,0.75);
+        }
+    
+        #monaco-editor-root {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+{{/* Default is mono font, but use the regular font in special cases, like for the imprint page */}}
+{{ $extraBodyClass := `font-mono` }}
+{{ if .Params.useRegularFont }}
+    {{ $extraBodyClass = `dark:text-gray-100` }}
+{{ end }}
+<body class='bg-white dark:bg-gray-900 {{ $extraBodyClass }}'>
+    <div x-data="{ isOpen: false }" class="relative bg-white wrapper dark:bg-gray-900">
+        {{ partial "langium-header" }}
+        <div class="relative bg-white wrapper dark:bg-gray-900">
+            <div class="dark:bg-gray-900" id="monaco-editor-root"></div>
+        </div>
+        {{ block "main" . }}
+        {{ end }}
+        {{ partial "langium-footer" }}
+        {{ partial "langium-mobile-menu" }}
+    </div>
+    {{ partial "langium-scripts" }}
+</body>
+</html>

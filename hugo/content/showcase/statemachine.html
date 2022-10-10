@@ -91,7 +91,6 @@ end`);
 
     const devMode = import.meta.env === undefined ? false : import.meta.env.DEV;
     const workerURL = new URL(devMode ? '../../src/language-server/main-browser.ts' : '../libs/worker/statemachineServerWorker.js', import.meta.url);
-    console.log(workerURL.href);
 
     const lsWorker = new Worker(workerURL.href, {
         type: 'classic',
