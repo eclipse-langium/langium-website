@@ -16,24 +16,11 @@ y = 3; // Cannot link, `y` isn't in any of the available scopes
 ```
 
 By default, Langium creates a simplistic, purely block based scoping for your language as shown above. You can use it to reference all elements that are either declared in the current block or in one of its parents.
-However, this behavior can be easily modified to your domain needs, which is required for most languages. In general, resolving references is split into three distinct phases.
+However, this behavior can be easily modified to your domain needs, which is required for most languages.
 
-## Pre-processing
+In general, the reference resolving mechanism is split into three distinct phases of the document lifecycle. [Symbol indexing](/docs/document-lifecycle#symbol-indexing) is responsible for making referencable objects globally available. [Scope computation](/docs/document-lifecycle#computing-scopes) determines which elements are reachable at a certain position in a document. Finally, the [linking phase](/docs/document-lifecycle#linking) eagerly links each reference within a document to its target using scoping rules.
 
-Right after parsing a document, Langium starts a scope pre-processing phase. Before we are able to create references from one element of our language to another, we first have to define which elements are exposed to be referenced and under what name.
+In the following, we will look at different scoping kinds and styles and see how we can achieve them using Langium:
 
-This is the job of the `ScopeComputation` interface. It returns a map that points for each element of a given document to a list of node descriptions which are contained within that element.
-
-```ts
-namespace MyNamespace {
-    function A();
-    function B();
-    function C();
-}
-```
-
-Let's take the code snippet above as an example: The scope computation takes the `MyNamespace` element, creates descriptions (i.e. pointers to a node) for all child elements - functions A, B and C - and associates the `MyNamespace` element with its child descriptions.
-
-## Linking
-
-## Scoping
+1. [Qualified Name Scoping](./qualified-name)
+2. [Class Member Scoping](./class-member)
