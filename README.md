@@ -6,4 +6,4 @@ Our setup uses TailwindCSS to build the styles which are then copied into the Hu
 
 Please look into the sub folders [hugo/](hugo/README.md) and [tailwind/](tailwind/README.md).
 
-You can find the `showcase/` folder [hugo/content/showcase](hugo/content/showcase).
+You can find the `showcase/` folder [here](hugo/content/showcase).
