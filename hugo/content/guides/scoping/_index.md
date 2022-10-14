@@ -18,7 +18,7 @@ y = 3; // Cannot link, `y` isn't in any of the available scopes
 By default, Langium creates a simplistic, purely block based scoping for your language as shown above. You can use it to reference all elements that are either declared in the current block or in one of its parents.
 However, this behavior can be easily modified to your domain needs, which is required for most languages.
 
-In general, the reference resolving mechanism is split into three distinct phases of the document lifecycle. [Symbol indexing](/docs/document-lifecycle#symbol-indexing) is responsible for making referencable objects globally available. [Scope computation](/docs/document-lifecycle#computing-scopes) determines which elements are reachable at a certain position in a document. Finally, the [linking phase](/docs/document-lifecycle#linking) eagerly links each reference within a document to its target using scoping rules.
+In general, the reference resolving mechanism is split into three distinct phases of the document lifecycle. [Symbol indexing](/docs/document-lifecycle#symbol-indexing) is responsible for making objects globally available for referencing. [Scope computation](/docs/document-lifecycle#computing-scopes) determines which elements are reachable at a certain position in a document. Finally, the [linking phase](/docs/document-lifecycle#linking) eagerly links each reference within a document to its target using scoping rules.
 
 In the following, we will look at different scoping kinds and styles and see how we can achieve them using Langium:
 
