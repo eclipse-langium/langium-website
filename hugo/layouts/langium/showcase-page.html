@@ -7,29 +7,6 @@
         height: 100%;
     }
 
-    .container {
-        width: 100%;
-        height: 100%;
-        border: 1px rgba(38, 136, 140) solid;
-        justify-content: center;
-        align-self: center;
-        display: flex;
-    }
-
-    .editor {
-        width: 50%;
-        height: 100%;
-        float: left;
-        border-right: 1px solid #fff;
-    }
-    
-    .preview-window {
-        width: 50%;
-        height: 100%;
-        float: right;
-        padding: 10px;
-    }
-    
     /* Monaco stuff */
     .wrapper {
         display: flex;
@@ -42,13 +19,13 @@
         flex-grow: 1;
     }
 </style>
-<div class="container">
-    <div class="editor">
+<div class="w-full h-full border border-emeraldLangium justify-center self-center flex">
+    <div class="float-left w-1/2 h-full border-r border-white">
         <div class="wrapper relative bg-white dark:bg-gray-900">
             <div class="dark:bg-gray-900" id="monaco-editor-root"></div>
         </div>
     </div>
-    <div class="preview-window" id="preview">
+    <div class="float-right w-1/2 h-full" id="preview">
     </div>
 </div>
 
