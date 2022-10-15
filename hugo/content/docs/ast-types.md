@@ -232,12 +232,13 @@ Let's look at the example from the previous section:
 X infers MyType: name=ID;
 Y infers MyType: name=ID count=INT;
 
-// should be replaced by:
+// generates:
 interface MyType {
     name: string
     count?: number
 }
 
+// should be replaced by:
 X returns MyType: name=ID;
 Y returns MyType: name=ID count=INT;
 ```
