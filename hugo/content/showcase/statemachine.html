@@ -102,6 +102,8 @@ end`);
 
     client.startEditor(document.getElementById("monaco-editor-root"));
 
-    window.addEventListener("resize", () => client.updateLayout());
+    window.addEventListener("resize", () => {
+        client.updateLayout({width: 100, heigth: 100})
+    });
       
 </script>
