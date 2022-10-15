@@ -329,15 +329,16 @@ Let's look at two dummy rules:
 X : A | B;
 
 Y: name=ID;
-```
-The first one is inferring a type alias, and the second one an interface. They are similar to parser rules explained in the [previous section](#inferred-types), but they are not reachable from the entry rule of the grammar. They should be replaced with **declared types** as follows:
-```
+
+//generates:
 type X = A | B;
 
 interface Y {
     name: string
 }
-
+```
+The first one is inferring a type alias, and the second one an interface. They are similar to parser rules explained in the [previous section](#inferred-types), but they are not reachable from the entry rule of the grammar. They should be replaced with **declared types** as follows:
+```
 Y returns Y: name=ID;
 ```
 This way, a layer of safety is introduced and the risk of breaking changes is greatly reduced.
