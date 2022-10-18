@@ -3,6 +3,7 @@
 /hugo/static/css/
 hugo/static/libs
 hugo/static/showcase/
+hugo/static/libs/
 hugo/static/playground/
 node_modules/
 .DS_Store

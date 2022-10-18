@@ -1,3 +1,4 @@
+import { MonacoEditorReactComp } from '@typefox/monaco-editor-react';
 import React, { createRef, HtmlHTMLAttributes, Ref, RefObject } from 'react';
 import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
@@ -134,7 +135,34 @@ function Preview() {
   );
 }
 
+const syntaxHighlighting = {
+  keywords: [
+      'def','module'
+  ],
+  operators: [
+      '-',',',';',':','*','/','+'
+  ],
+  symbols:  /-|,|;|:|\(|\)|\*|\/|\+/,
 
+  tokenizer: {
+      initial: [
+          { regex: /[_a-zA-Z][\w_]*/, action: { cases: { '@keywords': {"token":"keyword"}, '@default': {"token":"ID"} }} },
+          { regex: /[0-9]+(\.[0-9]*)?/, action: {"token":"number"} },
+          { include: '@whitespace' },
+          { regex: /@symbols/, action: { cases: { '@operators': {"token":"operator"}, '@default': {"token":""} }} },
+      ],
+      whitespace: [
+          { regex: /\s+/, action: {"token":"white"} },
+          { regex: /\/\*/, action: {"token":"comment","next":"@comment"} },
+          { regex: /\/\/[^\n\r]*/, action: {"token":"comment"} },
+      ],
+      comment: [
+          { regex: /[^\/\*]+/, action: {"token":"comment"} },
+          { regex: /\*\//, action: {"token":"comment","next":"@pop"} },
+          { regex: /[\/\*]/, action: {"token":"comment"} },
+      ],
+  }
+};;
 
 function App() {
   currentState = dummyData.initialState;
@@ -142,8 +170,7 @@ function App() {
     <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
       <div className="float-left w-1/2 h-full border-r border-emeraldLangium">
         <div className="wrapper relative bg-white dark:bg-gray-900">
-          <div className="dark:bg-gray-900" id="monaco-editor-root">
-          </div>
+          <MonacoEditorReactComp languageId="statemachine" text="blah blah" syntax={syntaxHighlighting}/>
         </div>
       </div>
       <div className="float-right w-1/2 h-full" id="preview">
