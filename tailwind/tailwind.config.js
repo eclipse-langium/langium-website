@@ -1,8 +1,7 @@
 const colors = require('tailwindcss/colors')
 
 module.exports = {
-  mode: 'jit',
-  purge: ['../hugo/layouts/**/*.html','../hugo/content/**/*.html','../hugo/static/**/*.html','../hugo/static/**/*.js'],
+  content: ['../hugo/layouts/**/*.html','../hugo/content/**/*.html','../hugo/static/**/*.html','../hugo/static/**/*.js', '../hugo/assets/scripts/*.tsx', '../hugo/assets/scripts/*.jsx'],
   darkMode: 'class',
   theme: {
     colors: {
@@ -10,7 +9,7 @@ module.exports = {
       current: 'currentColor',
       black: colors.black,
       white: colors.white,
-      gray: colors.trueGray
+      gray: colors.neutral
     },
     extend: {
       fontFamily: {
@@ -29,6 +28,7 @@ module.exports = {
       },
       colors: {
         emeraldLangium: '#26888C',
+        emeraldLangiumABitDarker: '#207578',
         emeraldLangiumDarker: '#0A4340',
         emeraldLangiumDarkest: '#042424',
         accentBlue: '#1FCDEB',

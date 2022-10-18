@@ -61,5 +61,5 @@
 }
 
 .feature-item-content {
-    @apply h-full w-full box-border rounded-xl border-8 border-emeraldLangium dark:border-emeraldLangium sm:px-6 px-2 pb-6 mx-2 sm:mx-0 bg-emeraldLangium dark:bg-gray-900 shadow-lg;
+    @apply h-full w-full box-border rounded-xl border-2 border-emeraldLangium dark:border-emeraldLangium sm:px-6 px-2 pb-6 mx-2 sm:mx-0 bg-emeraldLangium dark:bg-gray-900 shadow-lg;
 }
