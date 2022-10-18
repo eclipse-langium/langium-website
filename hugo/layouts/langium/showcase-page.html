@@ -7,18 +7,35 @@
         height: 100%;
     }
 
+    /* Monaco stuff */
     .wrapper {
         display: flex;
         flex-direction: column;
         height: 100%;
+        width: 100%;
     }
 
     #monaco-editor-root {
         flex-grow: 1;
     }
 </style>
-<div class="wrapper relative bg-white dark:bg-gray-900">
-    <div class="dark:bg-gray-900" id="monaco-editor-root"></div>
+<div class="w-full h-full border border-emeraldLangium justify-center self-center flex">
+    <div class="float-left w-1/2 h-full border-r border-white">
+        <div class="wrapper relative bg-white dark:bg-gray-900">
+            <div class="dark:bg-gray-900" id="monaco-editor-root"></div>
+        </div>
+    </div>
+    <div class="float-right w-1/2 h-full" id="preview">
+    </div>
 </div>
+
+
+
 {{ .Content }}
+
+{{ if .Params.file }}
+    {{- $jsFile := resources.Get .Params.file | resources.ExecuteAsTemplate "page.js" . | babel | js.Build -}}
+    <script type="module" src="{{ $jsFile.RelPermalink }}"></script>
+{{ end }}
+
 {{ end }}
