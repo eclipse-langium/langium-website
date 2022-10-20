@@ -12,10 +12,10 @@ noMain: true
 ---
 
 <script type="module">
-    import { MonacoEditorLanguageClientWrapper } from '../libs/monaco-editor-wrapper/index.js';
-    import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
+    import { MonacoEditorLanguageClientWrapper } from '../../libs/monaco-editor-wrapper/index.js';
+    import { buildWorkerDefinition } from "../../libs/monaco-editor-workers/index.js";
 
-    buildWorkerDefinition('../libs/monaco-editor-workers/workers', new URL('', window.location.href).href, false);
+    buildWorkerDefinition('../../libs/monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
     MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
     MonacoEditorLanguageClientWrapper.addCodiconTtf();

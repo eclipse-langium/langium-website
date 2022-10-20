@@ -1,6 +1,7 @@
 /public/
 /hugo/resources/
 /hugo/static/css/
+hugo/static/libs
 hugo/static/showcase/
 hugo/static/playground/
 node_modules/
