@@ -13,8 +13,8 @@ noMain: true
 <link rel="preload" as="script" href="./libs/worker/langiumServerWorker.js"/>
 <link rel="preload" as="script" href="./libs/worker/userServerWorker.js"/>
 <script type="module">
-  import { MonacoEditorLanguageClientWrapper } from "../showcase/libs/monaco-editor-wrapper/index.js";
-  import { buildWorkerDefinition } from "../showcase/libs/monaco-editor-workers/index.js";
+  import { MonacoEditorLanguageClientWrapper } from "../libs/monaco-editor-wrapper/index.js";
+  import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
   import { setupPlayground } from "./libs/worker/common.js";
 
   buildWorkerDefinition(
