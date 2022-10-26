@@ -22,7 +22,7 @@ In addition to this to Scripps, you also want to add an ES build – script. Ski
 
 No, the bundle the extension, we need the VS Code Extension Manager (vsce). We can also down this from NPM, and in this example were using version to turn 11th of zero. What's the obviously, producing your extension is a simple as running the following.
 
-```
+```bash
 vsce package
 ```
 

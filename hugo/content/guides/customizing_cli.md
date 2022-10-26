@@ -80,7 +80,7 @@ Now that we have our new action in place, we'll want to build a the CLI, and ver
 
 If you've been following along from the hello world example produced by the yeoman generator, then you'll have some errors that we'll need to correct.
 
-If you have errors with regards to your imports of `HelloWorldLanguageMetaData`, this is likely related to your `grammar NAME` in your langium file. The name of your metadata will change based on your grammar file's name, so be sure to update those imports as needed.
+If you have errors with regards to any imports of `HelloWorld...`, this is likely related to your `grammar NAME` in your langium file being something different. The name of these imports will change based on your grammar file's name after `npm run langium:generate`, so in each case you should be able to change each import to `MyLanguage...` to resolve the issue.
 
 You may also have build errors related to the generator logic, especially if it was written for the hello-world semantic model. For now, we can comment out the generator function's contents in **src/cli/generator.ts**, return an empty string, and comment/remove the imports to make TS happy. In the next guide, we'll come back to it and implement an initial version of a generator for our language.
 
@@ -113,7 +113,6 @@ We should get an output indicating that there were no errors with our program.
 
 > Parsed and validated test.logo successfully!
 
-
 If you get a message that indicates you need to choose a file with a given extension, you'll want to go back and update your list of extensions in your **package.json** and your **langium-config.json** in your project root. Then you'll need to run `npm run langium:generate` followed by `npm run build` to get that change incorporated into your CLI.
 
 If we wanted to verify that we *can* get errors, we can modify our program a bit to include a duplicate definition (which we should have a validation for, as we implemented in the validation guide).
@@ -139,6 +138,6 @@ Running the cli again should show that this program has an error, and better yet
 >
 > line 7: Def has non-unique name 'test'. [test]
 
-This is perfect, as we didn't have to implement too much more logic to get validation in our CLI. Since we already did the work in our validation, the CLI just handles the interaction with an external program. This separation of concerns makes for a very flexible implementation that is easy to adapt over time. 
+This is perfect, as we didn't have to implement too much more logic to get validation in our CLI. Since we already did the work in our validation, the CLI just handles the interaction with an external program. This separation of concerns makes for a very flexible implementation that is easy to adapt over time.
 
 That sums up how to add basic CLI functionality. [In the next guide, we will be talking about generation in more detail](/guides/generation), specifically about techniques that you can use to traverse your AST and produce a clean generated output.
