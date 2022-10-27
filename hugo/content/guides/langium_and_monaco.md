@@ -4,53 +4,328 @@ weight: 6
 draft: true
 ---
 
-And this guy will be talking about running Langum in the web with the Monaco editor. If you see Esco before you're probably quite familiar with Monica as it is the underline editor there powers does code. We should also state that just because we are using this code, monaco, in this guide does not mean that you cannot use another coat editor of your choice. For example, you can easily use code mirror or some other editor. If an editor has LSP support, it is very likely you can integrated quite easily with Lancome does LSP compatible. So without further do let's jump into setting up your language in Langham another the knuckle purely in the web.
+In this guide we'll be talking about running Langium in the web with the Monaco editor. If you're not familiar with Monaco, it's the editor that powers VS Code. We're quite fond of it at TypeFox, so we've taken the time to write up this guide to explain how you can integrate Langium in the web with Monaco, no backend required.
 
-To start you're gonna wanna have a language written in Lincoln if you don't have one. If you don't have one you can pull one down for one of our repos such as Langan locks or Langham many logo. For this example will be talking about Lancome you log on but it is a relevant which language you choose so long as you have one's work with. If you want to write one yourself can always use the human generator for me getting started in their documentation section, which will set up the bare-bones hello world language, you can customize to be your favorite on language. That's how mini logo started as well.
+As a disclaimer, just because we are using Monaco in this guide does not mean that you cannot use another code editor of your choice. For example, you can use Code Mirror with Langium as well. Generally, if an editor has LSP support, it is very likely you can integrate it quite easily with Langium, since it's LSP compatible.
 
-Once you have a language picked, you gonna want it in a great Monaco. For example here, we're going to use the the Monaco editor workers and Monaco editor rapper packages from npm. The Monica editor workers package is a support package for Manako. It allows supplying all the knuckle editor workers as modules are classic workers and with some handy utility function to be able to work with the components in Monaco. Monica editor rapper on the other hand frozen convenient way for wrapping a Monica editor with fooling with support and in his support for workers. This includes connecting with the language server via JSON-RPC.
+Without further ado, let's jump into getting your web-based Langium experience setup.
 
-https://www.npmjs.com/package/monaco-editor-wrapper
-https://www.npmjs.com/package/monaco-editor-workers
+## Getting your Language Setup
 
-Both these packages can be added into your dependencies for your project for language. And dish and it's also quite helpful to add Xpress as a dependency will be using it to make it easy way to serve our page containing Langium and Monaco. What also want to add a package Jasonville target that allows us to copy over the minako editor rapper in Minocqua editor workers contents into a library that will be using to reference on a static page as well. Add in the soonest part of our bill process makes a quote easy to update Monaco and update our page as well at the same time. Again, choosing another editor you would want to make sure that the assets required for that an are also copied into your stomach folder. What are you doing this we can proceed to actually implementing the static page itself that when I called like it will be on.
+To begin, you're going to need a Langium-based language to work with. We have already written [langium-minilogo](https://github.com/langium/langium-minilogo) as an example for deploying a language in the web. However, if you've been following along with these guides, you should be ready to move your language into a web-based context.
 
- And now for the actual page itself what are the things if you wanna get started with is making sure that there's a little bit of HTML set up to support our editor. In this case will be setting up just a single paying for Monaco just to make sure things work. Simple sentence can give this with a little bit of styling like so.
+Per usual, we'll be using MiniLogo as the motivating example here.
 
-Add HTML/TSS example here.
+Once you have a language picked, you're going to want to add a script to your **package.json**.
 
-And then the actual logic for configuring Monaco is going to follow. So we can team with an a script tag of type module that will import the Minako editor language client rapper from the Minako at the rapper, and will also get a Billerica definition for Minako editor workers and ask. From this we can  build a worker definitions and actually initialize the language client or the Minocqua editor language play rapper. This includes setting styles setting the font giving an ID setting language ID, etc..
-
-One of the more important aspects of configuring your Minako there is actually giving the syntax highlighting, which is  declared statically in this case. The grammar for providing syntax highlighting in Monaco Monarch. Conveniently, Langum automatically generates a simplified monarch grammar for your language provided you have configured it to do so. By the fault Langum only generates a text message grammar, which is used to support send text highlighting envious coat.
-
-In order to telling him to generate a monarch grammar file, Will need to update the Langham config Duchess on file at the route of our project. If you're using the human generator example, this has been already constructed by default for you. Under languages you can see where your language to find the ID and grammar in the file extensions you'll also notice to text me section with a given output tight. Order to generate a monarch grammar file I have to do is add the monarchy, and a simple object with one property of out, and make this hell world that monitor.es file. Then, the next time you run MPM run Langham generate you will not only constructed text Mike grammar file, but you also construct a monarch grammar file.
-
-Even then copy the contents of this monarch grammar file into your monarch tokens provider in the editor config for Monarch for Monica. This makes it easy in case you wanna change something directly in the language representation. In case you're curious, the monarch grammar grammar language is a simple stack paste purser. So under the tokenize her property, everything with the name is simply corresponding to a state and all of the following elements are actions that can change states or recognize tokens, or both. The documentation for Monarch is a little bit vague, but with this in mind it's much easier to piece together how it's working.
-
-At this point within wanna make sure we set the main code for editor which can be literal text or provided from some other JavaScript file. And we also want to set the theme in this case you can choose one of the default teams, will go with VS dark.
-
-We can also use the editor config to indicate that we are going to be using a language client. We also went to indicate that we are not using the web socket, as we're going to be referencing the language client directly instead of using a connection.
-
-Towards the end of our configuration Will also want to set up a language server worker in the classic style. This is dependent on the URL of your worker, so make sure that those files were they should be. Within set the worker on the client, and start the editor from the client. How to start the editor, we want to make sure that we have an element we want the editor to live with them, so if you haven't figured that before in your HTML make sure to do so now. Ours is called Minako editor route, but you may choose whatever they make sense for your case.
-
-Then as a small touch, Will also add an event listener to respond to resize events on the window and allow the client updated size. This is not necessary, however it's nice to have especially if you plan on squeezing the windows around for testing and keeps everything nice and responsive.
-
-This point we Have our front and set up for application to work. We have Monaco ready to use we had a bill target for it to copy over the library files as needed. However, we're still missing something very important. We still need to be producing a bundle version of Langham to also make referenceable for Monaco. Otherwise won't have access to our language server. If you've been following along with her guides, the last one was talking about call bundling, which is exactly what we're going to be doing here again.
-
-In order to bundle Lincoln for the web we can add a simple target description or package Jason to build the web worker. For this case we're gonna be using ES built so make sure that you have it installed is Deb dependency. Our version is 0.14.47 but yours may vary. Then you can add the following command to be able to produce a minified build of your language server bundled and ready for reference as a worker.
-
-```bash
-esbuild --minify ./out/language-server/main-browser.js --bundle --format=iife --outfile=./out/libs/minilogo-server-worker.js
+```json
+{
+    ...
+    "build:web": "esbuild --minify ./out/language-server/main.js --bundle --format=iife --outfile=./out/libs/minilogo-server-worker.js"
+}
 ```
 
- you may have noticed that this point that I am referencing the main browser dodges file from my language implementation. If you're following along with the hell world example you won't have this instead under language server you'll have a main.js. Either way this is OK, that's just another entry point for your language period for a mini logo it makes sense to create to entry points in addition to the regular mean, also added this main browser.es to provide a secondary entry point to the language server without using the note file system and keeping things more flexible for the web.
+Now, assuming `esbuild` is installed, if we try to invoke this we won't succeed as expected. Intead we'll get a warning back about some dependencies that couldn't be resolved. For example:
 
-In your case you may choose to eat in modify your existing mean.es, again located under source language server slash mean.es. Or if you believe you wanna retain this to be able to construct a local version of your language, you can add a main-browser.es as well like I have. Again, the main difference between the two is that the main browser will be using the empty file system since we're not hooking him with any virtual file system yet on the browser. Will also be adding a message reader and writer that are browser specific to support the language server in the browser. If you member from before this particular Porten, as we are not using web sockets so we need some other mechanism by which to communicate to and from our language server, and our language client.
+> Could not resolve "fs"
 
-Now he's in the command above, be able to build your browser specific bundle of her application important using the program script that we were above for a static page and we are nearly ready to be able to view the page.
+This makes *perfect* sense, if we're bundling for the web, we can't depend on packages that rely on the usual environment with a filesystem. So, we need to update our language to make it compabible in web-based context.
 
-In order to make it a little easier for us to view the page correctly, will set up a demonstration of Xpress application to serve our static assets for us. We can have this listen on portrait thousand and return just static assets from a folder. For convenience, let's just called his folder static, and will just be fetching details that are generated from this folder. To be able to access the six press application wanna add one more script to the scripts in her package Jason, Will call this one serve. And this will just invoke node on the xpress application file. 
+## Factoring out File System Dependencies
 
-At this point you should be able to open your browser important local host: 3000, and you should be able to see an instance of Monaco running in the browser with your code in the editor. How do you make changes to your Cody should be able to see that the syntax highlighting is not only present, but that you're actually being able to use the language server protocol to do things like renaming symbols, taking code actions, and also observing errors in the syntax of your program. If not, carefully double check that the proper resources are loaded into your browser, you can use the inspector for the census is quite helpful. And just make sure that everything is present and not missing, it's not uncommon to have a one file slightly misspelled and so you could always go back and double check to make sure everything is where it should be.
+First off, let's create a new entry point for our language server in **src/language-server/main-browser.ts**. This will mirror the regular entry point that we use to build already, but will allow us to target a web-based context instead. In this file, we'll have the following contents.
 
-And that's it, we have successfully implemented minako in Lincoln in the browser. It's not doing much at this time, but in the next guide we'll talk about using the same set up to hook in generation in the browser as well. By doing generation in the browser, we can lower self to have some sort of affect such as a graphic to draw. In the case of mini logo Will be able to show drawing instructions on an HTML five canvas, that corresponds directly with the program that you have written in Monaco.
+Again, this is based on code that was originally provided by the yeoman generator, thus the **hello world** references.
+
+```ts
+import { startLanguageServer, EmptyFileSystem } from 'langium';
+import { BrowserMessageReader, BrowserMessageWriter, createConnection } from 'vscode-languageserver/browser';
+import { createHelloWorldServices } from './hello-world-module';
+
+declare const self: DedicatedWorkerGlobalScope;
+
+/* browser specific setup code */
+const messageReader = new BrowserMessageReader(self);
+const messageWriter = new BrowserMessageWriter(self);
+
+const connection = createConnection(messageReader, messageWriter);
+
+// Inject the shared services and language-specific services
+const { shared } = createHelloWorldServices({ connection, ...EmptyFileSystem });
+
+// Start the language server with the shared services
+startLanguageServer(shared);
+```
+
+Most of this is very much the same as the **main.ts** file. The exceptions are the message readers & writers to maintain communication with our language client, and the notion of an `EmptyFileSystem` for the browser. There is a virtual file system API that we could try and utilize on most modern browsers, but for this guide we'll assume we aren't using any file system. Instead we'll have a single source 'file' located in our Monaco editor.
+
+We'll also need to include a library to resolve the missing `DedicatedWorkerGlobalScope`, which is normally not accessible until we update our **tsconfig.json** libs entry with `DOM` and `webworker`. From the yeoman generator example, the `lib` entry usually has just `["ESNext"]`.
+
+```json
+{
+    "compilerOptions": {
+        ...
+        "lib": ["ESNext","DOM","webworker"]
+    }
+}
+```
+
+Going back to our script in our **package.json**, be sure to change **main.js** to **main-browser.js**. Like so:
+
+```json
+{
+    ...
+    "build:worker": "esbuild --minify ./out/language-server/main-browser.js --bundle --format=iife --outfile=./out/libs/minilogo-server-worker.js"
+}
+```
+
+Running `npm run build:worker` again, we should see the a bundle is successfully generated without issue. If you're still having problems converting, double check that you're not coupled to `fs` or other file system dependent libraries in a related file.
+
+Note that although our generator *is* still connected to using the file system, it's not relevant for the LSP bundle to function.
+
+## Setting up Monaco
+
+Now we're going to setup Monaco, but not with Langium yet, as we want to be sure it's working first.
+
+For convenience, we're going to use two helper libraries from npm that wrap around some of Monaco's core functionality.
+
+- [monaco-editor-wrapper](https://www.npmjs.com/package/monaco-editor-wrapper)
+- [monaco-editor-workers](https://www.npmjs.com/package/monaco-editor-workers)
+
+Both these packages should be installed as dependencies for your language. Additionally, we'll also want to add `express` as a development dependency (don't forget to also add `@types/express` too), since we'll be using that to run a local webserver to test our generated results with.
+
+We'll also want to add some scripts to our package.json to copy over the necessary files from the monaco-editor-wrapper & monaco-editor-worker into a static library. We'll be referencing these library assets to setup a page for Langium and Monaco.
+
+```json
+{
+    ...
+    "prepare:public": "npx shx mkdir -p ./public; npx shx cp -fr ./src/static/* ./public/",
+    "copy:monaco-editor-wrapper": "npx shx cp -fr ./node_modules/monaco-editor-wrapper/bundle ./public/monaco-editor-wrapper",
+    "copy:monaco-workers": "npx shx cp -fr ./node_modules/monaco-editor-workers/dist/ ./public/monaco-editor-workers",
+    "build:web": "npm run build && npm run prepare:public && npm run build:worker && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers"
+}
+```
+
+The last script is only there to provide a convenient way to invoke all the intermediate build steps at once. You'll want to wait before running the `build:web` script, as we still need to add our **static** assets.
+
+If you went with another editor you would want to make sure that the assets required for that editor will also be copied into this `libs` folder as part of your output.
+
+## Setting up a Static Page
+
+And now for the actual HTML page itself, plus it's supporting pages. To keep things organized, we're splitting up the JS and CSS. We'll be putting these files into a new location from our project root, **src/static/**.
+
+Here's the raw contents of our HTML page stored in **src/static/index.html**. This will serve as a frame for Monaco to be setup within.
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <!-- Page & Monaco styling -->
+        <link href="styles.css" rel="stylesheet"/>
+        <title>MiniLogo in Langium</title>
+    </head>
+    <body>
+        <h1>MiniLogo in Langium</h1>
+        <div class="wrapper">
+            <!-- Monaco Root -->
+            <div id="monaco-editor-root"></div>
+        </div>
+        <br/>
+        <footer>
+            <br/>
+            <p style="font-style:italic">Powered by</p>
+            <img width="125" src="https://langium.org/assets/langium_logo_w_nib.svg" alt="Langium">
+        </footer>
+        <!-- Monaco Configuration -->
+        <script type="module" src="setup.js"></script>
+    </body>
+</html>
+```
+
+And here's the associated CSS stored in **src/static/styles.css**. Without this, our Monaco editor won't show up correctly.
+
+```css
+html,body {
+    background: rgb(33,33,33);
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: white;
+    /* for monaco */
+    margin: 8px auto;
+    width: 80%;
+    height: 80%;
+}
+h1 {
+    text-align: center;
+}
+#minilogo-canvas {
+    display: block;
+    margin: 8px auto;
+    text-align: center;
+}
+footer {
+    text-align: center;
+    color: #444;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+}
+@media(max-width: 1000px) {
+    #minilogo-canvas {
+        margin-top: 32px;
+    }
+}
+/* for monaco */
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+#monaco-editor-root {
+    flex-grow: 1;
+}
+```
+
+Finally, here's the actual Javascript powering our Monaco instance (stored in **src/static/setup.js**), and for setting up Langium as well. This is the most complex part of setting up Langium + Monaco in the web, so we'll walk through the file in parts.
+
+First, we need to import and setup our worker, as well as some of our languaeg client wrapper configuration.
+
+```js
+import { MonacoEditorLanguageClientWrapper } from './monaco-editor-wrapper/index.js';
+import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
+
+buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
+
+MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
+MonacoEditorLanguageClientWrapper.addCodiconTtf();
+```
+
+Then, we'll want to instantiate our language client wrapper, and give it some unique identifier (42 in this case). We'll also need to get a handle for the editor configuration, and set the current language id to `minilogo`. This should match the id of the language that will be recognized by our language server as well.
+
+```js
+const client = new MonacoEditorLanguageClientWrapper('42');
+const editorConfig = client.getEditorConfig();
+editorConfig.setMainLanguageId('minilogo');
+```
+
+Then, we'll want to add some static syntax highlighting. This is a bit verbose, but suffice it to say that the following is a small language for recognizing tokens in MiniLogo and applying styling to those tokens.
+
+```js
+editorConfig.setMonarchTokensProvider({
+    keywords: [
+        'color','def','down','for','move','pen','to','up'
+    ],
+    operators: [
+        '-',',','*','/','+','='
+    ],
+    symbols:  /-|,|\(|\)|\{|\}|\*|\/|\+|=/,
+
+    tokenizer: {
+        initial: [
+            { regex: /#(\d|[a-fA-F])+/, action: {"token":"string"} },
+            { regex: /[_a-zA-Z][\w_]*/, action: { cases: { '@keywords': {"token":"keyword"}, '@default': {"token":"string"} }} },
+            { regex: /-?[0-9]+/, action: {"token":"number"} },
+            { include: '@whitespace' },
+            { regex: /@symbols/, action: { cases: { '@operators': {"token":"operator"}, '@default': {"token":""} }} },
+        ],
+        whitespace: [
+            { regex: /\s+/, action: {"token":"white"} },
+            { regex: /\/\*/, action: {"token":"comment","next":"@comment"} },
+            { regex: /\/\/[^\n\r]*/, action: {"token":"comment"} },
+        ],
+        comment: [
+            { regex: /[^\/\*]+/, action: {"token":"comment"} },
+            { regex: /\*\//, action: {"token":"comment","next":"@pop"} },
+            { regex: /[\/\*]/, action: {"token":"comment"} },
+        ],
+    }
+});
+```
+
+We can actually autogenerate this Monarch configuration information by updating our **langium-config.json** to also produce this monarch syntax highlighting file as output. Note that although we're talking about MiniLogo here, we based this example off of the hello-world example produced by the yeoman generator. As such, we still have hello world names here and there, and for this guide, we'll just use the same name again as for the TextMate grammar.
+
+```json
+...
+"textMate": {
+    "out": "syntaxes/hello-world.tmLanguage.json"
+},
+"monarch": {
+    "out": "syntaxes/hello-world.monarch.ts"
+}
+```
+
+To generate this file, run `npm run langium:generate`. You can then copy over the definition of the grammar from **syntaxes/hello-world.monarch.ts** (or whatever other name you have given this file) into the `setMonarchTokensProvider` function to setup that highlighting. Keep in mind that this generated monarch grammar is *very* simple. If you want more complex highlighting, we recommend writing your own custom monarch grammar, and storing it somewhere else to prevent it from being overriden. If you're interested, you can find more details about the [Monarch grammar highlighting language here](https://microsoft.github.io/monaco-editor/monarch.html).
+
+Then, we want to setup the code that shows up by default. For now, we're going to statically set this.
+
+```js
+editorConfig.setMainCode(`
+def test() {
+    pen(down)
+    move(10,10)
+    pen(up)
+}
+
+color(blue)
+test()
+`);
+```
+
+Lastly, we'll cap off our JS file with some final configurations to setup the theme, configure how we use Langium's language server, and finish setting up the editor.
+
+```js
+editorConfig.theme = 'vs-dark';
+editorConfig.useLanguageClient = true;
+editorConfig.useWebSocket = false;
+
+const workerURL = new URL('./minilogo-server-worker.js', import.meta.url);
+console.log(workerURL.href);
+
+const lsWorker = new Worker(workerURL.href, {
+    type: 'classic',
+    name: 'LS'
+});
+client.setWorker(lsWorker);
+
+client.startEditor(document.getElementById("monaco-editor-root"));
+
+window.addEventListener("resize", () => client.updateLayout());
+```
+
+## Serving via Express
+
+Now that we have our files all setup, and our build process prepared, we can put together a mini express application to make viewing our public assets easy. We'll do this by adding **src/web/app.ts** to our project.
+
+```ts
+/**
+ * Simple app for serving generated examples
+ */
+
+import express from 'express';
+const app = express();
+const port = 3000;
+app.use(express.static('./public'));
+app.listen(port, () => {
+console.log(`Server for MiniLogo assets listening on http://localhost:${port}`);
+});
+```
+
+And to invoke express, we need to add one more script to our package.json.
+
+```json
+{
+    ...
+    "serve": "node ./out/web/app.js"
+}
+```
+
+That's it! Now we can build all the assets for the web, and run express to be able to view our demo of Langium in the web.
+
+```bash
+npm run build:web
+npm run serve
+```
+
+You should be greeted with a page that contains a working Monaco instance and a small MiniLogo program in the editor. This editor has the highlighting we would expect, and also is fully connected to the language server for our language. This means we have full LSP support for operations that we would expect to have in a desktop editor.
+
+And that's it, we have successfully implemented Langium + Monaco in the web with our language. It's not doing much at this time besides presenting us with an editor, but in the next guide we'll talk about using the same setup to add generation in the web. Since our generation has already been configured in prior guides, we can use what we've written to quickly implement a web application that translates MiniLogo programs into drawing instructions for an HTML5 canvas.
