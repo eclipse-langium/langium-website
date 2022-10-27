@@ -21,7 +21,7 @@ Once you have a language picked, you're going to want to add a script to your **
 ```json
 {
     ...
-    "build:web": "esbuild --minify ./out/language-server/main.js --bundle --format=iife --outfile=./out/libs/minilogo-server-worker.js"
+    "build:web": "esbuild --minify ./out/language-server/main.js --bundle --format=iife --outfile=./public/minilogo-server-worker.js"
 }
 ```
 
@@ -29,7 +29,7 @@ Now, assuming `esbuild` is installed, if we try to invoke this we won't succeed 
 
 > Could not resolve "fs"
 
-This makes *perfect* sense, if we're bundling for the web, we can't depend on packages that rely on the usual environment with a filesystem. So, we need to update our language to make it compabible in web-based context.
+This makes *perfect* sense if we're bundling for the web, since we can't depend on packages that rely on the usual environment with a filesystem. So, we need to update our language to make it compabible in web-based context.
 
 ## Factoring out File System Dependencies
 
@@ -75,7 +75,7 @@ Going back to our script in our **package.json**, be sure to change **main.js** 
 ```json
 {
     ...
-    "build:worker": "esbuild --minify ./out/language-server/main-browser.js --bundle --format=iife --outfile=./out/libs/minilogo-server-worker.js"
+    "build:worker": "esbuild --minify ./out/language-server/main-browser.js --bundle --format=iife --outfile=./public/minilogo-server-worker.js"
 }
 ```
 
@@ -261,13 +261,17 @@ Then, we want to setup the code that shows up by default. For now, we're going t
 ```js
 editorConfig.setMainCode(`
 def test() {
+    move(100, 0)
     pen(down)
-    move(10,10)
+    move(100, 100)
+    move(-100, 100)
+    move(-100, -100)
+    move(100, -100)
     pen(up)
 }
-
-color(blue)
+color(white)
 test()
+
 `);
 ```
 

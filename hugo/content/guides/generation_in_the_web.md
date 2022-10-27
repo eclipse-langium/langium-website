@@ -4,40 +4,443 @@ weight: 7
 draft: true
 ---
 
-And this guy will be talking about how to perform generation the web. We're assuming that you've already looked over most of our other guys at this point, or are relatively comfortable with  Langham and Monaco in the web. We also send that you have already set up song from generation for your language. If you haven't, you should go back to the generation guide, and take a moment to read that over and make sure that you can only understand it, but I've also set up something that is generated so that you can then use that I'll put in this part of the guide.  in the case that you don't have a language to customize, you can use one of our pre-existing languages Like Langer mini logo, which is specially designed to run in the web and follow along with that.
+In this guide we'll be talking about how to perform generation in the web by exposing a generator API from Langium. We should note that there are multiple ways to hook into Langium to utilize the generator, such as by registering (and invoking) a custom LSP command. However you set up your generation however, you'll still likely want to do the same preprocessing of your AST within Langium itself.
 
-One of the first things we want to establish is what we're going to be generating for in the web. This is often quite dependent on the domain of the language which you're working with. For this guy will be talking about the mini local language implement it in the Langham engineering framework. The domain for this language is dry and corresponds to graphical outfit. This works quite well and a web best contacts, as we will be using our language to correspond to drawing instructions on HTML5 canvas. For your language, you could easily perform some similar kind of matching, such as for a state machine based example with some sort of diagram based output to represent the state machine also shown on the webpage. There's no way to do this, so it's a little bit flexible based on the requirements and needs of your language and also your design application.
+We'll assume that you've already looked over most of our other guides at this point. It is particularly important that you have a language with working generation, and have a working instance of Langium + Monaco for your language. In the case that you don't have a language to work with, you can follow along with [MiniLogo](https://github.com/langium/langium-minilogo), which is the example language this is used often and throughout these guides.
 
-For mini logo our goals upfront or pretty simple. Support editing mini logo programs in the browser. Support generation of drawing instructions from these programs also in the browser. Have a simple programs running in the browser, that uses these drawing instructions To produce some sort of visualization on an HTML five canvas. For these requirements, it makes the parts that we're gonna be designing for the generator really really clear out front. This is a very important step, even though it involves no actual coding, as it will dictate the rest of your design process. Setting up the generator the web, but without a clear intention is to hot will be used, could lead to more problems than solutions down the road.
+Since we're working with MiniLogo, we already know that our generated output is drawing instructions that transform some drawing context. Better yet, we kept our generated output, consisting of simple commands in a JSON array. Now that we're working in a web-based context, this approach lends itself naturally towards manipulating an HTML5 canvas.
 
-Based on the guys that we have already read so far, particular one about running Langham and Monaco in the web, we already have set up working with mini logo and Monaco pause language 2 web. If you haven't already set this up you can go back to that guide and give it a look over to understand what's going on there. Continuing off of this example presented in that guide, we want to add a new feature to arm for mentation. Do you want to pull out only the generator separate from the actual language server worker. We have to do this because the current format for the worker, is it immediately executable format, and does not support allowing some other imports from it. So, to get access to the generator self we have to produce a second bundle that specifically exports the generator endpoint. Turns out this is actually pretty easy to do.
+The parts that we still need to setup are a way to access our generator, and a way to process our generated output into drawing instructions for an HTML5 canvas.
 
-We'll start by adding a new folder, called web. Much like the Sealife older this folder will describe or any points but in a web-based contacts. Well then create an index.TS file in this folder. This file will contain a single exported function as our entry point, which will be accessible from the bundle will be importing later on. For mini logo, this function is called parts and generate. Much like the name suggests, dysfunction takes a mini local program as a literal string, parts is it, and then generates output based on the AST that is produced. The share some logic that was used with the COI before, so the coach should be familiar. However, since you're working in the web, there is no CLI here so we're just invoking the functions directly.
+## Getting Access to the Generator
 
-We do have to make a slight change to the way that we extract an AST note however. Previously we actually use a file on disk to actually parts and perform some generation off of. In the web, we have no such file, instead it's a string stored in memory. So we're going to do is create a document in memory that has an arbitrary you are, that suggested it is in a memory document. Well then constructors document and add validation checks to it. At this point we can then check the parts result and return it as it is without any other considerations. Without the steps you would have some significant issues, as the default no distraction would not work since there is no physical file on this to work with anymore.
+Based on the work done in previous guides, we already have set up a working with MinLogo generator. If you haven't already set this up you can go back to the [guide on generation](/guides/generation) and give it a look over. Continuing off of the code written in that guide, we want to factor out our generator logic, so we can access it from the browser. To do this, we're going to create a 2nd bundle of our application. We have to do this because the current bundle format (IIFE) is designed for the language server worker, and does not support allowing some other imports from it. So, to get access to the generator itself, we have to produce a second bundle that specifically exports the generator endpoint. Turns out this is pretty easy to do.
 
-As a sidenote it's important to make sure that the code that your generator depends on, is not tightly coupled with any file system related functionality, or anything that is not compatible working in the browser. From the human generate example with the hello world language, the logic for the generator is deeply tied with the CLI. Thankfully the implementation is quite simple, and it's not too difficult to decouple, but it is something that you will need to do couple if you wish to have generation logic that is completely independent of any seal I logic that is fixed to the desk.
+We'll start by adding a new file **src/web/index.ts** that will act as the entry point for our new bundle. This directory was created in the previous tutorial about running Langium + Monaco in the web, and should already contain an express `app.ts` configuration. 
 
-Now this files complete I can add a new script in my package Jason cold milk generator. Descriptive OTS build much like we have been doing before, except it will be targeting are newly created web/index.TS file; which is the entry point for generator alone. Will also give us a global name to make the import user to manage.
+Our new file will contain a single exported function as our entry point, which will be imported into our web application. For MiniLogo we'll call this function `parseAndGenerate`. Much like the name suggests, this function takes a concrete MiniLogo program, parses it, and then generates output based on the AST that is produced. This will share some logic that was used with the CLI before, so the code should be familiar.
 
+For our `parseAndGenerate` function to work, we will have to make a slight change to the way that we extract an AST node from our document. Previously, we referenced a file on disk to read from. In this context we have no such file, instead our program is a string stored in memory. So, we'll need to create an in-memory document. Once we have this document, the rest of our process is the same. We can write this supporting function for creating in-memory documents like so:
+
+```ts
+import { AstNode, LangiumServices } from "langium";
+import { URI } from "vscode-uri";
+
+/**
+ * Extracts an AST node from a virtual document, represented as a string
+ * @param content Content to create virtual document from
+ * @param services For constructing & building a virtual document
+ * @returns A promise for the parsed result of the document
+ */
+ async function extractAstNodeFromString<T extends AstNode>(content: string, services: LangiumServices): Promise<T> {
+    // create a document from a string instead of a file
+    const doc = services.shared.workspace.LangiumDocumentFactory.fromString(content, URI.parse('memory://minilogo.document'));
+    // proceed with build & validation
+    await services.shared.workspace.DocumentBuilder.build([doc], { validationChecks: 'all' });
+    // get the parse result (root of our AST)
+    return doc.parseResult?.value as T;
+}
 ```
-"build:generator": "esbuild --minify ./out/web/index.js --bundle --global-name=MiniLogo --outfile=./out/libs/minilogo-generator.js",
+
+Once we have this function in place, we can create our `parseAndGenerate` function.
+
+```ts
+import { EmptyFileSystem } from "langium";
+import { createHelloWorldServices } from '../language-server/hello-world-module';
+import { Model } from "../language-server/generated/ast";
+import { generateCommands } from '../generator/generator';
+
+/**
+ * Parses a MiniLogo program & generates output as a list of Objects
+ * @param miniLogoProgram MiniLogo program to parse
+ * @returns Generated output from this MiniLogo program
+ */
+export async function parseAndGenerate (miniLogoProgram: string): Promise<Object[]> {
+    const services = createHelloWorldServices(EmptyFileSystem).HelloWorld;
+    const model = await extractAstNodeFromString<Model>(miniLogoProgram, services);
+    // generate mini logo drawing commands from the model
+    const cmds = generateCommands(model);
+    return Promise.resolve(cmds);
+}
 ```
 
- using the examples presented in the previous guides, will be looking at the static age to my page that we used in the lingam plus Monaco guide. We can use everything we've written before, but at a script at the top of the file that imports from our libraries, or bundles mini logo generator file. Because of the way we've constructed this bundle, it will automatically make the mini logo term available at the top of the global scope. We can then add a simple button to her page, and register for click events specifically for function, let's call it update local canvas. We can implement this function below and I skip module, so that we have access to all of the other Monaco editor support. In this function, as a call back, we can retrieve the current contents of the editor that have been changed using client that editor don't get value open). After this we can directly invoke the generator using our mini logo the parts and generate function, and passing the new program value into it. At this point, the result is completely dependent on whatever our generator returns. For many logo generator returns a list of commands I can be executed by some simple stack base machine. This means we can pass or commands into a simple JavaScript function that removes elements from the stack one of the time, and performs an action that corresponds to that at that element type.
+Ah, but we don't yet have a `generator` folder. So let's make that real quick.
 
-Now we need a place to actually perform are drawn, and also function to perform the drawing with. In order to do this mean to make a pair of changes to example. The first is that we need to actually add a canvas element on the page. This is a simple as adding a canvas HTML element would you give an idea, so that we can find it easily later. In my example I also wanted to be able to view Monaco in the cameras side by side so I've included a little bit of CSS here to split the views roughly 5050.
+## Factoring out the Generator
 
-I've also included some boiler plate logic to actually take the commands that are produced by the generator, and perform drawing actions. This voice generating redundant code that would be the same on every generation. As far one clued an update many local canvas function, which gets gets the canvas context set up a basic state, and removes commands off the stack one of the time. For each command specific action is hand, which corresponds to some affect on either the canvas, the state, or both. For example, the pinup command simply changes the state so that the pennies up and that the any pre-existing stroke is completed on the campus. On the opposite, the pen down command set the states that the pen is not down, and it also begins a path on the current canvas context I said the position. The movie man provides a relative x & y position, Which are added to the pre-existing state. Listen corresponds to move in the context to that position. Lastly the color command fairly simply changes a stroke style to a given color.
+It's important to make sure that the code that your generator depends on is not tightly coupled with any file system related functionality, or anything that is not compatible with running in the browser. From the yeoman generator example, the logic for the generator is connected with the CLI, which uses the file system. Thankfully, the implementation is quite simple, and it's not too difficult to decouple.
 
-As you may have noticed, the generation does not actually handle any of the control for logic, such as 44 loops. It also doesn't include any notion of macros or references, or definitions. This is because they are not actually needed to perform the actual generation logic. I could export them, through the generation, and be able to update my machine here to be able to run on these types. But for the simple example I was only interested in the direct commands that manipulate the context. Because I was aware that I only needed these commands I was able to offered most of the generator work to produce some simple outfit that would work. In your case, you may find some simplification during generation helpful, as a form of Semantically preserving translation it does not change the meaning of your program but perhaps makes it simple to work on. At one point, me logo even generated it's on JavaScript code to run all these commands, effectively performing a simple transpiration process; but without optimizations.
+First, create a new folder, **src/generator/** . Then, move **src/cli/generator.ts** to **src/generator/generator.ts**. Be sure to update imports in your generator, as well as anything in the CLI after moving this file.
 
-Lastly, a small delay is added between commands that are removed off of the stack, so sick of the effect of the campus is being drawn in real time. This is purely graphically entertaining, and has no functional relevance, but it definitely add a nice touch to the end result.
+Alright, now we need to decouple the file system related functionality from the generator. To do this, we're going to take our `generateCommands` function, and compress it down to this.
 
-No, using the same xpress server that I wrote before, with all that static assets. I can proceed to start my application view it in the web, and see my program on the left, and an html canvas on the right. An image should be drawn in the canvas, wishing to get to the generation & stack machine is working. Addition, I can change the program Contained in Monaco, and hit the update campus button. I should see the canvas clear, and a new image be drawn with the star changes.
+```ts
+/**
+ * Generates simple drawing commands from a MiniLogo Model
+ * @param model Model to generate commmands from
+ * @returns Generated commands that captures the program's drawing intent
+ */
+export function generateCommands(model: Model): Object[] {
+    return generateStatements(model.stmts);
+}
+```
 
-And that's it. At this point we have a complete language running in the web based contacts with Monica, with LSP support. We also have a generator and point that allows taking our program in Monaco, converting it to self command, and then running this through a simple stock base machine in JavaScript to produce in effect on the HTML5 campus. Although this example is purely demonstrational, indicates how lingam can be clean the integrated through all steps in the process to produce a nice functional language implementation with excellent support throughout the way. It is easy to imagine how one couldn't extend this generator or this example and produce their own functionality. For example extending from an HDMI five canvas to a three-dimensional web GL context might be it next path. It's even possible to imagine that you might have multiple generator target, as there is no requirement to simply have a single generator endpoint. You could add as many as you need for each specific target, and even share functionality between generators for a common components or aspects that are shared. This is hugely advantageous and decouples it completely from the implementation on the browser side, it's totally up to you I want it to work.
+Notice how we dropped all the other parameters, as well as any other logic *besides* the actual generation itself. This is what we want, a simple generator interface that does exactly that, and nothing else. However, this completely breaks the CLI `generateAction` that we wrote before, so we need to back over and correct it as well.
 
-At this point now we have a full stack for a system and we aren't even using it back in. However should we choose to do so we could easily Inc. back in and he's websites to make that work with Monica.
+```ts
+import { extractDestinationAndName } from './cli-util';
+import path from 'path';
+import fs from 'fs';
 
-We hope that this is been an lighten the experience reading through these guys, and that you've learned something about how to implement your language using the Langium engineering framework.
+export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
+    const services = createHelloWorldServices(NodeFileSystem).HelloWorld;
+    const model = await extractAstNode<Model>(fileName, services);
+
+    // invoke generator to get commands
+    const cmds = generateCommands(model);
+
+    // handle file related functionality here now
+    const data = extractDestinationAndName(fileName, opts.destination);
+    const generatedFilePath = `${path.join(data.destination, data.name)}.json`;
+    if (!fs.existsSync(data.destination)) {
+        fs.mkdirSync(data.destination, { recursive: true });
+    }
+    fs.writeFileSync(generatedFilePath, JSON.stringify(cmds, undefined, 2));
+
+    console.log(chalk.green(`MiniLogo commands generated successfully: ${generatedFilePath}`));
+};
+```
+
+Now the generator is cleanly separated from our CLI, and thus from our file system dependencies.
+
+## Importing the Generator
+
+Now that this file is complete we can add a new script to our package.json called `build:generator`. This script is much like what we have been doing before, except it will be targeting our newly created **web/index.ts** file; which allows us to access the generator.
+
+```json
+{
+    ...
+    "build:generator": "esbuild --minify ./out/web/index.js --bundle --global-name=MiniLogo --outfile=./public/minilogo-generator.js",
+}
+```
+
+You'll also want to run this script before (or add it to) your `build:web` script, ensuring that you actually get the generator file into your public folder before serving it.
+
+Now, if you've been following along with our prior guides, you should have a **src/static/** folder already setup with an HTML and JS file. We can now go into the HTML file, and make a few changes:
+- nclude our generator importing script
+- add a canvas
+- add a button to trigger updating the canvas
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <!-- Page & Monaco styling -->
+        <link href="styles.css" rel="stylesheet"/>
+        <!-- add our generator -->
+        <script src="./minilogo-generator.js" async></script>
+        <title>MiniLogo in Langium</title>
+    </head>
+    <body>
+        <h1>MiniLogo in Langium</h1>
+
+        <!-- Use a wrapper to display Monaco + Canvas side-by-side -->
+        <div id="page-wrapper">
+            <!-- Monaco half -->
+            <div class="half">
+                <div class="wrapper">
+                    <div id="monaco-editor-root"></div>
+                </div>
+            </div>
+            <!-- Canvas half -->
+            <div class="half">
+                <canvas id='minilogo-canvas' width=500 height=600></canvas>
+            </div>
+        </div>
+
+        <!-- Add a button to update our canvas, will invoke a globally accessible function -->
+        <div>
+            <input class="build" type="button" value="Update Canvas" onclick="window.generateAndDisplay()">
+        </div>
+
+        <br/>
+        <footer>
+            <br/>
+            <p style="font-style:italic">Powered by</p>
+            <img width="125" src="https://langium.org/assets/langium_logo_w_nib.svg" alt="Langium">
+        </footer>
+        <!-- Monaco Configuration -->
+        <script type="module" src="setup.js"></script>
+    </body>
+</html>
+```
+
+We need to update our CSS as well to allow a side-by-side view of Monaco and our canvas. You can replace your previous CSS file with these new contents to achieve that effect.
+
+```css
+html,body {
+    background: rgb(33,33,33);
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: white;
+    /* for monaco */
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+h1 {
+    text-align: center;
+}
+#minilogo-canvas {
+    display: block;
+    margin: 8px auto;
+    text-align: center;
+}
+#page-wrapper {
+    display: flex;
+    max-width: 2000px;
+    margin: 4px auto;
+    padding: 4px;
+    min-height: 80vh;
+    justify-content: center;
+}
+#page-wrapper .half {
+    display: flex;
+    width: 40vw;
+}
+.build {
+    display: block;
+    margin: 8px auto;
+    width: 300px;
+    height: 30px;
+    background: none;
+    border: 2px #fff solid;
+    color: #fff;
+    transition: 0.3s;
+    font-size: 1.2rem;
+    border-radius: 4px;
+}
+.build:hover {
+    border-color: #6cf;
+    color: #6cf;
+    cursor: pointer;
+}
+.build:active {
+    color: #fff;
+    border-color: #fff;
+}
+footer {
+    text-align: center;
+    color: #444;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+}
+@media(max-width: 1000px) {
+    #page-wrapper {
+        display: block;
+    }
+    #page-wrapper .half {
+        display: block;
+        width: auto;
+    }
+    #minilogo-canvas {
+        margin-top: 32px;
+    }
+    #page-wrapper {
+        min-height: auto;
+    }
+}
+
+/* for monaco */
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+#monaco-editor-root {
+    flex-grow: 1;
+}
+```
+
+At this point, running `npm run build:web && npm run serve` should show Monaco on the left, an empty space on the right (this is the canvas), along with an "Update Canvas" button at the bottom. If you see this, then you can trust that the layout was updated correctly.
+
+We'll also want to go into our JS file, and add a small modification to the end. This change will create a global function on the window, giving us a callback that lets us invoke the generator on our program in the Monaco editor. It's important that this goes into the same file as you Monaco setup code, as it directly interacts with the Monaco language client instance.
+
+```js
+const generateAndDisplay = (async () => {
+    console.info('generating & running current code...');
+    const value = client.editor.getValue();
+    // parse & generate new command stack for drawing a new image
+    const minilogoCmds = await MiniLogo.parseAndGenerate(value);
+    updateMiniLogoCanvas(minilogoCmds);
+});
+
+// Updates the mini-logo canvas
+window.generateAndDisplay = generateAndDisplay;
+
+// Takes generated MiniLogo commands, and draws on an HTML5 canvas
+function updateMiniLogoCanvas(cmds) {
+    // print the commands out, so we can verify what we have received.
+    alert(JSON.stringify(cmds));
+}
+```
+
+Running the build & serve workflow again, you should be able to now click "Update Canvas" and view an alert containing your generated commands corresponding with your program.
+
+## Interpreting Draw Commands
+
+If you've gotten to this point then you're on the final stretch here. The last part we need to implement is the actual logic that takes our drawing commands and updates the canvas. This logic will replace the existing contents of `updateMiniLogoCanvas`, and we'll walk through each step here.
+
+First, let's get a handle on our canvas, as well as the associated 2D context.
+
+```js
+const canvas = document.getElementById('minilogo-canvas');
+const context = canvas.getContext('2d');
+```
+
+We'll also want to clean up the context, in case we alredy drew something there before. This will be relevant when we're updating the canvas multiple times with a new program.
+
+```js
+context.clearRect(0, 0, canvas.width, canvas.height);
+```
+
+Next, we want to setup a background grid to display. It's not essential for drawing, but it looks nicer than an empty canvas.
+
+```js
+context.beginPath();
+context.strokeStyle = '#333';
+for (let x = 0; x <= canvas.width; x+=(canvas.width / 10)) {
+    context.moveTo(x, 0);
+    context.lineTo(x, canvas.height);
+}
+for (let y = 0; y <= canvas.height; y+=(canvas.height / 10)) {
+    context.moveTo(0, y);
+    context.lineTo(canvas.width, y);
+}
+context.stroke();
+```
+
+After drawing a grid, let's reset the stroke to white color, right before we begin drawing our commands.
+
+```js
+context.strokeStyle = 'white';
+```
+
+Now, let's setup some initial drawing state:
+
+```js
+// maintain some state about our drawing context
+let drawing = false;
+let posX = 0;
+let posY = 0;
+```
+
+And let's begin dispatching each of our commands. To do this, we'll setup an interval that repeatedly shifts the top element from our list of commands, dispatches, it and repeats. Once we're our of commands to dispatch, we'll clear the interval.
+
+```js
+// use the command list to execute each commmand with a small delay
+const id = setInterval(() => {
+    if (cmds.length > 0) {
+        dispatchCommand(cmds.shift(), context);
+    } else {
+        // finish existing draw
+        if (drawing) {
+            context.stroke();
+        }
+        clearInterval(id);
+    }
+}, 1);
+```
+
+The dispatch command itself is actually pretty straight forward. We only have 4 commands we need to worry about:
+- penUp
+- penDown
+- move
+- color
+
+Knowing this, and the details about what properties each command type can have, we can dispatch each command and update our context like so:
+
+```js
+// dispatches a single command in the current context
+function dispatchCommand(cmd, context) {
+    if (cmd.cmd) {
+        switch (cmd.cmd) {
+            // pen is lifted off the canvas
+            case 'penUp':
+                drawing = false;
+                context.stroke();
+                break;
+
+            // pen is put down onto the canvas
+            case 'penDown':
+                drawing = true;
+                context.beginPath();
+                context.moveTo(posX, posY);
+                break;
+
+            // move across the canvas
+            // will draw only if the pen is 'down'
+            case 'move':
+                const x = cmd.x;
+                const y = cmd.y;
+                posX += x;
+                posY += y;
+                if (!drawing) {
+                    // move, no draw
+                    context.moveTo(posX, posY);
+                } else {
+                    // move & draw
+                    context.lineTo(posX, posY);
+                }
+                break;
+
+            // set the color of the stroke
+            case 'color':
+                if (cmd.color) {
+                    // literal color or hex
+                    context.strokeStyle = cmd.color;
+                } else {
+                    // literal r,g,b components
+                    context.strokeStyle = `rgb(${cmd.r},${cmd.g},${cmd.b})`;
+                }
+                break;
+
+        }
+    }
+}
+```
+
+Lastly, we want to view the page with some output on the canvas, rather than an empty half of the screen. We can address this by setting the `generateAndDisplay` function to be called once the window is finished loading. We'll want to place this at the end of our file, or somewhere where it will be invoked when this script is loaded.
+
+```js
+window.onload = generateAndDisplay;
+```
+
+That's it, we're all done writing up our JS file. We should now be able to run the following (assuming the generator script is also executed by `build:web`), and get the result in `localhost:3000`.
+
+```bash
+npm run build:web
+npm run serve
+```
+
+You should see a white diamond sketched out on the canvas, and if so, congratulations! You've just successfully written your own Langium-based language, deployed it in the web, and hooked up generation to boot. In fact, you've done *quite* a lot if you've gone through all of these guides so far.
+
+- writing your own grammar
+- implementing custom validation
+- customizing your cli
+- adding generation
+- configuring code bundling
+- building an extension
+- setting up Langium + Monaco in the web
+- finally adding generation to draw images
+
+And the concepts that we've gone over from the beginning to now are not just for MiniLogo of course, they can be easily generalized to work for your language as well. As you've been going through these tutorials, we hope that you've been thinking about how you could have done things *differently* as well. Whether a simple improvement, or another approach, we believe it's this creative kind of thinking that takes an idea of a language and really allows it to grow into something great.
+
+It is easy to imagine how one could extend their generator or this example and produce their own functionality. For example, extending from an 2D context to a 3D context via WebGL could be an interesting direction. It's even possible to imagine that you might have multiple generator targets, as there is no requirement to have a single generator output form like we've done in these guides. You could add as many different outputs forms as you need for each specific target, and even share some functionality between generators.
+
+As mentioned earlier, one could also make this generator accessible by registering a custom command in the language server, but that's a separate topic that we may add in the future.
+
+We hope that these guides have given you a practical demonstration of how to setup the concepts outlined above, and faciliated further exploration into more advanced topics & customizations. If you're interested about learning more about Langium, you can continue through any other guides that we have, reach out to us via discussions on Github, or continue working on your Langium-based language.
