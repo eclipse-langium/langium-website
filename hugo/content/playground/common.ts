@@ -17,6 +17,8 @@ import {
 } from "./data";
 import { generateMonarch } from "./monarch-generator";
 import { createServicesForGrammar } from "langium/lib/grammar/grammar-util";
+import { decompressFromEncodedURIComponent } from 'lz-string';
+import { registerShareLink } from "./share-link";
 
 export { BrowserMessageReader, BrowserMessageWriter };
 
@@ -225,6 +227,11 @@ export function setupEditor(
   const editorConfig = client.getEditorConfig();
   editorConfig.setMainLanguageId(name);
   editorConfig.setMonarchTokensProvider(syntax);
+  editorConfig.setMonacoEditorOptions({
+    minimap: {
+        enabled: false
+    }
+  });
 
   editorConfig.setMainCode(content);
   editorConfig.theme = "vs-dark";
@@ -258,10 +265,11 @@ interface ActionRequest {
   message: PlaygroundMessage;
   element: HTMLElement;
   monacoFactory: (name: string) => MonacoClient;
-  editor: MonacoEditorResult|null;
+  editor?: MonacoEditorResult;
+  content: string;
 }
 
-type Action = (params: ActionRequest) => Promise<MonacoEditorResult|null>;
+type Action = (params: ActionRequest) => Promise<MonacoEditorResult | undefined>;
 type Actions = Record<PlaygroundMessageType, Action>;
 
 const messageWrapper = new PlaygroundWrapper();
@@ -283,12 +291,11 @@ const PlaygroundActions: Actions = {
     editor.overlay(true);
     return Promise.resolve(editor);
   },
-  validated: async ({ message, element, monacoFactory, editor }): Promise<MonacoEditorResult|null> => {
+  validated: async ({ message, element, monacoFactory, editor, content }): Promise<MonacoEditorResult | undefined> => {
     if(message.type != "validated") {
       return editor;
     }
 
-    let content = StateMachineInitialContent;
     if (editor) {
       content = editor.editor.getMainCode();
       await editor.editor.dispose();
@@ -317,19 +324,37 @@ const PlaygroundActions: Actions = {
   },
 };
 
-let userDefined: MonacoEditorResult | null = null;
+let userDefined: MonacoEditorResult | undefined;
 
 export function setupPlayground(
   monacoFactory: (name: string) => MonacoClient,
   leftEditor: HTMLElement,
-  rightEditor: HTMLElement
+  rightEditor: HTMLElement,
+  grammar?: string,
+  content?: string
 ) {
+
+  let langiumContent = LangiumInitialContent;
+  let dslContent = StateMachineInitialContent;
+
+  if (grammar) {
+    const decompressedGrammar = decompressFromEncodedURIComponent(grammar);
+    if (decompressedGrammar) {
+        langiumContent = decompressedGrammar;
+    }
+  }
+  if (content) {
+    const decompressedContent = decompressFromEncodedURIComponent(content);
+    if (decompressedContent) {
+        dslContent = decompressedContent;
+    }
+  }
 
   const langium = setupEditor(
     leftEditor,
     "langium",
     LangiumMonarchContent,
-    LangiumInitialContent,
+    langiumContent,
     "../../libs/worker/langiumServerWorker.js",
     () => monacoFactory("langium"),
     (worker) => new ByPassingMessageReader(worker, messageWrapper),
@@ -341,7 +366,8 @@ export function setupPlayground(
       message,
       element: rightEditor,
       monacoFactory,
-      editor: userDefined
+      editor: userDefined,
+      content: dslContent
     });
   });
 
@@ -349,4 +375,9 @@ export function setupPlayground(
     userDefined?.editor.updateLayout();
     langium.editor.updateLayout();
   });
+
+  registerShareLink(() => ({
+    grammar: langium.editor.getMainCode(),
+    content: userDefined?.editor.getMainCode() ?? ''
+  }));
 }

@@ -8,6 +8,7 @@ description: Write your own language on the left and try out your own language e
 geekdochidden: false
 draft: false
 noMain: true
+playground: true
 ---
 <link rel="preload" as="script" href="./libs/worker/common.js"/>
 <link rel="preload" as="script" href="./libs/worker/langiumServerWorker.js"/>
@@ -36,10 +37,16 @@ noMain: true
     divRoot.appendChild(leftEditor);
     divRoot.appendChild(rightEditor);
 
+    const url = new URL(window.location.toString());
+    const grammar = url.searchParams.get('grammar');
+    const content = url.searchParams.get('content');
+
     setupPlayground(
       (name) => new MonacoEditorLanguageClientWrapper(name),
       leftEditor,
-      rightEditor
+      rightEditor,
+      grammar,
+      content
     );
   });
 </script>
