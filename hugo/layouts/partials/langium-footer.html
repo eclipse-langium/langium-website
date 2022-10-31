@@ -1,5 +1,14 @@
 <!-- Footer Menu -->
 <footer class="font-mono block md:flex dark:text-gray-100 justify-center items-center mt-12 mb-6">
+    {{ if .Params.playground }}
+    <div class="px-4 block text-left md:text-center m-4" style="width:180px">
+        <a id="share-link" class="tooltip active:text-emeraldLangium" href="#">
+            <span class="tooltiptext" id="share-tooltip"></span>
+            Share
+        </a>
+    </div>
+    <span class="text-lg hidden md:inline">|</span>
+    {{ end }}
     <div class="hover:underline px-4 block text-left md:text-center m-4" style="width:180px">
         <a href="https://www.typefox.io/imprint-privacy/#privacy">
             Privacy Policy

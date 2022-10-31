@@ -202,16 +202,6 @@ h4 {
     margin-bottom: 8px;
 }
 
-button.nav-link-desktop {
-    border: 2px solid var(--header-font-color);
-    border-radius: 4px;
-    padding: 4px 8px;
-}
-
-button.nav-link-desktop:active {
-    background-color: var(--header-font-color);
-}
-
 .tooltip {
     position: relative;
     display: inline-block;
@@ -227,9 +217,9 @@ button.nav-link-desktop:active {
     padding: 5px;
     position: absolute;
     z-index: 1;
-    top: 130%;
+    bottom: 130%;
     left: 50%;
-    margin-left: -75px;
+    margin-left: -70px;
     opacity: 0;
     transition: opacity 0.3s;
 }
@@ -237,12 +227,12 @@ button.nav-link-desktop:active {
 .tooltip .tooltiptext::after {
     content: "";
     position: absolute;
-    bottom: 100%;
+    top: 100%;
     left: 50%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: transparent transparent var(--footer-background) transparent;
+    border-color: var(--footer-background) transparent transparent transparent;
 }
 
 .tooltip:hover .tooltiptext {

@@ -48,9 +48,9 @@
         </div>
         {{ block "main" . }}
         {{ end }}
-        {{ partial "langium-footer" }}
-        {{ partial "langium-mobile-menu" }}
+        {{ partial "langium-footer" . }}
+        {{ partial "langium-mobile-menu" . }}
     </div>
-    {{ partial "langium-scripts" }}
+    {{ partial "langium-scripts" . }}
 </body>
 </html>
