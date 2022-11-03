@@ -4,6 +4,7 @@
 hugo/static/libs
 hugo/static/showcase/
 hugo/static/playground/
+hugo/static/libs/
 node_modules/
 .DS_Store
 .hugo_build.lock

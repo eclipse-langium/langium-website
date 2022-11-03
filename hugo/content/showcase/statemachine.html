@@ -98,7 +98,15 @@ end`);
         name: 'LS'
     });
     client.setWorker(lsWorker);
-    client.startEditor(document.getElementById("monaco-editor-root"));
+    client.startEditor(document.getElementById("monaco-editor-root")).then(() => {
+        const vscode = client.getVscode();
+        const value = client.editor.getValue();
+        // define your custom command here by name, passing in any values you want one after another
+        return vscode.commands.executeCommand('parseAndGenerate', value);
+
+    }).then((resp) => {
+        // ... do something with the response object.
+    });
 
     window.addEventListener("resize", () => {
         client.updateLayout({width: 100, heigth: 100})
