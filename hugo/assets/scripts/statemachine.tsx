@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
-interface EventProps {
+interface StateProps {
   name: string;
   active: boolean;
 }
 
-class Event extends React.Component<EventProps> {
-  constructor(props: EventProps) {
+
+interface EventProps {
+  name: string;
+}
+
+class State extends React.Component<StateProps> {
+  constructor(props: StateProps) {
     super(props);
     this.state = {
       name: props.name,
@@ -21,13 +26,13 @@ class Event extends React.Component<EventProps> {
 
   render() {
     return (
-      <div>
+      <div className='cursor-default'>
         {this.props.active ? (
           <div className="text-emeraldLangium border-2 border-solid border-emeraldLangium rounded-md p-4 text-center text-sm shadow-opacity-50 shadow-[0px_0px_15px_0px] shadow-emeraldLangium">
             {this.props.name}
           </div>
         ) : (
-          <div className="border-2 text-emeraldLangiumDarker border-solid border-emeraldLangiumDarker rounded-md p-4 text-center text-sm shadow-opacity-50 hover:shadow-[0px_0px_10px_0px] hover:shadow-emeraldLangiumDarker">
+          <div className="border-2 text-emeraldLangiumDarker border-solid border-emeraldLangiumDarker rounded-md p-4 text-center text-sm shadow-opacity-50 hover:shadow-[0px_0px_5px_0px] hover:shadow-emeraldLangiumDarker">
             {this.props.name}
           </div>
         )}
@@ -38,10 +43,43 @@ class Event extends React.Component<EventProps> {
   }
 }
 
+class Event extends React.Component<EventProps> {
+  constructor(props: EventProps) {
+    super(props);
+    this.state = {
+      name: props.name,   
+    }
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    console.dir("Clicked", this);
+  }
+
+  render() {
+    return (
+      <button onClick={this.handleClick} className="text-white border-2 border-solid bg-emeraldLangium rounded-md p-4 text-center text-sm hover:shadow-opacity-50 hover:shadow-[0px_0px_15px_0px] hover:shadow-emeraldLangium">
+        {this.props.name}
+      </button>
+    );
+  }
+}
+
 function Preview() {
   return (
-    <div className="flex h-full w-full items-center justify-center">
-      <Event name="huen" active={true}></Event>
+    <div className="flex flex-col h-full w-full p-4 float-right items-center">
+      <p className='text-white text-lg w-full my-4'>Events</p>
+      <div className='flex flex-row w-full gap-2'>
+        <Event name="switchCapacity"></Event>
+        <Event name="next"></Event>
+      </div>
+      <p className='text-white text-lg w-full my-4'>States</p>
+      <div className='flex flex-row w-full gap-2'>
+        <State name="PowerOff" active={true}></State>
+        <State name="RedLight" active={false}></State>
+        <State name="YellowLight" active={false}></State>
+        <State name="GreenLight" active={false}></State>
+      </div>
     </div>
   );
 }
