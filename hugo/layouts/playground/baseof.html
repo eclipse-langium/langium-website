@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    {{ partial "langium-head" }}
+    {{ partial "langium-head" . }}
     <style>
         html, body, .overlay, .editing-area {
             margin: 0;
@@ -19,10 +19,6 @@
             position: absolute;
             width: 50%;
             top: 0;
-        }
-
-        .hidden {
-            display: none;
         }
 
         .overlay {
@@ -46,15 +42,15 @@
 {{ end }}
 <body class='bg-white dark:bg-gray-900 {{ $extraBodyClass }}'>
     <div x-data="{ isOpen: false }" class="relative bg-white wrapper dark:bg-gray-900">
-        {{ partial "langium-header" }}
+        {{ partial "langium-header" . }}
         <div class="relative bg-white wrapper dark:bg-gray-900">
             <div class="dark:bg-gray-900" id="monaco-editor-root"></div>
         </div>
         {{ block "main" . }}
         {{ end }}
-        {{ partial "langium-footer" }}
-        {{ partial "langium-mobile-menu" }}
+        {{ partial "langium-footer" . }}
+        {{ partial "langium-mobile-menu" . }}
     </div>
-    {{ partial "langium-scripts" }}
+    {{ partial "langium-scripts" . }}
 </body>
 </html>

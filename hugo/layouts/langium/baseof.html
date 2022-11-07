@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    {{ partial "langium-head" }}
+    {{ partial "langium-head" . }}
 </head>
 {{/* Default is mono font, but use the regular font in special cases, like for the imprint page */}}
 {{ $extraBodyClass := `font-mono` }}
@@ -11,7 +11,7 @@
 <body class='bg-white dark:bg-gray-900 {{ $extraBodyClass }}'>
     <div x-data="{ isOpen: false }" class="wrapper relative bg-white dark:bg-gray-900">
 
-        {{ partial "langium-header" }}
+        {{ partial "langium-header" . }}
 
         {{/* Drop main block for showcase pages */}}
         {{ if .Params.noMain }}
@@ -25,9 +25,9 @@
         {{ else }}
         </main>
         {{ end }}
-        {{ partial "langium-footer" }}
-        {{ partial "langium-mobile-menu" }}
+        {{ partial "langium-footer" . }}
+        {{ partial "langium-mobile-menu" . }}
     </div>
-    {{ partial "langium-scripts" }}
+    {{ partial "langium-scripts" . }}
 </body>
 </html>
