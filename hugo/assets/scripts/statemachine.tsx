@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 
 interface StateProps {
   name: string;
-  active: boolean;
+  isActive: boolean;
 }
 
 
@@ -11,29 +11,37 @@ interface EventProps {
   name: string;
 }
 
-class State extends React.Component<StateProps> {
+class State extends React.Component<StateProps, StateProps> {
   constructor(props: StateProps) {
     super(props);
     this.state = {
       name: props.name,
-      isActive: props.active
+      isActive: props.isActive
     }
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  setActivate(isItActiveBro: boolean) {
+  setActive(isItActiveBro: boolean) {
     this.setState({ isActive: isItActiveBro });
+  }
+
+  handleClick(){
+    // !!!REMOVE IN PRODUCTION!!!
+    // just to see if it works
+    // !!!REMOVE IN PRODUCTION!!!
+    this.setActive(!this.state.isActive);
   }
 
   render() {
     return (
-      <div className='cursor-default'>
-        {this.props.active ? (
+      <div className='cursor-default' onClick={this.handleClick} >
+        {this.state.isActive ? (
           <div className="text-emeraldLangium border-2 border-solid border-emeraldLangium rounded-md p-4 text-center text-sm shadow-opacity-50 shadow-[0px_0px_15px_0px] shadow-emeraldLangium">
             {this.props.name}
           </div>
         ) : (
           <div className="border-2 text-emeraldLangiumDarker border-solid border-emeraldLangiumDarker rounded-md p-4 text-center text-sm shadow-opacity-50 hover:shadow-[0px_0px_5px_0px] hover:shadow-emeraldLangiumDarker">
-            {this.props.name}
+            {this.state.name}
           </div>
         )}
 
@@ -53,7 +61,7 @@ class Event extends React.Component<EventProps> {
   }
 
   handleClick() {
-    console.dir("Clicked", this);
+    // change active state
   }
 
   render() {
@@ -69,16 +77,16 @@ function Preview() {
   return (
     <div className="flex flex-col h-full w-full p-4 float-right items-center">
       <p className='text-white text-lg w-full my-4'>Events</p>
-      <div className='flex flex-row w-full gap-2'>
+      <div className='flex flex-wrap w-full gap-2'>
         <Event name="switchCapacity"></Event>
         <Event name="next"></Event>
       </div>
       <p className='text-white text-lg w-full my-4'>States</p>
-      <div className='flex flex-row w-full gap-2'>
-        <State name="PowerOff" active={true}></State>
-        <State name="RedLight" active={false}></State>
-        <State name="YellowLight" active={false}></State>
-        <State name="GreenLight" active={false}></State>
+      <div className='flex flex-wrap w-full gap-2 justify-start '>
+        <State name="PowerOff" isActive={true}></State>
+        <State name="RedLight" isActive={false}></State>
+        <State name="YellowLight" isActive={false}></State>
+        <State name="GreenLight" isActive={false}></State>
       </div>
     </div>
   );
