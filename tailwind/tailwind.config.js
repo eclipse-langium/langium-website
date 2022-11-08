@@ -29,6 +29,7 @@ module.exports = {
       },
       colors: {
         emeraldLangium: '#26888C',
+        emeraldLangiumABitDarker: '#207578',
         emeraldLangiumDarker: '#0A4340',
         emeraldLangiumDarkest: '#042424',
         accentBlue: '#1FCDEB',
