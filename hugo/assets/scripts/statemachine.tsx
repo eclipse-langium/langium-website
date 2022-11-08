@@ -66,7 +66,7 @@ class Event extends React.Component<EventProps> {
 
   render() {
     return (
-      <button onClick={this.handleClick} className="text-white border-2 border-solid bg-emeraldLangium rounded-md p-4 text-center text-sm hover:shadow-opacity-50 hover:shadow-[0px_0px_15px_0px] hover:shadow-emeraldLangium">
+      <button onClick={this.handleClick} className="text-white border-2 border-solid bg-emeraldLangiumABitDarker rounded-md p-4 text-center text-sm hover:shadow-opacity-50 hover:shadow-[0px_0px_15px_0px] hover:shadow-emeraldLangium">
         {this.props.name}
       </button>
     );
@@ -97,7 +97,7 @@ function Preview() {
 function App() {
   return (
     <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
-      <div className="float-left w-1/2 h-full border-r border-white">
+      <div className="float-left w-1/2 h-full border-r border-emeraldLangium">
         <div className="wrapper relative bg-white dark:bg-gray-900">
           <div className="dark:bg-gray-900" id="monaco-editor-root">
           </div>
