@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
+
+let dummyData = {
+  events: ["switchCapacity", "next"],
+  states: ["PowerOff", "GreenLight", "YellowLigt", "RedLigt"],
+  initialState: "PowerOff",
+}
 interface StateProps {
   name: string;
   isActive: boolean;
 }
-
 
 interface EventProps {
   name: string;
@@ -25,7 +30,7 @@ class State extends React.Component<StateProps, StateProps> {
     this.setState({ isActive: isItActiveBro });
   }
 
-  handleClick(){
+  handleClick() {
     // !!!REMOVE IN PRODUCTION!!!
     // just to see if it works
     // !!!REMOVE IN PRODUCTION!!!
@@ -55,7 +60,7 @@ class Event extends React.Component<EventProps> {
   constructor(props: EventProps) {
     super(props);
     this.state = {
-      name: props.name,   
+      name: props.name,
     }
     this.handleClick = this.handleClick.bind(this);
   }
