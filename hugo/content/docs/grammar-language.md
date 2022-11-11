@@ -494,7 +494,7 @@ terminal BETWEEN_HASHES:'#' (!'#')* '#';
 
 This also works as expected when you use alternation in Xtext, `!('#'|'@')`, to recognize anything but `#` or `@`.
 
-*However, this works differently in Langium!* Instead of recognizing characters that are *not* in the set, it instead produces a negative lookahead. I.e., it does *not* consume tokens, but instead is a 'guard' for what the following expression can recognize. If you want to recognize a word that doesn't start with `no`, then you could write it in EBNF like so:
+*However, this works differently in Langium!* Instead of recognizing characters that are *not* in the set, it produces a negative lookahead. I.e., it does *not* consume tokens, but it is a 'guard' for what the following expression can recognize. If you want to recognize a word that doesn't start with `no`, then you could write it in EBNF like so:
 ```
 terminal NONO: (!'no')('a'..'z'|'A'..'Z')+;
 ```
