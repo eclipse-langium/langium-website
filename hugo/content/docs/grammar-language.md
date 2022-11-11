@@ -487,24 +487,19 @@ terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 ``` 
 
 #### Negated Token
-It is possible to negate tokens using the operator `!`. In Xtext, this allows recognizing the *complement* of a set of characters (or anything 'but' what is listed in the negation), very much akin to a negated character class in regular expressions. For example, the following terminal would recognize zero or more characters between two # symbols.
-```
-terminal BETWEEN_HASHES:'#' (!'#')* '#';
-```
+It is possible to negate tokens using the operator `!`. In Langium this produces a *negative lookahead*. I.e., it does *not* consume tokens, but it is a 'guard' for what the following expression can recognize.
 
-This also works as expected when you use alternation in Xtext, `!('#'|'@')`, to recognize anything but `#` or `@`.
-
-*However, this works differently in Langium!* Instead of recognizing characters that are *not* in the set, it produces a negative lookahead. I.e., it does *not* consume tokens, but it is a 'guard' for what the following expression can recognize. If you want to recognize a word that doesn't start with `no`, then you could write it in EBNF like so:
+For example, if you want to recognize a word that doesn't start with `no`, then you could write such an expression in EBNF like so:
 ```
 terminal NONO: (!'no')('a'..'z'|'A'..'Z')+;
 ```
 
-This would correspond to the following regular expression:
+For reference, this would correspond to the following regular expression:
 ```
 terminal NONO: /(?!no)[a-zA-Z]+/;
 ```
 
-This is *very* important to keep in mind if you're porting a grammar from Xtext, as Langium's interpretation of negated tokens deviates from that of Xtext.
+Note, if you're coming from Xtext, negated tokens works differently here. In Xtext, negated tokens allow recognizing the *complement* of a set of characters (or anything 'but' what is listed in the negation), very much akin to a negated character class in regular expressions. This is *very* important to keep in mind if you're porting a grammar from Xtext, as Langium's interpretation of negated tokens deviates from that of Xtext.
 
 #### Terminal Rule Calls
 A terminal rule can include other terminal rules in its definition.
