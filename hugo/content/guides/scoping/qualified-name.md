@@ -3,24 +3,26 @@ title: "Qualified Name Scoping"
 weight: 100
 ---
 
-Qualified name scoping refers to a style of referencing elements using a fully qualified name. This is done in C-like languages using namespaces or in Java using packages.
-The following shows an example of this using a function in a C++ namespace:
+Qualified name scoping refers to a style of referencing elements using a fully qualified name.
+Such a fully qualified name is usually composed of the original name of the target element and the names of its container elements. 
+You will usually see this method of scoping in C-like languages using namespaces or in Java using packages.
+The following code snippet shows an example of how qualified name scoping works from an end-user perspective, by using a function in a C++ namespace:
 
 ```cpp
-namespace QualifiedName {
-    void target();
+namespace Langium {
+    void getDocumentation();
 }
 
-void h() {
-    // Should call the `target` function defined in the `QualifiedName` namespace
-    QualifiedName::target();
+void main() {
+    // Should call the `getDocumentation` function defined in the `Langium` namespace
+    Langium::getDocumentation();
 }
 ```
 
-This behavior can be achieved in Langium by exporting the `target` function under the name `QualifiedName::target`. We will first set up a new `ScopeComputation` class that extends the `DefaultScopeComputation` and bind it in our module:
+As can be seen, using qualified name scoping is quite helpful in this case. It allows us to reference the `getDocumentation` function through the scope computed & made available by the `Langium` namespace, even though it's not directly accessible within the scope of `main` by itself. This behavior can be achieved in Langium by exporting the `getDocumentation` function under the name `Langium::getDocumentation`. To do this, we will first set up a new `ScopeComputation` class that extends the `DefaultScopeComputation`, and will be responsible for our custom scope computation. Then, we'll want to bind our custom scope computation class in our module:
 
 ```ts
-// Scope computation for C++
+// Scope computation for our C++-like language
 export class CppScopeComputation extends DefaultScopeComputation {
 
     constructor(services: LangiumServices) {
@@ -29,6 +31,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
 }
 
 // Services module for overriding the scope computation
+// Your language module is usually placed in your `<dsl-name>-module.ts` file
 export const CppModule: Module<CppServices, PartialLangiumServices & CppAddedServices> = {
     references: {
         ScopeComputation: (services) => new CppScopeComputation(services)
@@ -36,7 +39,7 @@ export const CppModule: Module<CppServices, PartialLangiumServices & CppAddedSer
 }
 ```
 
-Next, we can already start building our custom `computeExports` override which allows us to change export nodes of our model using qualified names:
+Next, we can start implementing our custom scoping by overriding the `computeExports` function. This function is particularly important, as it allows us to change export nodes of our model using qualified names: We'll also want to annotate this function with `override`, since there's already a default definition provided.
 
 ```ts
 export class CppScopeComputation extends DefaultScopeComputation {
@@ -74,7 +77,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
     }
 ```
 
-Once we start exporting functions using their fully qualified name, references such as `QualifiedName::target` start working correctly. We can even nest multiple namespaces to create `Fully::Qualified::Name::target`. However, this leads us to another problem. We can now **only** reference functions using their fully qualified names, even if they're locally available:
+Once we start exporting functions using their fully qualified name, references such as `QualifiedName::target` will start working correctly. We can even nest multiple namespaces to create `Fully::Qualified::Name::target`. However, this leads us to another problem. We can now only reference functions using their fully qualified names, even if they're locally available:
 
 ```cpp
 namespace QualifiedName {
@@ -88,7 +91,7 @@ namespace QualifiedName {
 }
 ```
 
-To rectify this change, we have to override the `computeLocalScopes` method. It serves as a way of providing access to elements which aren't exported globally. We can also use it to provide secondary access to the globally available objects using a local name.
+To rectify this problem, we have to override the `computeLocalScopes` method, which provides access to elements that aren't exported globally. We can also use this method to provide secondary access to globally available objects using a local name.
 
 ```ts
 export class CppScopeComputation extends DefaultScopeComputation {
@@ -103,7 +106,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
         return scopes;
     }
 
-    protected processContainer(
+    private processContainer(
         container: CppProgram | Namespace, 
         scopes: PrecomputedScopes, 
         document: LangiumDocument
@@ -128,7 +131,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
         return localDescriptions;
     }
 
-    protected createQualifiedDescription(
+    private createQualifiedDescription(
         container: Namespace, 
         description: AstNodeDescription, 
         document: LangiumDocument
@@ -140,5 +143,88 @@ export class CppScopeComputation extends DefaultScopeComputation {
 }
 ```
 
-This new change now allows us to use local names of functions in the local scope, while they are still being exported using their fully qualified name to the global scope.
+This new change now allows us to use local names of functions in the local scope, while they are still exported using their fully qualified name to the global scope.
 Another example for this style of scoping can be seen in the [domain-model example language](https://github.com/langium/langium/tree/main/examples/domainmodel).
+Also, click the following note to see the full implementation of the scope computation service.
+
+<details>
+<summary>Full Implementation</summary>
+
+```ts
+export class CppScopeComputation extends DefaultScopeComputation {
+
+    /**
+     * Export all functions using their fully qualified name
+     */
+    override async computeExports(document: LangiumDocument): Promise<AstNodeDescription[]> {
+        const exportedDescriptions: AstNodeDescription[] = [];
+        for (const childNode of streamAllContents(document.parseResult.value)) {
+            if (isFunctionDeclaration(childNode)) {
+                const fullyQualifiedName = this.getQualifiedName(childNode, childNode.name);
+                // `descriptions` is our `AstNodeDescriptionProvider` defined in `DefaultScopeComputation`
+                // It allows us to easily create descriptions that point to elements using a name.
+                exportedDescriptions.push(this.descriptions.createDescription(modelNode, fullyQualifiedName, document));
+            }
+        }
+        return exportedDescriptions;
+    }
+
+    override async computeLocalScopes(document: LangiumDocument): Promise<PrecomputedScopes> {
+        const model = document.parseResult.value as CppProgram;
+        // This multi-map stores a list of descriptions for each node in our document
+        const scopes = new MultiMap<AstNode, AstNodeDescription>();
+        this.processContainer(model, scopes, document);
+        return scopes;
+    }
+
+    private processContainer(
+        container: CppProgram | Namespace, 
+        scopes: PrecomputedScopes, 
+        document: LangiumDocument
+    ): AstNodeDescription[] {
+        const localDescriptions: AstNodeDescription[] = [];
+        for (const element of container.elements) {
+            if (isFunctionDeclaration(element)) {
+                // Create a simple local name for the function
+                const description = this.descriptions.createDescription(element, element.name, document);
+                localDescriptions.push(description);
+            } else if (isNamespace(element)) {
+                const nestedDescriptions = this.processContainer(element, scopes, document, cancelToken);
+                for (const description of nestedDescriptions) {
+                    // Add qualified names to the container
+                    // This could also be a partially qualified name
+                    const qualified = this.createQualifiedDescription(element, description, document);
+                    localDescriptions.push(qualified);
+                }
+            }
+        }
+        scopes.addAll(container, localDescriptions);
+        return localDescriptions;
+    }
+
+    private createQualifiedDescription(
+        container: Namespace, 
+        description: AstNodeDescription, 
+        document: LangiumDocument
+    ): AstNodeDescription {
+        const name = this.getQualifiedName(container.name, description.name);
+        return this.descriptions.createDescription(description.node!, name, document);
+    }
+
+    /**
+     * Build a qualified name for a model node
+     */
+    private getQualifiedName(node: AstNode, name: string): string {
+        let parent: AstNode | undefined = node.$container;
+        while (isNamespace(parent)) {
+            // Iteratively prepend the name of the parent namespace
+            // This allows us to work with nested namespaces
+            name = `${parent.name}::${name}`;
+            parent = parent.$container;
+        }
+        return name;
+    }
+}
+```
+
+</details>

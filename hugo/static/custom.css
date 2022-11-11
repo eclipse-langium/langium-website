@@ -80,6 +80,7 @@
         fill: #000000 !important;
     }
     
+    rect.actor,
     .node rect,
     .node polygon {
         fill: var(--header-font-color) !important;
@@ -162,6 +163,7 @@
         fill: var(--body-font-color) !important;
     }
 
+    rect.actor,
     .node rect,
     .node polygon {
         fill: var(--header-font-color) !important;
