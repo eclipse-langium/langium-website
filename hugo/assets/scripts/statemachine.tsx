@@ -112,7 +112,6 @@ function Preview() {
     events.forEach(event => {
       event.setEnabled(!dummyData.states.find(({ name }) => name === currentState)![event.props.name]);
     });
-
   }
 
   return (
@@ -120,7 +119,7 @@ function Preview() {
       <p className='text-white text-lg w-full my-4'>Events</p>
       <div className='flex flex-wrap w-full gap-2'>
         {dummyData.events.map((event, index) => {
-          return <Event isEnabled={false} handleClick={() => changeStates(event)} name={event} key={index} ref={event => { events.push(event!) }}></Event>
+          return <Event isEnabled={!dummyData.states.find(({ name }) => name === currentState)![event]} handleClick={() => changeStates(event)} name={event} key={index} ref={event => { events.push(event!) }}></Event>
         })}
       </div>
       <p className='text-white text-lg w-full my-4'>States</p>
