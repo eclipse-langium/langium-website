@@ -115,10 +115,6 @@ function Preview() {
 
   }
 
-  const isEventAvailable = function(event): boolean{
-    return dummyData.states.find(({ name }) => name === currentState)![event] !== undefined;
-  }
-  
   return (
     <div className="flex flex-col h-full w-full p-4 float-right items-center">
       <p className='text-white text-lg w-full my-4'>Events</p>
