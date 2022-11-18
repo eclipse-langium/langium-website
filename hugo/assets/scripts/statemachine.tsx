@@ -30,6 +30,7 @@ let dummyData = {
 }
 
 let currentState;
+
 interface StateProps {
   name: string;
   isActive: boolean;
@@ -101,17 +102,18 @@ function Preview() {
   let states: State[] = [];
   let events: Event[] = [];
 
-  const changeStates = function (e) {
-    let nextState = dummyData.states.find(({ name }) => name === currentState)![e];
-    if (nextState) {
-      states.forEach(state => {
-        state.setActive(state.props.name == nextState);
-      });
-      currentState = nextState;
-    }
-    events.forEach(event => {
-      event.setEnabled(!dummyData.states.find(({ name }) => name === currentState)![event.props.name]);
+  const changeStates = function(state: string) {
+    states.forEach(item => {
+      item.setActive(item.props.name === state);
     });
+    currentState = state;
+    events.forEach(event => {
+      event.setEnabled(!getNextState(event.props.name));
+    });
+  }
+
+  const getNextState = function(event: string): string {
+    return dummyData.states.find(({ name }) => name === currentState)![event];
   }
 
   return (
@@ -119,13 +121,13 @@ function Preview() {
       <p className='text-white text-lg w-full my-4'>Events</p>
       <div className='flex flex-wrap w-full gap-2'>
         {dummyData.events.map((event, index) => {
-          return <Event isEnabled={!dummyData.states.find(({ name }) => name === currentState)![event]} handleClick={() => changeStates(event)} name={event} key={index} ref={event => { events.push(event!) }}></Event>
+          return <Event isEnabled={!getNextState(event)} handleClick={() => changeStates(getNextState(event))} name={event} key={index} ref={event => { events.push(event!) }}></Event>
         })}
       </div>
       <p className='text-white text-lg w-full my-4'>States</p>
       <div className='flex flex-wrap w-full gap-2 justify-start '>
         {dummyData.states.map((state, index) => {
-          return <State name={state.name} key={index} isActive={currentState == state.name} ref={state => { states.push(state!) }}></State>
+          return <State handleClick={() => changeStates(state.name)} name={state.name} key={index} isActive={currentState == state.name} ref={state => { states.push(state!) }}></State>
         })}
       </div>
     </div>
@@ -150,7 +152,6 @@ function App() {
     </div>
   )
 }
-
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(
