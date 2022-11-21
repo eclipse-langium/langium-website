@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 20 20" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs/>
+<g id="Ebene-1">
+<path d="M15 6L16 6C16.552 6 17 6.448 17 7L17 18C17 18.552 16.552 19 16 19L4 19C3.448 19 3 18.552 3 18L3 7C3 6.448 3.448 6 4 6L5 6M10 16L10 2" fill="none" opacity="1" stroke="#FFFFFF" stroke-linecap="butt" stroke-linejoin="miter" stroke-width="2"/>
+<path d="M10 0L14 4L6 4L10 0Z" fill="#FFFFFF" fill-rule="nonzero" opacity="1" stroke="none"/>
+</g>
+</svg>

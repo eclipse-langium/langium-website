@@ -16,7 +16,7 @@ playground: true
 <script type="module">
   import { MonacoEditorLanguageClientWrapper } from "../libs/monaco-editor-wrapper/index.js";
   import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
-  import { setupPlayground } from "./libs/worker/common.js";
+  import { setupPlayground, share } from "./libs/worker/common.js";
 
   buildWorkerDefinition(
     "../libs/monaco-editor-workers/workers",
@@ -28,23 +28,57 @@ playground: true
   MonacoEditorLanguageClientWrapper.addCodiconTtf();
 
   addEventListener('load', function() {
+    let getState = null; //: () => PlaygroundParameters
+
     const divRoot = document.getElementById("monaco-editor-root");
-    const style = "width:50%; display:inline-block; height: 100%";
-    const leftEditor = document.createElement("div");
-    leftEditor.setAttribute("style", style);
-    const rightEditor = document.createElement("div");
-    rightEditor.setAttribute("style", style);
-    divRoot.appendChild(leftEditor);
-    divRoot.appendChild(rightEditor);
+    const table = document.createElement("table");
+    table.cellSpacing = 0;
+    table.cellPadding = 0;
+    table.border = 1;
+    table.style = 'width: 100%; height: 100%;';
+    const header = document.createElement("tr");
+    header.className = 'font-mono';
+    header.style = 'height: 2rem; color: white; border: 1px rgb(38,136,140) solid; background-color: rgb(38,136,140, 0.33);';
+    const body = document.createElement("tr");
+    const leftHeader = document.createElement("td");
+    const rightHeader = document.createElement("td");
+    const leftBody = document.createElement("td");
+    const rightBody = document.createElement("td");
+    const rightTitle = document.createElement('span');
+    const shareButton = document.createElement('img');
+    shareButton.src = '/assets/share.svg';
+    shareButton.style = 'display: inline; width: 1rem; height: 1rem; cursor: pointer; position: absolute; right: 0.5rem;';
+    shareButton.onclick = () => {
+      const parameters = getState();
+      share(parameters.grammar, parameters.content);
+      shareButton.src = '/assets/checkmark.svg';
+      setTimeout(() => shareButton.src = '/assets/share.svg', 1000);
+    };
+    leftHeader.innerText = 'Grammar'
+    rightTitle.innerText = 'Content'
+    shareButton.innerText = 'Share'
+    leftHeader.style = 'padding: 0.5rem;';
+    rightHeader.style = 'padding: 0.5rem; display: flex; align-items:center';
+    leftBody.style = 'border: 1px rgb(38,136,140) solid; position: relative;';
+    rightBody.style = 'border: 1px rgb(38,136,140) solid; position: relative;';
+    divRoot.appendChild(table);
+    table.appendChild(header);
+    table.appendChild(body);
+    header.appendChild(leftHeader);
+    header.appendChild(rightHeader);
+    rightHeader.appendChild(rightTitle);
+    rightHeader.appendChild(shareButton);
+    body.appendChild(leftBody);
+    body.appendChild(rightBody);
 
     const url = new URL(window.location.toString());
     const grammar = url.searchParams.get('grammar');
     const content = url.searchParams.get('content');
 
-    setupPlayground(
+    getState = setupPlayground(
       (name) => new MonacoEditorLanguageClientWrapper(name),
-      leftEditor,
-      rightEditor,
+      leftBody,
+      rightBody,
       grammar,
       content
     );

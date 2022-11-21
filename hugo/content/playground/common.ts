@@ -4,6 +4,7 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
+import { compressToEncodedURIComponent } from "lz-string";
 import {
   AbstractMessageReader,
   DataCallback,
@@ -24,7 +25,6 @@ import {
 import { generateMonarch } from "./monarch-generator";
 import { createServicesForGrammar } from "langium/lib/grammar/grammar-util";
 import { decompressFromEncodedURIComponent } from 'lz-string';
-import { registerShareLink } from "./share-link";
 
 export { BrowserMessageReader, BrowserMessageWriter };
 
@@ -78,6 +78,11 @@ export interface ResponseError extends MessageBase {
 export interface Notification extends MessageBase {
   method: string;
   params?: any[];
+}
+
+export interface PlaygroundParameters {
+  grammar: string;
+  content: string;
 }
 
 export function isNotification(msg: Message): msg is Notification {
@@ -382,8 +387,19 @@ export function setupPlayground(
     langium.editor.updateLayout();
   });
 
-  registerShareLink(() => ({
-    grammar: langium.editor.getMainCode(),
-    content: userDefined?.editor.getMainCode() ?? ''
-  }));
+  return () => {
+    return ({
+      grammar: langium.editor.getMainCode(),
+      content: userDefined?.editor.getMainCode() ?? ''
+    } as PlaygroundParameters);
+  };
+}
+
+export async function share(grammar: string, content: string): Promise<void> {
+  const compressedGrammar = compressToEncodedURIComponent(grammar);
+  const compressedContent = compressToEncodedURIComponent(content);
+  const url = new URL("/playground", window.origin);
+  url.searchParams.append("grammar", compressedGrammar);
+  url.searchParams.append("content", compressedContent);
+  await navigator.clipboard.writeText(url.toString());
 }
