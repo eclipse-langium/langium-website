@@ -3,7 +3,7 @@
 <head>
     {{ partial "langium-head" . }}
     <style>
-        html, body, .overlay, .editing-area {
+        html, body, .editing-area {
             margin: 0;
             padding: 0;
             height: 100%;
@@ -16,17 +16,27 @@
             margin: auto;
         }
 
-        .overlay {
+        #overlay {
             text-align: center;
+            position: relative;
+            z-index: 10000;
+            height: 100%;
+            width: 100%;
+        }
+
+        #indicator {
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .hint {
-            display: block;
             font-size: 0.75rem;
             position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translateY(-50% -50%);
+            width: 100%;
+            text-align: center;
         }
 
         .waiting-animation {
@@ -34,7 +44,7 @@
         }
 
         .error-animation {
-            animation: shake 1s ease normal;
+            animation: none;
         }
         
         @keyframes gelatine {
@@ -56,18 +66,27 @@
             height: 100%;
         }
 
-        #grammar-root, #content-root {
+        #grammar-root, #content-root, #overlay {
+            position: absolute;
+            width: 100%;
             top: 0;
             margin: 0;
             padding: 0;
             height: 100%;
         }
 
-        .overlay {
+        .editing-area {
+            width: 100%;
+            top: 0;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        #overlay {
             cursor: not-allowed;
             z-index: 1000;
             text-align: center;
-            font-size: 4rem;
             color: white;
             background-color: rgba(23,23,23,0.75);
         }
@@ -97,8 +116,18 @@
                         </td>
                     </tr>
                     <tr>
-                        <td id="grammar-root" style="border: 1px rgb(38,136,140) solid; position: relative;"></td>
-                        <td id="content-root" style="border: 1px rgb(38,136,140) solid; position: relative;"></td>
+                        <td id="grammar-root" style="border: 1px rgb(38,136,140) solid; position: relative;width: 50%;"></td>
+                        <td style="border: 1px rgb(38,136,140) solid; position: relative; width: 50%;">
+                            <div id="overlay">
+                                <div id="indicator">
+                                    <img class="waiting-animation" src="/assets/langium_logo_w_nib.svg"/>
+                                    <div class="hint font-mono">
+                                        Loading...
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="content-root"></div>
+                        </td>
                     </tr>
                 </table>
             </div>
