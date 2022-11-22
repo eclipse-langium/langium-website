@@ -10,12 +10,6 @@
             position: relative;
         }
 
-        .waiting-animation, .error-animation {
-            width: auto;
-            height: 2rem;
-            margin: auto;
-        }
-
         #overlay {
             text-align: center;
             position: relative;
@@ -34,30 +28,11 @@
 
         .hint {
             font-size: 0.75rem;
+            color: #d4d4d4;
             position: absolute;
             width: 100%;
             text-align: center;
-        }
-
-        .waiting-animation {
-            animation: gelatine 0.5s infinite;
-        }
-
-        .error-animation {
-            animation: none;
-        }
-        
-        @keyframes gelatine {
-            from, to { transform: scale(1, 1); }
-            25% { transform: scale(0.9, 1.1); }
-            50% { transform: scale(1.1, 0.9); }
-            75% { transform: scale(0.95, 1.05); }
-        }
-
-        @keyframes shake {
-            0%, 100% {transform: translateX(0);}
-            10%, 30%, 50%, 70%, 90% {transform: translateX(-10px);}
-            20%, 40%, 60%, 80% {transform: translateX(10px);}
+            width: 200px;
         }
 
         .wrapper {
@@ -120,7 +95,6 @@
                         <td style="border: 1px rgb(38,136,140) solid; position: relative; width: 50%;">
                             <div id="overlay">
                                 <div id="indicator">
-                                    <img class="waiting-animation" src="/assets/langium_logo_w_nib.svg"/>
                                     <div class="hint font-mono">
                                         Loading...
                                     </div>

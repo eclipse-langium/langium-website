@@ -266,16 +266,16 @@ const PlaygroundActions: Actions = {
     if(message.type != "changing" || !editor) {
       return editor;
     }
-    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
     overlay(true, false);
+    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
     return Promise.resolve(editor);
   },
   error: async ({ message, editor, overlay }) => {
+    overlay(true, true);
     if(message.type != "error" || !editor) {
       return editor;
     }
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
-    overlay(true, true);
     return Promise.resolve(editor);
   },
   validated: async ({ message, element, monacoFactory, editor, content, overlay }): Promise<MonacoEditorResult | undefined> => {
@@ -302,7 +302,6 @@ const PlaygroundActions: Actions = {
       (worker) => new ByPassingMessageWriter(worker, messageWrapper),
       () => { }
     );
-
     
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: false});
 
@@ -391,14 +390,9 @@ export function overlay(visible: boolean, hasError: boolean) {
   const element = document.getElementById('overlay')!;
   if(!visible) {
     element.style.display = 'none';
-    console.log('invisible')
   } else {
-    const img = element.getElementsByTagName('img')![0];
-    img.classList.remove('waiting-animation', 'error-animation');
-    img.classList.add(!hasError?'waiting-animation':'error-animation');
     const subTitle = element.getElementsByClassName('hint')![0] as HTMLDivElement;
     subTitle.innerText = hasError ? 'Your grammar contains errors.' : 'Loading...';
     element.style.display = 'block';
-    console.log('visible')
   }
 }
