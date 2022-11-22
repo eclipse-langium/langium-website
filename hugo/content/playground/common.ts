@@ -169,7 +169,7 @@ export interface MonacoEditorResult {
   out: ByPassingMessageReader<PlaygroundMessage>;
   in: ByPassingMessageWriter<PlaygroundMessage>;
   editor: MonacoClient;
-  overlay(visible: boolean): void;
+  overlay(visible: boolean, hasError: boolean): void;
 }
 
 export interface MonacoConfig {
@@ -209,18 +209,36 @@ export function setupEditor(
   overlayElement.classList.add('hidden');
   domElement.appendChild(overlayElement);
 
-  function overlay(visible: boolean): void {
+  const hint = document.createElement('div');
+  overlayElement.appendChild(hint);
+
+  const animatedImage = document.createElement('img');
+  const description = document.createElement('div');
+  animatedImage.src = '/assets/langium_logo_w_nib.svg';
+
+  function displayHint(hasError: boolean) {
+    if(hasError) {
+      description.innerText = 'Something is wrong with your grammar';
+      description.style.color = '#FF8080';
+      animatedImage.classList.add('error-animation');
+    } else {
+      description.innerText = 'Loading...';
+      description.style.color = '#FFFFFF';
+      animatedImage.classList.add('waiting-animation');
+    }
+  }
+
+  hint.classList.add('hint');
+  hint.appendChild(animatedImage);
+  hint.appendChild(description);
+
+  function overlay(visible: boolean, hasError: boolean): void {
+    displayHint(hasError);
     let elements = domElement.querySelectorAll('.overlay');
-    while(elements.length > 1) {
-      elements[0].remove();
-      elements = domElement.querySelectorAll('.overlay');
-    } 
-    if(elements.length === 1) {
-      if(visible) {
-        elements.forEach(e => e.classList.remove('hidden'));
-      } else {
-        elements.forEach(e => e.classList.add('hidden'));
-      }
+    if(visible) {
+      elements.forEach(e => e.classList.remove('hidden'));
+    } else {
+      elements.forEach(e => e.classList.add('hidden'));
     }
   }
 
@@ -286,7 +304,7 @@ const PlaygroundActions: Actions = {
       return editor;
     }
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
-    editor.overlay(true);
+    editor.overlay(true, false);
     return Promise.resolve(editor);
   },
   error: async ({ message, editor }) => {
@@ -294,7 +312,7 @@ const PlaygroundActions: Actions = {
       return editor;
     }
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
-    editor.overlay(true);
+    editor.overlay(true, true);
     return Promise.resolve(editor);
   },
   validated: async ({ message, element, monacoFactory, editor, content }): Promise<MonacoEditorResult | undefined> => {
@@ -321,7 +339,7 @@ const PlaygroundActions: Actions = {
       (worker) => new ByPassingMessageWriter(worker, messageWrapper)
     );
 
-    editor.overlay(false);
+    editor.overlay(false, false);
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: false});
 
     await editor.in.byPassWrite(message);

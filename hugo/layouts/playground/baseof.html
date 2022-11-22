@@ -7,8 +7,49 @@
             margin: 0;
             padding: 0;
             height: 100%;
+            position: relative;
         }
-    
+
+        .waiting-animation, .error-animation {
+            width: auto;
+            height: 2rem;
+            margin: auto;
+        }
+
+        .overlay {
+            text-align: center;
+        }
+
+        .hint {
+            display: block;
+            font-size: 0.75rem;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translateY(-50% -50%);
+        }
+
+        .waiting-animation {
+            animation: gelatine 0.5s infinite;
+        }
+
+        .error-animation {
+            animation: shake 1s ease normal;
+        }
+        
+        @keyframes gelatine {
+            from, to { transform: scale(1, 1); }
+            25% { transform: scale(0.9, 1.1); }
+            50% { transform: scale(1.1, 0.9); }
+            75% { transform: scale(0.95, 1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            10%, 30%, 50%, 70%, 90% {transform: translateX(-10px);}
+            20%, 40%, 60%, 80% {transform: translateX(10px);}
+        }
+
         .wrapper {
             display: flex;
             flex-direction: column;
