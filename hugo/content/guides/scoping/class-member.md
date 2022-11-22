@@ -28,39 +28,34 @@ This project implements a strongly-typed version of the [Lox language](https://c
 
 We'll first start with the `MemberCall` grammar rule, which references one of our `NamedElements`. These elements could be variable declarations, functions, classes or methods and fields of those classes. Additionally, we want to allow function calls on elements. Note that the grammar has no notion of whether these elements can actually be executed as functions. Instead, we always allow function calls on every named element, and simply provide validation errors in case an element is called erroneously. After parsing the first member call, we continue parsing further members as long as the input text provides us with further references to elements; which are separated by dots.
 
-```ts
+```
 type NamedElement = FunctionDeclaration | VariableDeclaration | MethodMember | FieldMember | Class;
 
 MemberCall:
     // Reference a named element of our grammar
     // Variables, functions, etc.
-    element=[NamedElement:ID]
+    ElementReference
     // Parse an operation call on this element
-    (explicitOperationCall?='(' (
-        // Parse any arguments for the operation call
-	    arguments+=Expression (',' arguments+=Expression)*
-	)? ')')?
+    OperationCall?
     // Create a new `MemberCall` and assign the old one to the `previous` property
     // The previous member call can either be the member call that was parsed in the previous section
     // Or one that is parsed in the next section due to the repetition at the end of this group
     ({infer MemberCall.previous=current} 
         // We repeat the named element reference
-        ("." element=[NamedElement:ID] (
+        ("." ElementReference (
         // Parse an operation call again
-		explicitOperationCall?='('
-		(
-		    arguments+=Expression (',' arguments+=Expression)*
-		)?
-		')')?
+		OperationCall?
         // Our language allows to return functions in functions
         // So we need to be able to call multiple functions without any element references
-        | (
-		explicitOperationCall?='('
-		(
-		    arguments+=Expression (',' arguments+=Expression)*
-		)?
-		')'))
+        | OperationCall)
     )*;
+
+fragment ElementReference: element=[NamedElement:ID];
+fragment OperationCall: 
+    explicitOperationCall?='(' (
+		arguments+=Expression (',' arguments+=Expression)*
+	)?
+')');
 ```
 
 A very important aspect of these chained member calls is the action (`{infer MemberCall.previous=current}`) which rewrites the resulting AST. In this case, it reverses the direction of member call AST nodes. Instead of starting with the first encountered member call and then traversing down to the last, we start with the last and traverse the list of member calls up using the `previous` property. The reason for doing this becomes clear when looking at the scope provider for the Lox language:

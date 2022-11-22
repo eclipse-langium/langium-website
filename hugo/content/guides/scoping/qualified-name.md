@@ -19,7 +19,7 @@ void main() {
 }
 ```
 
-As can be seen, using qualified name scoping is quite helpful in this case. It allows us to reference the `getDocumentation` function through the scope computed & made available by the `Langium` namespace, even though it's not directly accessible within the scope of `main` by itself. This behavior can be achieved in Langium by exporting the `getDocumentation` function under the name `Langium::getDocumentation`. To do this, we will first set up a new `ScopeComputation` class that extends the `DefaultScopeComputation`, and will be responsible for our custom scope computation. Then, we'll want to bind our custom scope computation class in our module:
+As can be seen, using qualified name scoping is quite helpful in this case. It allows us to reference the `getDocumentation` function through the scope computed & made available by the `Langium` namespace, even though it's not directly accessible within the scope of `main` by itself. This behavior can be achieved in Langium by exporting the `getDocumentation` function under the name `Langium::getDocumentation`. To do this, we will first set up a new `ScopeComputation` class that extends the `DefaultScopeComputation`. This class will be responsible for our custom scope computation. Then, we'll want to bind our custom scope computation class in our module:
 
 ```ts
 // Scope computation for our C++-like language
