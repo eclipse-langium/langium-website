@@ -24,13 +24,15 @@ import {
 } from "./data";
 import { generateMonarch } from "./monarch-generator";
 import { createServicesForGrammar } from "langium/lib/grammar/grammar-util";
-import { decompressFromEncodedURIComponent } from 'lz-string';
+import { decompressFromEncodedURIComponent } from "lz-string";
+import { AstNode } from "langium";
+import Mustache from "mustache";
 
 export { BrowserMessageReader, BrowserMessageWriter };
 
 declare type DedicatedWorkerGlobalScope = any;
 
-export type PlaygroundMessageType = "validated" | "changing" | "error";
+export type PlaygroundMessageType = "validated" | "changing" | "error" | "ast";
 
 export interface PlaygroundMessageBase {
   type: PlaygroundMessageType;
@@ -46,6 +48,11 @@ export interface PlaygroundOK extends PlaygroundMessageBase {
   grammar: string;
 }
 
+export interface PlaygroundAst extends PlaygroundMessageBase {
+  type: "ast";
+  root: AstNode;
+}
+
 export interface PlaygroundChanging extends PlaygroundMessageBase {
   type: "changing";
 }
@@ -53,7 +60,8 @@ export interface PlaygroundChanging extends PlaygroundMessageBase {
 export type PlaygroundMessage =
   | PlaygroundChanging
   | PlaygroundError
-  | PlaygroundOK;
+  | PlaygroundOK
+  | PlaygroundAst;
 
 export interface MessageBase {
   jsonrpc: "2.0";
@@ -209,28 +217,28 @@ export function setupEditor(
 ) {
   domElement.childNodes.forEach((c) => domElement.removeChild(c));
 
-  const overlayElement = document.createElement('div');
-  overlayElement.classList.add('overlay');
-  overlayElement.classList.add('hidden');
+  const overlayElement = document.createElement("div");
+  overlayElement.classList.add("overlay");
+  overlayElement.classList.add("hidden");
   domElement.appendChild(overlayElement);
 
   function overlay(visible: boolean): void {
-    let elements = domElement.querySelectorAll('.overlay');
-    while(elements.length > 1) {
+    let elements = domElement.querySelectorAll(".overlay");
+    while (elements.length > 1) {
       elements[0].remove();
-      elements = domElement.querySelectorAll('.overlay');
-    } 
-    if(elements.length === 1) {
-      if(visible) {
-        elements.forEach(e => e.classList.remove('hidden'));
+      elements = domElement.querySelectorAll(".overlay");
+    }
+    if (elements.length === 1) {
+      if (visible) {
+        elements.forEach((e) => e.classList.remove("hidden"));
       } else {
-        elements.forEach(e => e.classList.add('hidden'));
+        elements.forEach((e) => e.classList.add("hidden"));
       }
     }
   }
 
-  const editingArea = document.createElement('div');
-  editingArea.classList.add('editing-area');
+  const editingArea = document.createElement("div");
+  editingArea.classList.add("editing-area");
   domElement.appendChild(editingArea);
 
   const client = monacoFactory();
@@ -240,8 +248,8 @@ export function setupEditor(
   editorConfig.setMonarchTokensProvider(syntax);
   editorConfig.setMonacoEditorOptions({
     minimap: {
-        enabled: false
-    }
+      enabled: false,
+    },
   });
 
   editorConfig.setMainCode(content);
@@ -260,7 +268,7 @@ export function setupEditor(
     out: readerFactory(worker),
     in: writerFactory(worker),
     editor: client,
-    overlay
+    overlay,
   };
   client.setWorker(worker, {
     reader: result.out,
@@ -280,30 +288,39 @@ interface ActionRequest {
   content: string;
 }
 
-type Action = (params: ActionRequest) => Promise<MonacoEditorResult | undefined>;
+type Action = (
+  params: ActionRequest
+) => Promise<MonacoEditorResult | undefined>;
 type Actions = Record<PlaygroundMessageType, Action>;
 
 const messageWrapper = new PlaygroundWrapper();
 
 const PlaygroundActions: Actions = {
+  ast: () => Promise.resolve(undefined),
   changing: async ({ message, editor }) => {
-    if(message.type != "changing" || !editor) {
+    if (message.type != "changing" || !editor) {
       return editor;
     }
-    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
+    editor.editor.getEditorConfig().setMonacoEditorOptions({ readOnly: true });
     editor.overlay(true);
     return Promise.resolve(editor);
   },
   error: async ({ message, editor }) => {
-    if(message.type != "error" || !editor) {
+    if (message.type != "error" || !editor) {
       return editor;
     }
-    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
+    editor.editor.getEditorConfig().setMonacoEditorOptions({ readOnly: true });
     editor.overlay(true);
     return Promise.resolve(editor);
   },
-  validated: async ({ message, element, monacoFactory, editor, content }): Promise<MonacoEditorResult | undefined> => {
-    if(message.type != "validated") {
+  validated: async ({
+    message,
+    element,
+    monacoFactory,
+    editor,
+    content,
+  }): Promise<MonacoEditorResult | undefined> => {
+    if (message.type != "validated") {
       return editor;
     }
 
@@ -327,7 +344,7 @@ const PlaygroundActions: Actions = {
     );
 
     editor.overlay(false);
-    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: false});
+    editor.editor.getEditorConfig().setMonacoEditorOptions({ readOnly: false });
 
     await editor.in.byPassWrite(message);
 
@@ -344,23 +361,23 @@ export function setupPlayground(
   grammar?: string,
   content?: string
 ) {
-
   let langiumContent = LangiumInitialContent;
   let dslContent = StateMachineInitialContent;
 
   if (grammar) {
     const decompressedGrammar = decompressFromEncodedURIComponent(grammar);
     if (decompressedGrammar) {
-        langiumContent = decompressedGrammar;
+      langiumContent = decompressedGrammar;
     }
   }
   if (content) {
     const decompressedContent = decompressFromEncodedURIComponent(content);
     if (decompressedContent) {
-        dslContent = decompressedContent;
+      dslContent = decompressedContent;
     }
   }
 
+  const syntaxTreeDomElement = document.getElementById('syntax-tree')!;
   const langium = setupEditor(
     leftEditor,
     "langium",
@@ -378,7 +395,13 @@ export function setupPlayground(
       element: rightEditor,
       monacoFactory,
       editor: userDefined,
-      content: dslContent
+      content: dslContent,
+    });
+
+    userDefined!.out.listenByPass((data) => {
+      var template = document.getElementById('template')!.innerHTML;
+      var rendered = Mustache.render(template, { name: 'Luke' }, undefined, {tags: ['(%','%)']});
+      syntaxTreeDomElement.innerHTML = rendered;
     });
   });
 
@@ -388,10 +411,10 @@ export function setupPlayground(
   });
 
   return () => {
-    return ({
+    return {
       grammar: langium.editor.getMainCode(),
-      content: userDefined?.editor.getMainCode() ?? ''
-    } as PlaygroundParameters);
+      content: userDefined?.editor.getMainCode() ?? "",
+    } as PlaygroundParameters;
   };
 }
 
@@ -402,4 +425,25 @@ export async function share(grammar: string, content: string): Promise<void> {
   url.searchParams.append("grammar", compressedGrammar);
   url.searchParams.append("content", compressedContent);
   await navigator.clipboard.writeText(url.toString());
+}
+
+export function throttle<T>(milliseconds: number, action: (input: T) => void) {
+  let timeout: NodeJS.Timeout | undefined = undefined;
+
+  function clear() {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = undefined;
+    }
+  }
+
+  return {
+    clear,
+    call: (input: T) => {
+      clear();
+      timeout = setTimeout(() => {
+        action(input);
+      }, milliseconds);
+    },
+  };
 }

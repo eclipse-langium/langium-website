@@ -35,6 +35,9 @@
             flex-grow: 1;
         }
     </style>
+    <script id="template" type="x-tmpl-mustache">
+        Hello <b>(% name %)!</b>
+    </script>  
 </head>
 {{/* Default is mono font, but use the regular font in special cases, like for the imprint page */}}
 {{ $extraBodyClass := `font-mono` }}
@@ -45,6 +48,7 @@
     <div x-data="{ isOpen: false }" class="relative bg-white wrapper dark:bg-gray-900">
         {{ partial "langium-header" . }}
         <div class="relative bg-white wrapper dark:bg-gray-900">
+            <div id="syntax-tree"></div>
             <div class="dark:bg-gray-900" id="monaco-editor-root">
                 <table class="w-full h-full">
                     <tr class="font-mono" style="height: 2rem; color: white; border: 1px rgb(38,136,140) solid; background-color: rgb(38,136,140, 0.33);">
