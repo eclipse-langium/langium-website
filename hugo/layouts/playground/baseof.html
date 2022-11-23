@@ -34,9 +34,113 @@
         #monaco-editor-root {
             flex-grow: 1;
         }
+
+        #syntax-tree {
+            width: 100%;
+            height: 100%;
+            background-color: #efefef;
+        }
+
+        #syntax-tree > ul {
+            cursor: default;
+            box-sizing: border-box;
+            font-family: monospace;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            flex: 1;
+            margin: 0;
+            padding-left: 20px;
+            overflow: auto;
+        }
+
+        .entry {
+            margin: 0;
+            list-style: none;
+            padding: 5px;
+            position: relative;
+        }
+        .entry.toggable::before {
+            content: '-';
+            color: red;
+        }
+        .entry.toggable.closed::before {
+            content: '+';
+            color: green;
+        }
+
+        .entry > .value {
+            list-style: none;
+        }
+
+        .type {
+            color: #268BD2;
+            cursor: pointer;
+        }
+
+        .property {
+            color: #B58900;
+            cursor: pointer;
+        }
+
+        .opening-brace, .closing-brace {
+            color: #93A1A1;
+        }
+
+        .value-body {
+            width: -webkit-fit-content;
+            width: -moz-fit-content;
+            width: fit-content;
+            margin: 0;
+            padding-left: 20px;
+            overflow: auto;
+        }
+
+        .close.property-body, .closed .opening-brace, .closed .closing-brace, .closed .value-body{
+            display: none;
+        }
     </style>
-    <script id="template" type="x-tmpl-mustache">
-        Hello <b>(% name %)!</b>
+    <script id="template-boolean" type="text/html">
+        <span class="colon">:&nbsp;</span>
+        <span class="type">boolean</span>
+        <span class="equal">=</span>
+        <span class="literal">(%value%)</span>
+    </script>
+    <script id="template-number" type="text/html">
+        <span class="colon">:&nbsp;</span>
+        <span class="type">number</span>
+        <span class="equal">=</span>
+        <span class="literal">(%value%)</span>
+    </script> 
+    <script id="template-string" type="text/html">
+        <span class="colon">:&nbsp;</span>
+        <span class="type">string</span>
+        <span class="equal">=</span>
+        <span class="literal">&quot;(%value%)&quot;</span>
+    </script> 
+    <script id="template-simple" type="text/html">
+        <span class="value">
+            <span class="type">
+                (%$type%)
+            </span>
+        </span>
+        <span class="opening-brace">{</span>
+        <ul class="value-body"></ul>
+        <div class="closing-brace">}</div>
+    </script>  
+    <script id="template-array" type="text/html">
+        <span class="colon">:&nbsp;</span>
+        <span class="opening-brace">[</span>
+        <ul class="value-body"></ul>
+        <div class="closing-brace">]</div>
+    </script>
+    <script id="template-property" type="text/html">
+        <span class="value">
+            <span class="property">
+                (%name%)
+            </span>
+        </span>
+        <span class="property-body"></span>
     </script>  
 </head>
 {{/* Default is mono font, but use the regular font in special cases, like for the imprint page */}}
@@ -48,7 +152,13 @@
     <div x-data="{ isOpen: false }" class="relative bg-white wrapper dark:bg-gray-900">
         {{ partial "langium-header" . }}
         <div class="relative bg-white wrapper dark:bg-gray-900">
-            <div id="syntax-tree"></div>
+            
+            
+            <ul>
+                <li id="syntax-tree" class="entry closed toggable"></li>
+            </ul>
+
+
             <div class="dark:bg-gray-900" id="monaco-editor-root">
                 <table class="w-full h-full">
                     <tr class="font-mono" style="height: 2rem; color: white; border: 1px rgb(38,136,140) solid; background-color: rgb(38,136,140, 0.33);">
