@@ -6,7 +6,8 @@
 
 import { DocumentState, startLanguageServer, EmptyFileSystem, createLangiumGrammarServices } from 'langium';
 import { createConnection, DiagnosticSeverity } from 'vscode-languageserver/browser';
-import { ByPassingMessageReader, ByPassingMessageWriter, PlaygroundWrapper, throttle } from './common';
+import { PlaygroundWrapper, ByPassingMessageReader, ByPassingMessageWriter } from './monaco-utils';
+import { throttle } from './utils';
 
 /* browser specific setup code */
 const messageWrapper = new PlaygroundWrapper();

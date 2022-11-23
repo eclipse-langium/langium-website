@@ -22,6 +22,8 @@
   "devDependencies": {
     "@types/lz-string": "^1.3.34",
     "@types/mustache": "^4.2.1",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
     "langium": "0.5.0-next.52ab085",
     "langium-statemachine-dsl": "0.5.0-next.f2b3802",
     "lz-string": "^1.4.4",
@@ -31,6 +33,8 @@
     "vite": "^3.2.4"
   },
   "dependencies": {
-    "mustache": "^4.2.0"
+    "mustache": "^4.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }

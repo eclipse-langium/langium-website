@@ -7,7 +7,8 @@
 import { AstNode, DocumentState, startLanguageServer } from 'langium';
 import { createServicesForGrammar } from 'langium/lib/grammar/grammar-util';
 import { createConnection } from 'vscode-languageserver/browser';
-import { ByPassingMessageWriter, ByPassingMessageReader, PlaygroundWrapper, throttle } from './common';
+import { PlaygroundWrapper, ByPassingMessageReader, ByPassingMessageWriter } from './monaco-utils';
+import { throttle } from './utils';
 
 const messageWrapper = new PlaygroundWrapper();
 const messageReader = new ByPassingMessageReader(self, messageWrapper);

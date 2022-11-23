@@ -2,6 +2,9 @@ import path from 'path';
 import { defineConfig } from 'vite';
 
 const config = defineConfig({
+    define: {
+        'process.env': {}
+    },
     build: {
         lib: {
             entry: path.resolve(__dirname, 'common.ts'),
@@ -10,7 +13,7 @@ const config = defineConfig({
             formats: ['es']            
         },
         outDir: path.resolve(__dirname, '../../static/playground/libs/worker'),
-        emptyOutDir: false
+        emptyOutDir: false,
     }
 });
 
