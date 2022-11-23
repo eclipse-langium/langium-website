@@ -1,5 +1,5 @@
 import { AstNode, Reference } from "langium";
-import React, { FC } from "react";
+import React from "react";
 
 export function render(root: AstNode) {
   const location = document.getElementById("syntax-tree")!;
@@ -11,7 +11,7 @@ interface TreeProps {
   root: TypeNode;
 }
 
-const Tree: FC<TreeProps> = ({ root }) => {
+const Tree = ({ root }: TreeProps) => {
   const [open, setOpen] = window['React'].useState(true);
   switch (root.kind) {
     case "boolean":
@@ -70,7 +70,7 @@ const Tree: FC<TreeProps> = ({ root }) => {
   return <div>???</div>;
 };
 
-const TreeItem: FC<TreeProps & { name?: string }> = ({ root, name }) => {
+const TreeItem = ({ root, name }: TreeProps & { name?: string }) => {
   const [open, setOpen] = window['React'].useState(true);
   return (
     <li className={"entry toggable"}>
