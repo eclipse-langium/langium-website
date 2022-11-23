@@ -36,9 +36,13 @@
         }
 
         #syntax-tree {
-            width: 100%;
+            position: absolute;
+            right: 0;
+            width: 300px;
             height: 100%;
             background-color: #efefef;
+            z-index: 1000000;
+            overflow-y: scroll;
         }
 
         #syntax-tree > ul {
@@ -96,52 +100,12 @@
             overflow: auto;
         }
 
-        .close.property-body, .closed .opening-brace, .closed .closing-brace, .closed .value-body{
-            display: none;
+        .link {
+            cursor: pointer;
+            text-decoration: underline;
+            color: blue;
         }
     </style>
-    <script id="template-boolean" type="text/html">
-        <span class="colon">:&nbsp;</span>
-        <span class="type">boolean</span>
-        <span class="equal">=</span>
-        <span class="literal">(%value%)</span>
-    </script>
-    <script id="template-number" type="text/html">
-        <span class="colon">:&nbsp;</span>
-        <span class="type">number</span>
-        <span class="equal">=</span>
-        <span class="literal">(%value%)</span>
-    </script> 
-    <script id="template-string" type="text/html">
-        <span class="colon">:&nbsp;</span>
-        <span class="type">string</span>
-        <span class="equal">=</span>
-        <span class="literal">&quot;(%value%)&quot;</span>
-    </script> 
-    <script id="template-simple" type="text/html">
-        <span class="value">
-            <span class="type">
-                (%$type%)
-            </span>
-        </span>
-        <span class="opening-brace">{</span>
-        <ul class="value-body"></ul>
-        <div class="closing-brace">}</div>
-    </script>  
-    <script id="template-array" type="text/html">
-        <span class="colon">:&nbsp;</span>
-        <span class="opening-brace">[</span>
-        <ul class="value-body"></ul>
-        <div class="closing-brace">]</div>
-    </script>
-    <script id="template-property" type="text/html">
-        <span class="value">
-            <span class="property">
-                (%name%)
-            </span>
-        </span>
-        <span class="property-body"></span>
-    </script>  
 </head>
 {{/* Default is mono font, but use the regular font in special cases, like for the imprint page */}}
 {{ $extraBodyClass := `font-mono` }}
@@ -154,9 +118,7 @@
         <div class="relative bg-white wrapper dark:bg-gray-900">
             
             
-            <ul>
-                <li id="syntax-tree" class="entry closed toggable"></li>
-            </ul>
+            <div id="syntax-tree"></div>
 
 
             <div class="dark:bg-gray-900" id="monaco-editor-root">
