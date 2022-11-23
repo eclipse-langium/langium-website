@@ -29,9 +29,7 @@
     "monaco-editor-wrapper": "1.1.0",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
-    "vscode-languageserver": "8.0.2"
-  },
-  "dependencies": {
+    "vscode-languageserver": "8.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }
