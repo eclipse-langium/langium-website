@@ -25,7 +25,7 @@ import {
 import { generateMonarch } from "./monarch-generator";
 import { createServicesForGrammar } from "langium/lib/grammar/grammar-util";
 import { decompressFromEncodedURIComponent } from "lz-string";
-import { AstNode } from "langium";
+import { AstNode, Reference } from "langium";
 import Mustache from "mustache";
 
 export { BrowserMessageReader, BrowserMessageWriter };
@@ -377,7 +377,7 @@ export function setupPlayground(
     }
   }
 
-  const syntaxTreeDomElement = document.getElementById('syntax-tree')!;
+  const syntaxTreeDomElement = document.getElementById("syntax-tree")!;
   const langium = setupEditor(
     leftEditor,
     "langium",
@@ -398,10 +398,205 @@ export function setupPlayground(
       content: dslContent,
     });
 
+    interface TypeNodeBase {
+      kind: "object" | "array" | "string" | "boolean" | "number" | 'reference';
+    }
+    interface SimpleType extends TypeNodeBase {
+      kind: "object";
+      $type: string;
+      properties: PropertyNode[];
+    }
+    interface ReferenceType extends TypeNodeBase {
+      kind: "reference";
+      $text: string;
+      type: TypeNode;
+    }
+    type PrimitiveMapping = {
+      string: string;
+      boolean: boolean;
+      number: number;
+    };
+    interface PrimitiveType<T extends "number" | "string" | "boolean">
+      extends TypeNodeBase {
+      kind: T;
+      value: PrimitiveMapping[T];
+    }
+
+    interface ArrayType extends TypeNodeBase {
+      kind: "array";
+      children: TypeNode[];
+    }
+
+    type TypeNode =
+      | SimpleType
+      | ArrayType
+      | PrimitiveType<"boolean">
+      | PrimitiveType<"number">
+      | PrimitiveType<"string">
+      | ReferenceType;
+
+    interface PropertyNode {
+      name: string;
+      type: TypeNode;
+    }
+
+    function preprocessAstNode(node: AstNode): SimpleType {
+      const properties: PropertyNode[] = Object.keys(node)
+        .filter((n) => !n.startsWith("$"))
+        .map((n) => {
+          const valueOrValues = node[n] as AstNode | AstNode[] | 'string' | 'number' | 'boolean' | Reference;
+          if (Array.isArray(valueOrValues)) {
+            return {
+              name: n,
+              type: preprocessArrayType(valueOrValues),
+            } as PropertyNode;
+          } else if(typeof valueOrValues === 'object') {
+            if('$refText' in valueOrValues) {
+              return {
+                name: n,
+                type: preprocessReferenceNode(valueOrValues),
+              } as PropertyNode; 
+            }
+            return {
+              name: n,
+              type: preprocessAstNode(valueOrValues),
+            } as PropertyNode;
+          } else if(typeof valueOrValues === 'string') {
+            return {
+              name: n,
+              type: {
+                kind: "string",
+                value: valueOrValues
+              }
+            } as PropertyNode;
+          } else if(typeof valueOrValues === 'number') {
+            return {
+              name: n,
+              type: {
+                kind: "number",
+                value: valueOrValues
+              }
+            } as PropertyNode;
+          } else {
+            return {
+              name: n,
+              type: {
+                kind: "boolean",
+                value: valueOrValues
+              }
+            } as PropertyNode;
+          }
+        });
+      return {
+        kind: "object",
+        $type: node.$type,
+        properties,
+      };
+    }
+
+    function preprocessReferenceNode(node: Reference<AstNode>): ReferenceType {
+      return {
+        kind: "reference",
+        $text: node.$refText,
+        type: preprocessAstNode(node.ref!)
+      }
+    }
+
+    function preprocessArrayType(nodes: AstNode[]): ArrayType {
+      const children = nodes.map(preprocessAstNode);
+      return {
+        kind: "array",
+        children,
+      };
+    }
+
+    function applyTemplate<T>(
+      templateId: string,
+      data: T
+    ) {
+      var template = document.getElementById(templateId)!.innerHTML;
+      return Mustache.render(template, data, undefined, {
+        tags: ["(%", "%)"],
+      });
+    }
+
+    function buildType(domElement: HTMLElement, root: TypeNode) {
+      debugger
+      switch(root.kind) {
+        case 'object': return buildSimpleType(domElement, root);
+        case 'boolean': return buildBoolean(domElement, root);
+        case 'string': return buildString(domElement, root);
+        case 'number': return buildNumber(domElement, root);
+       // case 'reference': return buildReference(domElement, root);
+        case 'array': return buildArray(domElement, root);
+      }
+    }
+
+    function buildArray(domElement: HTMLElement, root: ArrayType) {
+      domElement.innerHTML = applyTemplate("template-array", root);
+      const contentDom = (domElement.querySelector('.value-body') as HTMLElement)!;
+      for (const child of root.children) {
+        const li = document.createElement('li');
+        li.className = 'entry toggable closed';
+        buildType(li, child);
+        contentDom.appendChild(li);
+      }
+    }
+
+    function buildBoolean(domElement: HTMLElement, root: PrimitiveType<'boolean'>) {
+      domElement.innerHTML = applyTemplate("template-boolean", root);
+    }
+
+    function buildString(domElement: HTMLElement, root: PrimitiveType<'string'>) {
+      domElement.innerHTML = applyTemplate("template-string", root);
+    }
+
+    function buildNumber(domElement: HTMLElement, root: PrimitiveType<'number'>) {
+      domElement.innerHTML = applyTemplate("template-number", root);
+    }
+
+    function buildSimpleType(domElement: HTMLElement, root: SimpleType) {
+      let initializedChildren = false;
+      domElement.innerHTML = applyTemplate("template-simple", root);
+      const titleDom = domElement.querySelector(
+        ".type"
+      )! as HTMLElement;
+      const listItemDom = domElement.querySelector(
+        "li.entry"
+      )! as HTMLElement;
+      const valueBody = domElement.querySelector('.value-body')!;
+      titleDom.onclick = () => {
+        if(!listItemDom.classList.toggle("closed") && !initializedChildren) {
+          buildProperties(valueBody, root.properties);
+          initializedChildren = true;
+        }
+      };
+    }
+
+    function buildProperties(element: Element, properties: PropertyNode[]) {
+      for (const property of properties) {
+        const li = document.createElement('li');
+        li.className = 'entry toggable closed';
+        li.innerHTML = applyTemplate('template-property', property);
+        element.appendChild(li);
+
+        const body = li.querySelector('.property-body')!;
+        let initializedType = false;
+        (li as HTMLElement).onclick = () => {
+          if(!li.classList.toggle('closed') && !initializedType) {
+            buildType(body as HTMLElement, property.type);
+            initializedType = true;
+          }
+        };
+      }
+    }
+
     userDefined!.out.listenByPass((data) => {
-      var template = document.getElementById('template')!.innerHTML;
-      var rendered = Mustache.render(template, { name: 'Luke' }, undefined, {tags: ['(%','%)']});
-      syntaxTreeDomElement.innerHTML = rendered;
+      if (data.type !== "ast") {
+        return;
+      }
+      const preprocessed = preprocessAstNode(data.root);  
+      buildSimpleType(syntaxTreeDomElement, preprocessed);
     });
   });
 
@@ -447,3 +642,5 @@ export function throttle<T>(milliseconds: number, action: (input: T) => void) {
     },
   };
 }
+
+
