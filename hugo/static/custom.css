@@ -71,10 +71,15 @@
         --footer-link-color-visited: #ffcc5c;
     }
 
-    .edgePath .path {
+    .edgePaths path,
+    .edgePath path {
         stroke: #000000 !important;
     }
 
+    .marker {
+        fill: #000000 !important;
+    }
+    
     .node rect,
     .node polygon {
         fill: var(--header-font-color) !important;
@@ -148,8 +153,13 @@
         --footer-link-color-visited: rgb(213, 104, 231);
     }
 
-    .edgePath .path {
+    .edgePaths path,
+    .edgePath path {
         stroke: var(--body-font-color) !important;
+    }
+
+    .marker {
+        fill: var(--body-font-color) !important;
     }
 
     .node rect,
