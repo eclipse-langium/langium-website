@@ -63,15 +63,19 @@
             height: 100%;
         }
 
-        @media screen and (max-width: 600px) {
-            #website-header, #website-footer {
-                display: none;
-            }   
-        }
 
+        @media screen and (max-width: 600px), screen and (max-height: 400px) {
+            #website-header {
+                max-height: 33vh;
+                padding: 0 12px 0 0;
+            }
+            
+            #website-logo {
+                max-height: 33vh;
+                padding: 3px;
+            }
 
-        @media screen and (max-height: 400px) {
-            #website-header, #website-footer {
+            #website-footer {
                 display: none;
             }   
         }
