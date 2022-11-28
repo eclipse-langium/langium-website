@@ -3,19 +3,11 @@
 <head>
     {{ partial "langium-head" . }}
     <style>
-        html, body, .editing-area {
+        html, body {
             margin: 0;
             padding: 0;
             height: 100%;
             position: relative;
-        }
-
-        #overlay {
-            text-align: center;
-            position: relative;
-            z-index: 10000;
-            height: 100%;
-            width: 100%;
         }
 
         #indicator {
@@ -39,33 +31,35 @@
             height: 100%;
         }
 
-        #grammar-root, #content-root, #overlay {
-            position: absolute;
-            width: 100%;
-            top: 0;
-            margin: 0;
-            padding: 0;
-            height: 100%;
+        #monaco-editor-root {
+            flex-grow: 1;
         }
 
-        .editing-area {
-            width: 100%;
-            top: 0;
-            margin: 0;
-            padding: 0;
-            height: 100%;
+        .header {
+            padding: 0.5rem;
+            color: white;
+            border: 1px rgb(38,136,140) solid;
+            background-color: rgb(38,136,140, 0.33);
+            display: flex;
+            align-items:center;
+        }
+
+        .body {
+            border: 1px rgb(38,136,140) solid;
+            position: relative;
         }
 
         #overlay {
-            cursor: not-allowed;
-            z-index: 1000;
-            text-align: center;
-            color: white;
-            background-color: rgba(23,23,23,0.75);
+            z-index: 100000;
+            background: #00000080;
         }
 
-        #monaco-editor-root {
-            flex-grow: 1;
+        .editing-area {
+            position: absolute;
+            top: 0;
+            left:0;
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -79,29 +73,27 @@
         {{ partial "langium-header" . }}
         <div class="relative bg-white wrapper dark:bg-gray-900">
             <div class="dark:bg-gray-900" id="monaco-editor-root">
-                <table class="w-full h-full">
-                    <tr class="font-mono" style="height: 2rem; color: white; border: 1px rgb(38,136,140) solid; background-color: rgb(38,136,140, 0.33);">
-                        <td style='padding: 0.5rem; width: 50%;'>Grammar</td>
-                        <td style='padding: 0.5rem; width: 50%; display: flex; align-items:center'>
-                            <span>Content</span>
-                            <img id="shareButton" src="/assets/share.svg" title='Copy URL to this grammar and content' style='display: inline; width: 1rem; height: 1rem; cursor: pointer; position: absolute; right: 0.5rem;'/>
-                            <span id="copiedHint" style="display: none; position: absolute; right: 2rem; font-size: 0.5rem;">Link was copied!</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td id="grammar-root" style="border: 1px rgb(38,136,140) solid; position: relative;width: 50%;"></td>
-                        <td style="border: 1px rgb(38,136,140) solid; position: relative; width: 50%;">
-                            <div id="overlay">
-                                <div id="indicator">
-                                    <div class="hint font-mono">
-                                        Loading...
-                                    </div>
+                <div class="grid h-full grid-cols-2" style="grid-template-rows: 3rem auto">
+                    <div class="header font-mono">Grammar</div>
+                    <div class="header font-mono">
+                        <span>Content</span>
+                        <img id="shareButton" src="/assets/share.svg" title='Copy URL to this grammar and content' style='display: inline; width: 1rem; height: 1rem; cursor: pointer; position: absolute; right: 0.5rem;'/>
+                        <span id="copiedHint" style="display: none; position: absolute; right: 2rem; font-size: 0.5rem;">Link was copied!</span>
+                    </div>
+                    <div class="body">
+                        <div id="grammar-root" class="editing-area"></div>
+                    </div>
+                    <div id="content-overlay-root" class="body">
+                        <div id="overlay" class="editing-area">
+                            <div id="indicator">
+                                <div class="hint font-mono">
+                                    Loading...
                                 </div>
                             </div>
-                            <div id="content-root"></div>
-                        </td>
-                    </tr>
-                </table>
+                        </div>
+                        <div id="content-root" class="editing-area"></div>
+                    </div>
+                </div>
             </div>
         </div>
         {{ block "main" . }}
