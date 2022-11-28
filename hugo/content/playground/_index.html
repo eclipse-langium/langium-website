@@ -23,10 +23,10 @@ playground: true
     new URL("", window.location.href).href,
     false
   );
-
+  
+  // helper function for adding monaco styles with embedded codicon TTF
   MonacoEditorLanguageClientWrapper.addMonacoStyles("monaco-editor-styles");
-  MonacoEditorLanguageClientWrapper.addCodiconTtf();
-
+  
   addEventListener('load', function() {
     let getState = null; //: () => PlaygroundParameters
 
