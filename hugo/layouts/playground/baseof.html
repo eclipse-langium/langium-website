@@ -47,6 +47,7 @@
         .body {
             border: 1px rgb(38,136,140) solid;
             position: relative;
+            min-height: 50vh;
         }
 
         #overlay {
@@ -57,9 +58,15 @@
         .editing-area {
             position: absolute;
             top: 0;
-            left:0;
+            left: 0;
             width: 100%;
             height: 100%;
+        }
+
+        @media screen and (max-width: 600px) {
+            #website-header, #website-footer {
+                display: none;
+            }   
         }
     </style>
 </head>
