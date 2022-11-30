@@ -1,70 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark h-full m-0 p-0 relative">
 <head>
     {{ partial "langium-head" . }}
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            position: relative;
-        }
-
-        #indicator {
-            display: block;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .hint {
-            font-size: 0.75rem;
-            color: #d4d4d4;
-            text-align: center;
-            width: 200px;
-        }
-
-        .wrapper {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        #monaco-editor-root {
-            flex-grow: 1;
-        }
-
-        .header {
-            padding: 0.5rem;
-            color: white;
-            border: 1px rgb(38,136,140) solid;
-            background-color: rgb(38,136,140, 0.33);
-            display: flex;
-            align-items:center;
-        }
-
-        .body {
-            border: 1px rgb(38,136,140) solid;
-            position: relative;
-            min-height: 50vh;
-        }
-
-        #overlay {
-            z-index: 100000;
-            background: #00000080;
-        }
-
-        .editing-area {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-
-        @media screen and (max-width: 600px), screen and (max-height: 400px) {
+        @media 
+          screen and (max-width: 600px),
+          screen and (max-height: 400px) {
             #website-header {
                 max-height: 33vh;
                 padding: 0 12px 0 0;
@@ -86,30 +27,30 @@
 {{ if .Params.useRegularFont }}
     {{ $extraBodyClass = `dark:text-gray-100` }}
 {{ end }}
-<body class='bg-white dark:bg-gray-900 {{ $extraBodyClass }}'>
-    <div x-data="{ isOpen: false }" class="relative bg-white wrapper dark:bg-gray-900">
+<body class='bg-white dark:bg-gray-900 {{ $extraBodyClass }} h-full m-0 p-0 relative'>
+    <div x-data="{ isOpen: false }" class="relative bg-white flex flex-col h-full dark:bg-gray-900">
         {{ partial "langium-header" . }}
-        <div class="relative bg-white wrapper dark:bg-gray-900">
-            <div class="dark:bg-gray-900" id="monaco-editor-root">
+        <div class="relative bg-white flex flex-col h-full dark:bg-gray-900">
+            <div class="dark:bg-gray-900 flex-grow" id="monaco-editor-root">
                 <div class="grid h-full grid-cols-2" style="grid-template-rows: 3rem auto">
-                    <div class="header font-mono">Grammar</div>
-                    <div class="header font-mono">
+                    <div class="border-solid border flex items-center p-2 text-white font-mono" style="border-color: rgba(38, 136, 140, 1); background-color: rgba(38, 136, 140, 0.33);">Grammar</div>
+                    <div class="border-solid border flex items-center p-2 text-white font-mono" style="border-color: rgba(38, 136, 140, 1); background-color: rgba(38, 136, 140, 0.33);">
                         <span>Content</span>
                         <img id="shareButton" src="/assets/share.svg" title='Copy URL to this grammar and content' style='display: inline; width: 1rem; height: 1rem; cursor: pointer; position: absolute; right: 0.5rem;'/>
                         <span id="copiedHint" style="display: none; position: absolute; right: 2rem; font-size: 0.5rem;">Link was copied!</span>
                     </div>
-                    <div class="body">
-                        <div id="grammar-root" class="editing-area"></div>
+                    <div class="border-solid border relative" style="border-color: rgba(38, 136, 140, 1); min-height: 50vh;">
+                        <div id="grammar-root" class="h-full absolute top-0 left-0 w-full"></div>
                     </div>
-                    <div id="content-overlay-root" class="body">
-                        <div id="overlay" class="editing-area">
-                            <div id="indicator">
-                                <div class="hint font-mono">
+                    <div id="content-overlay-root" class="border-solid border relative" style="border-color: rgba(38, 136, 140, 1); min-height: 50vh;">
+                        <div id="overlay" class="h-full absolute top-0 left-0 w-full bg-black" style="z-index: 100000;">
+                            <div class="block absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                <div class="hint text-xs text-center w-48 font-mono" style="color: rgba(212, 212, 212, 1);">
                                     Loading...
                                 </div>
                             </div>
                         </div>
-                        <div id="content-root" class="editing-area"></div>
+                        <div id="content-root" class="h-full absolute top-0 left-0 w-full"></div>
                     </div>
                 </div>
             </div>
