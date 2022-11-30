@@ -1,4 +1,10 @@
-import { AstNode } from "langium";
+/******************************************************************************
+ * Copyright 2022 TypeFox GmbH
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License, which is available in the project root.
+ ******************************************************************************/
+
+ import { AstNode } from "langium";
 import { Diagnostic } from "vscode-languageserver";
 
 export declare type DedicatedWorkerGlobalScope = any;

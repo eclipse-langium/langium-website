@@ -1,4 +1,10 @@
-import { MagicAction, Message, MessageWrapper, PlaygroundMessage, Notification, isNotification, DedicatedWorkerGlobalScope, MessageCallback } from "./types";
+/******************************************************************************
+ * Copyright 2022 TypeFox GmbH
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License, which is available in the project root.
+ ******************************************************************************/
+
+ import { MagicAction, Message, MessageWrapper, PlaygroundMessage, Notification, isNotification, DedicatedWorkerGlobalScope, MessageCallback } from "./types";
 import {
     AbstractMessageReader,
     BrowserMessageReader,
