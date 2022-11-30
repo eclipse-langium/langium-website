@@ -16,17 +16,17 @@ playground: true
 <script type="module">
   import { MonacoEditorLanguageClientWrapper } from "../libs/monaco-editor-wrapper/index.js";
   import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
-  import { setupPlayground, share } from "./libs/worker/common.js";
+  import { setupPlayground, share, overlay } from "./libs/worker/common.js";
 
   buildWorkerDefinition(
     "../libs/monaco-editor-workers/workers",
     new URL("", window.location.href).href,
     false
   );
-
+  
+  // helper function for adding monaco styles with embedded codicon TTF
   MonacoEditorLanguageClientWrapper.addMonacoStyles("monaco-editor-styles");
-  MonacoEditorLanguageClientWrapper.addCodiconTtf();
-
+  
   addEventListener('load', function() {
     let getState = null; //: () => PlaygroundParameters
 
@@ -54,7 +54,8 @@ playground: true
       grammarRoot,
       contentRoot,
       grammar,
-      content
+      content,
+      overlay
     );
   });
 </script>

@@ -1,38 +1,24 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark h-full m-0 p-0 relative">
 <head>
     {{ partial "langium-head" . }}
     <style>
-        html, body, .overlay, .editing-area {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
-    
-        .wrapper {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
+        @media 
+          screen and (max-width: 600px),
+          screen and (max-height: 400px) {
+            #website-header {
+                max-height: 33vh;
+                padding: 0 12px 0 0;
+            }
+            
+            #website-logo {
+                max-height: 33vh;
+                padding: 3px;
+            }
 
-        #grammar-root, #content-root {
-            top: 0;
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
-
-        .overlay {
-            cursor: not-allowed;
-            z-index: 1000;
-            text-align: center;
-            font-size: 4rem;
-            color: white;
-            background-color: rgba(23,23,23,0.75);
-        }
-
-        #monaco-editor-root {
-            flex-grow: 1;
+            #website-footer {
+                display: none;
+            }   
         }
 
         #syntax-tree {
@@ -112,30 +98,34 @@
 {{ if .Params.useRegularFont }}
     {{ $extraBodyClass = `dark:text-gray-100` }}
 {{ end }}
-<body class='bg-white dark:bg-gray-900 {{ $extraBodyClass }}'>
-    <div x-data="{ isOpen: false }" class="relative bg-white wrapper dark:bg-gray-900">
+<body class='bg-white dark:bg-gray-900 {{ $extraBodyClass }} h-full m-0 p-0 relative'>
+    <div x-data="{ isOpen: false }" class="relative bg-white flex flex-col h-full dark:bg-gray-900">
         {{ partial "langium-header" . }}
-        <div class="relative bg-white wrapper dark:bg-gray-900">
-            
-            
-            <div id="syntax-tree"></div>
+        <div class="relative bg-white flex flex-col h-full dark:bg-gray-900">
+            <div class="dark:bg-gray-900 flex-grow" id="monaco-editor-root">
+                <div id="syntax-tree"></div>
 
-
-            <div class="dark:bg-gray-900" id="monaco-editor-root">
-                <table class="w-full h-full">
-                    <tr class="font-mono" style="height: 2rem; color: white; border: 1px rgb(38,136,140) solid; background-color: rgb(38,136,140, 0.33);">
-                        <td style='padding: 0.5rem; width: 50%;'>Grammar</td>
-                        <td style='padding: 0.5rem; width: 50%; display: flex; align-items:center'>
-                            <span>Content</span>
-                            <img id="shareButton" src="/assets/share.svg" title='Copy URL to this grammar and content' style='display: inline; width: 1rem; height: 1rem; cursor: pointer; position: absolute; right: 0.5rem;'/>
-                            <span id="copiedHint" style="display: none; position: absolute; right: 2rem; font-size: 0.5rem;">Link was copied!</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td id="grammar-root" style="border: 1px rgb(38,136,140) solid; position: relative;"></td>
-                        <td id="content-root" style="border: 1px rgb(38,136,140) solid; position: relative;"></td>
-                    </tr>
-                </table>
+                <div class="grid h-full grid-cols-2" style="grid-template-rows: 3rem auto">
+                    <div class="border-solid border flex items-center p-2 text-white font-mono" style="border-color: rgba(38, 136, 140, 1); background-color: rgba(38, 136, 140, 0.33);">Grammar</div>
+                    <div class="border-solid border flex items-center p-2 text-white font-mono" style="border-color: rgba(38, 136, 140, 1); background-color: rgba(38, 136, 140, 0.33);">
+                        <span>Content</span>
+                        <img id="shareButton" src="/assets/share.svg" title='Copy URL to this grammar and content' style='display: inline; width: 1rem; height: 1rem; cursor: pointer; position: absolute; right: 0.5rem;'/>
+                        <span id="copiedHint" style="display: none; position: absolute; right: 2rem; font-size: 0.5rem;">Link was copied!</span>
+                    </div>
+                    <div class="border-solid border relative" style="border-color: rgba(38, 136, 140, 1); min-height: 50vh;">
+                        <div id="grammar-root" class="h-full absolute top-0 left-0 w-full"></div>
+                    </div>
+                    <div id="content-overlay-root" class="border-solid border relative" style="border-color: rgba(38, 136, 140, 1); min-height: 50vh;">
+                        <div id="overlay" class="h-full absolute top-0 left-0 w-full bg-black" style="z-index: 100000;">
+                            <div class="block absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                <div class="hint text-xs text-center w-48 font-mono" style="color: rgba(212, 212, 212, 1);">
+                                    Loading...
+                                </div>
+                            </div>
+                        </div>
+                        <div id="content-root" class="h-full absolute top-0 left-0 w-full"></div>
+                    </div>
+                </div>
             </div>
         </div>
         {{ block "main" . }}

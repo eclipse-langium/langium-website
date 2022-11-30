@@ -11,11 +11,127 @@ import {
 } from "./data";
 import { generateMonarch } from "./monarch-generator";
 import { createServicesForGrammar } from "langium/lib/grammar/grammar-util";
-import { decompressFromEncodedURIComponent } from "lz-string";
-import { render } from "./Tree";
-import { PlaygroundMessage, PlaygroundMessageType, PlaygroundParameters } from "./types";
-import { ByPassingMessageReader, ByPassingMessageWriter, MonacoClient, MonacoEditorResult, PlaygroundWrapper } from "./monaco-utils";
-export { share } from "./utils";
+import { decompressFromEncodedURIComponent } from 'lz-string';
+import { Diagnostic } from "vscode-languageserver";
+import { ByPassingMessageReader, ByPassingMessageWriter, MonacoConnection, MonacoEditorResult } from "./monaco-utils";
+import { AstNode } from "langium";
+import { render } from './Tree';
+import { overlay } from "./utils";
+export { share, overlay } from './utils'
+
+declare type DedicatedWorkerGlobalScope = any;
+
+export type PlaygroundMessageType = "validated" | "changing" | "error" | "ast";
+
+export interface PlaygroundMessageBase {
+  type: PlaygroundMessageType;
+}
+
+export interface PlaygroundError extends PlaygroundMessageBase {
+  type: "error";
+  errors: Diagnostic[];
+}
+
+export interface PlaygroundAst extends PlaygroundMessageBase {
+  type: "ast";
+  root: AstNode;
+}
+
+export interface PlaygroundOK extends PlaygroundMessageBase {
+  type: "validated";
+  grammar: string;
+}
+
+export interface PlaygroundChanging extends PlaygroundMessageBase {
+  type: "changing";
+}
+
+export type PlaygroundMessage =
+  | PlaygroundChanging
+  | PlaygroundError
+  | PlaygroundOK
+  | PlaygroundAst;
+
+export interface MessageBase {
+  jsonrpc: "2.0";
+}
+
+export interface Request extends MessageBase {
+  method: string;
+  params?: any[];
+  id: string;
+}
+
+export interface ResponseOK extends MessageBase {
+  result: any;
+  id: string;
+}
+
+export interface ResponseError extends MessageBase {
+  error: any;
+  id: string;
+}
+
+export interface Notification extends MessageBase {
+  method: string;
+  params?: any[];
+}
+
+export interface PlaygroundParameters {
+  grammar: string;
+  content: string;
+}
+
+export function isNotification(msg: Message): msg is Notification {
+  return !msg["id"] && msg["method"];
+}
+
+type Message = Request | ResponseError | ResponseOK | Notification;
+
+const MagicAction = "PlaygroundMagic";
+
+export interface MessageWrapper<T> {
+  wrap(message: T): Message;
+  unwrap(message: Message): T | null;
+}
+
+export type MessageCallback<T> = (data: T) => void;
+
+export class PlaygroundWrapper implements MessageWrapper<PlaygroundMessage> {
+  wrap(message: PlaygroundMessage): Message {
+    return {
+      jsonrpc: "2.0",
+      method: MagicAction,
+      params: [message],
+    } as Notification;
+  }
+  unwrap(message: Message): PlaygroundMessage | null {
+    if (isNotification(message) && message.method === MagicAction) {
+      return message.params![0] as PlaygroundMessage;
+    }
+    return null;
+  }
+}
+
+export interface MonacoConfig {
+  getMainCode(): string;
+  setMainCode(code: string): void;
+  setMainLanguageId(name: string): void;
+  setMonarchTokensProvider(monarch: any): void;
+  theme: string;
+  useLanguageClient: boolean;
+  useWebSocket: boolean;
+  setMonacoEditorOptions(monacoEditorOptions: Record<string, unknown>): void;
+}
+
+export interface MonacoClient {
+  getEditorConfig(): MonacoConfig;
+  setWorker(worker: Worker, connection: MonacoConnection): void;
+  startEditor(domElement: HTMLElement): void;
+  updateLayout(): void;
+  dispose(): Promise<void>;
+  getMainCode(): string;
+}
 
 export function setupEditor(
   domElement: HTMLElement,
@@ -25,34 +141,9 @@ export function setupEditor(
   relativeWorkerURL: string,
   monacoFactory: () => MonacoClient,
   readerFactory: (worker: Worker) => ByPassingMessageReader<PlaygroundMessage>,
-  writerFactory: (worker: Worker) => ByPassingMessageWriter<PlaygroundMessage>
+  writerFactory: (worker: Worker) => ByPassingMessageWriter<PlaygroundMessage>,
+  onReady: () => void
 ) {
-  domElement.childNodes.forEach((c) => domElement.removeChild(c));
-
-  const overlayElement = document.createElement("div");
-  overlayElement.classList.add("overlay");
-  overlayElement.classList.add("hidden");
-  domElement.appendChild(overlayElement);
-
-  function overlay(visible: boolean): void {
-    let elements = domElement.querySelectorAll(".overlay");
-    while (elements.length > 1) {
-      elements[0].remove();
-      elements = domElement.querySelectorAll(".overlay");
-    }
-    if (elements.length === 1) {
-      if (visible) {
-        elements.forEach((e) => e.classList.remove("hidden"));
-      } else {
-        elements.forEach((e) => e.classList.add("hidden"));
-      }
-    }
-  }
-
-  const editingArea = document.createElement("div");
-  editingArea.classList.add("editing-area");
-  domElement.appendChild(editingArea);
-
   const client = monacoFactory();
 
   const editorConfig = client.getEditorConfig();
@@ -79,15 +170,16 @@ export function setupEditor(
   const result: MonacoEditorResult = {
     out: readerFactory(worker),
     in: writerFactory(worker),
-    editor: client,
-    overlay,
+    editor: client
   };
   client.setWorker(worker, {
     reader: result.out,
     writer: result.in,
   });
 
-  client.startEditor(editingArea);
+  client.startEditor(domElement);
+
+  onReady();
 
   return result;
 }
@@ -110,29 +202,23 @@ const messageWrapper = new PlaygroundWrapper();
 const PlaygroundActions: Actions = {
   ast: () => Promise.resolve(undefined),
   changing: async ({ message, editor }) => {
-    if (message.type != "changing" || !editor) {
+    if(message.type != "changing" || !editor) {
       return editor;
     }
-    editor.editor.getEditorConfig().setMonacoEditorOptions({ readOnly: true });
-    editor.overlay(true);
+    overlay(true, false);
+    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
     return Promise.resolve(editor);
   },
   error: async ({ message, editor }) => {
-    if (message.type != "error" || !editor) {
+    overlay(true, true);
+    if(message.type != "error" || !editor) {
       return editor;
     }
-    editor.editor.getEditorConfig().setMonacoEditorOptions({ readOnly: true });
-    editor.overlay(true);
+    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
     return Promise.resolve(editor);
   },
-  validated: async ({
-    message,
-    element,
-    monacoFactory,
-    editor,
-    content,
-  }): Promise<MonacoEditorResult | undefined> => {
-    if (message.type != "validated") {
+  validated: async ({ message, element, monacoFactory, editor, content }): Promise<MonacoEditorResult | undefined> => {
+    if(message.type != "validated") {
       return editor;
     }
 
@@ -143,7 +229,7 @@ const PlaygroundActions: Actions = {
 
     const { Grammar } = createServicesForGrammar({ grammar: message.grammar });
     const syntax = generateMonarch(Grammar, "user");
-
+    
     editor = setupEditor(
       element,
       "user",
@@ -152,13 +238,15 @@ const PlaygroundActions: Actions = {
       "../../libs/worker/userServerWorker.js",
       () => monacoFactory("user"),
       (worker) => new ByPassingMessageReader(worker, messageWrapper),
-      (worker) => new ByPassingMessageWriter(worker, messageWrapper)
+      (worker) => new ByPassingMessageWriter(worker, messageWrapper),
+      () => { }
     );
-
-    editor.overlay(false);
-    editor.editor.getEditorConfig().setMonacoEditorOptions({ readOnly: false });
+    
+    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: false});
 
     await editor.in.byPassWrite(message);
+
+    overlay(false, false);
 
     return editor;
   },
@@ -171,7 +259,8 @@ export function setupPlayground(
   leftEditor: HTMLElement,
   rightEditor: HTMLElement,
   grammar?: string,
-  content?: string
+  content?: string,
+  overlay?: (visible: boolean, hasError: boolean) => void
 ) {
   let langiumContent = LangiumInitialContent;
   let dslContent = StateMachineInitialContent;
@@ -189,7 +278,6 @@ export function setupPlayground(
     }
   }
 
-  const syntaxTreeDomElement = document.getElementById("syntax-tree")!;
   const langium = setupEditor(
     leftEditor,
     "langium",
@@ -198,12 +286,13 @@ export function setupPlayground(
     "../../libs/worker/langiumServerWorker.js",
     () => monacoFactory("langium"),
     (worker) => new ByPassingMessageReader(worker, messageWrapper),
-    (worker) => new ByPassingMessageWriter(worker, messageWrapper)
+    (worker) => new ByPassingMessageWriter(worker, messageWrapper),
+    () => {}
   );
 
   langium.out.listenByPass(async (message) => {
     userDefined = await PlaygroundActions[message.type]({
-      message,
+      message: message,
       element: rightEditor,
       monacoFactory,
       editor: userDefined,

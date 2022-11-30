@@ -29,3 +29,14 @@ export function throttle<T>(milliseconds: number, action: (input: T) => void) {
     },
   };
 }
+
+export function overlay(visible: boolean, hasError: boolean) {
+  const element = document.getElementById('overlay')!;
+  if(!visible) {
+    element.style.display = 'none';
+  } else {
+    const subTitle = element.getElementsByClassName('hint')![0] as HTMLDivElement;
+    subTitle.innerText = hasError ? 'Your grammar contains errors.' : 'Loading...';
+    element.style.display = 'block';
+  }
+}

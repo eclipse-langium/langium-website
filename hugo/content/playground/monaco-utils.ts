@@ -85,7 +85,6 @@ export interface MonacoEditorResult {
   out: ByPassingMessageReader<PlaygroundMessage>;
   in: ByPassingMessageWriter<PlaygroundMessage>;
   editor: MonacoClient;
-  overlay(visible: boolean): void;
 }
 
 export interface MonacoConfig {

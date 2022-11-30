@@ -25,8 +25,8 @@ const sendGrammar = throttle<string>(1000, text => messageWriter.byPassWrite({
 }));
 
 // by pass other messages that are required to make the playground work
-shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Parsed, () => messageWriter.byPassWrite({type: 'changing'}));
 shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, ([document]) => {
+    messageWriter.byPassWrite({type: 'changing'});
     const errors = (document.diagnostics ?? []).filter(d => d.severity === DiagnosticSeverity.Error);
     if (errors.length > 0) {
         sendGrammar.clear();
