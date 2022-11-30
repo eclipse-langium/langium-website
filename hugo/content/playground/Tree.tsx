@@ -50,7 +50,7 @@ const Tree: FC<TreeProps> = ({ root, className }) => {
                 <TreeItem key={index} name={p.name} root={p.type} />
               ))}
             </ul>
-            <div className="closing-brace">)</div>
+            <span className="closing-brace">)</span>
           </span>
         </span>
       );
