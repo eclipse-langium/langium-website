@@ -22,7 +22,7 @@ Once you have a language picked, you're going to want to add a script to your **
 ```json
 {
     ...
-    "build:web": "esbuild --minify ./out/language-server/main.js --bundle --format=iife --outfile=./public/minilogo-server-worker.js"
+    "build:worker": "esbuild --minify ./out/language-server/main.js --bundle --format=iife --outfile=./public/minilogo-server-worker.js"
 }
 ```
 
@@ -93,7 +93,9 @@ For convenience, we're going to use two helper libraries from npm that wrap arou
 - [monaco-editor-wrapper](https://www.npmjs.com/package/monaco-editor-wrapper)
 - [monaco-editor-workers](https://www.npmjs.com/package/monaco-editor-workers)
 
-Both these packages should be installed as dependencies for your language. Additionally, we'll also want to add `express` as a development dependency (don't forget to also add `@types/express` too), since we'll be using that to run a local webserver to test our standalone webpage.
+Both these packages should be installed as dependencies for your language. In particular, it's important that you're using version **1.4.0** or later of the monaco-editor-wrapper.
+
+Additionally, we'll want to add `express` as a development dependency (don't forget to also add `@types/express` too), since we'll be using that to run a local webserver to test our standalone webpage.
 
 We'll also want to add some more scripts to our package.json to copy over the necessary files from the monaco-editor-wrapper & monaco-editor-worker into the **public** folder. We'll be referencing these library assets to setup the webpage for Langium and Monaco.
 
@@ -257,7 +259,7 @@ We can produce this Monarch grammar by updating our **langium-config.json** to a
 
 To generate this file, run `npm run langium:generate`. You can then copy over the definition of the grammar from **syntaxes/hello-world.monarch.ts** (or whatever other name you have given this file) into the `setMonarchTokensProvider` function to setup that highlighting. Keep in mind that this generated monarch grammar is *very* simple. If you want more complex highlighting, we recommend writing your own custom monarch grammar, and storing it somewhere else to prevent it from being overriden. If you're interested, you can find more details about the [Monarch grammar highlighting language here](https://microsoft.github.io/monaco-editor/monarch.html).
 
-Then, we want to setup the code that shows up by default. For now, we're going to statically set the displayed MiniLogo program.
+Then, we want to setup the code that shows up by default. The following is a fixed MiniLogo program that should display a white diamond in the top left corner of the screen.
 
 ```js
 editorConfig.setMainCode(`
@@ -292,10 +294,13 @@ const lsWorker = new Worker(workerURL.href, {
 });
 client.setWorker(lsWorker);
 
-client.startEditor(document.getElementById("monaco-editor-root"));
+// keep a reference to a promise for when the editor is finished starting, we'll use this to setup the canvas on load
+const startingPromise = client.startEditor(document.getElementById("monaco-editor-root"));
 
 window.addEventListener("resize", () => client.updateLayout());
 ```
+
+Note the `startingPromise` that's returned from `startEditor`. We're not using this yet, but it will be important for our setup in the next tutorial.
 
 ## Serving via Express
 
