@@ -13,10 +13,10 @@ Regardless of what you're working with, you'll want to make sure you have the fo
 
 ```json
 {
-    ...,
+    ...
     "vscode:prepublish": "npm run esbuild-base -- --minify && npm run lint",
     "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-    "lint": "eslint src --ext ts"
+    ...
 }
 ```
 
@@ -36,9 +36,46 @@ vsce package
 
 You should now see a VSIX extension file in the root of your project. The name of this file will correspond with the **name** and **version** properties listed in your **package.json**. For MiniLogo, this produced **minilogo-0.1.0.vsix**.
 
-For installing the extension, you can right click the extension file, and select "Install VSIX Extension" at the bottom of the list. You should see a small indication that your VSIX extension has been successfully installed. You can verify this by going to your extensions tab and looking at the enabled extensions, where you should find the name of your language (again corresponding to the **name** property in your package.json). Assuming the extension is enabled and working correctly, you can open any file that ends in the extensions registered for your language, and you should immediately observe the syntax highlighting kicking in. Interaction with your language should show that syntax errors are recognized, and other LSP functionalities are working as intended (such as renaming of symbols).
+{{< figure src="minilogo-vsix.jpg" height="225" >}}
 
-You may also notice that your extension may not have an icon to start with. This is a small thing that we can fix quickly. This is as simple as adding a small PNG icon somewhere in your project repo, such as the root. You'll also want to set the **icon** property in your package.json with the relative path to this icon. When you regenerate your extension & reinstall it, you should get an icon that is the same as the one that you packaged it with.
+For installing the extension, you can right click the extension file, and select "Install VSIX Extension" at the bottom of the list.
+
+{{< figure src="vsix-install.jpg" title="Indication that VSIX extension has been installed" height="400" >}}
+
+You should see a small indication at the bottom right of your screen that your VSIX extension has been successfully installed, like so:
+
+![Indication that VSIX extension has been installed](vsix-installed.jpg)
+
+You can verify this by going to your extensions tab and looking at the enabled extensions, where you should find the name of your language (again corresponding to the **name** property in your package.json).
+
+{{< figure src="installed-extension.jpg" height="400" >}}
+
+Assuming the extension is enabled and working correctly, you can open any file that ends in the extensions registered for your language, and you should immediately observe the syntax highlighting kicking in. Interaction with your language should show that syntax errors are recognized, and other LSP functionalities are working as intended (such as renaming of symbols).
+
+## Adding an Icon
+
+You may notice that your extension may not have an icon to start with. This is a small thing that we can quickly fix. This is as simple as adding a small PNG icon somewhere in your project repo, such as the root. You'll also want to set the **icon** property in your package.json with the relative path to this icon.
+
+```json
+{
+    ...
+    "name": "minilogo",
+    "displayName": "minilogo",
+    "icon": "icon.png",
+    "publisher": "TypeFox",
+    ...
+}
+```
+
+In our example, we're using a simple turtle icon from [onlinewebfonts](https://www.onlinewebfonts.com/icon/74548) as a placeholder.
+
+{{< figure src="icon.png" height="200" >}}
+
+When you regenerate your extension & reinstall it, you should get an icon that is the same as the one that you packaged it with.
+
+{{< figure src="minilogo-with-icon.png" height="300" >}}
+
+## Conclusion
 
 And that's it, at this point you have an extension for your langauge that you can use for development. After some testing, and improvments, you could even publish it!
 
