@@ -1,12 +1,13 @@
 ---
 title: "Validation"
 weight: 1
-draft: true
 ---
 
-In this guide, we will be talking about implementing validation for your Langium-based language. We recommend first reading the previous guide about [writing your grammar](/guides/writing_a_grammar/), as we will assume you're familiar with the topics covered there. We'll also assume that you have a working language to add validation to, so double check that `npm run langium:generate` succeeds without errors before you proceed.
+{{< toc format=html >}}
 
-For this guide, we'll be implementing validation for the [MiniLogo language](https://github.com/langium/langium-minilogo), but you can use your own language to follow along as well.
+In this tutorial, we will be talking about implementing validation for your Langium-based language. We recommend first reading the previous tutorial about [writing a grammar](/tutorials/writing_a_grammar/), as we will assume you're familiar with the topics covered there. We'll also assume that you have a working language to add validation to, so double check that `npm run langium:generate` succeeds without errors before you proceed.
+
+For this tutorial, we'll be implementing validation for the [MiniLogo language](https://github.com/langium/langium-minilogo), but you can use your own language to follow along as well.
 
 ## Overview
 
@@ -18,7 +19,7 @@ Let's consider the case where you want to allow redeclaring a previous definitio
 
 In this example we're going to *disallow* names that are non-unique for definitions, and we'll be doing the same for arguments of a definition as well.
 
-## Validation Registry
+## The Validation Registry
 
 In order to express these constraints, we need to modify our language's **validator**. By default, this can be found in **src/language-server/YOUR-LANGUAGE-validator.ts**; with a name that corresponds to your language. This file begins with a validation registry that extends the default validation registry. The validation registry allows us to register validation checks for our language.
 
@@ -47,12 +48,14 @@ From this example, we have a single validation for the `Person` node.
 Person: validator.checkPersonStartsWithCapital
 ```
 
-Before we changed our grammar in the last guide, the `Person` node corresponded with a parser rule named `Person`. Similarly, most nodes that we can validate will share the name of the parser rule that instantiates them. However, there are a couple cases where this is different:
+Before we changed our grammar in the last tutorial, the `Person` node corresponded with a parser rule named `Person`. Similarly, most nodes that we can validate will share the name of the parser rule that instantiates them. However, there are a couple cases where this is different:
 
 - when `Rule infers AnotherName` (or uses `return`), the node's type will be `AnotherName`
 - when the body of a parser rule has an action (like `{AnotherName}`, possibly starting with `infer`) this new name will exist instead for this *part* of the rule body
 
-With this in mind, we can look back at our grammar that we've written for MiniLogo (from the last guide), and find the parser rules that refer to the nodes we want to validate. For this language we have a pair of cases to check, as mentioned above:
+## Finding Nodes to Validate
+
+With this in mind, we can look back at our grammar that we've written for MiniLogo (from the last tutorial), and find the parser rules that refer to the nodes we want to validate. For this language we have a pair of cases to check, as mentioned above:
 
 - Validate that definitions have unique names in a Model
 - Validate that arguments have unique names in a Definition
@@ -71,6 +74,8 @@ export interface Model extends AstNode {
     stmts: Array<Stmt>
 }
 ```
+
+## Registering Validations
 
 So, we can register a validation on all nodes of type `Model` (which should be just the root), like so. Note the import coming from the generated file, which contains the definitions that compose our semantic model. The name **ast.ts** reflects it's usage as identifying node types that constitute an AST in our language (akin to an abstract syntax).
 
@@ -145,4 +150,4 @@ checkUniqueParams(def: Def, accept: ValidationAcceptor): void {
 
 Although we've only implemented a pair of validations, hopefully this demonstrates the flexibility of the validator API. The validator can help enforce constraints or features of your language, and ensure that your programs are correct. You could also explore more customized validations for specific cases, perhaps where a parameter and a definition share the same name -- which is not handled here. So long as you can identify the AST node type that you need to validate, you can implement the logic here.
 
-That's all for validation. Next we'll be talking about how we can [customize our CLI](/guides/customizing_cli).
+That's all for validation. Next we'll be talking about how we can [customize our CLI](/tutorials/customizing_cli).

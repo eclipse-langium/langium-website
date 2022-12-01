@@ -1,12 +1,13 @@
 ---
-title: "Writing your Grammar"
+title: "Writing a Grammar"
 weight: 0
-draft: true
 ---
 
-In this guide we will be talking about writing a grammar for your langauge in Langium. As a motivating example, we'll be describing how to write a grammar for the MiniLogo language. If you're not familiar with MiniLogo, it's a smaller implementation of the Logo programming language. Logo itself is a lot like Turtle from Python. Ultimately, we'll be using MiniLogo to express drawing instructions that can be used to draw on a canvas.
+{{< toc format=html >}}
 
-We've already written an implemention of [MiniLogo on Github using Langium](https://github.com/langium/langium-minilogo). This guide will be following along with this project, bs walking through the grammar implementation step by step. Later guides will also follow along with MiniLogo to create an incremental series of examples throughout these guides.
+In this tutorial we will be talking about writing a grammar for your langauge in Langium. As a motivating example, we'll be describing how to write a grammar for the MiniLogo language. If you're not familiar with MiniLogo, it's a smaller implementation of the Logo programming language. Logo itself is a lot like Turtle from Python. Ultimately, we'll be using MiniLogo to express drawing instructions that can be used to draw on a canvas.
+
+We've already written an implemention of [MiniLogo on Github using Langium](https://github.com/langium/langium-minilogo). This tutorial will be following along with this project, bs walking through the grammar implementation step by step. Later tutorials will also follow along with MiniLogo to create an easy to follow series.
 
 ## Planning
 
@@ -23,7 +24,7 @@ The Semantic Domain describes the types of values that will be produced by evalu
 
 We'll also be producing values and updating an environment as well, which are important to keep in mind.
 
-Basically, a MiniLogo program can be considered equivalent to a series of transformations on some drawing context. This goal for MiniLogo will guide our design throughout these guides.
+Basically, a MiniLogo program can be considered equivalent to a series of transformations on some drawing context. This goal for MiniLogo will guide our design throughout these tutorials.
 
 In addition, we'll want to get an idea of what our concrete syntax will be. This step can be done on paper if you like, but the overall goal is to get a feel for how you want the language to look. Your coice of concrete syntax will also drive your grammar's design. If your design is chosen well, it can simplify the way your grammar is constructed. If your syntax is complex, the grammar may also be complex as well. Not only this, but it's also important to try and strike a balance betwenen syntax that is special to your language, and syntax that is at least somewhat shared with other languages. The more unfamiliar the language appears, the more likely your users will struggle trying to pick it up.
 
@@ -302,4 +303,4 @@ The generation should finish successfully, indicating that our grammar doesn't h
 - a semantic model (that ASTs can be mapped onto)
 - a parser that recognizes our language
 
-With that, we have the beginnings of our very own language! Hopefully this gives a good idea of how to express a grammar in Langium, particularly with consideration to your concrete syntax & semantic domain. You can also consider the ways we can express cases that are left-recursive, like expressions, in an alternative fashion. Overall, our grammar should now be ready for the next step of [validation in the following guide](/guides/validation).
+With that, we have the beginnings of our very own language! Hopefully this gives a good idea of how to express a grammar in Langium, particularly with consideration to your concrete syntax & semantic domain. You can also consider the ways we can express cases that are left-recursive, like expressions, in an alternative fashion. Overall, our grammar should now be ready for the next step of [validation in the following tutorial](/tutorials/validation).

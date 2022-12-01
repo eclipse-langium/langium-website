@@ -1,10 +1,11 @@
 ---
 title: "Customizing the CLI"
 weight: 2
-draft: true
 ---
 
-In this guide, we'll be talking about customizing the command line interface for your language. We recommend reading through previous guides about [writing a grammar](/guides/writing_a_grammar) and [validation](/guides/validation). Once you have a good grasp on those concepts, then you should be all set for setting up a CLI. We will also continue to use the [MiniLogo](https://github.com/langium/langium-minilogo) language as a motivating example.
+{{< toc format=html >}}
+
+In this tutorial, we'll be talking about customizing the command line interface for your language. We recommend reading through previous tutorials about [writing a grammar](/tutorials/writing_a_grammar) and [validation](/tutorials/validation). Once you have a good grasp on those concepts, then you should be all set for setting up a CLI. We will also continue to use the [MiniLogo](https://github.com/langium/langium-minilogo) language as a motivating example.
 
 ## Overview
 
@@ -14,13 +15,13 @@ Once you have a grammar and some validation place, you may want to start configu
 
 If you've been using a language built with the yeoman generator for Langium, you should be able to find your CLI defined in **src/cli/index.ts**. This file describes the general layout of your languages's command line interface, and lets you register specific commands. By default, you're provided with a single command for your CLI, the **generate** command.
 
-Much like the command implies, it allows you to take a program written in your DSL, parse it, and traverse the AST to produce some sort of generated output. We won't talk about the generator itself in this guide (that will come in the [next guide on generation](/guides/generation)). Instead we'll focus on a simple example for parsing and validating a program, which allows learning more about the CLI itself.
+Much like the command implies, it allows you to take a program written in your DSL, parse it, and traverse the AST to produce some sort of generated output. We won't talk about the generator itself in this tutorial (that will come in the [next tutorial on generation](/tutorials/generation)). Instead we'll focus on a simple example for parsing and validating a program, which allows learning more about the CLI itself.
 
 ## Adding a Parse and Validate Action
 
 To start, let's write up a custom action to allow us to **parse** and **validate** a program in our language. If we've already written up a grammar, and already added some basic validation, then all we have to do is hookup the CLI action here to get this to work. This action will help us verify that our MiniLogo programs have no syntax errors, and also pass our custom validations.
 
-Feel free to keep (or remove) the existing **generate** action, as we won't be setting that up until the next guide. We'll be sure to present example code for that as well, so don't worry about deleting functions that you'll need later.
+Feel free to keep (or remove) the existing **generate** action, as we won't be setting that up until the next tutorial. We'll be sure to present example code for that as well, so don't worry about deleting functions that you'll need later.
 
 In order to add our new command, we need to register it in the default export for the **index.ts** file. In this function, there's a **command** object, which is a collection of commands for our CLI. Let's call our command `parseAndValidate`, and give it some extra details, like:
 
@@ -82,7 +83,7 @@ If you've been following along from the hello world example produced by the yeom
 
 If you have errors with regards to any imports of `HelloWorld...`, this is likely related to your `grammar NAME` in your langium file being something different than the original `HelloWorld`. The name of these imports will change based on your grammar file's name after `npm run langium:generate`, so in each case you should be able to change each import to `MyLanguage...` to resolve the issue.
 
-You may also have build errors related to the generator logic, especially if it was written for the hello-world semantic model. For now, we can comment out the generator function's contents in **src/cli/generator.ts**, return an empty string, and comment/remove the imports to make Typescript happy. In the next guide, we'll come back to it and implement an initial version of a generator for our language.
+You may also have build errors related to the generator logic, especially if it was written for the hello-world semantic model. For now, we can comment out the generator function's contents in **src/cli/generator.ts**, return an empty string, and comment/remove the imports to make Typescript happy. In the next tutorial, we'll come back to it and implement an initial version of a generator for our language.
 
 If you have any other errors while building, double check that the exported & imported names match up. More often than note there's a small discrepancy here, especially when you use a different langauge name than the default.
 
@@ -117,7 +118,7 @@ We should get an output indicating that there were no errors with our program.
 
 If you get a message that indicates you need to choose a file with a given extension, you'll want to go back and update your list of extensions in your **package.json** and your **langium-config.json** in your project root. Then you'll need to run `npm run langium:generate` followed by `npm run build` to get that change incorporated into your CLI.
 
-If we wanted to verify that we *can* get errors, we can modify our program a bit to include a duplicate definition (which we should have a validation for, as we implemented in the validation guide).
+If we wanted to verify that we *can* get errors, we can modify our program a bit to include a duplicate definition (which we should have a validation for, as we implemented in the validation tutorial).
 
 ```minilogo
 def test() {
@@ -142,4 +143,4 @@ Running the CLI again should show that this program has an error, and better yet
 
 This is perfect, as we didn't have to implement too much more logic to get validation in our CLI. Since we already hooked up our validation service before, the CLI just handles the interaction with an external program. This separation of concerns makes for a very flexible implementation that is easy to adapt over time.
 
-That sums up how to add basic CLI functionality. [In the next guide, we will be talking about generation in more detail](/guides/generation), specifically about techniques that you can use to traverse your AST and produce a generated output.
+That sums up how to add basic CLI functionality. [In the next tutorial, we will be talking about generation in more detail](/tutorials/generation), specifically about techniques that you can use to traverse your AST and produce a generated output.

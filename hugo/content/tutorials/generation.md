@@ -1,16 +1,17 @@
 ---
 title: "Generation"
 weight: 3
-draft: true
 ---
 
-In this guide we'll be showing how to implement basic generation for your language. When we're talking about generation, we're talking about transforming an AST from your Langium-based language into some output target. This could be another language of similar functionality (transpilation), a lower level language (compilation), or generating some artifacts/data that will be consumed by another application. If you haven't already, make sure to go back over and check out the [guide on customizing your CLI](/guides/customizing_cli), as it touches on details about how to implement endpoints for your application (like generation).
+{{< toc format=html >}}
+
+In this tutorial we'll be showing how to implement basic generation for your language. When we're talking about generation, we're talking about transforming an AST from your Langium-based language into some output target. This could be another language of similar functionality (transpilation), a lower level language (compilation), or generating some artifacts/data that will be consumed by another application. If you haven't already, make sure to go back over and check out the [tutorial on customizing your CLI](/tutorials/customizing_cli), as it touches on details about how to implement endpoints for your application (like generation).
 
 Per usual, we'll be using the MiniLogo language as a motiviating example here.
 
-We'll be describing how write a simple MiniLogo generator to output drawing a JSON array of drawing instructions. This guide will give you a general idea of how you can traverse an AST to produce generated output.
+We'll be describing how write a simple MiniLogo generator to output drawing a JSON array of drawing instructions. This tutorial will give you a general idea of how you can traverse an AST to produce generated output.
 
-## Writing the Generator
+## Setting up the Generator API
 
 To write the generator, we're going to work in the **src/cli/generator.ts** file. If you're using a language produced by the yeoman generator for Langium, then you should already have a function in here called `generateJavascript`. For MiniLogo, we'll change this to `generateCommands`, which will generate drawing commands to be handled later. We will also change the function signature to take a `Model`, and return a string of the generated file path.
 
@@ -47,6 +48,8 @@ And translate it into a generated JSON-like list of drawing commands like so:
 ]
 ```
 
+## Deciding Output to Generate
+
 Notice that there's no notion of macros, definitions, for loops, or other constructs that are present in MiniLogo. We only need to produce a generated output that contains information relevant to our *semantic domain*. If you remember this term from the very beginning of writing our grammar, then you'll likely also remember that our semantic domain is a series of transformations performed on a drawing context. With this in mind, we can safely reduce a MiniLogo program to such a series of transformations on the pen, position, and color. We don't need to include anything else. In this context, you could think of it like a form of evaluation.
 
 To be able to produce this output, we need to be able to traverse through all nodes of our AST. We can perform such a traversal by creating functions that map from our AST to our generated output. This is as simple as accessing the properties stored on a node, and writing functions to process the types of those properties such that generation is defined for every type of node in your AST.
@@ -67,6 +70,8 @@ function generateStatements(stmts: Stmt[]): Object[] { ... }
 ```
 
 As a side note, to support generation with string content (like for generating file/program contents) we've added a `CompositeGeneratorNode` that is designed to help collect generated output. This is located in our **cli-util.ts**, and provides more structure with constructing textual outputs, without resorting to direct manipulation of strings.
+
+## Generating from Statements
 
 Now, let's expand on `generateStatements`. From our grammar, there are 5 types of statements:
 
@@ -104,7 +109,11 @@ For `isPen` we have the easiest case where we could emit something like so:
 };
 ```
 
-However, for all our other cases, we need to *evaluate* our expressions to final values first, as we don't want to emit something like `1 + x * 5`. We'll handle this in a new `evalExprWithEnv` function.
+However, for the rest of the statements, we need to be able to evaluate expressions first.
+
+## Writing an Expression Evaluator
+
+We need to *evaluate* our expressions to final values for statements, as we don't want to emit literal expressions like `1 + x * 5`; but rather their evaluated result. We'll handle this in a new `evalExprWithEnv` function.
 
 ```ts
 // map of names to values
@@ -177,6 +186,8 @@ if(isGroup(e)) {
 Lastly, it's always a good measure to *sanity check* that you aren't missing a case. Throwing an error is often much more desirable than having something silently fail, and produce strange results on generation. This means adding a default for your switches, and a final `else` clause to handle unexpected nodes.
 
 With all those cases above, we can combine them into a series of `else if` clauses to have a clean case-by-case check.
+
+## Generating from Statements with the Evaluator
 
 Now that we can evaluate expressions, we can handle the rest of our statement cases. In order to incorpoate our `env`, we'll also want to update our `generateStatements` function, and create a new `evalStmt` function to help out.
 
@@ -279,6 +290,8 @@ if (stmt.color) {
 
 With that, we're effectively done writing the core of our generator! The last changes to make are to write the output to a file, and to connect what we've written here with a command in our CLI.
 
+## Connecting the Generator to the CLI
+
 To do this, we can go back to the top of our generator, and update the `generateCommands` function to write the generated result to a file. Most of the structure here is carried over from the original code first setup by the yeoman generator, which makes it convenient to add in.
 
 ```ts
@@ -360,6 +373,6 @@ our JSON output should be:
 
 If you're looking at the implementation of [MiniLogo that we've already written in the Langium organization on Github](https://github.com/langium/langium-minilogo), you may notice that the program and output there are *slightly* different. This isan  interpretation of MiniLogo has gone through some iterations, and so there are some slight differences here and there. What's most important is that your version produces the generated output that you expect.
 
-We could continue to extend on this with new features, and generate new sorts of output using a given input language. In this guide, we're able to take a MiniLogo program and convert it into some simple JSON drawing instructions that can be consumed by another program. This opens the door for us to write such a program in another language, such as Python or Javascript, and draw with these results. In later guides, we'll be talking about how to run Langium in the web with generation, so that we can immediately verify our results by drawing on an HTML5 canvas.
+We could continue to extend on this with new features, and generate new sorts of output using a given input language. In this tutorial, we're able to take a MiniLogo program and convert it into some simple JSON drawing instructions that can be consumed by another program. This opens the door for us to write such a program in another language, such as Python or Javascript, and draw with these results. In later tutorials, we'll be talking about how to run Langium in the web with generation, so that we can immediately verify our results by drawing on an HTML5 canvas.
 
-[In the next guide, we'll be talking about how to bundle your language with Langium to reduce its size](/guides/bundling_an_extension). This is an important step before deployment as an extension for VSCode. This also important if you're planning to later deploy you language in the web.
+We recommend that you next read [the guide on bundling your language with Langium to reduce its size](/guides/bundling_an_extension), before moving onto the tutorial about [bundling an extension](/tutorials/bundling_an_extension). This is an important step before deployment as an extension for VSCode, and also if you're planning to later deploy your language in the web.

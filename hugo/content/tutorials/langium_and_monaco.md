@@ -1,18 +1,19 @@
 ---
 title: "Langium + Monaco"
 weight: 6
-draft: true
 ---
 
-In this guide we'll be talking about running Langium in the web with the Monaco editor. If you're not familiar with Monaco, it's the editor that powers VS Code. We're quite fond of it at TypeFox, so we've taken the time to write up this guide to explain how to integrate Langium in the web with Monaco, no backend required.
+{{< toc format=html >}}
 
-As a disclaimer, just because we are using Monaco in this guide does not mean that you cannot use another code editor of your choice. For example, you can use Code Mirror with Langium as well. Generally, if an editor has LSP support, it is very likely you can integrate it quite easily with Langium, since it's LSP compatible.
+In this tutorial we'll be talking about running Langium in the web with the Monaco editor. If you're not familiar with Monaco, it's the editor that powers VS Code. We're quite fond of it at TypeFox, so we've taken the time to write up this tutorial to explain how to integrate Langium in the web with Monaco, no backend required.
+
+As a disclaimer, just because we are using Monaco in this tutorial does not mean that you cannot use another code editor of your choice. For example, you can use Code Mirror with Langium as well. Generally, if an editor has LSP support, it is very likely you can integrate it quite easily with Langium, since it's LSP compatible.
 
 Without further ado, let's jump into getting your web-based Langium experience setup.
 
 ## Getting your Language Setup for the Web
 
-To begin, you're going to need a Langium-based language to work with. We have already written [MiniLogo](https://github.com/langium/langium-minilogo) in Langium as an example for deploying a language in the web. However, if you've been following along with these guides, you should be ready to move your own language into a web-based context.
+To begin, you're going to need a Langium-based language to work with. We have already written [MiniLogo](https://github.com/langium/langium-minilogo) in Langium as an example for deploying a language in the web. However, if you've been following along with these tutorials, you should be ready to move your own language into a web-based context.
 
 Per usual, we'll be using MiniLogo as the motivating example here.
 
@@ -57,7 +58,7 @@ startLanguageServer(shared);
 
 Again, this is based on code that was originally produced by the yeoman generator, thus the **hello world** references.
 
-Most of this is similar to what's in the **main.ts** file. The exceptions are the message readers & writers, and the notion of an `EmptyFileSystem` for the browser. There is a virtual file system API that we could utilize on most modern browsers, but for this guide we'll assume we aren't using any file system. Instead we'll have a single source 'file' located in our Monaco editor in memory.
+Most of this is similar to what's in the **main.ts** file. The exceptions are the message readers & writers, and the notion of an `EmptyFileSystem` for the browser. There is a virtual file system API that we could utilize on most modern browsers, but for this tutorial we'll assume we aren't using any file system. Instead we'll have a single source 'file' located in our Monaco editor in memory.
 
 We'll also need to include a library to resolve the missing `DedicatedWorkerGlobalScope`, which is normally not accessible until we update our **tsconfig.json** in our project root. We need to supplement the libs entry with `DOM` and `webworker`. From the yeoman generator example, the `lib` entry usually has just `["ESNext"]`.
 
@@ -242,7 +243,7 @@ editorConfig.setMonarchTokensProvider({
 });
 ```
 
-We can produce this Monarch grammar by updating our **langium-config.json** to also produce a Monarch file as output. Note that although we're talking about MiniLogo here, we based this example off of the hello-world example produced by the yeoman generator. As such, we still have hello world names here and there, and for this guide, we'll just use the same name again as for the TextMate grammar.
+We can produce this Monarch grammar by updating our **langium-config.json** to also produce a Monarch file as output. Note that although we're talking about MiniLogo here, we based this example off of the hello-world example produced by the yeoman generator. As such, we still have hello world names here and there, and for this tutorial we'll just use the same name again as for the TextMate grammar.
 
 ```json
 ...
@@ -332,4 +333,4 @@ npm run serve
 
 You should be greeted with a page that contains a working Monaco instance and a small MiniLogo program in the editor. This editor has the highlighting we would expect, and also is fully connected to the language server for our language. This means we have full LSP support for operations that we would expect to have in a desktop editor.
 
-And that's it, we have successfully implemented Langium + Monaco in the web for our language. It's not doing much at this time besides presenting us with an editor, but in the next guide we'll talk about using the same setup to add generation in the web. Since our generation has already been configured natively in prior guides, we can use what we've written to quickly implement a web application that translates MiniLogo programs into drawing instructions for an HTML5 canvas.
+And that's it, we have successfully implemented Langium + Monaco in the web for our language. It's not doing much at this time besides presenting us with an editor, but in the next tutorial we'll talk about [using the same setup to add generation in the web](/tutorials/generation_in_the_web). Since our generation has already been configured natively in prior tutorials, we can use what we've written to quickly implement a web application that translates MiniLogo programs into drawing instructions for an HTML5 canvas.
