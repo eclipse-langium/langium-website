@@ -1,4 +1,5 @@
 import { MonacoEditorReactComp } from '@typefox/monaco-editor-react/bundle';
+import { monaco } from 'monaco-editor-wrapper';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -102,7 +103,7 @@ function Preview() {
   let states: State[] = [];
   let events: Event[] = [];
 
-  const changeStates = function(state: string) {
+  const changeStates = function (state: string) {
     states.forEach(item => {
       item.setActive(item.props.name === state);
     });
@@ -112,7 +113,7 @@ function Preview() {
     });
   }
 
-  const getNextState = function(event: string): string {
+  const getNextState = function (event: string): string {
     return dummyData.states.find(({ name }) => name === currentState)![event];
   }
 
@@ -136,32 +137,38 @@ function Preview() {
 
 const syntaxHighlighting = {
   keywords: [
-      'def','module'
+      'actions', 'commands', 'end', 'events', 'initialState', 'state', 'statemachine'
   ],
-  operators: [
-      '-',',',';',':','*','/','+'
-  ],
-  symbols:  /-|,|;|:|\(|\)|\*|\/|\+/,
 
+  // The main tokenizer for our languages
   tokenizer: {
-      initial: [
-          { regex: /[_a-zA-Z][\w_]*/, action: { cases: { '@keywords': {"token":"keyword"}, '@default': {"token":"ID"} }} },
-          { regex: /[0-9]+(\.[0-9]*)?/, action: {"token":"number"} },
-          { include: '@whitespace' },
-          { regex: /@symbols/, action: { cases: { '@operators': {"token":"operator"}, '@default': {"token":""} }} },
+      root: [
+          // identifiers and keywords
+          [/[a-z_$][\w$]*/, {
+              cases: {
+                  '@keywords': 'keyword',
+                  '@default': 'identifier'
+              }
+          }],
+
+          // whitespace
+          { include: '@whitespace' }
       ],
-      whitespace: [
-          { regex: /\s+/, action: {"token":"white"} },
-          { regex: /\/\*/, action: {"token":"comment","next":"@comment"} },
-          { regex: /\/\/[^\n\r]*/, action: {"token":"comment"} },
-      ],
+
       comment: [
-          { regex: /[^\/\*]+/, action: {"token":"comment"} },
-          { regex: /\*\//, action: {"token":"comment","next":"@pop"} },
-          { regex: /[\/\*]/, action: {"token":"comment"} },
+          [/[^\/*]+/, 'comment'],
+          [/\/\*/, 'comment', '@push'],    // nested comment
+          ["\\*/", 'comment', '@pop'],
+          [/[\/*]/, 'comment']
       ],
+
+      whitespace: [
+          [/[ \t\r\n]+/, 'white'],
+          [/\/\*/, 'comment', '@comment'],
+          [/\/\/.*$/, 'comment'],
+      ]
   }
-};;
+} as monaco.languages.IMonarchLanguage;
 
 function App() {
   currentState = dummyData.initialState;
@@ -174,7 +181,33 @@ function App() {
     <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
       <div className="float-left w-1/2 h-full border-r border-emeraldLangium">
         <div className="wrapper relative bg-white dark:bg-gray-900">
-          <MonacoEditorReactComp languageId="statemachine" text="blah blah" syntax={syntaxHighlighting} style={style}/>
+          <MonacoEditorReactComp languageId="statemachine" text={`// Create your own statemachine here!
+statemachine TrafficLight
+
+events
+    switchCapacity
+    next
+
+initialState PowerOff
+
+state PowerOff
+    switchCapacity => RedLight
+end
+
+state RedLight
+    switchCapacity => PowerOff
+    next => GreenLight
+end
+
+state YellowLight
+    switchCapacity => PowerOff
+    next => RedLight
+end
+
+state GreenLight
+    switchCapacity => PowerOff
+    next => YellowLight
+end`} syntax={syntaxHighlighting} style={style} />
         </div>
       </div>
       <div className="float-right w-1/2 h-full" id="preview">
