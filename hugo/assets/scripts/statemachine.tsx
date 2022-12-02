@@ -1,6 +1,5 @@
-import { MonacoEditorReactComp } from '@typefox/monaco-editor-react';
-import React, { createRef, HtmlHTMLAttributes, Ref, RefObject } from 'react';
-import ReactDOM from 'react-dom';
+import { MonacoEditorReactComp } from '@typefox/monaco-editor-react/bundle';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 let dummyData = {
@@ -166,11 +165,16 @@ const syntaxHighlighting = {
 
 function App() {
   currentState = dummyData.initialState;
+  const style = {
+    "paddingTop": "5px",
+    "height": "100%",
+    "width": "100%"
+  };
   return (
     <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
       <div className="float-left w-1/2 h-full border-r border-emeraldLangium">
         <div className="wrapper relative bg-white dark:bg-gray-900">
-          <MonacoEditorReactComp languageId="statemachine" text="blah blah" syntax={syntaxHighlighting}/>
+          <MonacoEditorReactComp languageId="statemachine" text="blah blah" syntax={syntaxHighlighting} style={style}/>
         </div>
       </div>
       <div className="float-right w-1/2 h-full" id="preview">
