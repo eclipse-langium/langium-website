@@ -30,6 +30,41 @@ let dummyData = {
   initialState: "PowerOff"
 }
 
+const syntaxHighlighting = {
+  keywords: [
+      'actions', 'commands', 'end', 'events', 'initialState', 'state', 'statemachine'
+  ],
+
+  // The main tokenizer for our languages
+  tokenizer: {
+      root: [
+          // identifiers and keywords
+          [/[a-z_$][\w$]*/, {
+              cases: {
+                  '@keywords': 'keyword',
+                  '@default': 'identifier'
+              }
+          }],
+
+          // whitespace
+          { include: '@whitespace' }
+      ],
+
+      comment: [
+          [/[^\/*]+/, 'comment'],
+          [/\/\*/, 'comment', '@push'],    // nested comment
+          ["\\*/", 'comment', '@pop'],
+          [/[\/*]/, 'comment']
+      ],
+
+      whitespace: [
+          [/[ \t\r\n]+/, 'white'],
+          [/\/\*/, 'comment', '@comment'],
+          [/\/\/.*$/, 'comment'],
+      ]
+  }
+} as monaco.languages.IMonarchLanguage;
+
 let currentState;
 
 interface StateProps {
@@ -42,6 +77,10 @@ interface EventProps {
   name: string;
   isEnabled: boolean;
   handleClick?;
+}
+
+interface PreviewProps {
+  errorMessage?: string;
 }
 
 class State extends React.Component<StateProps, StateProps> {
@@ -99,89 +138,80 @@ class Event extends React.Component<EventProps, EventProps> {
 }
 
 
-function Preview() {
-  let states: State[] = [];
-  let events: Event[] = [];
-
-  const changeStates = function (state: string) {
-    states.forEach(item => {
-      item.setActive(item.props.name === state);
-    });
-    currentState = state;
-    events.forEach(event => {
-      event.setEnabled(!getNextState(event.props.name));
-    });
+class Preview extends React.Component<PreviewProps, PreviewProps> {
+  constructor(props: PreviewProps) {
+    super(props);
   }
+  render() {
+    // Continue if the code is right
+    if(!this.props.errorMessage){
+      let states: State[] = [];
+      let events: Event[] = [];
+      const changeStates = function (state: string) {
+        states.forEach(item => {
+          item.setActive(item.props.name === state);
+        });
+        currentState = state;
+        events.forEach(event => {
+          event.setEnabled(!getNextState(event.props.name));
+        });
+      }
+    
+      const getNextState = function (event: string): string {
+        return dummyData.states.find(({ name }) => name === currentState)![event];
+      }
+    
+      return (
+        <div className="flex flex-col h-full w-full p-4 float-right items-center">
+          <p className='text-white text-lg w-full my-4'>Events</p>
+          <div className='flex flex-wrap w-full gap-2'>
+            {dummyData.events.map((event, index) => {
+              return <Event isEnabled={!getNextState(event)} handleClick={() => changeStates(getNextState(event))} name={event} key={index} ref={event => { events.push(event!) }}></Event>
+            })}
+          </div>
+          <p className='text-white text-lg w-full my-4'>States</p>
+          <div className='flex flex-wrap w-full gap-2 justify-start '>
+            {dummyData.states.map((state, index) => {
+              return <State handleClick={() => changeStates(state.name)} name={state.name} key={index} isActive={currentState == state.name} ref={state => { states.push(state!) }}></State>
+            })}
+          </div>
+        </div>
+      );
+    }
 
-  const getNextState = function (event: string): string {
-    return dummyData.states.find(({ name }) => name === currentState)![event];
+    // Show the exception
+    return (
+      <div className="flex flex-col h-full w-full p-4 justify-center items-center">
+         <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-center text-sm cursor-default">
+            {this.props.errorMessage}
+          </div>
+      </div>
+    );
   }
-
-  return (
-    <div className="flex flex-col h-full w-full p-4 float-right items-center">
-      <p className='text-white text-lg w-full my-4'>Events</p>
-      <div className='flex flex-wrap w-full gap-2'>
-        {dummyData.events.map((event, index) => {
-          return <Event isEnabled={!getNextState(event)} handleClick={() => changeStates(getNextState(event))} name={event} key={index} ref={event => { events.push(event!) }}></Event>
-        })}
-      </div>
-      <p className='text-white text-lg w-full my-4'>States</p>
-      <div className='flex flex-wrap w-full gap-2 justify-start '>
-        {dummyData.states.map((state, index) => {
-          return <State handleClick={() => changeStates(state.name)} name={state.name} key={index} isActive={currentState == state.name} ref={state => { states.push(state!) }}></State>
-        })}
-      </div>
-    </div>
-  );
+ 
 }
 
-const syntaxHighlighting = {
-  keywords: [
-      'actions', 'commands', 'end', 'events', 'initialState', 'state', 'statemachine'
-  ],
-
-  // The main tokenizer for our languages
-  tokenizer: {
-      root: [
-          // identifiers and keywords
-          [/[a-z_$][\w$]*/, {
-              cases: {
-                  '@keywords': 'keyword',
-                  '@default': 'identifier'
-              }
-          }],
-
-          // whitespace
-          { include: '@whitespace' }
-      ],
-
-      comment: [
-          [/[^\/*]+/, 'comment'],
-          [/\/\*/, 'comment', '@push'],    // nested comment
-          ["\\*/", 'comment', '@pop'],
-          [/[\/*]/, 'comment']
-      ],
-
-      whitespace: [
-          [/[ \t\r\n]+/, 'white'],
-          [/\/\*/, 'comment', '@comment'],
-          [/\/\/.*$/, 'comment'],
-      ]
-  }
-} as monaco.languages.IMonarchLanguage;
 
 function App() {
   currentState = dummyData.initialState;
+  let errorMessage;
   const style = {
     "paddingTop": "5px",
     "height": "100%",
     "width": "100%"
   };
+
+  const startPreview = function (text: string, isDirty: boolean) {
+    if(isDirty){
+        errorMessage = text;
+    }
+  }
+
   return (
     <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
       <div className="float-left w-1/2 h-full border-r border-emeraldLangium">
-        <div className="wrapper relative bg-white dark:bg-gray-900">
-          <MonacoEditorReactComp languageId="statemachine" text={`// Create your own statemachine here!
+        <div className="wrapper relative bg-white dark:bg-gray-900" >
+          <MonacoEditorReactComp onTextChanged={startPreview} languageId="statemachine" text={`// Create your own statemachine here!
 statemachine TrafficLight
 
 events
@@ -211,7 +241,7 @@ end`} syntax={syntaxHighlighting} style={style} />
         </div>
       </div>
       <div className="float-right w-1/2 h-full" id="preview">
-        <Preview />
+        <Preview errorMessage={errorMessage}/>
       </div>
     </div>
   )
