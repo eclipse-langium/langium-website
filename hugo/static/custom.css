@@ -71,10 +71,15 @@
         --footer-link-color-visited: #ffcc5c;
     }
 
-    .edgePath .path {
+    .edgePaths path,
+    .edgePath path {
         stroke: #000000 !important;
     }
 
+    .marker {
+        fill: #000000 !important;
+    }
+    
     .node rect,
     .node polygon {
         fill: var(--header-font-color) !important;
@@ -148,8 +153,13 @@
         --footer-link-color-visited: rgb(213, 104, 231);
     }
 
-    .edgePath .path {
+    .edgePaths path,
+    .edgePath path {
         stroke: var(--body-font-color) !important;
+    }
+
+    .marker {
+        fill: var(--body-font-color) !important;
     }
 
     .node rect,
@@ -200,4 +210,42 @@ h4 {
 
 .gdoc-post__codecontainer {
     margin-bottom: 8px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: var(--footer-background);
+    color: var(--body-font-color);
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 130%;
+    left: 50%;
+    margin-left: -70px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--footer-background) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }

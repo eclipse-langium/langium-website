@@ -1,3 +1,9 @@
+/******************************************************************************
+ * Copyright 2022 TypeFox GmbH
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License, which is available in the project root.
+ ******************************************************************************/
+
 import { DocumentState, startLanguageServer, EmptyFileSystem, createLangiumGrammarServices } from 'langium';
 import { createConnection, DiagnosticSeverity } from 'vscode-languageserver/browser';
 import { ByPassingMessageReader, ByPassingMessageWriter, PlaygroundWrapper } from './common';
@@ -15,8 +21,8 @@ const { shared } = createLangiumGrammarServices({ connection, ...EmptyFileSystem
 let timeout: NodeJS.Timeout | undefined;
 
 // by pass other messages that are required to make the playground work
-shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Parsed, () => messageWriter.byPassWrite({type: 'changing'}));
 shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, ([document]) => {
+    messageWriter.byPassWrite({type: 'changing'});
     const errors = (document.diagnostics ?? []).filter(d => d.severity === DiagnosticSeverity.Error);
     if (errors.length > 0) {
         if (timeout) {

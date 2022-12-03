@@ -1,3 +1,10 @@
+/******************************************************************************
+ * Copyright 2022 TypeFox GmbH
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License, which is available in the project root.
+ ******************************************************************************/
+
+import { compressToEncodedURIComponent } from "lz-string";
 import {
   AbstractMessageReader,
   DataCallback,
@@ -17,6 +24,7 @@ import {
 } from "./data";
 import { generateMonarch } from "./monarch-generator";
 import { createServicesForGrammar } from "langium/lib/grammar/grammar-util";
+import { decompressFromEncodedURIComponent } from 'lz-string';
 
 export { BrowserMessageReader, BrowserMessageWriter };
 
@@ -70,6 +78,11 @@ export interface ResponseError extends MessageBase {
 export interface Notification extends MessageBase {
   method: string;
   params?: any[];
+}
+
+export interface PlaygroundParameters {
+  grammar: string;
+  content: string;
 }
 
 export function isNotification(msg: Message): msg is Notification {
@@ -161,7 +174,6 @@ export interface MonacoEditorResult {
   out: ByPassingMessageReader<PlaygroundMessage>;
   in: ByPassingMessageWriter<PlaygroundMessage>;
   editor: MonacoClient;
-  overlay(visible: boolean): void;
 }
 
 export interface MonacoConfig {
@@ -192,39 +204,19 @@ export function setupEditor(
   relativeWorkerURL: string,
   monacoFactory: () => MonacoClient,
   readerFactory: (worker: Worker) => ByPassingMessageReader<PlaygroundMessage>,
-  writerFactory: (worker: Worker) => ByPassingMessageWriter<PlaygroundMessage>
+  writerFactory: (worker: Worker) => ByPassingMessageWriter<PlaygroundMessage>,
+  onReady: () => void
 ) {
-  domElement.childNodes.forEach((c) => domElement.removeChild(c));
-
-  const overlayElement = document.createElement('div');
-  overlayElement.classList.add('overlay');
-  overlayElement.classList.add('hidden');
-  domElement.appendChild(overlayElement);
-
-  function overlay(visible: boolean): void {
-    let elements = domElement.querySelectorAll('.overlay');
-    while(elements.length > 1) {
-      elements[0].remove();
-      elements = domElement.querySelectorAll('.overlay');
-    } 
-    if(elements.length === 1) {
-      if(visible) {
-        elements.forEach(e => e.classList.remove('hidden'));
-      } else {
-        elements.forEach(e => e.classList.add('hidden'));
-      }
-    }
-  }
-
-  const editingArea = document.createElement('div');
-  editingArea.classList.add('editing-area');
-  domElement.appendChild(editingArea);
-
   const client = monacoFactory();
 
   const editorConfig = client.getEditorConfig();
   editorConfig.setMainLanguageId(name);
   editorConfig.setMonarchTokensProvider(syntax);
+  editorConfig.setMonacoEditorOptions({
+    minimap: {
+        enabled: false
+    }
+  });
 
   editorConfig.setMainCode(content);
   editorConfig.theme = "vs-dark";
@@ -241,15 +233,16 @@ export function setupEditor(
   const result: MonacoEditorResult = {
     out: readerFactory(worker),
     in: writerFactory(worker),
-    editor: client,
-    overlay
+    editor: client
   };
   client.setWorker(worker, {
     reader: result.out,
     writer: result.in,
   });
 
-  client.startEditor(editingArea);
+  client.startEditor(domElement);
+
+  onReady();
 
   return result;
 }
@@ -258,37 +251,38 @@ interface ActionRequest {
   message: PlaygroundMessage;
   element: HTMLElement;
   monacoFactory: (name: string) => MonacoClient;
-  editor: MonacoEditorResult|null;
+  editor?: MonacoEditorResult;
+  content: string;
+  overlay: (visible: boolean, hasError: boolean) => void
 }
 
-type Action = (params: ActionRequest) => Promise<MonacoEditorResult|null>;
+type Action = (params: ActionRequest) => Promise<MonacoEditorResult | undefined>;
 type Actions = Record<PlaygroundMessageType, Action>;
 
 const messageWrapper = new PlaygroundWrapper();
 
 const PlaygroundActions: Actions = {
-  changing: async ({ message, editor }) => {
+  changing: async ({ message, editor, overlay }) => {
     if(message.type != "changing" || !editor) {
       return editor;
     }
+    overlay(true, false);
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
-    editor.overlay(true);
     return Promise.resolve(editor);
   },
-  error: async ({ message, editor }) => {
+  error: async ({ message, editor, overlay }) => {
+    overlay(true, true);
     if(message.type != "error" || !editor) {
       return editor;
     }
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
-    editor.overlay(true);
     return Promise.resolve(editor);
   },
-  validated: async ({ message, element, monacoFactory, editor }): Promise<MonacoEditorResult|null> => {
+  validated: async ({ message, element, monacoFactory, editor, content, overlay }): Promise<MonacoEditorResult | undefined> => {
     if(message.type != "validated") {
       return editor;
     }
 
-    let content = StateMachineInitialContent;
     if (editor) {
       content = editor.editor.getMainCode();
       await editor.editor.dispose();
@@ -296,7 +290,7 @@ const PlaygroundActions: Actions = {
 
     const { Grammar } = createServicesForGrammar({ grammar: message.grammar });
     const syntax = generateMonarch(Grammar, "user");
-
+    
     editor = setupEditor(
       element,
       "user",
@@ -305,35 +299,57 @@ const PlaygroundActions: Actions = {
       "../../libs/worker/userServerWorker.js",
       () => monacoFactory("user"),
       (worker) => new ByPassingMessageReader(worker, messageWrapper),
-      (worker) => new ByPassingMessageWriter(worker, messageWrapper)
+      (worker) => new ByPassingMessageWriter(worker, messageWrapper),
+      () => { }
     );
-
-    editor.overlay(false);
+    
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: false});
 
     await editor.in.byPassWrite(message);
+
+    overlay(false, false);
 
     return editor;
   },
 };
 
-let userDefined: MonacoEditorResult | null = null;
+let userDefined: MonacoEditorResult | undefined;
 
 export function setupPlayground(
   monacoFactory: (name: string) => MonacoClient,
   leftEditor: HTMLElement,
-  rightEditor: HTMLElement
+  rightEditor: HTMLElement,
+  grammar?: string,
+  content?: string,
+  overlay?: (visible: boolean, hasError: boolean) => void
 ) {
+
+  let langiumContent = LangiumInitialContent;
+  let dslContent = StateMachineInitialContent;
+
+  if (grammar) {
+    const decompressedGrammar = decompressFromEncodedURIComponent(grammar);
+    if (decompressedGrammar) {
+        langiumContent = decompressedGrammar;
+    }
+  }
+  if (content) {
+    const decompressedContent = decompressFromEncodedURIComponent(content);
+    if (decompressedContent) {
+        dslContent = decompressedContent;
+    }
+  }
 
   const langium = setupEditor(
     leftEditor,
     "langium",
     LangiumMonarchContent,
-    LangiumInitialContent,
+    langiumContent,
     "../../libs/worker/langiumServerWorker.js",
     () => monacoFactory("langium"),
     (worker) => new ByPassingMessageReader(worker, messageWrapper),
-    (worker) => new ByPassingMessageWriter(worker, messageWrapper)
+    (worker) => new ByPassingMessageWriter(worker, messageWrapper),
+    () => {}
   );
 
   langium.out.listenByPass(async (message) => {
@@ -341,7 +357,9 @@ export function setupPlayground(
       message,
       element: rightEditor,
       monacoFactory,
-      editor: userDefined
+      editor: userDefined,
+      content: dslContent,
+      overlay: overlay ?? ((visible: boolean, hasError: boolean) => {})
     });
   });
 
@@ -349,4 +367,32 @@ export function setupPlayground(
     userDefined?.editor.updateLayout();
     langium.editor.updateLayout();
   });
+
+  return () => {
+    return ({
+      grammar: langium.editor.getMainCode(),
+      content: userDefined?.editor.getMainCode() ?? ''
+    } as PlaygroundParameters);
+  };
+}
+
+export async function share(grammar: string, content: string): Promise<void> {
+  const compressedGrammar = compressToEncodedURIComponent(grammar);
+  const compressedContent = compressToEncodedURIComponent(content);
+  const url = new URL("/playground", window.origin);
+  url.searchParams.append("grammar", compressedGrammar);
+  url.searchParams.append("content", compressedContent);
+  await navigator.clipboard.writeText(url.toString());
+}
+
+export function overlay(visible: boolean, hasError: boolean) {
+  debugger
+  const element = document.getElementById('overlay')!;
+  if(!visible) {
+    element.style.display = 'none';
+  } else {
+    const subTitle = element.getElementsByClassName('hint')![0] as HTMLDivElement;
+    subTitle.innerText = hasError ? 'Your grammar contains errors.' : 'Loading...';
+    element.style.display = 'block';
+  }
 }

@@ -35,8 +35,7 @@
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.19.3",
     "@babel/preset-react": "^7.18.6",
-    "@monaco-editor/react": "^4.4.6",
-    "monaco-editor-wrapper": "^1.2.0",
+    "@typefox/monaco-editor-react": "^1.0.0-next.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }

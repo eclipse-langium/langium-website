@@ -1,5 +1,6 @@
-import React, { createRef, HtmlHTMLAttributes, Ref, RefObject } from 'react';
-import ReactDOM from 'react-dom';
+import { MonacoEditorReactComp } from '@typefox/monaco-editor-react/bundle';
+import { monaco } from 'monaco-editor-wrapper';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 let dummyData = {
@@ -102,7 +103,7 @@ function Preview() {
   let states: State[] = [];
   let events: Event[] = [];
 
-  const changeStates = function(state: string) {
+  const changeStates = function (state: string) {
     states.forEach(item => {
       item.setActive(item.props.name === state);
     });
@@ -112,7 +113,7 @@ function Preview() {
     });
   }
 
-  const getNextState = function(event: string): string {
+  const getNextState = function (event: string): string {
     return dummyData.states.find(({ name }) => name === currentState)![event];
   }
 
@@ -134,16 +135,79 @@ function Preview() {
   );
 }
 
+const syntaxHighlighting = {
+  keywords: [
+      'actions', 'commands', 'end', 'events', 'initialState', 'state', 'statemachine'
+  ],
 
+  // The main tokenizer for our languages
+  tokenizer: {
+      root: [
+          // identifiers and keywords
+          [/[a-z_$][\w$]*/, {
+              cases: {
+                  '@keywords': 'keyword',
+                  '@default': 'identifier'
+              }
+          }],
+
+          // whitespace
+          { include: '@whitespace' }
+      ],
+
+      comment: [
+          [/[^\/*]+/, 'comment'],
+          [/\/\*/, 'comment', '@push'],    // nested comment
+          ["\\*/", 'comment', '@pop'],
+          [/[\/*]/, 'comment']
+      ],
+
+      whitespace: [
+          [/[ \t\r\n]+/, 'white'],
+          [/\/\*/, 'comment', '@comment'],
+          [/\/\/.*$/, 'comment'],
+      ]
+  }
+} as monaco.languages.IMonarchLanguage;
 
 function App() {
   currentState = dummyData.initialState;
+  const style = {
+    "paddingTop": "5px",
+    "height": "100%",
+    "width": "100%"
+  };
   return (
     <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
       <div className="float-left w-1/2 h-full border-r border-emeraldLangium">
         <div className="wrapper relative bg-white dark:bg-gray-900">
-          <div className="dark:bg-gray-900" id="monaco-editor-root">
-          </div>
+          <MonacoEditorReactComp languageId="statemachine" text={`// Create your own statemachine here!
+statemachine TrafficLight
+
+events
+    switchCapacity
+    next
+
+initialState PowerOff
+
+state PowerOff
+    switchCapacity => RedLight
+end
+
+state RedLight
+    switchCapacity => PowerOff
+    next => GreenLight
+end
+
+state YellowLight
+    switchCapacity => PowerOff
+    next => RedLight
+end
+
+state GreenLight
+    switchCapacity => PowerOff
+    next => YellowLight
+end`} syntax={syntaxHighlighting} style={style} />
         </div>
       </div>
       <div className="float-right w-1/2 h-full" id="preview">
