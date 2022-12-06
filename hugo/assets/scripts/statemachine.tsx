@@ -1,6 +1,6 @@
 import { MonacoEditorReactComp } from '@typefox/monaco-editor-react/bundle';
 import { monaco } from 'monaco-editor-wrapper';
-import React from 'react';
+import React, { createRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
 let dummyData = {
@@ -32,36 +32,36 @@ let dummyData = {
 
 const syntaxHighlighting = {
   keywords: [
-      'actions', 'commands', 'end', 'events', 'initialState', 'state', 'statemachine'
+    'actions', 'commands', 'end', 'events', 'initialState', 'state', 'statemachine'
   ],
 
   // The main tokenizer for our languages
   tokenizer: {
-      root: [
-          // identifiers and keywords
-          [/[a-z_$][\w$]*/, {
-              cases: {
-                  '@keywords': 'keyword',
-                  '@default': 'identifier'
-              }
-          }],
+    root: [
+      // identifiers and keywords
+      [/[a-z_$][\w$]*/, {
+        cases: {
+          '@keywords': 'keyword',
+          '@default': 'identifier'
+        }
+      }],
 
-          // whitespace
-          { include: '@whitespace' }
-      ],
+      // whitespace
+      { include: '@whitespace' }
+    ],
 
-      comment: [
-          [/[^\/*]+/, 'comment'],
-          [/\/\*/, 'comment', '@push'],    // nested comment
-          ["\\*/", 'comment', '@pop'],
-          [/[\/*]/, 'comment']
-      ],
+    comment: [
+      [/[^\/*]+/, 'comment'],
+      [/\/\*/, 'comment', '@push'],    // nested comment
+      ["\\*/", 'comment', '@pop'],
+      [/[\/*]/, 'comment']
+    ],
 
-      whitespace: [
-          [/[ \t\r\n]+/, 'white'],
-          [/\/\*/, 'comment', '@comment'],
-          [/\/\/.*$/, 'comment'],
-      ]
+    whitespace: [
+      [/[ \t\r\n]+/, 'white'],
+      [/\/\*/, 'comment', '@comment'],
+      [/\/\/.*$/, 'comment'],
+    ]
   }
 } as monaco.languages.IMonarchLanguage;
 
@@ -80,7 +80,7 @@ interface EventProps {
 }
 
 interface PreviewProps {
-  errorMessage?: string;
+  hasError?: boolean;
 }
 
 class State extends React.Component<StateProps, StateProps> {
@@ -141,10 +141,18 @@ class Event extends React.Component<EventProps, EventProps> {
 class Preview extends React.Component<PreviewProps, PreviewProps> {
   constructor(props: PreviewProps) {
     super(props);
+    this.state = {
+      hasError: props.hasError,
+    }
   }
+
+  startPreview(hasError: boolean) {
+    this.setState({hasError: hasError})
+  }
+
   render() {
     // Continue if the code is right
-    if(!this.props.errorMessage){
+    if (!this.state.hasError) {
       let states: State[] = [];
       let events: Event[] = [];
       const changeStates = function (state: string) {
@@ -156,11 +164,11 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
           event.setEnabled(!getNextState(event.props.name));
         });
       }
-    
+
       const getNextState = function (event: string): string {
         return dummyData.states.find(({ name }) => name === currentState)![event];
       }
-    
+
       return (
         <div className="flex flex-col h-full w-full p-4 float-right items-center">
           <p className='text-white text-lg w-full my-4'>Events</p>
@@ -181,37 +189,47 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 
     // Show the exception
     return (
-      <div className="flex flex-col h-full w-full p-4 justify-center items-center">
-         <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-center text-sm cursor-default">
-            {this.props.errorMessage}
-          </div>
+      <div className="flex flex-col h-full w-full p-4 justify-start items-center my-10">
+        <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-center text-sm cursor-default">
+          Failed to compile your code
+        </div>
       </div>
     );
   }
- 
 }
 
-
-function App() {
-  currentState = dummyData.initialState;
-  let errorMessage;
-  const style = {
-    "paddingTop": "5px",
-    "height": "100%",
-    "width": "100%"
-  };
-
-  const startPreview = function (text: string, isDirty: boolean) {
-    if(isDirty){
-        errorMessage = text;
-    }
+class App extends React.Component<{}, { hasError }> {
+  monacoEditor: React.RefObject<MonacoEditorReactComp>;
+  preview:  React.RefObject<Preview>;
+  constructor(props) {
+    super(props);
+    this.onTextChanged = this.onTextChanged.bind(this);
+    this.monacoEditor = React.createRef();
+    this.preview = React.createRef();
+    this.state = {
+      hasError: false
+    };
   }
 
-  return (
-    <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
-      <div className="float-left w-1/2 h-full border-r border-emeraldLangium">
-        <div className="wrapper relative bg-white dark:bg-gray-900" >
-          <MonacoEditorReactComp onTextChanged={startPreview} languageId="statemachine" text={`// Create your own statemachine here!
+  onTextChanged(text: string, isDirty: boolean) {
+    this.preview.current?.startPreview(isDirty);
+    // yes, its possible to execute commands
+    // this.monacoEditor.current?.executeCommand("editor.exampleCommand");
+  }
+
+  render() {
+    currentState = dummyData.initialState;
+    const style = {
+      "paddingTop": "5px",
+      "height": "100%",
+      "width": "100%"
+    };
+
+    return (
+      <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
+        <div className="float-left w-1/2 h-full border-r border-emeraldLangium">
+          <div className="wrapper relative bg-white dark:bg-gray-900" >
+            <MonacoEditorReactComp ref={this.monacoEditor} onTextChanged={this.onTextChanged} webworkerUri="../showcase/libs/worker/statemachineServerWorker.js" workerName='LS' workerType='classic' languageId="statemachine" text={`// Create your own statemachine here!
 statemachine TrafficLight
 
 events
@@ -238,13 +256,14 @@ state GreenLight
     switchCapacity => PowerOff
     next => YellowLight
 end`} syntax={syntaxHighlighting} style={style} />
+          </div>
+        </div>
+        <div className="float-right w-1/2 h-full" id="preview">
+          <Preview ref={this.preview} hasError={this.state.hasError} />
         </div>
       </div>
-      <div className="float-right w-1/2 h-full" id="preview">
-        <Preview errorMessage={errorMessage}/>
-      </div>
-    </div>
-  )
+    );
+  }
 }
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
