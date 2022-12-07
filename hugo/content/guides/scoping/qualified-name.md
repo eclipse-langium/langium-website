@@ -19,7 +19,15 @@ void main() {
 }
 ```
 
-As can be seen, using qualified name scoping is quite helpful in this case. It allows us to reference the `getDocumentation` function through the scope computed & made available by the `Langium` namespace, even though it's not directly accessible within the scope of `main` by itself. This behavior can be achieved in Langium by exporting the `getDocumentation` function under the name `Langium::getDocumentation`. To do this, we will first set up a new `ScopeComputation` class that extends the `DefaultScopeComputation`. This class will be responsible for our custom scope computation. Then, we'll want to bind our custom scope computation class in our module:
+As can be seen, using qualified name scoping is quite helpful in this case. It allows us to reference the `getDocumentation` function through the scope computed & made available by the `Langium` namespace, even though it's not directly accessible within the scope of `main` by itself.
+
+Note that such behavior can also be accomplished using [class member scoping](./class-member).
+However, there is one core advantage to using globally available elements:
+Compared to member scoping, this type of scoping requires very little resources.
+The lookup required for qualified name scoping can be done in near constant time with just a bit of additional computation on a **per-document** basis, whereas member scoping needs to do a lot of computation on a **per-reference** basis.
+With large workspaces, complex scoping might become a performance bottleneck.
+
+This behavior can be achieved in Langium by exporting the `getDocumentation` function under the name `Langium::getDocumentation`. To do this, we will first set up a new `ScopeComputation` class that extends the `DefaultScopeComputation`. This class will be responsible for our custom scope computation. Then, we'll want to bind our custom scope computation class in our module:
 
 ```ts
 // Scope computation for our C++-like language
