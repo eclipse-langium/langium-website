@@ -6,9 +6,9 @@ weight: 300
 Languages usually offer their users some high-level programming features that they do not have to define themselves.
 For example, TypeScript provides users with typings for globally accessible variables such as the `window`, `process` or `console` objects.
 They are part of the JavaScript runtime, and not defined by any user or a package they might import.
-Instead, these features are contributed through what we call a builtin library.
+Instead, these features are contributed through what we call builtin libraries.
 
-Fortunately, loading a builtin library in Langium is very simple. We first start off with defining the source code of the library using the *hello world* language from the [getting started guide](/docs/getting-started):
+Loading a builtin library in Langium is very simple. We first start off with defining the source code of the library using the *hello world* language from the [getting started guide](/docs/getting-started):
 
 ```ts
 export const builtinHelloWorld = `
@@ -17,7 +17,7 @@ person John
 `.trimLeft();
 ```
 
-Next, we load our builtin library code through the `loadAdditionalDocuments` provided by the `DefaultWorkspaceManager`:
+Next, we load our builtin library code through the `loadAdditionalDocuments` method provided by the `DefaultWorkspaceManager`:
 
 ```ts
 import {
@@ -39,7 +39,10 @@ export class HelloWorldWorkspaceManager extends DefaultWorkspaceManager {
         this.documentFactory = services.workspace.LangiumDocumentFactory;
     }
 
-    protected async loadAdditionalDocuments(folders: WorkspaceFolder[], collector: (document: LangiumDocument<AstNode>) => void): Promise<void> {
+    protected async loadAdditionalDocuments(
+        folders: WorkspaceFolder[],
+        collector: (document: LangiumDocument<AstNode>) => void
+    ): Promise<void> {
         // Load our library using the `builtin` URI schema
         collector(this.documentFactory.fromString(builtinHelloWorld, URI.parse('builtin:///library.hello')));
     }
@@ -49,6 +52,7 @@ export class HelloWorldWorkspaceManager extends DefaultWorkspaceManager {
 As a last step, we have to bind our newly created workspace manager:
 
 ```ts
+// Add this to the `hello-world-module.ts` included in the yeoman generated project
 export const HelloWorldSharedModule: Module<HelloWorldSharedServices, DeepPartial<LangiumSharedServices>> = {
     workspace: {
         WorkspaceManager: (services) => new HelloWorldWorkspaceManager(services)
@@ -58,11 +62,31 @@ export const HelloWorldSharedModule: Module<HelloWorldSharedServices, DeepPartia
 
 Be aware that this shared module is not injected by default. You have to add it manually to the `inject` call for the shared injection container.
 
-Once everything is wired together, we are done from the DSL perspective.
+```ts
+export function createHellowWorldServices(context: DefaultSharedModuleContext): {
+        shared: LangiumSharedServices,
+        services: HelloWordServices
+    } {
+    const shared = inject(
+        createDefaultSharedModule(context),
+        HelloWorldGeneratedSharedModule,
+        HelloWorldSharedModule
+    );
+    const services = inject(
+        createDefaultModule({ shared }),
+        HelloWorldGeneratedModule,
+        HelloWorldModule
+    );
+    shared.ServiceRegistry.register(services);
+    return { shared, services };
+}
+```
+
+Once everything is wired together, we are done from the perspective of our DSL.
 At startup, our language server will run the `loadAdditionalDocuments` method which makes our library available for any workspace documents of the user.
 
 However, when trying to navigate to the builtin library elements, vscode will show users an error message, complaining that it cannot find the builtin library file.
-This is expected, as the file only lives in memory.
+This is expected, as the builtin library only lives in memory.
 To fix this issue, we need to implement a custom `FileSystemProvider` that allows navigation to the builtin library files:
 
 ```ts
@@ -132,3 +156,6 @@ export function activate(context: vscode.ExtensionContext) {
     DslLibraryFileSystemProvider.register(context);
 }
 ```
+
+This registers an in-memory file system for vscode to use for the `builtin` file schema.
+Every time vscode is supposed to open a file with this schema, it will invoke the `stat` and `readFile` methods of the registered file system provider.
