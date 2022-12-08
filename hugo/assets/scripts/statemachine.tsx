@@ -1,6 +1,5 @@
-import { MonacoEditorReactComp } from '@typefox/monaco-editor-react/bundle';
-import { monaco } from 'monaco-editor-wrapper';
-import React, { createRef } from 'react';
+import { MonacoEditorReactComp, monaco } from '@typefox/monaco-editor-react/bundle';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 
 let dummyData = {
