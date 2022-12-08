@@ -170,7 +170,8 @@
 }
 
 :root .chroma .err {
-    background-color: transparent;   
+    color: inherit !important;
+    background-color: transparent !important;   
 }
 
 .gdoc-markdown h1,
