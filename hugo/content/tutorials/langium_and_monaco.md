@@ -1,5 +1,5 @@
 ---
-title: "Langium + Monaco"
+title: "Langium + Monaco Editor"
 weight: 6
 ---
 
@@ -200,13 +200,12 @@ import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
 buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
 MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
-MonacoEditorLanguageClientWrapper.addCodiconTtf();
 ```
 
-Then, we'll want to instantiate our language client wrapper, and give it some unique identifier (42 in this case). We'll also need to get a handle for the editor configuration, and set the current language id to `minilogo`. This should match the id of the language that will be recognized by our language server.
+Then, we'll want to instantiate our language client wrapper. We'll also need to get a handle for the editor configuration, and set the current language id to `minilogo`. This should match the id of the language that will be recognized by our language server.
 
 ```js
-const client = new MonacoEditorLanguageClientWrapper('42');
+const client = new MonacoEditorLanguageClientWrapper();
 const editorConfig = client.getEditorConfig();
 editorConfig.setMainLanguageId('minilogo');
 ```
@@ -290,14 +289,12 @@ console.log(workerURL.href);
 
 const lsWorker = new Worker(workerURL.href, {
     type: 'classic',
-    name: 'LS'
+    name: 'MiniLogo Language Server'
 });
 client.setWorker(lsWorker);
 
 // keep a reference to a promise for when the editor is finished starting, we'll use this to setup the canvas on load
 const startingPromise = client.startEditor(document.getElementById("monaco-editor-root"));
-
-window.addEventListener("resize", () => client.updateLayout());
 ```
 
 Note the `startingPromise` that's returned from `startEditor`. We're not using this yet, but it will be important for our setup in the next tutorial.

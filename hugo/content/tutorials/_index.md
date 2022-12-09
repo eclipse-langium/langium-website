@@ -14,7 +14,7 @@ By working through each of these tutorials, you'll be learning about:
 - customizing a CLI for your tooling
 - writing up a simple generator
 - building a VSCode extension
-- running Langium in the web with Monaco
+- running Langium in the web with the Monaco editor
 - implementing generation in the web
 
 By the end of this series, you should be equipped to start working on your own language, and also have a pretty good idea for how you can integrate Langium into other projects as well.

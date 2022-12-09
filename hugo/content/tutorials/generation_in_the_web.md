@@ -181,7 +181,7 @@ export function createMiniLogoServices(context: DefaultSharedModuleContext): {
 }
 ```
 
-And now our implementation features a custom command handler that takes a MiniLogo program, and returns a generated result from that program's AST. To get these chnages into the language server itself, you'll want to rebuild & rebundle everything once more. If you recall the command from the last tutorial, we can do this via `build:web`.
+And now our implementation features a custom command handler that takes a MiniLogo program, and returns a generated result from that program's AST. To get these changes into the language server itself, you'll want to rebuild & rebundle everything once more. If you recall the command from the last tutorial, we can do this via `build:web`.
 
 ```bash
 npm run build:web
@@ -341,12 +341,16 @@ At this point, running `npm run build:web && npm run serve` should show Monaco o
 We'll also want to go into **setup.js** file, and add a small modification to the end. This change will create a global function on the window, giving us a callback that lets us execute our command to parse and generate data from the current program in Monaco. It's important that this goes into the same file as your Monaco setup code, as it directly interacts with the Monaco language client instance.
 
 ```js
+// modify your previous import to bring in the appropriate monaco-vscode-api version
+import { vscode } from './monaco-editor-wrapper/index.js';
+
+...
+
 const generateAndDisplay = (async () => {
     console.info('generating & running current code...');
     const value = client.editor.getValue();
-    // parse & generate new command stack for drawing a new image
-    const vscode = client.getVscode();
-    // execute custom command, and receive the response
+    // parse & generate commands for drawing an image
+    // execute custom LSP command, and receive the response
     const minilogoCmds = await vscode.commands.executeCommand('parseAndGenerate', value);
     updateMiniLogoCanvas(minilogoCmds);
 });
@@ -412,13 +416,14 @@ let posX = 0;
 let posY = 0;
 ```
 
-And let's begin dispatching each of our commands. To do this, we'll setup an interval that repeatedly shifts the top element from our list of commands, dispatches, it and repeats. Once we're out of commands to dispatch, we'll clear the interval. Feel free to adjust the delay (or remove it entirely) in your version.
+And let's begin evaluating each of our commands. To do this, we'll setup an interval that repeatedly shifts the top element from our list of commands, evaluates it, and repeats. Once we're out of commands to evaluate, we'll clear the interval. Feel free to adjust the delay (or remove it entirely) in your version.
 
 ```js
 // use the command list to execute each commmand with a small delay
 const id = setInterval(() => {
     if (cmds.length > 0) {
-        dispatchCommand(cmds.shift(), context);
+        // evaluate the next command in the current env/context
+        evalCmd(cmds.shift(), context);
     } else {
         // finish existing draw
         if (drawing) {
@@ -429,20 +434,20 @@ const id = setInterval(() => {
 }, 1);
 ```
 
-The dispatch command itself only needs to handle 4 commands:
+The evaluate command itself only needs to handle 4 cases:
 
 - penUp
 - penDown
 - move
 - color
 
-Knowing this, and the details about what properties each command type can have, we can dispatch each command and update our context. This can be done with a switch and a case for each command type.
+Knowing this, and the details about what properties each command type can have, we can evaluate each command and update our context. This can be done with a switch and a case for each command type.
 
 *Be sure to add this function inside the `updateMiniLogoCanvas` function, otherwise it will not have access to the necessary state!*
 
 ```js
-// dispatches a single command in the current context
-function dispatchCommand(cmd, context) {
+// evaluate a single command in the current context
+function evalCmd(cmd, context) {
     if (cmd.cmd) {
         switch (cmd.cmd) {
             // pen is lifted off the canvas

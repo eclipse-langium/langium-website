@@ -7,7 +7,7 @@ weight: 0
 
 In this tutorial we will be talking about writing a grammar for your langauge in Langium. As a motivating example, we'll be describing how to write a grammar for the MiniLogo language. If you're not familiar with MiniLogo, it's a smaller implementation of the Logo programming language. Logo itself is a lot like Turtle from Python. Ultimately, we'll be using MiniLogo to express drawing instructions that can be used to draw on a canvas.
 
-We've already written an implemention of [MiniLogo on Github using Langium](https://github.com/langium/langium-minilogo). This tutorial will be following along with this project, bs walking through the grammar implementation step by step. Later tutorials will also follow along with MiniLogo to create an easy to follow series.
+We've already written an implemention of [MiniLogo on Github using Langium](https://github.com/langium/langium-minilogo). This tutorial will be following along with this project, by walking through the grammar implementation step by step. Later tutorials will also follow along with MiniLogo to create an easy to follow series.
 
 ## Planning
 
@@ -152,7 +152,7 @@ We can express this with the following parser rule.
 Pen:    'pen' '(' mode=('up' | 'down') ')';
 ```
 
-**Move** commands will take a pair of expressions, corresopnding to the x and y components, and can look like so:
+**Move** commands will take a pair of expressions, corresponding to the x and y components, and can look like so:
 
 ```minilogo
 move(1,5)
@@ -298,7 +298,7 @@ And that's it, we're all set writing up the grammar for MiniLogo. To verify that
 npm run langium:generate
 ```
 
-The generation should finish successfully, indicating that our grammar doesn't have any errors in it. In some cases, you may get warnings, but these shouldn't prevent the generation from completing successfully. Also, when we're referring to the generation, we're talking about the construction of the following from your grammar:
+The generation should finish successfully, indicating that our grammar doesn't have any errors in it. In some cases, you may get warnings -- such as from unreachable rules in your grammar -- but these won't prevent the generation from completing successfully. Also, when we're referring to the generation, we're talking about the construction of the following from your grammar:
 
 - a semantic model (that ASTs can be mapped onto)
 - a parser that recognizes our language
