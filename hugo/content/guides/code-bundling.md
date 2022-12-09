@@ -1,6 +1,6 @@
 ---
 title: "Code Bundling"
-weight: 4
+weight: 0
 ---
 
 When you first create a Langium project using the [Yeoman generator](/docs/getting-started/#your-first-example-language), it will only contain a plain TypeScript configuration, without any additional build processes.
