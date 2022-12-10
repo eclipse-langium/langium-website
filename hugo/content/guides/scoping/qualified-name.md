@@ -23,7 +23,7 @@ As can be seen, using qualified name scoping is quite helpful in this case. It a
 
 Note that such behavior can also be accomplished using [class member scoping](./class-member).
 However, there is one core advantage to using globally available elements:
-Compared to member scoping, this type of scoping requires very little resources.
+Compared to member scoping, this type of scoping requires few resources.
 The lookup required for qualified name scoping can be done in near constant time with just a bit of additional computation on a **per-document** basis, whereas member scoping needs to do a lot of computation on a **per-reference** basis.
 With large workspaces, complex scoping might become a performance bottleneck.
 
