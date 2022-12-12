@@ -63,6 +63,13 @@
             grid-row-end: 3;
         }
 
+        #grid.without-tree #ast-header, #grid.without-tree #ast-body {
+          display: none;
+        }
+        #grid.without-tree {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         @media screen and (max-width: 600px), screen and (max-height: 400px) {
             #website-header {
                 max-height: 33vh;
@@ -214,7 +221,7 @@
       {{ partial "langium-header" . }}
       <div class="relative bg-white flex flex-col h-full dark:bg-gray-900">
         <div class="dark:bg-gray-900 flex-grow" id="monaco-editor-root">
-          <div id="grid">
+          <div id="grid" class="without-tree">
             <div
               id="grammar-header"
               class="border-solid border flex items-center p-2 text-white font-mono"
@@ -227,8 +234,8 @@
             >
               <span>Content</span>
               <img
-                id="shareButton"
-                src="/assets/share.svg"
+                id="treeButton"
+                src="/assets/tree.svg"
                 title="Copy URL to this grammar and content"
                 style="
                   display: inline;
@@ -239,12 +246,25 @@
                   right: 0.5rem;
                 "
               />
+              <img
+                id="shareButton"
+                src="/assets/share.svg"
+                title="Copy URL to this grammar and content"
+                style="
+                  display: inline;
+                  width: 1rem;
+                  height: 1rem;
+                  cursor: pointer;
+                  position: absolute;
+                  right: 2rem;
+                "
+              />
               <span
                 id="copiedHint"
                 style="
                   display: none;
                   position: absolute;
-                  right: 2rem;
+                  right: 4rem;
                   font-size: 0.5rem;
                 "
                 >Link was copied!</span

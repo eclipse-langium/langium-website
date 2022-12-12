@@ -48,7 +48,7 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
         <>
           <span className="object">
             {hidden ? (
-             <span className="opening-brace">&#123;...&#125;</span>
+              <span className="opening-brace">&#123;...&#125;</span>
             ) : (
               <>
                 <span className="opening-brace">&#123;</span>
@@ -100,7 +100,8 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
       return (
         <>
           <span className="colon">:&nbsp;</span>
-          <span className="link">"{root.$text}"</span>
+          {hidden ? <span className="link">{"..."}</span> :
+          <span className="link">"{root.$text}"</span>}
         </>
       );
   }
