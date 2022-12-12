@@ -8,7 +8,7 @@
     "watch": "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch --workspace hugo\" \"npm run watch --workspace tailwind\"",
     "watch:gitpod": "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
     "build": "npm run clean && npm run build --workspace=tailwind --workspace=hugo",
-    "clean": "shx rm -rf public"
+    "clean": "shx rm -rf public && npm run clean --workspace=tailwind"
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.0",
