@@ -17,9 +17,8 @@ import { ByPassingMessageReader, ByPassingMessageWriter, MonacoConnection, Monac
 import { AstNode } from "langium";
 import { render } from './Tree';
 import { overlay } from "./utils";
+import { DefaultAstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 export { share, overlay } from './utils'
-
-declare type DedicatedWorkerGlobalScope = any;
 
 export type PlaygroundMessageType = "validated" | "changing" | "error" | "ast";
 
@@ -303,7 +302,7 @@ export function setupPlayground(
       if (data.type !== "ast") {
         return;
       }
-      render(data.root);
+      render(data.root, new DefaultAstNodeLocator());
     });
   });
 

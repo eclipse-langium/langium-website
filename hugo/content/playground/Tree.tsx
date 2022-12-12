@@ -9,10 +9,11 @@ import React, { FC, useState } from "react";
 import * as ReactDOM from "react-dom/client";
 import { preprocessAstNode, PropertyNode, TypeNode } from "./preprocess";
 import { clsx } from "clsx";
+import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 
-export function render(root: AstNode) {
+export function render(root: AstNode, locator: AstNodeLocator) {
   const location = document.getElementById("syntax-tree")!;
-  const data = preprocessAstNode(root);
+  const data = preprocessAstNode(root, locator);
   ReactDOM.createRoot(location).render(
     <ul>
       <TreeNode root={data} hidden={false} />
@@ -99,7 +100,7 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
       return (
         <>
           <span className="colon">:&nbsp;</span>
-          <span className="link">{root.type.$type}</span>
+          <span className="link">"{root.$text}"</span>
         </>
       );
   }

@@ -5,6 +5,7 @@
  ******************************************************************************/
 
  import { AstNode, Reference } from "langium";
+import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 
 export interface TypeNodeBase {
     kind: "object" | "array" | "string" | "boolean" | "number" | "reference";
@@ -48,7 +49,7 @@ export interface TypeNodeBase {
     type: TypeNode;
   }
   
-  export function preprocessAstNode(node: AstNode): SimpleType {
+  export function preprocessAstNode(node: AstNode, locator: AstNodeLocator): SimpleType {
     const properties: PropertyNode[] = Object.keys(node)
       .filter((n) => !n.startsWith("$"))
       .map((n) => {
@@ -62,18 +63,18 @@ export interface TypeNodeBase {
         if (Array.isArray(valueOrValues)) {
           return {
             name: n,
-            type: preprocessArrayType(valueOrValues),
+            type: preprocessArrayType(valueOrValues, locator),
           } as PropertyNode;
         } else if (typeof valueOrValues === "object") {
           if ("$refText" in valueOrValues) {
             return {
               name: n,
-              type: preprocessReferenceNode(valueOrValues),
+              type: preprocessReferenceNode(valueOrValues, locator),
             } as PropertyNode;
           }
           return {
             name: n,
-            type: preprocessAstNode(valueOrValues),
+            type: preprocessAstNode(valueOrValues, locator),
           } as PropertyNode;
         } else if (typeof valueOrValues === "string") {
           return {
@@ -109,17 +110,17 @@ export interface TypeNodeBase {
   }
   
   export function preprocessReferenceNode(
-    node: Reference<AstNode>
+    node: Reference<AstNode>, locator: AstNodeLocator
   ): ReferenceType {
     return {
       kind: "reference",
-      $text: node.$refText,
-      type: preprocessAstNode(node.ref!),
+      $text: locator.getAstNodePath(node.ref!),
+      type: preprocessAstNode(node.ref!, locator),
     };
   }
   
-  export function preprocessArrayType(nodes: AstNode[]): ArrayType {
-    const children = nodes.map(preprocessAstNode);
+  export function preprocessArrayType(nodes: AstNode[], locator: AstNodeLocator): ArrayType {
+    const children = nodes.map(n => preprocessAstNode(n, locator));
     return {
       kind: "array",
       children,
