@@ -26,6 +26,7 @@
             right: 0;
             height: 100%;
             width: 100%;
+            padding: 0.5rem;
             background-color: #1e1e1e;
             z-index: 1000000;
             overflow-y: scroll;
@@ -35,34 +36,31 @@
             cursor: default;
             box-sizing: border-box;
             font-family: monospace;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
             flex: 1;
             margin: 0;
-            padding-left: 20px;
+            padding-left: 0px;
             overflow: auto;
         }
 
         .entry {
             margin: 0;
             list-style: none;
-            padding: 5px;
+            padding: 0px;
             position: relative;
         }
-        .entry.toggable::before {
-            content: '- ';
-            color: red;
-        }
-        .entry.toggable.closed::before {
-            content: '+ ';
-            color: green;
-        }
 
+        .object-body > .entry {
+            padding-left: 0px;
+
+        }
         .entry > .value {
             list-style: none;
         }
-
+        li:last-child:after {
+            content: none;
+        }
+        .value {
+        }
         .type {
             color: #569cd6;
             cursor: pointer;
@@ -73,7 +71,7 @@
             cursor: pointer;
         }
 
-        .opening-brace, .closing-brace, .colon {
+        .opening-brace, .closing-brace, .colon, .comma {
             color: #d4d4d4;
         }
 
@@ -81,12 +79,11 @@
             color: #ce9178;        
         }
 
-        .value-body {
+        .object-body {
             width: -webkit-fit-content;
             width: -moz-fit-content;
             width: fit-content;
             margin: 0;
-            padding-left: 20px;
             overflow: auto;
         }
 
@@ -94,6 +91,17 @@
             cursor: pointer;
             text-decoration: underline;
             color: blue;
+        }
+
+
+
+
+
+        .object {
+        }
+
+        .object-body {
+            padding-left: 20px;
         }
     </style>
 </head>
