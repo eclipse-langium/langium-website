@@ -93,6 +93,11 @@
                 height: 100%;
             }
 
+            #grid.without-tree {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+                grid-template-rows: repeat(2, 3rem auto);
+            }
+
             #grammar-body, #content-body, #ast-body {
                 min-height: 20vh;
             }
