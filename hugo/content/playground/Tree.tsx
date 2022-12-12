@@ -12,7 +12,7 @@ import { clsx } from "clsx";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 
 export function render(root: AstNode, locator: AstNodeLocator) {
-  const location = document.getElementById("syntax-tree")!;
+  const location = document.getElementById("ast-body")!;
   const data = preprocessAstNode(root, locator);
   ReactDOM.createRoot(location).render(
     <ul>
