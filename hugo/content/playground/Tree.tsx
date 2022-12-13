@@ -100,8 +100,8 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
       return (
         <>
           <span className="colon">:&nbsp;</span>
-          {hidden ? <span className="link">{"..."}</span> :
-          <span className="link">"{root.$text}"</span>}
+          {hidden ? <span className="link">{"Reference(...)"}</span> :
+          <span className="link">Reference('{root.$text}')</span>}
         </>
       );
   }
