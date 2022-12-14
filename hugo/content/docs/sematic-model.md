@@ -187,6 +187,7 @@ Primary infers Expression:
     '(' Expression ')' | {Literal} value=NUMBER;
 ```
 When parsing a document containing `def x: (1 + 2) + 3`, this is the shape of the semantic model node:
+
 {{<mermaid>}}
 graph TD;
 expr((expr)) --> left((left))
@@ -198,9 +199,11 @@ left_left --> left_left_v{1}
 left_right --> left_right_{2}
 right_left --> right_left_v{3}
 {{</mermaid>}}
-We can see that the nested `right -> left` property in the tree is counter-intuitive and we would like to remove one level of nesting from the tree. 
+
+We can see that the nested `right -> left` nodes in the tree are unnecessary and we would like to remove one level of nesting from the tree. 
 
 This can be done by refactoring the grammar and adding an assigned action:
+
 ```
 Definition: 
     'def' name=ID ':' expr=Addition ';';
@@ -212,7 +215,9 @@ Addition infers Expression:
 Primary infers Expression:
     '(' Expression ')' | {Literal} value=NUMBER;
 ```
+
 Parsing the same document now leads to this semantic model:
+
 {{<mermaid>}}
 graph TD;
 expr((expr)) --> left((left))
@@ -223,6 +228,8 @@ right --> right_v{3}
 left_left --> left_left_v{1}
 left_right --> left_right_{2}
 {{</mermaid>}}
+
+While this is a fairly trivial example, adding more layers of expression types in your grammar massively degrades the quality of your syntax tree as each layer will add another empty `right` property to the tree. Assigned actions alleviate this issue completely.
 
 ## Declared Types
 It's important to keep in mind that while declared types can improve your grammars, they are a *bleeding edge feature and are still being developed*.
@@ -313,6 +320,7 @@ Z returns C: 'Z' name=ID count=INT;
 
 ### Actions
 Actions referring to a declared type have the following syntax:
+
 ```
 interface A {
     name: string
@@ -327,25 +335,44 @@ X:
     {A} 'A' name=ID 
   | {B} 'B' name=ID count=INT;
 ```
+
 Note the absence of the keyword `infer` compared to [actions which infer a type](#simple-actions).
 
-## Refactoring Dummy Rules
-*Dummy rules* are parser rules that are not reachable from the entry rule of the grammar. Despite the fact that they do not participate in the parsing process, they still influence the shape of the semantic model. They infer types in the same fashion as any other parser rule with type inference. However, because dummy rules are exempt from validation checks they are prone to introduce breaking changes. For this reason, we strongly advise using declared types instead of dummy rules.
+## Reference Unions
 
-Let's look at two dummy rules:
-```
-X : A | B;
+Trying to reference different types of elements can be an error prone process. Take a look at the following rule which tries to reference either a `Function` or a `Variable`:
 
-Y: name=ID;
 ```
-The first one is inferring a type alias, and the second one an interface. They are similar to parser rules explained in the [previous section](#inferred-types), but they are not reachable from the entry rule of the grammar. They should be replaced with **declared types** as follows:
+MemberCall: (element=[Function:ID] | element=[Variable:ID]);
 ```
-type X = A | B;
 
-interface Y {
+As both alternatives are only an `ID` from a parser perspective, this grammar is not decidable and the `langium` CLI script will throw an error during generation. Luckily, we can improve on this by adding a layer of indirection using an additional parser rule:
+
+```
+NamedElement: Function | Variable;
+
+MemberCall: element=[NamedElement:ID];
+```
+
+This allows us to reference either `Function` or `Variable` using the common rule `NamedElement`. However, we have now introduced a rule which is never actually parsed, but only exists for the purpose of the type system to pick up on the correct target types of the reference. Using declared types, we are able to refactor this unused rule, making our grammar more resilient in the process:
+
+```
+// Note the `type` prefix here
+type NamedElement = Function | Variable;
+
+MemberCall: element=[NamedElement:ID];
+```
+
+We can also use interfaces in place of union types with similar results:
+
+```
+interface NamedElement {
     name: string
 }
 
-Y returns Y: name=ID;
+// Infers an interface `Function` that extends `NamedElement`
+Function returns NamedElement: {infer Function} "function" name=ID ...;
+
+// This also picks up on the `Function` elements
+MemberCall: element=[NamedElement:ID];
 ```
-This way, a layer of safety is introduced and the risk of breaking changes is greatly reduced.
