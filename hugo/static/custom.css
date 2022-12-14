@@ -169,6 +169,10 @@
     }
 }
 
+:root .chroma .err {
+    color: inherit !important;
+    background-color: transparent !important;   
+}
 
 .gdoc-markdown h1,
 h2,
