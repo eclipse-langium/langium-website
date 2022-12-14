@@ -272,9 +272,9 @@ function Addition() {
 Please refer to [this blog post](https://www.typefox.io/blog/parsing-expressions-with-xtext) for further details.
 
 ### Data Type Rules
-Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and therefore are context-dependent, and are allowed to use hidden terminal rules. Contrary to terminal rules, they cannot use *regular expressions* to match a stream of characters, so they have to be composed of keywords, terminal rules or other data type rules.
+Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and are therefore context-dependent. This allows for more flexible parsing, as they can be interspersed with hidden terminals, such as whitespaces or comments. Contrary to terminal rules, they cannot use *regular expressions* to match a stream of characters, so they have to be composed of keywords, terminal rules or other data type rules.
 
-The following example from the [domain model example](https://github.com/langium/langium/blob/main/examples/domainmodel/src/language-server/domain-model.langium) avoids for the `QualifiedName` data type rule to conflict with the terminal rule `ID`.
+The following example from the [domain model example](https://github.com/langium/langium/blob/main/examples/domainmodel/src/language-server/domain-model.langium) uses the `QualifiedName` data type rule to enable references to other elements using their fully qualified name.
 ```
 QualifiedName returns string:
     ID ('.' ID)*;

@@ -62,9 +62,7 @@ Langium accomplishes this feat by using the concept of 'scoping'. You likely kno
 ```ts
 let x = 42;
 x = 3; // References the `x` defined in the previous line
-```
 
-```ts
 if (something) {
     let y = 42;
 }
