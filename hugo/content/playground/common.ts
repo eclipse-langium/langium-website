@@ -298,7 +298,7 @@ export function setupPlayground(
       content: dslContent,
     });
 
-    userDefined!.out.listenByPass((data) => {
+    userDefined?.out.listenByPass((data) => {
       if (data.type !== "ast") {
         return;
       }

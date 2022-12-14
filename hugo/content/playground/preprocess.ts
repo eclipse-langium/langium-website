@@ -68,7 +68,6 @@ export function preprocessAstNode(
           type: preprocessArrayType(valueOrValues, locator),
         } as PropertyNode;
       } else if (typeof valueOrValues === "object") {
-        debugger
         if ("$refText" in valueOrValues) {
           return {
             name: n,
@@ -124,7 +123,7 @@ export function preprocessReferenceNode(
   node: Reference<AstNode>,
   locator: AstNodeLocator
 ): ReferenceType {
-  debugger
+  
   return node.ref ? {
     kind: "reference",
     $text: locator.getAstNodePath(node.ref!),
