@@ -109,7 +109,7 @@ test()
 We'll save this under our project root as **test.logo**, and we can test that it's correct using our CLI like so:
 
 ```bash
-./bin/cli parseAndValidate test.logo
+./bin/cli parseAndValidate examples/test.logo
 ```
 
 We should get an output indicating that there were no errors with our program.
