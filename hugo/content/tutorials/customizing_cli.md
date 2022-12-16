@@ -111,7 +111,7 @@ We'll save this under our project root as **test.logo**, and we can test that it
 ```bash
 ./bin/cli parseAndValidate test.logo
 ```
-NOTE: The langium-minilogo repo places `test.logo` in an `examples` subdirectory. So, for that case, the CLI usage would be:
+NOTE: The langium-minilogo repo places `test.logo` in an `examples` subdirectory under the project root. So, for that case, the CLI usage would be:
 ```bash
 ./bin/cli parseAndValidate examples/test.logo
 ```
