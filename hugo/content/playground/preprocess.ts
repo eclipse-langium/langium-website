@@ -7,53 +7,55 @@
 import { AstNode, Reference } from "langium";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 
-export interface TypeNodeBase {
+export interface ValueNodeBase {
   kind: "object" | "array" | "string" | "boolean" | "number" | "reference";
 }
-export interface SimpleType extends TypeNodeBase {
+export interface ObjectValueNode extends ValueNodeBase {
   kind: "object";
   properties: PropertyNode[];
 }
-export interface ReferenceType extends TypeNodeBase {
+export interface ReferenceValueNode extends ValueNodeBase {
   kind: "reference";
   $text: string;
-  type?: SimpleType;
 }
-export type PrimitiveMapping = {
+export type PrimitiveValueKindMapping = {
   string: string;
   boolean: boolean;
   number: number;
 };
-export interface PrimitiveType<T extends "number" | "string" | "boolean">
-  extends TypeNodeBase {
+export interface PrimitiveValueNode<T extends "number" | "string" | "boolean">
+  extends ValueNodeBase {
   kind: T;
-  value: PrimitiveMapping[T];
+  value: PrimitiveValueKindMapping[T];
 }
 
-export interface ArrayType extends TypeNodeBase {
+export interface ArrayValueNode extends ValueNodeBase {
   kind: "array";
-  children: TypeNode[];
+  children: ValueNode[];
 }
 
-export type TypeNode =
-  | SimpleType
-  | ArrayType
-  | PrimitiveType<"boolean">
-  | PrimitiveType<"number">
-  | PrimitiveType<"string">
-  | ReferenceType;
+export type ValueNode =
+  | ObjectValueNode
+  | ArrayValueNode
+  | PrimitiveValueNode<"boolean">
+  | PrimitiveValueNode<"number">
+  | PrimitiveValueNode<"string">
+  | ReferenceValueNode;
 
 export interface PropertyNode {
   name: string;
-  type: TypeNode;
+  type: ValueNode;
 }
-
-export function preprocessAstNodeValue(valueOrValues: AstNode
-  | AstNode[]
-  | "string"
-  | "number"
-  | "boolean"
-  | Reference, locator: AstNodeLocator): TypeNode {
+export function preprocessAstNodeValue(
+  valueOrValues:
+    | AstNode
+    | AstNode[]
+    | "string"
+    | "number"
+    | "boolean"
+    | Reference,
+  locator: AstNodeLocator
+): ValueNode {
   if (Array.isArray(valueOrValues)) {
     return preprocessArrayType(valueOrValues, locator);
   } else if (typeof valueOrValues === "object") {
@@ -65,24 +67,23 @@ export function preprocessAstNodeValue(valueOrValues: AstNode
     return {
       kind: "string",
       value: valueOrValues,
-    } as TypeNode;
+    } as ValueNode;
   } else if (typeof valueOrValues === "number") {
     return {
-        kind: "number",
-        value: valueOrValues,
-      } as TypeNode;
+      kind: "number",
+      value: valueOrValues,
+    } as ValueNode;
   } else {
     return {
-        kind: "boolean",
-        value: valueOrValues,
-      };
-    }
+      kind: "boolean",
+      value: valueOrValues,
+    };
+  }
 }
-
 export function preprocessAstNodeObject(
   node: AstNode,
   locator: AstNodeLocator
-): SimpleType {
+): ObjectValueNode {
   const properties: PropertyNode[] = Object.keys(node)
     .filter((n) => !n.startsWith("$"))
     .map((n) => {
@@ -93,10 +94,10 @@ export function preprocessAstNodeObject(
         | "number"
         | "boolean"
         | Reference;
-        return {
-          name: n,
-          type: preprocessAstNodeValue(valueOrValues, locator)
-        } as PropertyNode;
+      return {
+        name: n,
+        type: preprocessAstNodeValue(valueOrValues, locator),
+      } as PropertyNode;
     });
   return {
     kind: "object",
@@ -116,24 +117,25 @@ export function preprocessAstNodeObject(
 export function preprocessReferenceNode(
   node: Reference<AstNode>,
   locator: AstNodeLocator
-): ReferenceType {
-  return node.ref ? {
-    kind: "reference",
-    $text: locator.getAstNodePath(node.ref!),
-    type: preprocessAstNodeObject(node.ref!, locator),
-  } : {
-    kind: "reference",
-    $text: "???"
-  };
+): ReferenceValueNode {
+  return node.ref
+    ? {
+        kind: "reference",
+        $text: locator.getAstNodePath(node.ref!),
+      }
+    : {
+        kind: "reference",
+        $text: "???",
+      };
 }
 
 export function preprocessArrayType(
   nodes: AstNode[],
   locator: AstNodeLocator
-): ArrayType {
+): ArrayValueNode {
   const children = nodes.map((n) => preprocessAstNodeValue(n, locator));
   return {
     kind: "array",
-    children
+    children,
   };
 }

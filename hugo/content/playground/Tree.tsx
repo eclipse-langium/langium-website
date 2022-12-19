@@ -7,7 +7,7 @@
 import { AstNode } from "langium";
 import React, { FC, useState } from "react";
 import * as ReactDOM from "react-dom/client";
-import { preprocessAstNodeObject, PropertyNode, TypeNode } from "./preprocess";
+import { preprocessAstNodeObject, PropertyNode, ValueNode } from "./preprocess";
 import { clsx } from "clsx";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 
@@ -22,7 +22,7 @@ export function render(root: AstNode, locator: AstNodeLocator) {
 }
 
 interface TreeProps {
-  root: TypeNode;
+  root: ValueNode;
   hidden: boolean;
 }
 
@@ -73,7 +73,7 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
             <span className="opening-brace">{"[...]"}</span>
           ) : (
             <>
-              <span className="opening-brace">[</span>
+              <div className="opening-brace">[</div>
               <ul className="object-body">
                 {root.children.map((c, index) => (
                   <li
