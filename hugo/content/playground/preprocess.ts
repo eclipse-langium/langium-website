@@ -48,7 +48,38 @@ export interface PropertyNode {
   type: TypeNode;
 }
 
-export function preprocessAstNode(
+export function preprocessAstNodeValue(valueOrValues: AstNode
+  | AstNode[]
+  | "string"
+  | "number"
+  | "boolean"
+  | Reference, locator: AstNodeLocator): TypeNode {
+  if (Array.isArray(valueOrValues)) {
+    return preprocessArrayType(valueOrValues, locator);
+  } else if (typeof valueOrValues === "object") {
+    if (valueOrValues && "$refText" in valueOrValues) {
+      return preprocessReferenceNode(valueOrValues, locator);
+    }
+    return preprocessAstNodeObject(valueOrValues, locator);
+  } else if (typeof valueOrValues === "string") {
+    return {
+      kind: "string",
+      value: valueOrValues,
+    } as TypeNode;
+  } else if (typeof valueOrValues === "number") {
+    return {
+        kind: "number",
+        value: valueOrValues,
+      } as TypeNode;
+  } else {
+    return {
+        kind: "boolean",
+        value: valueOrValues,
+      };
+    }
+}
+
+export function preprocessAstNodeObject(
   node: AstNode,
   locator: AstNodeLocator
 ): SimpleType {
@@ -62,47 +93,10 @@ export function preprocessAstNode(
         | "number"
         | "boolean"
         | Reference;
-      if (Array.isArray(valueOrValues)) {
         return {
           name: n,
-          type: preprocessArrayType(valueOrValues, locator),
+          type: preprocessAstNodeValue(valueOrValues, locator)
         } as PropertyNode;
-      } else if (typeof valueOrValues === "object") {
-        if ("$refText" in valueOrValues) {
-          return {
-            name: n,
-            type: preprocessReferenceNode(valueOrValues, locator),
-          } as PropertyNode;
-        }
-        return {
-          name: n,
-          type: preprocessAstNode(valueOrValues, locator),
-        } as PropertyNode;
-      } else if (typeof valueOrValues === "string") {
-        return {
-          name: n,
-          type: {
-            kind: "string",
-            value: valueOrValues,
-          },
-        } as PropertyNode;
-      } else if (typeof valueOrValues === "number") {
-        return {
-          name: n,
-          type: {
-            kind: "number",
-            value: valueOrValues,
-          },
-        } as PropertyNode;
-      } else {
-        return {
-          name: n,
-          type: {
-            kind: "boolean",
-            value: valueOrValues,
-          },
-        } as PropertyNode;
-      }
     });
   return {
     kind: "object",
@@ -123,11 +117,10 @@ export function preprocessReferenceNode(
   node: Reference<AstNode>,
   locator: AstNodeLocator
 ): ReferenceType {
-  
   return node.ref ? {
     kind: "reference",
     $text: locator.getAstNodePath(node.ref!),
-    type: preprocessAstNode(node.ref!, locator),
+    type: preprocessAstNodeObject(node.ref!, locator),
   } : {
     kind: "reference",
     $text: "???"
@@ -138,9 +131,9 @@ export function preprocessArrayType(
   nodes: AstNode[],
   locator: AstNodeLocator
 ): ArrayType {
-  const children = nodes.map((n) => preprocessAstNode(n, locator));
+  const children = nodes.map((n) => preprocessAstNodeValue(n, locator));
   return {
     kind: "array",
-    children,
+    children
   };
 }

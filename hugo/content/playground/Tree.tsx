@@ -7,13 +7,13 @@
 import { AstNode } from "langium";
 import React, { FC, useState } from "react";
 import * as ReactDOM from "react-dom/client";
-import { preprocessAstNode, PropertyNode, TypeNode } from "./preprocess";
+import { preprocessAstNodeObject, PropertyNode, TypeNode } from "./preprocess";
 import { clsx } from "clsx";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 
 export function render(root: AstNode, locator: AstNodeLocator) {
   const location = document.getElementById("ast-body")!;
-  const data = preprocessAstNode(root, locator);
+  const data = preprocessAstNodeObject(root, locator);
   ReactDOM.createRoot(location).render(
     <ul>
       <TreeNode root={data} hidden={false} />
@@ -33,7 +33,6 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
     case "string":
       return (
         <>
-          <span className="colon">:&nbsp;</span>
           <span className="literal">
             {hidden
               ? "..."
@@ -51,7 +50,7 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
               <span className="opening-brace">&#123;...&#125;</span>
             ) : (
               <>
-                <span className="opening-brace">&#123;</span>
+                <div className="opening-brace">&#123;</div>
                 <ul className="object-body">
                   {root.properties.map((p, index) => (
                     <Property
@@ -70,7 +69,6 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
     case "array":
       return (
         <>
-          <span className="colon">:&nbsp;</span>
           {hidden ? (
             <span className="opening-brace">{"[...]"}</span>
           ) : (
@@ -80,7 +78,7 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
                 {root.children.map((c, index) => (
                   <li
                     key={index}
-                    className={clsx("entry toggable inline", {
+                    className={clsx("entry toggable", {
                       closed: hidden,
                     })}
                   >
@@ -99,7 +97,6 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
     case "reference":
       return (
         <>
-          <span className="colon">:&nbsp;</span>
           {hidden ? <span className="link">{"Reference(...)"}</span> :
           <span className="link">Reference('{root.$text}')</span>}
         </>
@@ -124,6 +121,7 @@ function Property({ p, comma }: { p: PropertyNode; comma: boolean }) {
         <span className="property" onClick={() => setOpen((p) => !p)}>
           {p.name}
         </span>
+        <span className="colon">:&nbsp;</span>
         <ul className="inline">
           <TreeNode root={p.type} hidden={!open} />
         </ul>
