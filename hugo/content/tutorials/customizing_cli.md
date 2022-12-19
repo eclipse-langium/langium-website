@@ -111,6 +111,11 @@ We'll save this under our project root as **test.logo**, and we can test that it
 ```bash
 ./bin/cli parseAndValidate test.logo
 ```
+NOTE: The langium-minilogo repo places `test.logo` in an `examples` subdirectory under the project root. So, for that case, the CLI usage would be:
+```bash
+./bin/cli parseAndValidate examples/test.logo
+```
+It does not matter where you place your .logo files. Organize them as you see fit.
 
 We should get an output indicating that there were no errors with our program.
 
