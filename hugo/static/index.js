@@ -3,35 +3,39 @@ function init(size) {
         // Teaser BG parallax effect
         const teaser = gsap.utils.selector('#teaser');
         const teaserBg = teaser('.teaser-bg');
-        teaserBg[0].style.backgroundPosition = "50% 0";
-        gsap.to(teaserBg, {
-            backgroundPosition: `50% -450px`,
-            ease: "none",
-            scrollTrigger: {
-                scrub: true
-            }
-        });
+        if(teaserBg && teaserBg.length) {
+            teaserBg[0].style.backgroundPosition = "50% 0";
+            gsap.to(teaserBg, {
+                backgroundPosition: `50% -450px`,
+                ease: "none",
+                scrollTrigger: {
+                    scrub: true
+                }
+            });
+        }
     
         // title animations
         function animateTitle(name) {
             const containerId = `#${name}-title-container`;
             const contentId = `#${name}-content`;
             const titleContainer = document.querySelector(containerId);
-            const content = document.querySelector(contentId);
-            const title = titleContainer.firstElementChild;
-            title.style.top = '200px';
-            gsap.to(`#${name}-title`, {
-                top: 0,
-                scrollTrigger: {
-                    trigger: containerId,
-                    start: '180px bottom'
-                },
-                onComplete: () => {
-                    titleContainer.style.height = 'auto';
-                    title.style.position = 'relative';
-                    content.style.marginTop = '0px';
-                }
-            });
+            if(titleContainer) {
+                const content = document.querySelector(contentId);
+                const title = titleContainer.firstElementChild;
+                title.style.top = '200px';
+                gsap.to(`#${name}-title`, {
+                    top: 0,
+                    scrollTrigger: {
+                        trigger: containerId,
+                        start: '180px bottom'
+                    },
+                    onComplete: () => {
+                        titleContainer.style.height = 'auto';
+                        title.style.position = 'relative';
+                        content.style.marginTop = '0px';
+                    }
+                });
+            }
         }
         ['about', 'features', 'compare'].forEach(name => animateTitle(name));
     
@@ -183,7 +187,7 @@ md.addEventListener('change', mediaChanged);
 lg.addEventListener('change', mediaChanged);
 
 const scrollDown = document.querySelector('#scroll-down');
-scrollDown.addEventListener('click', () => {
+scrollDown?.addEventListener('click', () => {
     gsap.to(window, {
         duration: 1.5,
         ease: 'power3',
@@ -199,12 +203,12 @@ gsap.registerPlugin(Draggable);
 const wrapper = document.querySelector(".feature-carussel");
 const boxes = gsap.utils.toArray(".feature-item-container");
 
-const loop = horizontalLoop(boxes, {paused: true, draggable: true});
-
-boxes.forEach((box, i) => box.addEventListener("click", () => loop.toIndex(i, {duration: 0.8, ease: "power1.inOut"})));
-
-document.querySelector("#features-right").addEventListener("click", () => loop.next({duration: 0.4, ease: "power1.inOut"}));
-document.querySelector("#features-left").addEventListener("click", () => loop.previous({duration: 0.4, ease: "power1.inOut"}));
+if(Array.isArray(boxes) && boxes.length && boxes.every(b => b && 'offsetLeft' in b)) {
+    const loop = horizontalLoop(boxes, {paused: true, draggable: true});
+    boxes.forEach((box, i) => box.addEventListener("click", () => loop.toIndex(i, {duration: 0.8, ease: "power1.inOut"})));    
+}
+document.querySelector("#features-right")?.addEventListener("click", () => loop.next({duration: 0.4, ease: "power1.inOut"}));
+document.querySelector("#features-left")?.addEventListener("click", () => loop.previous({duration: 0.4, ease: "power1.inOut"}));
 
 // copied from here: https://greensock.com/docs/v3/HelperFunctions
 /*

@@ -45,6 +45,19 @@ playground: true
       }, 1000);
     };
 
+    const treeButton = document.getElementById('treeButton');
+    const grid = document.getElementById('grid');
+    const key = 'display-ast';
+    if(localStorage.getItem(key) === 'yes') {
+      grid.classList.toggle('without-tree');
+    }
+    treeButton.onclick = () => {
+      const shown = !grid.classList.toggle('without-tree');
+      localStorage.setItem(key, shown ? 'yes' : 'no');
+      const resizeEvent = new Event('resize');
+      window.dispatchEvent(resizeEvent);
+    };
+
     const url = new URL(window.location.toString());
     const grammar = url.searchParams.get('grammar');
     const content = url.searchParams.get('content');

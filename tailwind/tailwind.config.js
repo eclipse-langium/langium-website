@@ -2,7 +2,7 @@ const colors = require('tailwindcss/colors')
 
 module.exports = {
   mode: 'jit',
-  purge: ['../hugo/layouts/**/*.html','../hugo/content/**/*.html','../hugo/static/**/*.html','../hugo/static/**/*.js'],
+  purge: ['../hugo/layouts/**/*.html','../hugo/content/**/*.html','../hugo/content/**/*.ts','../hugo/content/**/*.tsx','../hugo/static/**/*.html','../hugo/static/**/*.js'],
   darkMode: 'class',
   theme: {
     colors: {

@@ -4,19 +4,6 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { compressToEncodedURIComponent } from "lz-string";
-import {
-  AbstractMessageReader,
-  DataCallback,
-  Diagnostic,
-  Disposable,
-  Emitter,
-  MessageReader,
-} from "vscode-languageserver";
-import {
-  BrowserMessageReader,
-  BrowserMessageWriter,
-} from "vscode-languageserver/browser";
 import {
   LangiumInitialContent,
   LangiumMonarchContent,
@@ -25,12 +12,15 @@ import {
 import { generateMonarch } from "./monarch-generator";
 import { createServicesForGrammar } from "langium/lib/grammar/grammar-util";
 import { decompressFromEncodedURIComponent } from 'lz-string';
+import { Diagnostic } from "vscode-languageserver";
+import { ByPassingMessageReader, ByPassingMessageWriter, MonacoConnection, MonacoEditorResult } from "./monaco-utils";
+import { AstNode } from "langium";
+import { render } from './Tree';
+import { overlay } from "./utils";
+import { DefaultAstNodeLocator } from "langium/lib/workspace/ast-node-locator";
+export { share, overlay } from './utils'
 
-export { BrowserMessageReader, BrowserMessageWriter };
-
-declare type DedicatedWorkerGlobalScope = any;
-
-export type PlaygroundMessageType = "validated" | "changing" | "error";
+export type PlaygroundMessageType = "validated" | "changing" | "error" | "ast";
 
 export interface PlaygroundMessageBase {
   type: PlaygroundMessageType;
@@ -39,6 +29,11 @@ export interface PlaygroundMessageBase {
 export interface PlaygroundError extends PlaygroundMessageBase {
   type: "error";
   errors: Diagnostic[];
+}
+
+export interface PlaygroundAst extends PlaygroundMessageBase {
+  type: "ast";
+  root: AstNode;
 }
 
 export interface PlaygroundOK extends PlaygroundMessageBase {
@@ -53,7 +48,8 @@ export interface PlaygroundChanging extends PlaygroundMessageBase {
 export type PlaygroundMessage =
   | PlaygroundChanging
   | PlaygroundError
-  | PlaygroundOK;
+  | PlaygroundOK
+  | PlaygroundAst;
 
 export interface MessageBase {
   jsonrpc: "2.0";
@@ -116,66 +112,6 @@ export class PlaygroundWrapper implements MessageWrapper<PlaygroundMessage> {
   }
 }
 
-export class ByPassingMessageReader<T>
-  extends AbstractMessageReader
-  implements MessageReader
-{
-  private _onData: Emitter<Message>;
-  private _onByPass: Emitter<T>;
-  private _messageListener: (event: MessageEvent) => void;
-
-  public constructor(
-    port: MessagePort | Worker | DedicatedWorkerGlobalScope,
-    wrapper: MessageWrapper<T>
-  ) {
-    super();
-    this._onData = new Emitter<Message>();
-    this._onByPass = new Emitter<T>();
-    this._messageListener = (event: MessageEvent) => {
-      const unwrapped = wrapper.unwrap(event.data);
-      if (unwrapped) {
-        this._onByPass.fire(unwrapped);
-        return;
-      }
-      this._onData.fire(event.data);
-    };
-    port.addEventListener("error", (event) => this.fireError(event));
-    port.onmessage = this._messageListener;
-  }
-
-  public listen(callback: DataCallback): Disposable {
-    return this._onData.event((x) => callback(x as any));
-  }
-
-  public listenByPass(callback: MessageCallback<T>): Disposable {
-    return this._onByPass.event(callback);
-  }
-}
-
-export class ByPassingMessageWriter<T> extends BrowserMessageWriter {
-  public constructor(
-    port: MessagePort | Worker | DedicatedWorkerGlobalScope,
-    private wrapper: MessageWrapper<T>
-  ) {
-    super(port);
-  }
-
-  public byPassWrite(message: T) {
-    return this.write(this.wrapper.wrap(message));
-  }
-}
-
-export interface MonacoConnection {
-  reader: ByPassingMessageReader<PlaygroundMessage>;
-  writer: ByPassingMessageWriter<PlaygroundMessage>;
-}
-
-export interface MonacoEditorResult {
-  out: ByPassingMessageReader<PlaygroundMessage>;
-  in: ByPassingMessageWriter<PlaygroundMessage>;
-  editor: MonacoClient;
-}
-
 export interface MonacoConfig {
   getMainCode(): string;
   setMainCode(code: string): void;
@@ -214,8 +150,8 @@ export function setupEditor(
   editorConfig.setMonarchTokensProvider(syntax);
   editorConfig.setMonacoEditorOptions({
     minimap: {
-        enabled: false
-    }
+      enabled: false,
+    },
   });
 
   editorConfig.setMainCode(content);
@@ -253,16 +189,18 @@ interface ActionRequest {
   monacoFactory: (name: string) => MonacoClient;
   editor?: MonacoEditorResult;
   content: string;
-  overlay: (visible: boolean, hasError: boolean) => void
 }
 
-type Action = (params: ActionRequest) => Promise<MonacoEditorResult | undefined>;
+type Action = (
+  params: ActionRequest
+) => Promise<MonacoEditorResult | undefined>;
 type Actions = Record<PlaygroundMessageType, Action>;
 
 const messageWrapper = new PlaygroundWrapper();
 
 const PlaygroundActions: Actions = {
-  changing: async ({ message, editor, overlay }) => {
+  ast: () => Promise.resolve(undefined),
+  changing: async ({ message, editor }) => {
     if(message.type != "changing" || !editor) {
       return editor;
     }
@@ -270,7 +208,7 @@ const PlaygroundActions: Actions = {
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
     return Promise.resolve(editor);
   },
-  error: async ({ message, editor, overlay }) => {
+  error: async ({ message, editor }) => {
     overlay(true, true);
     if(message.type != "error" || !editor) {
       return editor;
@@ -278,7 +216,7 @@ const PlaygroundActions: Actions = {
     editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
     return Promise.resolve(editor);
   },
-  validated: async ({ message, element, monacoFactory, editor, content, overlay }): Promise<MonacoEditorResult | undefined> => {
+  validated: async ({ message, element, monacoFactory, editor, content }): Promise<MonacoEditorResult | undefined> => {
     if(message.type != "validated") {
       return editor;
     }
@@ -323,20 +261,19 @@ export function setupPlayground(
   content?: string,
   overlay?: (visible: boolean, hasError: boolean) => void
 ) {
-
   let langiumContent = LangiumInitialContent;
   let dslContent = StateMachineInitialContent;
 
   if (grammar) {
     const decompressedGrammar = decompressFromEncodedURIComponent(grammar);
     if (decompressedGrammar) {
-        langiumContent = decompressedGrammar;
+      langiumContent = decompressedGrammar;
     }
   }
   if (content) {
     const decompressedContent = decompressFromEncodedURIComponent(content);
     if (decompressedContent) {
-        dslContent = decompressedContent;
+      dslContent = decompressedContent;
     }
   }
 
@@ -354,12 +291,18 @@ export function setupPlayground(
 
   langium.out.listenByPass(async (message) => {
     userDefined = await PlaygroundActions[message.type]({
-      message,
+      message: message,
       element: rightEditor,
       monacoFactory,
       editor: userDefined,
       content: dslContent,
-      overlay: overlay ?? ((visible: boolean, hasError: boolean) => {})
+    });
+
+    userDefined?.out.listenByPass((data) => {
+      if (data.type !== "ast") {
+        return;
+      }
+      render(data.root, new DefaultAstNodeLocator());
     });
   });
 
@@ -369,30 +312,9 @@ export function setupPlayground(
   });
 
   return () => {
-    return ({
+    return {
       grammar: langium.editor.getMainCode(),
-      content: userDefined?.editor.getMainCode() ?? ''
-    } as PlaygroundParameters);
+      content: userDefined?.editor.getMainCode() ?? "",
+    } as PlaygroundParameters;
   };
-}
-
-export async function share(grammar: string, content: string): Promise<void> {
-  const compressedGrammar = compressToEncodedURIComponent(grammar);
-  const compressedContent = compressToEncodedURIComponent(content);
-  const url = new URL("/playground", window.origin);
-  url.searchParams.append("grammar", compressedGrammar);
-  url.searchParams.append("content", compressedContent);
-  await navigator.clipboard.writeText(url.toString());
-}
-
-export function overlay(visible: boolean, hasError: boolean) {
-  debugger
-  const element = document.getElementById('overlay')!;
-  if(!visible) {
-    element.style.display = 'none';
-  } else {
-    const subTitle = element.getElementsByClassName('hint')![0] as HTMLDivElement;
-    subTitle.innerText = hasError ? 'Your grammar contains errors.' : 'Loading...';
-    element.style.display = 'block';
-  }
 }
