@@ -14,6 +14,7 @@ import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 export function render(root: AstNode, locator: AstNodeLocator) {
   const location = document.getElementById("ast-body")!;
   const data = preprocessAstNodeObject(root, locator);
+  console.log(data)
   ReactDOM.createRoot(location).render(
     <ul>
       <TreeNode root={data} hidden={false} />
@@ -28,19 +29,23 @@ interface TreeProps {
 
 const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
   switch (root.kind) {
+    case "undefined":
+      return (
+        <span className="undefined">
+          undefined
+        </span>
+      );
     case "boolean":
     case "number":
     case "string":
       return (
-        <>
           <span className="literal">
             {hidden
               ? "..."
               : root.kind === "string"
               ? '"' + root.value + '"'
-              : root.value}
+              : root.value.toString()}
           </span>
-        </>
       );
     case "object":
       return (
@@ -67,31 +72,31 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
         </>
       );
     case "array":
+      if(root.children.length === 0) {
+        return <span className="opening-brace">{"[]"}</span>
+      }
+      if(hidden) {
+        return <span className="opening-brace">{"[...]"}</span>
+      }
       return (
         <>
-          {hidden ? (
-            <span className="opening-brace">{"[...]"}</span>
-          ) : (
-            <>
-              <div className="opening-brace">[</div>
-              <ul className="object-body">
-                {root.children.map((c, index) => (
-                  <li
-                    key={index}
-                    className={clsx("entry toggable", {
-                      closed: hidden,
-                    })}
-                  >
-                    <TreeContent root={c} hidden={false} />
-                    {index !== root.children.length - 1 && (
-                      <span className="comma">,&nbsp;</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-              <span className="closing-brace inline">]</span>
-            </>
-          )}
+          <div className="opening-brace">[</div>
+          <ul className="object-body">
+            {root.children.map((c, index) => (
+              <li
+                key={index}
+                className={clsx("entry toggable", {
+                  closed: hidden,
+                })}
+              >
+                <TreeContent root={c} hidden={false} />
+                {index !== root.children.length - 1 && (
+                  <span className="comma">,&nbsp;</span>
+                )}
+              </li>
+            ))}
+          </ul>
+          <span className="closing-brace inline">]</span>
         </>
       );
     case "reference":

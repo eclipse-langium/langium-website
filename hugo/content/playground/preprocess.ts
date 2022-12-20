@@ -8,12 +8,17 @@ import { AstNode, Reference } from "langium";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 
 export interface ValueNodeBase {
-  kind: "object" | "array" | "string" | "boolean" | "number" | "reference";
+  kind: "object" | "array" | "string" | "boolean" | "number" | "reference" | "undefined";
 }
 export interface ObjectValueNode extends ValueNodeBase {
   kind: "object";
   properties: PropertyNode[];
 }
+
+export interface UndefinedValueNode extends ValueNodeBase {
+  kind: "undefined";
+}
+
 export interface ReferenceValueNode extends ValueNodeBase {
   kind: "reference";
   $text: string;
@@ -40,7 +45,8 @@ export type ValueNode =
   | PrimitiveValueNode<"boolean">
   | PrimitiveValueNode<"number">
   | PrimitiveValueNode<"string">
-  | ReferenceValueNode;
+  | ReferenceValueNode
+  | UndefinedValueNode;
 
 export interface PropertyNode {
   name: string;
@@ -59,7 +65,9 @@ export function preprocessAstNodeValue(
   if (Array.isArray(valueOrValues)) {
     return preprocessArrayType(valueOrValues, locator);
   } else if (typeof valueOrValues === "object") {
-    if (valueOrValues && "$refText" in valueOrValues) {
+    if(!valueOrValues) {
+      return {kind: "undefined"};
+    } else if ("$refText" in valueOrValues) {
       return preprocessReferenceNode(valueOrValues, locator);
     }
     return preprocessAstNodeObject(valueOrValues, locator);
