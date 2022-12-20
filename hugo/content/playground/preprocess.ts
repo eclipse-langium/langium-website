@@ -56,15 +56,16 @@ export function preprocessAstNodeValue(
   valueOrValues:
     | AstNode
     | AstNode[]
-    | "string"
-    | "number"
-    | "boolean"
-    | Reference,
+    | string
+    | number
+    | boolean
+    | Reference
+    | undefined,
   locator: AstNodeLocator
 ): ValueNode {
   if (Array.isArray(valueOrValues)) {
     return preprocessArrayType(valueOrValues, locator);
-  } else if (typeof valueOrValues === "object") {
+  } else if (typeof valueOrValues === "object" || typeof valueOrValues === "undefined") {
     if(!valueOrValues) {
       return {kind: "undefined"};
     } else if ("$refText" in valueOrValues) {
