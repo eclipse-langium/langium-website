@@ -7,7 +7,7 @@ const config = defineConfig({
             entry: path.resolve(__dirname, '../../../node_modules/langium-statemachine-dsl/out/language-server/main-browser.js'),
             name: 'statemachineServerWorker',
             fileName: () => 'statemachineServerWorker.js',
-            formats: ['iife']            
+            formats: ['iife'],   
         },
         outDir: path.resolve(__dirname, '../../static/showcase/libs/worker/'),
         emptyOutDir: false
