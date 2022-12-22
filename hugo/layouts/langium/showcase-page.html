@@ -26,7 +26,7 @@
 
 {{ .Content }}
 {{ if .Params.file }}
-    {{- $jsFile := resources.Get .Params.file | resources.ExecuteAsTemplate "page.js" . | babel | js.Build -}}
+    {{- $jsFile := resources.Get .Params.file | resources.ExecuteAsTemplate .Params.file . | babel | js.Build -}}
     <script src="{{ $jsFile.RelPermalink }}"></script>
 {{ end }}
 {{ end }}
