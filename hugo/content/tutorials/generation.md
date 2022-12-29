@@ -9,7 +9,7 @@ In this tutorial we'll be showing how to implement basic generation for your lan
 
 Per usual, we'll be using the MiniLogo language as a motiviating example here.
 
-We'll be describing how write a simple MiniLogo generator to output drawing a JSON array of drawing instructions. This tutorial will give you a general idea of how you can traverse an AST to produce generated output.
+We'll be describing how to write a simple MiniLogo generator to output drawing a JSON array of drawing instructions. This tutorial will give you a general idea of how you can traverse an AST to produce generated output.
 
 ## Setting up the Generator API
 
@@ -24,7 +24,7 @@ export function generateCommands(mode: Model, filePath: string, destination: str
 }
 ```
 
-This function will serve as our generator endpoint. All MiniLogo programs that we want to generate from be processed from here.
+This function will serve as our generator endpoint. All MiniLogo programs that we want to generate from will be processed from here.
 
 Now, our objective is to take a program like this:
 
@@ -205,9 +205,9 @@ function generateStatements(stmts: Stmt[]): Object[] {
  */
 function evalStmt(stmt: Stmt, env: MiniLogoGenEnv) : (Object | undefined)[] {
     if (isPen(stmt)) {
-        return {
+        return [{
             cmd: stmt.mode === 'up' ? 'penUp' : 'penDown'
-        };
+        }];
     }
 
     // ... the rest of our cases will follow ...
@@ -218,11 +218,11 @@ This gives us an `env` that can be updated by evaluating each statement, and per
 
 ```ts
 if (isMove(stmt)) {
-    return {
+    return [{
         cmd: 'move',
         x: evalExprWithEnv(stmt.ex, env),
         y: evalExprWithEnv(stmt.ey, env)
-    };
+    }];
 }
 ```
 
@@ -247,7 +247,7 @@ macro.params.map((elm, idx) => tmpEnv.set(elm.name, evalExprWithEnv(stmt.args[id
 tmpEnv.forEach((v,k) => macroEnv.set(k,v));
 
 // evaluate all statements under this macro
-return macro.body.flatMap(s => evalStmt(s, macroEnv, state));
+return macro.body.flatMap(s => evalStmt(s, macroEnv));
 ```
 
 For `isFor`, we also use a copied env, so that we don't alter the original env outside of the loop.
@@ -266,7 +266,7 @@ const loopEnv = new Map(env);
 while(vi < ve) {
     loopEnv.set(stmt.var.name, vi++);
     stmt.body.forEach(s => {
-        results = results.concat(evalStmt(s, new Map(loopEnv), state));
+        results = results.concat(evalStmt(s, new Map(loopEnv)));
     });
 }
 
