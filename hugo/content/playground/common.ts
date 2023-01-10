@@ -10,11 +10,10 @@ import {
   StateMachineInitialContent,
 } from "./data";
 import { generateMonarch } from "./monarch-generator";
-import { createServicesForGrammar } from "langium/lib/grammar/grammar-util";
 import { decompressFromEncodedURIComponent } from 'lz-string';
 import { Diagnostic } from "vscode-languageserver";
 import { ByPassingMessageReader, ByPassingMessageWriter, MonacoConnection, MonacoEditorResult } from "./monaco-utils";
-import { AstNode } from "langium";
+import { AstNode, createServicesForGrammar } from "langium";
 import { render } from './Tree';
 import { overlay } from "./utils";
 import { DefaultAstNodeLocator } from "langium/lib/workspace/ast-node-locator";
