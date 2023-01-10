@@ -23,8 +23,8 @@ import {
   StateMachineInitialContent,
 } from "./data";
 import { generateMonarch } from "./monarch-generator";
-import { createServicesForGrammar } from "langium/lib/grammar/grammar-util";
 import { decompressFromEncodedURIComponent } from 'lz-string';
+import { createServicesForGrammar } from "langium";
 
 export { BrowserMessageReader, BrowserMessageWriter };
 

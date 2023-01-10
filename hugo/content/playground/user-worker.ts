@@ -4,8 +4,7 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { startLanguageServer } from 'langium';
-import { createServicesForGrammar } from 'langium/lib/grammar/grammar-util';
+import { createServicesForGrammar, startLanguageServer } from 'langium';
 import { createConnection } from 'vscode-languageserver/browser';
 import { ByPassingMessageWriter, ByPassingMessageReader, PlaygroundWrapper } from './common';
 
