@@ -5,7 +5,7 @@ weight: 0
 
 {{< toc format=html >}}
 
-In this tutorial we will be talking about writing a grammar for your langauge in Langium. As a motivating example, we'll be describing how to write a grammar for the MiniLogo language. If you're not familiar with MiniLogo, it's a smaller implementation of the Logo programming language. Logo itself is a lot like Turtle from Python. Ultimately, we'll be using MiniLogo to express drawing instructions that can be used to draw on a canvas.
+In this tutorial we will be talking about writing a grammar for your language in Langium. As a motivating example, we'll be describing how to write a grammar for the MiniLogo language. If you're not familiar with MiniLogo, it's a smaller implementation of the Logo programming language. Logo itself is a lot like Turtle from Python. Ultimately, we'll be using MiniLogo to express drawing instructions that can be used to draw on a canvas.
 
 We've already written an implemention of [MiniLogo on Github using Langium](https://github.com/langium/langium-minilogo). This tutorial will be following along with this project, by walking through the grammar implementation step by step. Later tutorials will also follow along with MiniLogo to create an easy to follow series.
 
@@ -26,7 +26,7 @@ We'll also be producing values and updating an environment as well, which are im
 
 Basically, a MiniLogo program can be considered equivalent to a series of transformations on some drawing context. This goal for MiniLogo will guide our design throughout these tutorials.
 
-In addition, we'll want to get an idea of what our concrete syntax will be. This step can be done on paper if you like, but the overall goal is to get a feel for how you want the language to look. Your coice of concrete syntax will also drive your grammar's design. If your design is chosen well, it can simplify the way your grammar is constructed. If your syntax is complex, the grammar may also be complex as well. Not only this, but it's also important to try and strike a balance betwenen syntax that is special to your language, and syntax that is at least somewhat shared with other languages. The more unfamiliar the language appears, the more likely your users will struggle trying to pick it up.
+In addition, we'll want to get an idea of what our concrete syntax will be. This step can be done on paper if you like, but the overall goal is to get a feel for how you want the language to look. Your coice of concrete syntax will also drive your grammar's design. If your design is chosen well, it can simplify the way your grammar is constructed. If your syntax is complex, the grammar may also be complex as well. Not only this, but it's also important to try and strike a balance between syntax that is special to your language, and syntax that is at least somewhat shared with other languages. The more unfamiliar the language appears, the more likely your users will struggle trying to pick it up.
 
 In our case, we're going to use a C-like concrete syntax. This will make it easy to understand the structure of our programs for most users. This is also chosen because it allows us to use curly braces to delimit blocks of code, which is quite easy to implement in Langium. You could also go for a Python style language, where whitespace has significance in determing which block some code belongs to. Unfortunately, this is not as easy to do out of the box with Langium, due to it ignoring whitespace by default, but it can be configured to work for such languages.
 
