@@ -7,7 +7,7 @@ weight: 3
 
 In this tutorial we'll be showing how to implement basic generation for your language. When we're talking about generation, we're talking about transforming an AST from your Langium-based language into some output target. This could be another language of similar functionality (transpilation), a lower level language (compilation), or generating some artifacts/data that will be consumed by another application. If you haven't already, make sure to go back over and check out the [tutorial on customizing your CLI](/tutorials/customizing_cli), as it touches on details about how to implement endpoints for your application (like generation).
 
-Per usual, we'll be using the MiniLogo language as a motiviating example here.
+Per usual, we'll be using the MiniLogo language as a motivating example here.
 
 We'll be describing how to write a simple MiniLogo generator to output drawing a JSON array of drawing instructions. This tutorial will give you a general idea of how you can traverse an AST to produce generated output.
 
@@ -175,7 +175,7 @@ if (isNegExpr(e)) {
 }
 ```
 
-Lastly, for groups we extract the 'grouped' value and evalute it.
+Lastly, for groups we extract the 'grouped' value and evaluate it.
 
 ```ts
 if(isGroup(e)) {
@@ -189,7 +189,7 @@ With all those cases above, we can combine them into a series of `else if` claus
 
 ## Generating from Statements with the Evaluator
 
-Now that we can evaluate expressions, we can handle the rest of our statement cases. In order to incorpoate our `env`, we'll also want to update our `generateStatements` function, and create a new `evalStmt` function to help out.
+Now that we can evaluate expressions, we can handle the rest of our statement cases. In order to incorporate our `env`, we'll also want to update our `generateStatements` function, and create a new `evalStmt` function to help out.
 
 ```ts
 function generateStatements(stmts: Stmt[]): Object[] {
@@ -226,9 +226,9 @@ if (isMove(stmt)) {
 }
 ```
 
-For `isMacro` we need to save and restore our execution environment after the macro has been evaluted. We can do this by generating a new env, setting the parameters from the arguments, and passing that new env to the macro's statements instead.
+For `isMacro` we need to save and restore our execution environment after the macro has been evaluated. We can do this by generating a new env, setting the parameters from the arguments, and passing that new env to the macro's statements instead.
 
-*Keep in mind* arguments need to be evaluted before setting them into the env, and we want to carefully do this using the *original* env, not the new one being constructed. If there are names that already exist, and would be shadowed by this macro, then it could change the result of the macro (or even the value of subsequent arguments).
+*Keep in mind* arguments need to be evaluated before setting them into the env, and we want to carefully do this using the *original* env, not the new one being constructed. If there are names that already exist, and would be shadowed by this macro, then it could change the result of the macro (or even the value of subsequent arguments).
 
 ```ts
 // get the cross ref
@@ -273,7 +273,7 @@ while(vi < ve) {
 return results;
 ```
 
-Lastly, to handle `isColor`, check whether one set of properies is defined or the other (like color vs. any of the r,g,b properties).
+Lastly, to handle `isColor`, check whether one set of properties is defined or the other (like color vs. any of the r,g,b properties).
 
 ```ts
 if (stmt.color) {

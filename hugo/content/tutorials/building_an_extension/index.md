@@ -32,7 +32,7 @@ npm i --save-dev esbuild
 
 ## Generate an Extension
 
-At this point we're ready to generate an extension. Ws need the VS Code Extension Manager (`vsce`) to do this, so make sure to download this from npm via `npm install -g vsce` (or install locally, as per your preference). Once you have that installed, you can invoke it like so from the root of your project.
+At this point we're ready to generate an extension. We need the VS Code Extension Manager (`vsce`) to do this, so make sure to download this from npm via `npm install -g vsce` (or install locally, as per your preference). Once you have that installed, you can invoke it like so from the root of your project.
 
 ```bash
 vsce package
@@ -83,7 +83,7 @@ When you regenerate your extension & reinstall it, you should get an icon that i
 
 ## Conclusion
 
-And that's it, at this point you have an extension for your langauge that you can use for development. After some testing, and improvments, you could even publish it!
+And that's it, at this point you have an extension for your language that you can use for development. After some testing, and improvements, you could even publish it!
 
 As a quick aside, it's important to keep the extensions that your language recognizes synchronized in both your **package.json** and your **langium-config.json**. If you do make changes to your extensions, it's a good idea to double check that these are both synced up, and to do a full rebuild to get those changes into your extension.
 
