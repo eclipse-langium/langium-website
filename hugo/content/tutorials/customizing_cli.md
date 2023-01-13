@@ -73,7 +73,7 @@ export const parseAndValidate = async (fileName: string): Promise<void> => {
 };
 ```
 
-Some amount of the contents for our custom action are shared with the `generateAction` function. This isn't surprising, given that for example we still need to set up our language's services.
+Some amount of the contents for our custom action are shared with the `generateAction` function. This isn't surprising given that we still need to set up our language's services.
 
 ## Building and Running the CLI
 
