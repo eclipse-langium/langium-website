@@ -9,7 +9,7 @@ In this tutorial, we'll be talking about customizing the command line interface 
 
 ## Overview
 
-Once you have a grammar and some validation place, you may want to start configuring a basic CLI for your language. This is an important step where your language begins to become more accessible to other programs. Having a CLI for your language is a powerful way to access functionality that is expressed through Langium, but without having to interact directly with Langium. A well designed CLI can be used by other applications to provide advanced language features, without making those other applications unnecessarily complex.
+Once you have a grammar and some validation in place, you may want to start configuring a basic CLI for your language. This is an important step where your language begins to become more accessible to other programs. Having a CLI for your language is a powerful way to access functionality that is expressed through Langium, but without having to interact directly with Langium. A well designed CLI can be used by other applications to provide advanced language features, without making those other applications unnecessarily complex.
 
 ## About the Command Line Interface
 
@@ -37,7 +37,7 @@ We can register our parse and validate action like so:
 program
     .command('parseAndValidate')
     .argument('<file>', 'Source file to parse & validate (ending in ${fileExtensions})')
-    .description('Indicates where a program parses & validates successfully, but produce no output code')
+    .description('Indicates where a program parses & validates successfully, but produces no output code')
     .action(parseAndValidate) // we'll need to implement this function
 ```
 
@@ -73,7 +73,7 @@ export const parseAndValidate = async (fileName: string): Promise<void> => {
 };
 ```
 
-A good amount of the contents for our custom action are shared with the `generateAction` function. This isn't surprising, given that we still need to set up our language's services, and we still need to be able to extract the AST.
+Some amount of the contents for our custom action are shared with the `generateAction` function. This isn't surprising given that we still need to set up our language's services.
 
 ## Building and Running the CLI
 
@@ -85,7 +85,7 @@ If you have errors with regards to any imports of `HelloWorld...`, this is likel
 
 You may also have build errors related to the generator logic, especially if it was written for the hello-world semantic model. For now, we can comment out the generator function's contents in **src/cli/generator.ts**, return an empty string, and comment/remove the imports to make Typescript happy. In the next tutorial, we'll come back to it and implement an initial version of a generator for our language.
 
-If you have any other errors while building, double check that the exported & imported names match up. More often than note there's a small discrepancy here, especially when you use a different langauge name than the default.
+If you have any other errors while building, double check that the exported & imported names match up. More often than note there's a small discrepancy here, especially when you use a different language name than the default.
 
 At this point, you should be able to run the following with no errors from the project root.
 
