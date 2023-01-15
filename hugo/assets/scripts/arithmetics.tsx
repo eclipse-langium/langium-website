@@ -1,8 +1,14 @@
-import { MonacoEditorReactComp } from '@typefox/monaco-editor-react/bundle';
-import { monaco } from 'monaco-editor-wrapper';
-import React, { createRef } from 'react';
+import { MonacoEditorReactComp, monaco, addMonacoStyles } from '@typefox/monaco-editor-react/bundle';
+import { buildWorkerDefinition } from 'monaco-editor-workers';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 
+buildWorkerDefinition(
+  "../../libs/monaco-editor-workers/workers",
+  new URL("", window.location.href).href,
+  false
+);
+addMonacoStyles('monaco-editor-styles');
  
 const syntaxHighlighting = {
     keywords: [
