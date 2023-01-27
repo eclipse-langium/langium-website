@@ -32,7 +32,16 @@ To format each node, we use the `getNodeFormatter` method of the `AbstractFormat
 
 Once we have selected the nodes of our document that we are interested in formatting, we can start applying a specific formatting.
 Each formatting option allows to prepend/append whitespace to each note.
-The `Formatting` namespace provides a few predefined formatting options which we can use for this.
+The `Formatting` namespace provides a few predefined formatting options which we can use for this:
+
+* `newLine` Adds one newline character (while preserving indentation).
+* `newLines` Adds a specified amount of newline characters.
+* `indent` Adds one level of indentation. Automatically also adds a newline character.
+* `noIndent` Removes all indentation.
+* `oneSpace` Adds one whitespace character.
+* `spaces` Adds a specified amount of whitespace characters.
+* `noSpace` Removes all spaces.
+* `fit` Tries to fit the existing text into one of the specified formattings.
  
 We first start off by formatting the `Domainmodel` element of our DSL.
 It is the root node of every document and just contains a list of other elements.
