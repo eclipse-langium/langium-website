@@ -9,16 +9,16 @@ We start building a custom formatter for our language by creating a new class th
 ```ts
 import { AbstractFormatter, AstNode, Formatting } from 'langium';
 
-export class CustomModelFormatter extends AbstractFormatter {
+export class CustomFormatter extends AbstractFormatter {
     protected format(node: AstNode): void {
         // This method is called for every AstNode in a document
     }
 }
 ...
 // Bind the class in your module
-export const CustomModelModule: Module<CustomModelServices, PartialLangiumServices> = {
+export const CustomModule: Module<CustomServices, PartialLangiumServices> = {
     lsp: {
-        Formatter: () => new CustomModelFormatter()
+        Formatter: () => new CustomFormatter()
     }
 };
 ```
@@ -61,7 +61,7 @@ if (ast.isEntity(node) || isPackageDeclaration(node)) {
     // Add a level of indentation to each element
     // between the opening and closing braces.
     // This even includes comment nodes
-    formatter.interior(bracesOpen, bracesClose).prepend  (Formatting.indent());
+    formatter.interior(bracesOpen, bracesClose).prepend(Formatting.indent());
     // Also move the newline to a closing brace
     bracesClose.prepend(Formatting.newLine());
     // Surround the name property of the element
