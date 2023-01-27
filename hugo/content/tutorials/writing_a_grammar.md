@@ -90,7 +90,13 @@ You may be wondering what `Block` is as well. Block corresponds to a rule *fragm
 fragment Block: '{' body+=Stmt* '}';
 ```
 
-Then we have **Statements**, which consist of Commands or Macros. A **Command** describes an action that transforms the drawing state (which connects to our semantic domain from before). The commands in MiniLogo can be expressed like so:
+Then we have **Statements**, which consist of Commands or Macros. 
+
+```antlr
+Stmt: Cmd | Macro;
+```
+
+A **Command** describes an action that transforms the drawing state (which connects to our semantic domain from before). The commands in MiniLogo can be expressed like so:
 
 ```antlr
 Cmd: Pen | Move | Color | For;
