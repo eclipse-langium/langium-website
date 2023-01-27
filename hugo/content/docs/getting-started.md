@@ -71,7 +71,7 @@ For a full explanation of all terms we use throughout Langium, please refer to o
 
 Here's the grammar that parses the previous text snippet:
 
-```
+```antlr
 grammar HelloWorld
 
 hidden terminal WS: /\s+/;
@@ -88,32 +88,32 @@ Greeting:
 
 Let's go through this one by one:
 
-```
+```antlr
 grammar HelloWorld
 ```
 
 Before we tell Langium anything about our grammar contents, we first need to give it a name - in this case it's `HelloWorld`. The `langium-cli` will pick this up to prefix any generated services with this name.
 
-```
+```antlr
 hidden terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w]*/;
 ```
 
 Here we define our two needed terminals for this grammar: The whitespace `WS` and identifier `ID` terminals. Terminals parse a part of our document by matching it against their regular expression. The `WS` terminal parses any whitespace characters with the regex `/\s+/`. This allows us consume whitespaces in our document. As the terminal is declared as `hidden`, the parser will parse any whitespace and discard the results. That way, we don't have to care about how many whitespaces a user uses in their document. Secondly, we define our `ID` terminal. It parses any string that starts with an underscore or letter and continues with any amount of characters that match the `\w` regex token. It will match `Alice`, `_alice`, or `_al1c3` but not `4lice` or `#alice`. Langium is using the JS regex dialect for terminal definitions.
 
-```
+```antlr
 entry Model: (persons+=Person | greetings+=Greeting)*;
 ```
 
 The `Model` parser rule is the `entry` point to our grammar. Parsing always starts with the `entry` rule. Here we define a repeating group of alternatives: `persons+=Person | greetings+=Greeting`. This will always try to parse either a `Person` or a `Greeting` and add it to the respective list of `persons` or `greetings` in the `Model` object. Since the alternative is wrapped in a repeating group `*`, the parser will continue until all input has been consumed. 
 
-```
+```antlr
 Person: 'person' name=ID;
 ```
 
 The `Person` rule starts off with the `'person'` keyword. Keywords are like terminals, in the sense that they parse a part of the document. The set of keywords and terminals create the tokens that your language is able to parse. You can imagine that the `'person'` keyword here is like an indicator to tell the parser that an object of type `Person` should be parsed. After the keyword, we assign the `Person` a name by parsing an `ID`.
 
-```
+```antlr
 Greeting: 'Hello' person=[Person] '!';
 ```
 
