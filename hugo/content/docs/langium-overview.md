@@ -34,7 +34,7 @@ Based on the grammar, Langium is then able to construct a parser which transform
 
 Langium grammars are not only used to parse your language, but also to generate a semantic model for your Language as TypeScript interfaces. When a program in your language is then parsed, the generated AST will be automatically produced using these interfaces. The following language snippet parses a simple object `{ name: 'John' }`.
 
-```ts
+```antlr
 Person:
     'person' // keyword 
     name=ID // semantic assignment

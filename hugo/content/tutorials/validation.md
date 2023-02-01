@@ -118,7 +118,7 @@ export class HelloWorldValidator {
 To call this validator in our registry, we can modify the check that is listed in our registry like so (removing the previously written lambda/arrow function).
 
 ```ts
-const checks: MiniLogoChecks = {
+const checks: ValidationChecks<MiniLogoAstType> = {
     Model: validator.checkUniqueDefs,
 };
 ```
@@ -128,7 +128,7 @@ Great! Now we have a simple validation in place to guard against duplicate defin
 Now that we've shown how this can be done, we can implement this for parameters as well. Looking at our grammar, we can see params are contained as part of a Definition, so we'll register validation for Definition nodes and report if any parameter are duplicated.
 
 ```ts
-const checks: MiniLogoChecks = {
+const checks: ValidationChecks<MiniLogoAstType> = {
     Model: validator.checkUniqueDefs,
     Def:   validator.checkUniqueParams
 };
