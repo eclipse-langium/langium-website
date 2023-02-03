@@ -26,11 +26,11 @@ Once you have a language picked, you're going to want to add a script to your **
 }
 ```
 
-Now, assuming `esbuild` is installed, if we try to invoke this it *won't succeed as expected*. Intead we'll get a warning back about some dependencies that couldn't be resolved. For example:
+Now, assuming `esbuild` is installed, if we try to invoke this it *won't succeed as expected*. Instead we'll get a warning back about some dependencies that couldn't be resolved. For example:
 
 > Could not resolve "fs"
 
-This makes sense since we're bundling for the web, and we can't depend on packages that rely on the usual environment with a filesystem. So, we need to update our language to make it compabible in a web-based context.
+This makes sense since we're bundling for the web, and we can't depend on packages that rely on the usual environment with a filesystem. So, we need to update our language to make it compatible in a web-based context.
 
 ## Factoring out File System Dependencies
 
@@ -95,7 +95,7 @@ For convenience, we're going to use two helper libraries from npm that wrap arou
 
 Both these packages should be installed as dependencies for your language. In particular, it's important that you're using version **1.4.0** or later of the monaco-editor-wrapper.
 
-Additionally, we'll want to add `express` as a development dependency (don't forget to also add `@types/express` too), since we'll be using that to run a local webserver to test our standalone webpage.
+Additionally, we'll want to add `express` as a development dependency (don't forget to also add `@types/express` too), since we'll be using that to run a local web server to test our standalone webpage.
 
 We'll also want to add some more scripts to our package.json to copy over the necessary files from the monaco-editor-wrapper & monaco-editor-worker into the **public** folder. We'll be referencing these library assets to setup the webpage for Langium and Monaco.
 
@@ -256,7 +256,7 @@ We can produce this Monarch grammar by updating our **langium-config.json** to a
 }
 ```
 
-To generate this file, run `npm run langium:generate`. You can then copy over the definition of the grammar from **syntaxes/hello-world.monarch.ts** (or whatever other name you have given this file) into the `setMonarchTokensProvider` function to setup that highlighting. Keep in mind that this generated monarch grammar is *very* simple. If you want more complex highlighting, we recommend writing your own custom monarch grammar, and storing it somewhere else to prevent it from being overriden. If you're interested, you can find more details about the [Monarch grammar highlighting language here](https://microsoft.github.io/monaco-editor/monarch.html).
+To generate this file, run `npm run langium:generate`. You can then copy over the definition of the grammar from **syntaxes/hello-world.monarch.ts** (or whatever other name you have given this file) into the `setMonarchTokensProvider` function to setup that highlighting. Keep in mind that this generated monarch grammar is *very* simple. If you want more complex highlighting, we recommend writing your own custom monarch grammar, and storing it somewhere else to prevent it from being overridden. If you're interested, you can find more details about the [Monarch grammar highlighting language here](https://microsoft.github.io/monaco-editor/monarch.html).
 
 Then, we want to setup the code that shows up by default. The following is a fixed MiniLogo program that should display a white diamond in the top left corner of the screen.
 

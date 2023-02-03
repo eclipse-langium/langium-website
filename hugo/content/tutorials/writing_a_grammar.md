@@ -7,7 +7,7 @@ weight: 0
 
 In this tutorial we will be talking about writing a grammar for your language in Langium. As a motivating example, we'll be describing how to write a grammar for the MiniLogo language. If you're not familiar with MiniLogo, it's a smaller implementation of the Logo programming language. Logo itself is a lot like Turtle from Python. Ultimately, we'll be using MiniLogo to express drawing instructions that can be used to draw on a canvas.
 
-We've already written an implemention of [MiniLogo on Github using Langium](https://github.com/langium/langium-minilogo). This tutorial will be following along with this project, by walking through the grammar implementation step by step. Later tutorials will also follow along with MiniLogo to create an easy to follow series.
+We've already written an implementation of [MiniLogo on Github using Langium](https://github.com/langium/langium-minilogo). This tutorial will be following along with this project, by walking through the grammar implementation step by step. Later tutorials will also follow along with MiniLogo to create an easy to follow series.
 
 ## Planning
 
@@ -26,9 +26,9 @@ We'll also be producing values and updating an environment as well, which are im
 
 Basically, a MiniLogo program can be considered equivalent to a series of transformations on some drawing context. This goal for MiniLogo will guide our design throughout these tutorials.
 
-In addition, we'll want to get an idea of what our concrete syntax will be. This step can be done on paper if you like, but the overall goal is to get a feel for how you want the language to look. Your coice of concrete syntax will also drive your grammar's design. If your design is chosen well, it can simplify the way your grammar is constructed. If your syntax is complex, the grammar may also be complex as well. Not only this, but it's also important to try and strike a balance between syntax that is special to your language, and syntax that is at least somewhat shared with other languages. The more unfamiliar the language appears, the more likely your users will struggle trying to pick it up.
+In addition, we'll want to get an idea of what our concrete syntax will be. This step can be done on paper if you like, but the overall goal is to get a feel for how you want the language to look. Your choice of concrete syntax will also drive your grammar's design. If your design is chosen well, it can simplify the way your grammar is constructed. If your syntax is complex, the grammar may also be complex as well. Not only this, but it's also important to try and strike a balance between syntax that is special to your language, and syntax that is at least somewhat shared with other languages. The more unfamiliar the language appears, the more likely your users will struggle trying to pick it up.
 
-In our case, we're going to use a C-like concrete syntax. This will make it easy to understand the structure of our programs for most users. This is also chosen because it allows us to use curly braces to delimit blocks of code, which is quite easy to implement in Langium. You could also go for a Python style language, where whitespace has significance in determing which block some code belongs to. Unfortunately, this is not as easy to do out of the box with Langium, due to it ignoring whitespace by default, but it can be configured to work for such languages.
+In our case, we're going to use a C-like concrete syntax. This will make it easy to understand the structure of our programs for most users. This is also chosen because it allows us to use curly braces to delimit blocks of code, which is quite easy to implement in Langium. You could also go for a Python style language, where whitespace has significance in determining which block some code belongs to. Unfortunately, this is not as easy to do out of the box with Langium, due to it ignoring whitespace by default, but it can be configured to work for such languages.
 
 ## Sketching the Grammar
 
@@ -84,7 +84,7 @@ Def: 'def' name=ID '(' (params+=Param (',' params+=Param)*)? ')' Block;
 
 As an additional note, much like regular expressions we use modifiers in our grammar to indicate that definitions can take any number of comma separated parameters.
 
-You may be wondering what `Block` is as well. Block corresponds to a rule *fragment*, which is akin to a reusable rule body. It's not a rule itself, but an reusable piece that can be reused to complete rules. It's particularly handy when you find yourself writing the same pattern repatedly, and want to factor it out.
+You may be wondering what `Block` is as well. Block corresponds to a rule *fragment*, which is akin to a reusable rule body. It's not a rule itself, but an reusable piece that can be reused to complete rules. It's particularly handy when you find yourself writing the same pattern repeatedly, and want to factor it out.
 
 ```antlr
 fragment Block: '{' body+=Stmt* '}';
@@ -223,7 +223,7 @@ What's interesting here is that the color & r,g,b properties are *both* optional
 
 ## Addding Expressions
 
-Now we're at the core of our language, **Expressions**. In MiniLogo we want to be able to express not only literal values, but also references and arithmetic operations such as addition, subtraction, multiplication, and division. When implementing expressions, we need to keep in mind that Langium is based off of Chevrotain, which produces top-down parsers. This means we have to watch out for cases that lead to left-recursion. In order to avoid this, we need to be careful not to define a rule with itself on the lefthand side. For example, something like `Expr: e1=Expr ...` would not work, because the parser would infinitely try to parse another expression forever.
+Now we're at the core of our language, **Expressions**. In MiniLogo we want to be able to express not only literal values, but also references and arithmetic operations such as addition, subtraction, multiplication, and division. When implementing expressions, we need to keep in mind that Langium is based off of Chevrotain, which produces top-down parsers. This means we have to watch out for cases that lead to left-recursion. In order to avoid this, we need to be careful not to define a rule with itself on the left-hand side. For example, something like `Expr: e1=Expr ...` would not work, because the parser would infinitely try to parse another expression forever.
 
 However, we can work around this. We can introduce expressions and avoid left-recursion by writing them from the bottom up in terms of order of operations. We'll start with `Add` (which also includes subtraction):
 

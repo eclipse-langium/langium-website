@@ -5,7 +5,7 @@ weight: 7
 
 {{< toc format=html >}}
 
-In this tutorial we'll be talking about how to perform generation in the web by executing a custom LSP command. There are multiple ways to hook into Langium to utilize the generator, such as by directly exporting the generator API. However by using the LSP as is, we can save ourselves the effort of doing additional work. By using an LSP command, we can quickly and easily integrate new functionailty into our existing Langium + Monaco integration.
+In this tutorial we'll be talking about how to perform generation in the web by executing a custom LSP command. There are multiple ways to hook into Langium to utilize the generator, such as by directly exporting the generator API. However by using the LSP as is, we can save ourselves the effort of doing additional work. By using an LSP command, we can quickly and easily integrate new functionality into our existing Langium + Monaco integration.
 
 We'll assume that you've already looked over most of the other tutorials at this point. It is particularly important that you have a language with working generation, and have a working instance of Langium + Monaco for your language (or another editor of your choice). In the case that you don't have a language to work with, you can follow along with [MiniLogo](https://github.com/langium/langium-minilogo), which is the example language used throughout these tutorials.
 
@@ -128,7 +128,7 @@ export const generateAction = async (fileName: string, opts: GenerateOptions): P
 };
 ```
 
-Now the generator is cleanly separated from our CLI, and thus from our file system dependencies. At this point we're ready to write up a custom commmand handler, and invoke our generator API through it.
+Now the generator is cleanly separated from our CLI, and thus from our file system dependencies. At this point we're ready to write up a custom command handler, and invoke our generator API through it.
 
 ## Adding a Custom LSP Command Handler to Langium
 
@@ -181,7 +181,7 @@ export function createMiniLogoServices(context: DefaultSharedModuleContext): {
 }
 ```
 
-And now our implementation features a custom command handler that takes a MiniLogo program, and returns a generated result from that program's AST. To get these changes into the language server itself, you'll want to rebuild & rebundle everything once more. If you recall the command from the last tutorial, we can do this via `build:web`.
+And now our implementation features a custom command handler that takes a MiniLogo program, and returns a generated result from that program's AST. To get these changes into the language server itself, you'll want to rebuild & bundle everything once more. If you recall the command from the last tutorial, we can do this via `build:web`.
 
 ```bash
 npm run build:web
@@ -379,7 +379,7 @@ const canvas = document.getElementById('minilogo-canvas');
 const context = canvas.getContext('2d');
 ```
 
-We'll also want to clean up the context, in case we alredy drew something there before. This will be relevant when we're updating the canvas multiple times with a new program.
+We'll also want to clean up the context, in case we already drew something there before. This will be relevant when we're updating the canvas multiple times with a new program.
 
 ```js
 context.clearRect(0, 0, canvas.width, canvas.height);
@@ -419,7 +419,7 @@ let posY = 0;
 And let's begin evaluating each of our commands. To do this, we'll setup an interval that repeatedly shifts the top element from our list of commands, evaluates it, and repeats. Once we're out of commands to evaluate, we'll clear the interval. Feel free to adjust the delay (or remove it entirely) in your version.
 
 ```js
-// use the command list to execute each commmand with a small delay
+// use the command list to execute each command with a small delay
 const id = setInterval(() => {
     if (cmds.length > 0) {
         // evaluate the next command in the current env/context
@@ -547,4 +547,4 @@ One easy point to make is how the example code shown in these tutorials is desig
 
 It is also easy to imagine how one could extend their generator to produce their own functionality, besides drawing. It's even possible to imagine that you might have multiple generator targets, as there is no requirement to have a single generator output form like we've done in these tutorials. You could add as many different outputs forms as you need for each specific target, and even share some functionality between generators.
 
-We hope that these tutorials have given you a practical demonstration of how to construct a language in Langium, and faciliated further exploration into more advanced topics & customizations. If you're interested about learning more about Langium, you can continue through our other tutorials, reach out to us via discussions on Github, or continue working on your Langium-based language.
+We hope that these tutorials have given you a practical demonstration of how to construct a language in Langium, and facilitated further exploration into more advanced topics & customizations. If you're interested about learning more about Langium, you can continue through our other tutorials, reach out to us via discussions on Github, or continue working on your Langium-based language.
