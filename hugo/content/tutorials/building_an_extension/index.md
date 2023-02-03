@@ -32,7 +32,7 @@ npm i --save-dev esbuild
 
 ## Generate an Extension
 
-At this point we're ready to generate an extension. We need the VS Code Extension Manager (`vsce`) to do this, so make sure to download this from npm via `npm install -g vsce` (or install locally, as per your preference). Once you have that installed, you can invoke it like so from the root of your project.
+At this point we're ready to generate an extension. We need the VS Code Extension Manager (`vsce`) to do this, so make sure to download this from npm via `npm install -g @vscode/vsce` (or install locally, as per your preference). Once you have that installed, you can invoke it like so from the root of your project.
 
 ```bash
 vsce package
