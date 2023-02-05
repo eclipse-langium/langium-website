@@ -102,7 +102,7 @@ We'll also want to add some more scripts to our package.json to copy over the ne
 ```json
 {
     ...
-    "prepare:public": "npx shx mkdir -p ./public; npx shx cp -fr ./src/static/* ./public/",
+    "prepare:public": "npx shx mkdir -p ./public && npx shx cp -fr ./src/static/* ./public/",
     "copy:monaco-editor-wrapper": "npx shx cp -fr ./node_modules/monaco-editor-wrapper/bundle ./public/monaco-editor-wrapper",
     "copy:monaco-workers": "npx shx cp -fr ./node_modules/monaco-editor-workers/dist/ ./public/monaco-editor-workers",
     "build:web": "npm run build && npm run prepare:public && npm run build:worker && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers"
