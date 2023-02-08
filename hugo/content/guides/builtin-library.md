@@ -87,7 +87,7 @@ At startup, our language server will run the `loadAdditionalDocuments` method wh
 
 However, when trying to navigate to the builtin library elements, vscode will show users an error message, complaining that it cannot find the builtin library file.
 This is expected, as the builtin library only lives in memory.
-To fix this issue, we need to implement a custom `FileSystemProvider` that allows navigation to the builtin library files:
+To fix this issue, we need to implement a custom `FileSystemProvider` on the client(`src/extension.ts` in the *hello world* example) that allows navigation to the builtin library files:
 
 ```ts
 import * as vscode from 'vscode';
@@ -103,12 +103,12 @@ export class DslLibraryFileSystemProvider implements vscode.FileSystemProvider {
             }));
     }
 
-    stat(uri: Uri): vscode.FileStat {
+    stat(uri: vscode.Uri): vscode.FileStat {
         const date = Date.now();
         return {
             ctime: date,
             mtime: date,
-            size: library.length,
+            size: library.length, // Library is undefined!
             type: vscode.FileType.File
         };
     }
