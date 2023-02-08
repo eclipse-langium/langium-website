@@ -108,7 +108,7 @@ export class DslLibraryFileSystemProvider implements vscode.FileSystemProvider {
         return {
             ctime: date,
             mtime: date,
-            size: library.length, // Library is undefined!
+            size: builtinHelloWorld.length,
             type: vscode.FileType.File
         };
     }
