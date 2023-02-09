@@ -18,5 +18,8 @@
   "workspaces": [
     "hugo",
     "tailwind"
-  ]
+  ],
+  "dependencies": {
+    "graphviz-react": "^1.2.5"
+  }
 }

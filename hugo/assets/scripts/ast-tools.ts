@@ -56,11 +56,12 @@ type StateMachineState = {
 /**
  * Approximation of a langium AST, capturing the most relevant information
  */
-interface AstNode {
+export interface AstNode {
     $type: string;
     $container?: AstNode;
     $containerProperty?: string;
     $containerIndex?: number;
+    $__dotID: number;
 
     // customizations added for the StateMachine example
     events: StateMachineEvent[];
@@ -117,6 +118,114 @@ function linkNode(node: AstNode, root: AstNode, container?: AstNode, containerPr
             linkNode(item, root, node, propertyName);
         }
     }
+}
+
+export function traverse(node: AstNode): AstNode[] {
+    const traversal = [];
+    traversal.push(node);
+    for (const [propertyName, item] of Object.entries(node)) {
+        if (propertyName === '$container') {
+            // don't evaluate containers again (causes a recursive loop)
+            continue;
+        }
+        if (Array.isArray(item)) {
+            // Array of refs/nodes
+            for (let index = 0; index < item.length; index++) {
+                const element = item[index];
+                if (isReference(element)) {
+                    // cross ref to existing node
+                    traversal.push(element);
+                } else if (isAstNode(element)) {
+                    // another AST node we should link with proper details
+                    traversal.push(...traverse(element));
+                }
+            }
+        } else if (isReference(item)) {
+            // single reference to handle
+            traversal.push(item);
+        } else if (isAstNode(item)) {
+            // single ast node to handle
+            traversal.push(...traverse(item));
+        }
+    }
+    return traversal;
+}
+
+export type Graph = {
+    nodes: AstNode[]
+    edges: Edge[]
+};
+
+export type Edge = {
+    from: AstNode;
+    to: AstNode;
+}
+
+
+/**
+ * Takes a Langium AST, and produces a node & edges graph representation
+ */
+export function astToGraph(node: AstNode): Graph {
+    let parentId = 0;
+
+    const graph: Graph = {
+        nodes: [],
+        edges: []
+    };
+
+    function _astToGraph(node: AstNode): void {
+        node.$__dotID = parentId;
+        graph.nodes.push(node);
+        for (const [propertyName, item] of Object.entries(node)) {
+
+            if (propertyName === '$container') {
+                // don't evaluate containers again (causes a recursive loop)
+                continue;
+            }
+
+            if (Array.isArray(item)) {
+                // Array of refs/nodes
+                for (const element of item) {
+                    if (isAstNode(element)) {
+                        graph.edges.push({
+                            from: node,
+                            to: element
+                        });
+                        parentId++;
+                        _astToGraph(element);
+                    }
+                }
+            } if (isAstNode(item)) {
+                graph.edges.push({
+                    from: node,
+                    to: item
+                });
+                parentId++;
+                _astToGraph(item);
+            }
+        }
+    }
+
+    _astToGraph(node);
+
+    return graph;
+}
+
+/**
+ * Takes a graph representation of an AST, and outputs a concrete DOT program
+ */
+export function graphToDOT(graph: Graph): string {
+    const prog: string[] = [
+        'strict digraph {'
+    ];
+    for (const node of graph.nodes) {
+        prog.push(node.$__dotID + ' [label="'+node.$type+'"]');
+    }
+    for (const edge of graph.edges) {
+        prog.push(edge.from.$__dotID + ' -> ' + edge.to.$__dotID);
+    }
+    prog.push('}');
+    return prog.join('\n');
 }
 
 // Takes the root, and a path string, traversing the root to find the node denoted by the path
