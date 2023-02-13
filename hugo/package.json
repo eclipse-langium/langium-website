@@ -16,7 +16,7 @@
     "build:worker/playground-langium": "npx vite --config  ./content/playground/vite.langium-worker.ts build",
     "build:worker/playground-user": "npx vite --config  ./content/playground/vite.user-worker.ts build",
     "build:worker/playground-common": "npx vite --config  ./content/playground/vite.common.ts build",
-    "build:static": "npm run clean:static && npm run build:worker/statemachine && npm run build:worker/arithmetics  && npm run build:worker/domainmodel && npm run build:worker/dviz && npm run build:worker/playground-common && npm run build:worker/playground-langium && npm run build:worker/playground-user && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers",
+    "build:static": "npm run clean:static && npm run build:worker/statemachine && npm run build:worker/arithmetics  && npm run build:worker/domainmodel && npm run build:worker/playground-common && npm run build:worker/playground-langium && npm run build:worker/playground-user && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers",
     "build": "npm run build:static && cross-env NODE_ENV=production  hugo        --config ./config.toml    -b /              -d ../public --gc --minify    ",
     "watch": "npm run build:static && cross-env NODE_ENV=development hugo server --config ./config.toml -D -b localhost:1313 -d ../public --appendPort=false",
     "watch:gitpod": "npm run build:static && cross-env NODE_ENV=development hugo server --config ./config.toml -D -b `gp url 1313` -d ../public --appendPort=false"

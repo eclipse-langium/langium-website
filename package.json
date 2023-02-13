@@ -20,6 +20,8 @@
     "tailwind"
   ],
   "dependencies": {
-    "graphviz-react": "^1.2.5"
+    "graphviz-react": "^1.2.5",
+    "react-dom": "^18.2.0",
+    "react-vis": "^1.11.12"
   }
 }

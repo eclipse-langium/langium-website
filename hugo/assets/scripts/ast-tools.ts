@@ -79,7 +79,7 @@ export interface Reference<T extends AstNode = AstNode> {
 }
 
 // Identify a ref by its type & shape as well
-function isReference(obj: unknown): obj is Reference {
+export function isReference(obj: unknown): obj is Reference {
     return typeof obj === 'object' && obj !== null && typeof (obj as Reference).$ref === 'string';
 }
 
@@ -161,6 +161,111 @@ export type Edge = {
     to: AstNode;
 }
 
+export type TreemapData = {
+    title: string;
+    color: string;
+    size: number;
+    children: TreemapData[];
+};
+
+
+/* SFC32 (Simple Fast Counter PRNG), a variant at least */
+function sfc32(a, b, c, d) {
+    return function() {
+      // right shift assign all values
+      a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0;
+      let t = (a + b) | 0;
+      a = b ^ b >>> 9;
+      b = c + (c << 3) | 0;
+      c = c << 21 | c >>> 11;
+      d = d + 1 | 0;
+      t = t + d | 0;
+      c = c + t | 0;
+      return (t >>> 0) / 4294967296;
+    }
+  }
+
+
+function toHash(v: string): number {
+    let hash = 0;
+    for (let i = 0; i < v.length; i++) {
+        const n = v.codePointAt(i);
+        hash = (hash << 2) - hash + n;
+    }
+    return hash;
+}
+
+/**
+ * Takes a string, and using it produces a deterministic hex string
+ */
+export function toHex(v: string): string {
+    let hash = toHash(v);
+    let rand = sfc32(hash, hash >> 2, hash << 2, hash & hash);
+    // get 6 random characters
+    let hex = '#';
+    for (let i = 0; i < 6; i++) {
+        hex += Math.floor(rand() * 100000 % 10);
+    }
+    return hex;
+}
+
+/**
+ * Takes an AST, and exports a tree-like structure, matched to the d3-flare style dataset.
+ * Thus compatible with most D3 tree/graph visualizations
+ * 
+ * @param node Node to convert to a tree map
+ */
+export function astToTreemapData(node: AstNode): TreemapData {
+    const treemap: TreemapData = {
+        title: node.$type,
+        children: [],
+        color: toHex(node.$type),
+        size: 0
+    };
+    for (const [propertyName, item] of Object.entries(node)) {
+
+        if (propertyName === '$container') {
+            // don't evaluate containers again (causes a recursive loop)
+            continue;
+        }
+
+        if (Array.isArray(item)) {
+            // Array of refs/nodes
+            for (const element of item) {
+                if (isAstNode(element)) {
+                    treemap.children.push(astToTreemapData(element));
+                }
+            }
+        } else if (isAstNode(item)) {
+            treemap.children.push(astToTreemapData(item));
+        }
+    }
+    treemap.size = treemap.children.length + 1;
+    return treemap;
+}
+
+export function getASTCrossRefs(node: AstNode): Reference<AstNode>[] {
+    const crossRefs = [];
+    for (const [propertyName, item] of Object.entries(node)) {
+        if (propertyName === '$container') {
+            continue;
+        }
+        if (Array.isArray(item)) {
+            for (const element of item) {
+            if (isReference(element)) {
+                crossRefs.push(element);
+            } else if (isAstNode(element)) {
+                crossRefs.push(...getASTCrossRefs(element));
+            }
+            }
+        } else if (isReference(item)) {
+            crossRefs.push(item);
+        } else if (isAstNode(item)) {
+            crossRefs.push(...getASTCrossRefs(item));
+        }
+    }
+    return crossRefs;
+}
 
 /**
  * Takes a Langium AST, and produces a node & edges graph representation
@@ -219,7 +324,8 @@ export function graphToDOT(graph: Graph): string {
         'strict digraph {'
     ];
     for (const node of graph.nodes) {
-        prog.push(node.$__dotID + ' [label="'+node.$type+'"]');
+        const hex = toHex(node.$type);
+        prog.push(node.$__dotID + ' [label="'+node.$type+'" style=filled fillcolor="'+hex+'" fontcolor=white fontsize=32]');
     }
     for (const edge of graph.edges) {
         prog.push(edge.from.$__dotID + ' -> ' + edge.to.$__dotID);
