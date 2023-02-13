@@ -143,7 +143,7 @@ export class CustomTokenBuilder extends DefaultTokenBuilder {
 ```
 
 With this change in place, the parser will work as expected. There is one last issue which we need to resolve in order to get everything working perfectly.
-When inspecting our AST, the `TemplateLiteral` object will contain strings with input artifacts in there (mainly `` ` ``, `{` and `}`).
+When inspecting our AST, the `TemplateLiteral` object will contain strings with input artifacts in there; mainly `` ` ``, `{` and `}`.
 These aren't actually part of the semantic value of these strings, so we should get rid of them.
 We will need to create a custom `ValueConverter` and remove these artifacts:
 
