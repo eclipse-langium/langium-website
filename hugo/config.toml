@@ -7,7 +7,6 @@ pygmentsUseClasses = true
 pygmentsCodeFences = true
 disablePathToLower = true
 enableGitInfo = true
-
 # Required if you want to render robots.txt template
 enableRobotsTXT = true
 
@@ -21,6 +20,10 @@ enableRobotsTXT = true
 
 [taxonomies]
   tag = "tags"
+
+
+[build]
+  noJSConfigInAssets = true
 
 [params]
   # (Optional, default 6) Set how many table of contents levels to be showed on page.

@@ -7,7 +7,7 @@ import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "./ast/ast-tools";
-import { StateMachineAST, StateMachineAstNode } from "./ast/statemachine-ast";
+import { StateMachineAST, StateMachineAstNode, StateMachineState, StateMachineTools } from "./ast/statemachine";
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
@@ -15,34 +15,6 @@ buildWorkerDefinition(
   false
 );
 addMonacoStyles("monaco-editor-styles");
-
-// let dummyData = {
-//   events: ["switchCapacity", "next"],
-//   states: [
-//     {
-//       name: "PowerOff",
-//       next: "",
-//       switchCapacity: "RedLight"
-//     },
-//     {
-//       name: "GreenLight",
-//       next: "YellowLight",
-//       switchCapacity: "PowerOff"
-//     },
-//     {
-//       name: "YellowLight",
-//       next: "RedLight",
-//       switchCapacity: "PowerOff"
-//     },
-//     {
-//       name: "RedLight",
-//       next: "GreenLight",
-//       switchCapacity: "PowerOff"
-//     }
-//   ],
-//   initialState: "PowerOff"
-// }
-
 const syntaxHighlighting = {
   keywords: [
     "actions",
@@ -86,8 +58,6 @@ const syntaxHighlighting = {
     ],
   },
 } as monaco.languages.IMonarchLanguage;
-
-let currentState;
 
 interface StateProps {
   name: string;
@@ -160,8 +130,7 @@ class Event extends React.Component<EventProps, EventProps> {
       <button
         onClick={this.props.handleClick}
         disabled={this.state.isEnabled}
-        className="text-white border-2 border-solid bg-emeraldLangiumABitDarker rounded-md p-4 text-center text-sm enabled:hover:shadow-opacity-50 enabled:hover:shadow-[0px_0px_15px_0px] enabled:hover:shadow-emeraldLangium disabled:border-gray-400 disabled:text-gray-400 disabled:bg-emeraldLangiumDarker "
-      >
+        className="text-white border-2 border-solid bg-emeraldLangiumABitDarker rounded-md p-4 text-center text-sm enabled:hover:shadow-opacity-50 enabled:hover:shadow-[0px_0px_15px_0px] enabled:hover:shadow-emeraldLangium disabled:border-gray-400 disabled:text-gray-400 disabled:bg-emeraldLangiumDarker ">
         {this.props.name}
       </button>
     );
@@ -177,21 +146,14 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
     };
 
     this.startPreview = this.startPreview.bind(this);
-    this.getNextState = this.getNextState.bind(this);
   }
 
   startPreview(ast: StateMachineAstNode, diagnostics: Diagnostic[]) {
-    this.setState({ astNode: ast, diagnostics: diagnostics });
-  }
-
-  // find next state by event
-  getNextState(event: string): string {
-    // what the hell was this supposed to do
-    return this.state.astNode.states.find(({ name }) => name === currentState)![event];
+    this.setState({astNode: ast, diagnostics: diagnostics });
   }
 
   render() {
-    // check if code has no diagnostics and contains a astNode
+    // check if code contains an astNode
     if (!this.state.astNode) {
       // Show the exception
       return (
@@ -203,69 +165,67 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
       );
     }
 
-    if (this.state.diagnostics == null || (this.state.diagnostics.length == 0 && this.state.astNode != undefined)) {
+    // if the code doesn't contain any errors
+    if (this.state.diagnostics == null || (this.state.diagnostics.length == 0)) {
       let states: State[] = [];
       let events: Event[] = [];
-      const changeStates = function (state: string) {
-        states.forEach((item) => {
-          item.setActive(item.props.name === state);
-        });
-        currentState = state;
-        events.forEach((event) => {
-          event.setEnabled(!this.getNextState(event.props.name));
-        });
-      };
 
+      let statemachineTools = new StateMachineTools(this.state.astNode);
+      // update the aktive state
+      const changeStates = function(state: StateMachineState) {
+        console.log(state);
+        statemachineTools.changeState(state);
+        // loop through all states and set the active state
+        states.forEach((i) => {
+          i.setActive(statemachineTools.isCurrentState(state));
+        });
+        events.forEach((i) => {
+          i.setEnabled(!statemachineTools.isEventEnabled(statemachineTools.getEventByName(i.props.name)!));
+        });
+        console.log("Current state: " + statemachineTools.getCurrentState().name);
+      }
+
+      return (
+        <div className="flex flex-col h-full w-full p-4 float-right items-center">
+          <p className="text-white text-lg w-full my-4">Events</p>
+          <div className="flex flex-wrap w-full gap-2">
+            {statemachineTools.getEvents().map((event, index) => {
+              return (
+                <Event
+                  isEnabled={statemachineTools.isEventEnabled(event)}
+                  handleClick={() => changeStates(statemachineTools.getNextState(event)!)}
+                  name={event.name}
+                  key={index}
+                  ref={event => { events.push(event!) }}
+                ></Event>
+              );
+            })}
+          </div>
+          <p className="text-white text-lg w-full my-4">States</p>
+          <div className="flex flex-wrap w-full gap-2 justify-start ">
+            { // loop through every state and display it check if the state is active
+              statemachineTools.getStates().map((state, index) => {
+                return (
+                  <State
+                    isActive={statemachineTools.isCurrentState(state)}
+                    handleClick={() => changeStates(state)}
+                    name={state.name}
+                    key={index}
+                    ref={state => { states.push(state!) }}
+                  ></State>
+                );
+              })}
+          </div>
+        </div>
+      );
+    }
+
+    // Show the exception
     return (
-      <div className="flex flex-col h-full w-full p-4 float-right items-center">
-        <p className="text-white text-lg w-full my-4">Events</p>
-        <div className="flex flex-wrap w-full gap-2">
-          {this.state.astNode.events.map((event, index) => {
-            return (
-              <Event
-                isEnabled={!this.getNextState(event)}
-                handleClick={() => changeStates(this.getNextState(event))}
-                name={event}
-                key={index}
-                ref={(event) => {
-                  events.push(event!);
-                }}
-              ></Event>
-            );
-          })}
+      <div className="flex flex-col h-full w-full p-4 justify-start items-center my-10" >
+        <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-left text-sm cursor-default">
+        {this.state.diagnostics.map(diagnostic => <div>{`Line   ${diagnostic.range.start.line}-${diagnostic.range.end.line}: ${diagnostic.message}`}</div>)}
         </div>
-        <p className="text-white text-lg w-full my-4">States</p>
-        <div className="flex flex-wrap w-full gap-2 justify-start ">
-          {this.state.astNode.states.map((state, index) => {
-            return (
-              <State
-                handleClick={() => changeStates(state.name)}
-                name={state.name}
-                key={index}
-                isActive={currentState == state.name}
-                ref={(state) => {
-                  states.push(state!);
-                }}
-              ></State>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // Show the exception
-  return(
-      <div className = "flex flex-col h-full w-full p-4 justify-start items-center my-10" >
-      <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-center text-sm cursor-default">
-        {this.state.diagnostics.map((diagnostic, i) => {
-          return (
-            <p>
-              {diagnostic.range}: {diagnostic.message}
-            </p>
-          );
-        })}
-      </div>
       </div>
     );
   }
@@ -315,23 +275,8 @@ class App extends React.Component<{}> {
    * @param resp Response data
    */
   onDocumentChange(resp: DocumentChangeResponse) {
-    // // decode the received AST
+    // decode the received Ast
     const statemachineAst = new StateMachineAST().deserializeAST(resp.content);
-
-    // const eventNames: string[] = [];
-    // for (const event of langiumAst.events) {
-    //   eventNames.push(event.name);
-    // }
-    // console.info('Found events: ' + eventNames.join(', '));
-
-    // // pull out all states
-    // // const stateInfo: StateMachineState[] = [];
-    // for (const state of langiumAst.states) {
-    //   console.info('\nFound State: ' + state.name + ' with transitions:');
-    //   for (const transition of state.transitions) {
-    //     console.info(transition.event.ref.name + '\t=>\t' + transition.state.ref.name);
-    //   }
-    // }
     this.preview.current?.startPreview(statemachineAst, resp.diagnostics);
   }
 
