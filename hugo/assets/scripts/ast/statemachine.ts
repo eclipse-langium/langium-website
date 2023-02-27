@@ -51,6 +51,14 @@ export class StateMachineTools {
     }
 
     /**
+     * Set the current state
+     * @param state The state to set
+     */
+    setState(state: StateMachineState) {
+        this.currentState = state
+    }
+
+    /**
      * Get the events from the AST
      * @param ast The AST to get the events from
      * @returns The events
@@ -63,12 +71,10 @@ export class StateMachineTools {
      * Change the state based on the event
      * @param event The event to change the state for
      */
-    changeState(event: StateMachineEvent): void {
+    changeState(event: StateMachineEvent) {
         const nextState = this.getNextState(event);
-        console.dir(nextState)
-        console.log(`Current state from changeState(): ${this.currentState.name}`);
         if (nextState) {
-            this.currentState = nextState;
+            this.setState(nextState);
         }
     }
 
@@ -107,6 +113,14 @@ export class StateMachineTools {
         return this.ast.events.find(e => e.name === name) || null;
     }
 
+    /**
+     * Get the state by name
+     * @param name The name of the state
+     * @returns The state or null if no state with the given name exists
+     */
+    getStateByName(name: string): StateMachineState | null {
+        return this.ast.states.find(s => s.name === name) || null;
+    }
 }
 
 export interface StateMachineAstNode extends AstNode {

@@ -87,8 +87,8 @@ class State extends React.Component<StateProps, StateProps> {
     this.stateRef = React.createRef<HTMLInputElement>();
   }
 
-  setActive(isItActiveBro: boolean) {
-    this.setState({ isActive: isItActiveBro });
+  setActive(active: boolean) {
+    this.setState({ isActive: active });
   }
 
   render() {
@@ -173,16 +173,17 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
       let statemachineTools = new StateMachineTools(this.state.astNode);
       // update the aktive state
       const changeStates = function(state: StateMachineState) {
-        console.log(state);
-        statemachineTools.changeState(state);
+        statemachineTools.setState(state);
+
         // loop through all states and set the active state
-        states.forEach((i) => {
-          i.setActive(statemachineTools.isCurrentState(state));
-        });
         events.forEach((i) => {
-          i.setEnabled(!statemachineTools.isEventEnabled(statemachineTools.getEventByName(i.props.name)!));
+          i.setEnabled(statemachineTools.isEventEnabled(statemachineTools.getEventByName(i.props.name)!));
         });
-        console.log("Current state: " + statemachineTools.getCurrentState().name);
+
+        states.forEach((i) => {
+          i.setActive(statemachineTools.isCurrentState(statemachineTools.getStateByName(i.props.name)!));
+        });
+   
       }
 
       return (
@@ -224,7 +225,12 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
     return (
       <div className="flex flex-col h-full w-full p-4 justify-start items-center my-10" >
         <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-left text-sm cursor-default">
-        {this.state.diagnostics.map(diagnostic => <div>{`Line   ${diagnostic.range.start.line}-${diagnostic.range.end.line}: ${diagnostic.message}`}</div>)}
+        {this.state.diagnostics.map((diagnostic, index) => 
+          <details key={index}>
+            <summary>{`Line ${diagnostic.range.start.line}-${diagnostic.range.end.line}: ${diagnostic.message}`}</summary>
+            <p>Source: {diagnostic.source} | Code: {diagnostic.code}</p>
+          </details>
+        )}
         </div>
       </div>
     );
