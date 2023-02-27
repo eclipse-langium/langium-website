@@ -87,6 +87,10 @@ class State extends React.Component<StateProps, StateProps> {
     this.stateRef = React.createRef<HTMLInputElement>();
   }
 
+  /**
+   * set the state to active or inactive
+   * @param active true if the event should be aktive
+   */
   setActive(active: boolean) {
     this.setState({ isActive: active });
   }
@@ -121,6 +125,10 @@ class Event extends React.Component<EventProps, EventProps> {
     };
   }
 
+  /**
+   * Enables or disables the event button
+   * @param enabled true if the button should be enabled
+   */
   setEnabled(enabled: boolean) {
     this.setState({ isEnabled: enabled });
   }
