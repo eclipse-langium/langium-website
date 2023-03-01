@@ -6,8 +6,8 @@ import {
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { Diagnostic, DocumentChangeResponse } from "./ast/ast-tools";
-import { StateMachineAST, StateMachineAstNode, StateMachineState, StateMachineTools } from "./ast/statemachine";
+import { Diagnostic, DocumentChangeResponse, LangiumAST } from "./ast/ast-tools";
+import { StateMachineAstNode, StateMachineState, StateMachineTools } from "./ast/statemachine";
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
@@ -290,7 +290,7 @@ class App extends React.Component<{}> {
    */
   onDocumentChange(resp: DocumentChangeResponse) {
     // decode the received Ast
-    const statemachineAst = new StateMachineAST().deserializeAST(resp.content);
+    const statemachineAst = new LangiumAST().deserializeAST(resp.content) as StateMachineAstNode;
     this.preview.current?.startPreview(statemachineAst, resp.diagnostics);
   }
 

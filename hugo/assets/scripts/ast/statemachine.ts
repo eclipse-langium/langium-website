@@ -2,14 +2,6 @@ import { type } from "os";
 import { AstNode, LangiumAST } from "./ast-tools";
 
 
-export class StateMachineAST extends LangiumAST {
-    // change LangiumAST AstNode to StateMachineAstNode
-    deserializeAST(content: string): StateMachineAstNode {
-        const root = JSON.parse(content);
-        this.linkNode(root, root);
-        return root;
-    }
-}
 
 export class StateMachineTools {
     currentState: StateMachineState;
