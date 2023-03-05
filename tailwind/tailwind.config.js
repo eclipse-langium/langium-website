@@ -2,7 +2,7 @@ const colors = require('tailwindcss/colors')
 
 module.exports = {
   mode: 'jit',
-  content: ['../hugo/layouts/**/*.html','../hugo/content/**/*.html','../hugo/content/**/*.ts','../hugo/content/**/*.tsx','../hugo/static/**/*.html','../hugo/static/**/*.js', '../hugo/assets/scripts/*.tsx', '../hugo/assets/scripts/*.jsx'],
+  content: ['../hugo/layouts/**/*.html','../hugo/content/**/*.html','../hugo/content/**/*.ts','../hugo/content/**/*.tsx','../hugo/static/**/*.html','../hugo/static/**/*.js', '../hugo/assets/scripts/*.tsx'],
   darkMode: 'class',
   theme: {
     colors: {
