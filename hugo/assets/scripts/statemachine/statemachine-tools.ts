@@ -1,7 +1,5 @@
 import { type } from "os";
-import { AstNode, LangiumAST } from "./ast-tools";
-
-
+import { AstNode, LangiumAST } from "../langium-utils/langium-ast";
 
 export class StateMachineTools {
     currentState: StateMachineState;

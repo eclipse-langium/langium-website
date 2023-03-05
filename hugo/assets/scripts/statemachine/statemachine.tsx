@@ -6,8 +6,8 @@ import {
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { Diagnostic, DocumentChangeResponse, LangiumAST } from "./ast/ast-tools";
-import { StateMachineAstNode, StateMachineState, StateMachineTools } from "./ast/statemachine";
+import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
+import { StateMachineAstNode, StateMachineState, StateMachineTools } from "./statemachine-tools";
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
@@ -209,7 +209,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
                 ></Event>
               );
             })}
-          </div>
+          </div> 
           <p className="text-white text-lg w-full my-4">States</p>
           <div className="flex flex-wrap w-full gap-2 justify-start ">
             { // loop through every state and display it check if the state is active
@@ -285,7 +285,6 @@ class App extends React.Component<{}> {
   /**
    * Callback invoked when the document processed by the LS changes
    * Invoked on startup as well
-   *
    * @param resp Response data
    */
   onDocumentChange(resp: DocumentChangeResponse) {
