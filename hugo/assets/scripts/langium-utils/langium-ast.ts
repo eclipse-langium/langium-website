@@ -1,9 +1,8 @@
 
+/**
+ * Provides utilities for deserializing Langium ASTs
+ */
 export class LangiumAST {
-    constructor() {
-
-    }
-
     // Identify an AST node by it's type & shape
     isReference(obj: unknown): obj is Reference {
         return typeof obj === 'object' && obj !== null && typeof (obj as Reference).$ref === 'string';

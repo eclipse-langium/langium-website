@@ -18,5 +18,9 @@
   "workspaces": [
     "hugo",
     "tailwind"
-  ]
+  ],
+  "volta": {
+    "node": "16.17.0",
+    "npm": "8.15.0"
+  }
 }
