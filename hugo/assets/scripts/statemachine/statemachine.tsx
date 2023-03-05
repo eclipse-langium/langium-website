@@ -1,13 +1,12 @@
 import {
   MonacoEditorReactComp,
-  monaco,
   addMonacoStyles,
 } from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
-import { StateMachineAstNode, StateMachineState, StateMachineTools } from "./statemachine-tools";
+import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools, syntaxHighlighting } from "./statemachine-tools";
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
@@ -15,49 +14,6 @@ buildWorkerDefinition(
   false
 );
 addMonacoStyles("monaco-editor-styles");
-const syntaxHighlighting = {
-  keywords: [
-    "actions",
-    "commands",
-    "end",
-    "events",
-    "initialState",
-    "state",
-    "statemachine",
-  ],
-
-  // The main tokenizer for our languages
-  tokenizer: {
-    root: [
-      // identifiers and keywords
-      [
-        /[a-z_$][\w$]*/,
-        {
-          cases: {
-            "@keywords": "keyword",
-            "@default": "identifier",
-          },
-        },
-      ],
-
-      // whitespace
-      { include: "@whitespace" },
-    ],
-
-    comment: [
-      [/[^\/*]+/, "comment"],
-      [/\/\*/, "comment", "@push"], // nested comment
-      ["\\*/", "comment", "@pop"],
-      [/[\/*]/, "comment"],
-    ],
-
-    whitespace: [
-      [/[ \t\r\n]+/, "white"],
-      [/\/\*/, "comment", "@comment"],
-      [/\/\/.*$/, "comment"],
-    ],
-  },
-} as monaco.languages.IMonarchLanguage;
 
 interface StateProps {
   name: string;
@@ -311,33 +267,7 @@ class App extends React.Component<{}> {
               workerName="LS"
               workerType="classic"
               languageId="statemachine"
-              text={`// Create your own statemachine here!
-statemachine TrafficLight
-
-events
-    switchCapacity
-    next
-
-initialState PowerOff
-
-state PowerOff
-    switchCapacity => RedLight
-end
-
-state RedLight
-    switchCapacity => PowerOff
-    next => GreenLight
-end
-
-state YellowLight
-    switchCapacity => PowerOff
-    next => RedLight
-end
-
-state GreenLight
-    switchCapacity => PowerOff
-    next => YellowLight
-end`}
+              text={defaultText}
               syntax={syntaxHighlighting}
               style={style}
             />
