@@ -8,13 +8,11 @@ import * as langium from "langium";
 import {
   getTerminalParts,
   isCommentTerminal,
-  isRegexToken,
-  isTerminalRule,
-  terminalRegex,
-  TerminalRule,
   escapeRegExp,
   stream,
 } from "langium";
+import { isParserRule, isKeyword, isTerminalRule, isRegexToken, TerminalRule, AbstractElement, isAlternatives, isGroup, isUnorderedGroup, isAssignment } from "langium/lib/grammar/generated/ast";
+import { terminalRegex } from "langium/lib/grammar/internal-grammar-util";
 
 /**
  * Monarch Language Definition, describes aspects & token categories of target language
@@ -481,7 +479,7 @@ function getSymbols(grammar: langium.Grammar): string[] {
 export function collectKeywords(grammar: langium.Grammar): string[] {
   const keywords = new Set<string>();
 
-  for (const rule of stream(grammar.rules).filter(langium.isParserRule)) {
+  for (const rule of stream(grammar.rules).filter(isParserRule)) {
     collectElementKeywords(rule.definition, keywords);
   }
 
@@ -489,20 +487,20 @@ export function collectKeywords(grammar: langium.Grammar): string[] {
 }
 
 function collectElementKeywords(
-  element: langium.AbstractElement,
+  element: AbstractElement,
   keywords: Set<string>
 ) {
   if (
-    langium.isAlternatives(element) ||
-    langium.isGroup(element) ||
-    langium.isUnorderedGroup(element)
+    isAlternatives(element) ||
+    isGroup(element) ||
+    isUnorderedGroup(element)
   ) {
     for (const item of element.elements) {
       collectElementKeywords(item, keywords);
     }
-  } else if (langium.isAssignment(element)) {
+  } else if (isAssignment(element)) {
     collectElementKeywords(element.terminal, keywords);
-  } else if (langium.isKeyword(element)) {
+  } else if (isKeyword(element)) {
     keywords.add(element.value);
   }
 }

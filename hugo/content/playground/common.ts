@@ -225,7 +225,7 @@ const PlaygroundActions: Actions = {
       await editor.editor.dispose();
     }
 
-    const { Grammar } = createServicesForGrammar({ grammar: message.grammar });
+    const { Grammar } = await createServicesForGrammar({ grammar: message.grammar });
     const syntax = generateMonarch(Grammar, "user");
     
     editor = setupEditor(
