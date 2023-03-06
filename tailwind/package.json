@@ -6,14 +6,18 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "clean": "rm -rf ../hugo/static/css/style.css",
+    "clean": "shx rm -rf ../hugo/static/css/style.css",
     "build": "cross-env NODE_ENV=production  tailwindcss -i ./style.css -o ../hugo/static/css/style.css -c ./tailwind.config.js",
     "watch": "cross-env NODE_ENV=development tailwindcss -i ./style.css -o ../hugo/static/css/style.css -c ./tailwind.config.js --watch "
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "~0.4.2",
     "autoprefixer": "~10.4.13",
-    "postcss": "~8.4.19",
-    "tailwindcss": "~3.2.4"
+    "postcss": "~8.4.21",
+    "tailwindcss": "~3.2.7"
+  },
+  "volta": {
+    "node": "16.19.1",
+    "npm": "8.19.3"
   }
 }
