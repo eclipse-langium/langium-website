@@ -175,7 +175,7 @@ AbstractDefinition:
 ```
 The parser rule `AbstractDefinition` will not create an object of type AbstractDefinition. Instead, it calls either the `Definition` or `DeclaredParameter` parser rule which will be responsible for creating an object of a given type (or call other parser rules if they are unassigned rule calls themselves).
 
-In contrast, an assigned rule call such as `parameter=DeclaredParameter` means that an object is created in the current parser rule and assigns the reult of the `DeclaredParameter` parser rule to the specified property `parameter` of that object.
+In contrast, an assigned rule call such as `parameter=DeclaredParameter` means that an object is created in the current parser rule and assigns the result of the `DeclaredParameter` parser rule to the specified property `parameter` of that object.
 
 #### Unordered Groups
 
@@ -431,7 +431,7 @@ The above example will be successfully parsed.
 
 ### Extended Backus-Naur Form Terminals
 
-*For full disclosure, we recommend using regular expressions when writing your terminals, as EBNF expressions are translated to regular expressions internally anyways. EBNF support is primarily intended for supporting grammars that were originally written in Xtext, but are being ported to Langium.*
+*For full disclosure, we recommend using regular expressions when writing your terminals, as EBNF expressions are translated to regular expressions internally anyway. EBNF support is primarily intended for supporting grammars that were originally written in Xtext, but are being ported to Langium.*
 
 As mentioned earlier, terminal rules can be described using *regular expressions* or *EBNF expressions*.
 
