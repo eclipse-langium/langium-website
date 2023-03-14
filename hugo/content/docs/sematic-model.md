@@ -110,7 +110,7 @@ interface X extends AstNode {
 
 The right-hand side of an assignment can be any of the following:
 * A terminal rule or a data type rule, which results in the type of the property to be a built-in type.
-* A parser rule, which results is the type of the property to be the type of the parser rule.
+* A parser rule, which results in the type of the property to be the type of the parser rule.
 * A cross-reference, which results in the type of the property to be a *Reference* to the type of the cross-reference.
 * An alternative, which results in the type of the property to be a type union of all the types in the alternative.
 
