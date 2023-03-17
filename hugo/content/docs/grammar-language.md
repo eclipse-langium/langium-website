@@ -8,7 +8,7 @@ In the following, we describe the Langium syntax and document structure.
 ## Language Declaration
 An *entry* Langium grammar file (i.e. a grammar which contains an [entry rule](#the-entry-rule)) always starts with a header which declares the name of the language. For example, a language named `MyLanguage` would be declared with:
 
-```antlr
+```langium
 grammar MyLanguage
 ```
 
@@ -16,8 +16,8 @@ Every grammar file has a `.langium` extension and the *entry grammar file* needs
 
 ### Import of other grammar languages
 It is possible to reuse grammar rules from other `.langium` files by importing them into your own grammar file.
-```ts
-import 'path/to/an/other/langium/grammar';
+```langium
+import './path/to/an/other/langium/grammar';
 ```
 This will import **all grammar rules** from the imported grammar file. It is therefore crucial to ensure that there are no duplicate rules between the different grammar files.
 
@@ -33,7 +33,7 @@ Langium also allows the use of [Extended Backus-Naur Form (EBNF) Expressions](#e
 With that said, both types of expressions can be used jointly in the same grammar.
 
 The declaration of a terminal rule starts with the keyword `terminal`:
-```antlr
+```langium
 terminal ID: /[_a-zA-Z][\w_]*/;
 ```
 Here, the token `ID` will match a stream of characters starting with the character `_`, a small letter, or a capital letter followed by a sequence of zero or many ([cardinality](#cardinalities) *) alphanumeric characters (`\w`) or `_`.
@@ -42,7 +42,7 @@ Here, the token `ID` will match a stream of characters starting with the charact
 
 ### Return Types
 A terminal rule returns an instance of a _TypeScript primitive type_. If no return type is specified, the terminal rule will return a `string` by default. 
-```antlr
+```langium
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal INT returns number: /[0-9]+/;
 ```
@@ -57,7 +57,7 @@ The available return types in Langium are:
 
 ### Hidden Terminal Rules
 The lexer tries to match every character in the document to a terminal rule or a keyword. It is therefore necessary to specify which characters or sequence of characters need to be ignored during lexing and parsing. Generally, you would want to ignore whitespaces and comments. This is achieved by adding the keyword `hidden` when defining a terminal rule. These *hidden terminal rules* are global and will be valid for all parser rules in the document.
-```antlr
+```langium
 hidden terminal WS: /\s+/;
 hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
@@ -68,14 +68,14 @@ While [terminal rules](#terminal-rules) indicate to the lexer what sequence of c
 
 ### Declaration
 A parser rule always starts with the name of the rule followed by a colon.
-```
+```langium
 Person:
     'person' name=ID;
 ```
 In this example, the parser will create an object of type `Person`. This object will have a property `name` which value and type must match the terminal rule `ID` (i.e. the property `name` is of type `string` and cannot start with a digit or special character).
 
 By default, the parser will create an object with an inferred type corresponding to the parser rule name. It is possible to override this behavior by explicitly defining the type of the object to be created. This is done by adding the keyword `returns` followed by a separately declared type, or the keyword `infers` followed by the name of the type to be inferred for this rule (more about this [in the next chapter](../sematic-model)):
-```
+```langium
 Person infers OtherType:
     'person' name=ID;
 ```
@@ -83,7 +83,7 @@ The parser rule `Person` will now lead to the creation of objects of type `Other
 
 ### The Entry Rule
 The *entry rule* is a parser rule that defines the starting point of the parsing step. The *entry rule* starts with the keyword `entry` and matches other parser rules.
-```antlr
+```langium
 entry Model:
     (persons+=Person | greetings+=Greeting)*;
 ```
@@ -101,7 +101,7 @@ A cardinality defines the number of elements in a given set. Four different card
 
 #### Groups
 Expressions can be put in sequence specifying the order they have to appear:
-```antlr
+```langium
 Person:
     'person' name=ID address=Address;
 ```
@@ -109,7 +109,7 @@ In this example, the rule `Person` must start with the `person` keyword followed
 
 #### Alternatives
 It is possible to match one of multiple valid options by using the pipe operator `|`. The already mentioned `Model` example specifies to parse either `Person` or `Greeting`, zero or many times (cardinality *):
-```antlr
+```langium
 entry Model:
     (persons+=Person | greetings+=Greeting)*;
 ```
@@ -122,21 +122,21 @@ Assignments define properties on the type returned by the surrounding rule.
 There are three different ways to assign an expression (right side) to a property (left side).
 
 1. `=` is used for assigning **a single value** to a property.
-    ```antlr
+    ```langium
     Person:
         'person' name=ID
     ```
     Here, the property `name` will accept only one expression matching the terminal rule `ID`.
 
 2. `+=` is used to assign **multiple values** to an array property.
-    ```antlr
+    ```langium
     Contact:
         addresses+=STRING addresses+=STRING;
     ```
     Here, the array property `addresses` will accept two expressions matching the terminal rule `STRING`.
 
 3. `?=` is used to assign a **value to a property of type boolean**. The value of the property of type `boolean` is set to `true` if the right part of the assignment is consumed by the parser.
-    ```antlr
+    ```langium
     Employee:
         'employee' name=ID (remote?='remote')?
     ```
@@ -144,11 +144,11 @@ There are three different ways to assign an expression (right side) to a propert
 
 #### Cross-References
 With Langium, you can declare *cross-references* directly in the grammar. A *cross-reference* allows to reference an object of a given type. The syntax is:
-```antlr
+```langium
 property=[Type:TOKEN]
 ```
 The `property` will be a reference to an object of type `Type` identified by the token `TOKEN`. If the `TOKEN` is omitted, the parser will use the terminal or data type rule associated with the `name` assignment of the `Type` rule. If no such rule exists, then the token is mandatory.
-```antlr
+```langium
 Person:
     'person' name=ID;
 Greeting:
@@ -169,7 +169,7 @@ will result in an error message since the cross reference resolution will fail b
 #### Unassigned Rule Calls
 Parser rules do not necessarily need to create an object, they can also refer to other parser rules which in turn will be responsible for returning the object.
 For example, in the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium):
-```antlr
+```langium
 AbstractDefinition:
 	Definition | DeclaredParameter;
 ```
@@ -180,7 +180,7 @@ In contrast, an assigned rule call such as `parameter=DeclaredParameter` means t
 #### Unordered Groups
 
 In regular groups, expressions must occur in the exact order they are declared.
-```antlr
+```langium
 Person:
     'person' name=ID age=INT
 ```
@@ -195,7 +195,7 @@ person 25 Bob
 will throw an error.
 
 However, it is possible to declare a group of properties in an unordered fashion using the `&` operator
-```antlr
+```langium
 Person:
     'person' name=ID & age=INT
 ```
@@ -209,7 +209,7 @@ Cardinality (?,*,+ operators) also applies to unordered group. Please note that 
 
 #### Simple Actions
 It is possible for a rule to return different types depending on declaration
-```antlr
+```langium
 interface TypeOne {
     name: string
 }
@@ -221,13 +221,13 @@ RuleTwo returns TypeTwo:
     'keywordTwo' name=ID;
 ```
 A rule call is one of the ways to specify the return type. With more complex rules, the readability will be highly impacted. *Actions* allow to improve the readability of the grammar by explicitly defining the return type. Actions are declared inside of curly braces `{}`:
-```antlr
+```langium
 RuleOne returns TypeOne:
     'keywordOne' name=ID | {TypeTwo} 'keywordTwo' name=ID;
 ```
 
 The example above requires that the return types `TypeOne` and `TypeTwo` are declared separately (see [the next chapter](../semantic-model)). If the type returned by the action is created on-the-fly, the keyword `infer` needs to be added:
-```antlr
+```langium
 RuleOne infers TypeOne:
     'keywordOne' name=ID | {infer TypeTwo} 'keywordTwo' name=ID;
 ```
@@ -237,12 +237,12 @@ Now both `TypeOne` and `TypeTwo` are inferred from the rule definition. Note tha
 The parser is built using [Chevrotain](https://github.com/chevrotain/chevrotain) which implements a LL(k) parsing algorithm (left-to-right). Conceptually, a LL(k) grammar cannot have rules containing left recursion.
 
 Consider the following: 
-```antlr
+```langium
 Addition:
     Addition '+' Addition | '(' Addition ')' | value=INT;
 ```
 The parser rule `Addition` is left-recursive and will not be parseable. We can go around this issue by *left-factoring* the rule, *i.e.* by factoring out the common left-factor. We introduce a new rule `SimpleExpression`:
-```antlr
+```langium
 Addition:
     SimpleExpression ('+' right=SimpleExpression)*;
 
@@ -250,7 +250,7 @@ SimpleExpression:
     '(' Addition ')' | value=INT;
 ```
 Unfortunately, *left-factoring* does not come without consequences and can lead to the generation of unwanted nodes. It is possible to "clean" the tree by using *tree-rewriting actions*.
-```antlr
+```langium
 Addition returns Expression:
     SimpleExpression ({Addition.left=current} '+' right=SimpleExpression)*;
 
@@ -275,7 +275,7 @@ Please refer to [this blog post](https://www.typefox.io/blog/parsing-expressions
 Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and are therefore context-dependent. This allows for more flexible parsing, as they can be interspersed with hidden terminals, such as whitespaces or comments. Contrary to terminal rules, they cannot use *regular expressions* to match a stream of characters, so they have to be composed of keywords, terminal rules or other data type rules.
 
 The following example from the [domain model example](https://github.com/langium/langium/blob/main/examples/domainmodel/src/language-server/domain-model.langium) uses the `QualifiedName` data type rule to enable references to other elements using their fully qualified name.
-```antlr
+```langium
 QualifiedName returns string:
     ID ('.' ID)*;
 ```
@@ -283,7 +283,7 @@ Data type rules need to specify a primitive return type.
 
 ### Rule Fragments
 If you are facing repetitive patterns in your grammar definition, you can take advantage of *Rule Fragments* to improve the grammar's maintainability.
-```antlr
+```langium
 Student:
     'student' firstName=ID lastName=ID address=STRING phoneNumber=STRING grades=Grades;
 Teacher:
@@ -294,7 +294,7 @@ TechnicalStaff:
 The parser rules Student, Teacher, and TechnicalStaff partly share the same syntax. 
 If, for example, the assignment for `phoneNumber` had to be updated, we would need to make changes everywhere the `phoneNumber` assignment was used. 
 We can introduce *Rule Fragments* to extract similar patterns and improve maintainability:
-```antlr
+```langium
 fragment Details:
     firstName=ID lastName=ID address=STRING phoneNumber=STRING;
 
@@ -310,7 +310,7 @@ Fragment rules are not part of the AST and will therefore never create an object
 
 ### Guard Conditions
 It may be useful to group parser rules with small variations inside of a single parser rule. Given the following example:
-```antlr
+```langium
 entry Model:
     element+=RootElement;
 
@@ -327,7 +327,7 @@ Element:
 ```
 The only difference between `RootElement` and `Element` is that the former has the boolean property `isPublic`. 
 We can refactor the grammar so that only `Element` is present in the grammar with a *guard condition* that will determine which concrete syntax should be used by the parser:
-```antlr
+```langium
 entry Model:
     element+=Element<true>;
 
@@ -344,7 +344,7 @@ The *entry rule* `Model` sets the value of `isRoot` to `true` with `element+=Ele
 In general, a guard condition on a group decides whether the parser is allowed to parse the group or not depending on the result of the evaluated condition. Logical operations can be applied, such as `&` (and), `|` (or) and `!` (not) to fine-tune the exact conditions in which the group is supposed to be parsed.
 
 Additionally, guard conditions can also be used inside of alternatives. See the following example:
-```antlr
+```langium
 entry Model:
     element+=Element<true>;
 
@@ -360,7 +360,7 @@ The parser will always exclude alternatives whose guard conditions evaluate to `
 ### More Examples
 
 Not all parser rules need to be mentioned in the entry rule, as shown in this example:
-```antlr
+```langium
 entry Model:
     (persons+=Person | greetings+=Greeting)*;
 
@@ -379,7 +379,7 @@ Here the `Person` parser rule includes a property `address` which matches the pa
 
 Keywords are meant to provide a visible structure to the language and guide the parser in deciding what type of object needs to be parsed.
 Consider the following:
-```antlr
+```langium
 Student:
     name=ID;
 
@@ -392,7 +392,7 @@ Person:
 In this example, a `Person` can either be a `Student` or a `Teacher`. This grammar is ambiguous because the parser rules `Student` and `Teacher` are identical. The parser will not be able to differentiate between the parser rules for `Student` and `Teacher` when trying to parse a `Person`. 
 Keywords can help removing such ambiguity and guide the parser in defining if a `Student` or `Teacher` needs to be parsed.
 We can add a keyword to the parser rule `Student`, `Teacher`, or to both of them:
-```antlr
+```langium
 Student:
     'student' name=ID;
 
@@ -405,7 +405,7 @@ Person:
 Now the ambiguity is resolved and the parser is able to differentiate between the two parser rules.
 
 Parser rules can have many keywords:
-```antlr
+```langium
 Person:
     'person' name=ID 'age' age=INT;
 ```
@@ -413,7 +413,7 @@ Person:
 ---
 
 If an assignment has a cardinality of `+` or `*`, then the expressions belong to a single group and must not be interrupted by other expressions.
-```antlr
+```langium
 Paragraph:
     'paragraph' (sentences+=STRING)+ id=INT;
 ```
@@ -439,50 +439,50 @@ EBNF expressions are very similar to [parser rules](#extended-backus-naur-form-e
 
 #### Terminal Groups
 Tokens can be put in sequence specifying the order they have to appear:
-```antlr
+```langium
 terminal FLIGHT_NUMBER: ('A'..'Z')('A'..'Z')('0'..'9')('0'..'9')('0'..'9')('0'...'9')?;
 ```
 In this example, the token `FLIGHT_NUMBER` must start with two capital letters followed by three or four digits.
 
 #### Terminal Alternatives
 It is possible to match one of multiple valid options by using the pipe operator `|`. The terminal rule `STRING` can use alternatives to match a sequence of characters between double quotes `""` or single quotes `''`:
-```antlr
+```langium
 terminal STRING: '"' !('"')* '"' | ''' !(''')* '''; 
 ```
 In regular expression, alternatives are also possible with the pipe operator `|`:
-```antlr
+```langium
 terminal STRING: /"[^"]*"|'[^']*'/;
 ```
 
 #### Character Range
 The operator `..` is used to declare a character range. It is equivalent to the operator `-` within a character class in a regular expression. It matches any character in between the left character and the right character (inclusive on both ends).
-```antlr
+```langium
 terminal INT returns number: ('0'..'9')+;
 ```
 is equivalent to the regular expression:
-```antlr
+```langium
 terminal INT returns number: /[0-9]+/;
 ```
 Here, `INT` is matched to one or more characters (by using the operand `+`, which defines a [cardinality](#cardinalities) of 'one or many') between `0` and `9` (inclusive on both ends).
 
 #### Wildcard Token
 The operator `.` is used to match any character and is similar in regular expression.
-```antlr
+```langium
 terminal HASHTAG: '#'.+;
 ```
 In this example, the terminal rule `HASHTAG` matches a sequence of character starting with `#` followed by one or many ([cardinality](#cardinalities) +) characters.
 
 Equivalent in regular expression:
-```antlr
+```langium
 terminal HASHTAG: /#.+/;
 ```
 #### Until Token
 The operator `->` indicates that all characters should be consumed from the left token *until* the right token occurs. For example, the terminal rule for multi-line comment can be implemented as:
-```antlr
+```langium
 terminal ML_COMMENT: '/*' -> '*/';
 ```
 Langium will transform the until token into the regular expression `[\s\S]*?` which matches any character non-greedily:
-```antlr
+```langium
 terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 ``` 
 
@@ -490,12 +490,12 @@ terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 It is possible to negate tokens using the operator `!`. In Langium this produces a *negative lookahead*. I.e., it does *not* consume tokens, but it is a 'guard' for what the following expression can recognize.
 
 For example, if you want to recognize a word that doesn't start with `no`, then you could write such an expression in EBNF like so:
-```antlr
+```langium
 terminal NONO: (!'no')('a'..'z'|'A'..'Z')+;
 ```
 
 For reference, this would correspond to the following regular expression:
-```antlr
+```langium
 terminal NONO: /(?!no)[a-zA-Z]+/;
 ```
 
@@ -503,14 +503,14 @@ Note, if you're coming from Xtext, negated tokens works differently here. In Xte
 
 #### Terminal Rule Calls
 A terminal rule can include other terminal rules in its definition.
-```antlr
+```langium
 terminal DOUBLE returns number: INT '.' INT;
 ```
 Note that it is easy to create conflicts between terminal rules when using *terminal rule calls*. See [Data Type Rules](#data-type-rules) for further details.
 
 ### Terminal Fragments
 Fragments allow for sub-definition of terminal rules to be extracted. They are not consumed by the lexer and have to be consumed by other terminal rules.
-```antlr
+```langium
 terminal fragment CAPITAL_LETTER: ('A'..'Z');
 terminal fragment SMALL_LETTER: ('a'..'z');
 terminal NAME: CAPITAL_LETTER SMALL_LETTER+;

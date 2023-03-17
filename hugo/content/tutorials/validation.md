@@ -62,7 +62,7 @@ With this in mind, we can look back at our grammar that we've written for MiniLo
 
 In order to perform a validation, we need to know the type of that node to validate. Beyond checking our grammar to find this, we can also check the semantic model (akin to the abstract syntax) of our language. This was generated while running `npm run langium:generate`, and is located in **src/language-server/generated/ast.ts**. Peeking into this model, we can see that our rule for `Model` was written like so:
 
-```antlr
+```langium
 entry Model: (stmts+=Stmt | defs+=Def)*;
 ```
 

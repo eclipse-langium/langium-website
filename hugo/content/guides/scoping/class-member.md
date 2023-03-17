@@ -5,19 +5,19 @@ weight: 200
 
 In this guide we will take a look at member based scoping. It's a mechanism you are likely familiar with from object oriented languages such as Java, C# and JavaScript:
 
-```java
+```ts
 class A {
-    public B b;
+    b: B;
 }
 
 class B {
-    public String value;
+    value: string;
 }
 
-void test() {
-    A a = new A();
-    B b = a.b; // Refers to the `b` defined in class `A`
-    String value = b.value; // Refers to the `value` defined in class `B`
+function test(): void {
+    const a = new A();
+    const b = a.b; // Refers to the `b` defined in class `A`
+    const value = b.value; // Refers to the `value` defined in class `B`
 }
 ```
 
@@ -28,7 +28,7 @@ This project implements a strongly-typed version of the [Lox language](https://c
 
 We'll first start with the `MemberCall` grammar rule, which references one of our `NamedElements`. These elements could be variable declarations, functions, classes or methods and fields of those classes. Additionally, we want to allow function calls on elements. Note that the grammar has no notion of whether these elements can actually be executed as functions. Instead, we always allow function calls on every named element, and simply provide validation errors in case an element is called erroneously. After parsing the first member call, we continue parsing further members as long as the input text provides us with further references to elements; which are separated by dots.
 
-```ts
+```langium
 type NamedElement = FunctionDeclaration | VariableDeclaration | MethodMember | FieldMember | Class;
 
 MemberCall:
