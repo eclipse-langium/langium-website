@@ -5,76 +5,75 @@ https://prismjs.com/download.html#themes=prism-dark */
  * Based on the slides of the talk â€œ/Reg(exp){2}lained/â€
  * @author Lea Verou
  */
- 
- .token.comment,
- .token.prolog,
- .token.doctype,
- .token.cdata {
-     color: #6A9955;
- }
- 
- .token.punctuation {
-     opacity: .7;
- }
- 
- .token.namespace {
-     opacity: .7;
- }
- 
- .token.property,
- .token.tag,
- .token.boolean,
- .token.number,
- .token.constant,
- .token.symbol {
-     color: #9CDCFE;
- }
- 
- .token.selector,
- .token.attr-name,
- .token.string,
- .token.char,
- .token.builtin,
- .token.inserted {
-     color: #CE9178;
- }
- 
- .token.operator,
- .token.entity,
- .token.url,
- .token.variable {
-     color: #4EC9B0;
- }
 
- .token.class {
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #6A9955;
+}
+
+.token.punctuation {
+    opacity: .7;
+}
+
+.token.namespace {
+    opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol {
+    color: #9CDCFE;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #CE9178;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.token.variable {
     color: #4EC9B0;
- }
- 
- .token.atrule,
- .token.attr-value,
- .token.keyword {
-     color: #569CD6;
- }
- 
- .token.regex,
- .token.important {
-     color: #D16969;
- }
- 
- .token.important,
- .token.bold {
-     font-weight: bold;
- }
- .token.italic {
-     font-style: italic;
- }
- 
- .token.entity {
-     cursor: help;
- }
- 
- .token.deleted {
-     color: red;
- }
- 
- 
+}
+
+.token.class {
+    color: #4EC9B0;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #569CD6;
+}
+
+.token.regex,
+.token.important {
+    color: #D16969;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+.token.deleted {
+    color: red;
+}
