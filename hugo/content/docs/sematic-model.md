@@ -16,7 +16,7 @@ In the following, we detail how grammar rules shape the semantic model via infer
 
 ### Parser Rules
 The simplest way to write a parser rule is as follows:
-```antlr
+```langium
 X: name=ID;
 ```
 With this syntax, Langium will **infer** the type of the node to be generated when parsing the rule. By convention, the type of the node will be named after the name of the rule, resulting in this **TypeScript interface** in the semantic model:
@@ -26,7 +26,7 @@ interface X extends AstNode {
 }
 ```
 It is also possible to control the naming of the interface by using the following syntax:
-```antlr
+```langium
 X infers MyType: name=ID;
 ```
 resulting in the following interface in the semantic model:
@@ -40,7 +40,7 @@ Please note that an `interface X` is no longer present in the semantic model.
 It is important to understand that the name of the parser rule and the name of the type it infers work on two separate abstraction levels. The name of the parser rule is used at the *parsing level* where types are ignored and only the parsing rule is considered, while the name of the type is used at the *types level* where both the type and the parser rule play a role. This means that the name of the type can be changed without affecting the parsing rules hierarchy, and that the name of the rule can be changed - if it explicitly infers or returns a given type - without affecting the semantic model.
 
 By inferring types within the grammar, it is also possible to define several parser rules creating the same semantic model type. For example, the following grammar has two rules `X` and `Y` inferring a single semantic model type `MyType`:
-```antlr
+```langium
 X infers MyType: name=ID;
 Y infers MyType: name=ID count=INT;
 ```
@@ -54,7 +54,7 @@ interface MyType extends AstNode {
 
 ### Terminal Rules
 Terminal rules are linked to built-in types in the semantic model. They do not result in semantic model types on their own but determine the type of properties in semantic model types inferred from a parser rule:
-```antlr
+```langium
 terminal INT returns number: /[0-9]+/;
 terminal ID returns string: /[a-zA-Z_][a-zA-Z0-9_]*/;
 
@@ -73,7 +73,7 @@ The property `name` is of type `string` because the terminal rule `ID` is linked
 
 ### Data type rules
 Data type rules are similar to terminal rules in the sense that they determine the type of properties in semantic model types inferred from parser rules. However, they lead to the creation of type aliases for built-in types in the semantic model:
-```antlr
+```langium
 QualifiedName returns string: ID '.' ID;
 
 X: name=QualifiedName;
@@ -95,7 +95,7 @@ There are three available kinds of [assignments](../grammar-language/#assignment
 2. `+=` for assigning **multiple values** to a property, resulting in the property's type to be an array of the right hand side of the assignment.
 3. `?=` for assigning a **boolean** to a property, resulting in the property's type to be a `boolean`.
 
-```antlr
+```langium
 X: name=ID numbers+=INT (numbers+=INT)* isValid?='valid'?;
 ```
 
@@ -114,7 +114,7 @@ The right-hand side of an assignment can be any of the following:
 * A cross-reference, which results in the type of the property to be a *Reference* to the type of the cross-reference.
 * An alternative, which results in the type of the property to be a type union of all the types in the alternative.
 
-```antlr
+```langium
 X: 'x' name=ID;
 
 Y: crossValue=[X:ID] alt=(INT | X | [X:ID]);
@@ -136,7 +136,7 @@ interface Y extends AstNode {
 
 A parser rule does not necessarily need to have assignments. It may also contain only *unassigned rule calls*. These kind of rules can be used to change the types' hierarchy.
 
-```antlr
+```langium
 X: A | B;
 
 A: 'A' name=ID;
@@ -162,7 +162,7 @@ interface B extends AstNode {
 
 Actions can be used to change the type of a node **inside** of a parser rule to another semantic model type. For example, they allow you to simplify parser rules which would have to be split into multiple rules.
 
-```antlr
+```langium
 X: 
     {infer A} 'A' name=ID 
   | {infer B} 'B' name=ID count=INT;
@@ -195,7 +195,7 @@ Let's consider two different grammars derived from the [Arithmetics example](htt
 
 The first one does not use assigned actions:
 
-```antlr
+```langium
 Definition: 
     'def' name=ID ':' expr=Expression;
 Expression:
@@ -225,7 +225,7 @@ We can see that the nested `right -> left` nodes in the tree are unnecessary and
 
 This can be done by refactoring the grammar and adding an assigned action:
 
-```antlr
+```langium
 Definition: 
     'def' name=ID ':' expr=Addition ';';
 Expression:
@@ -265,7 +265,7 @@ With that aside, declared types can be *especially* helpful for more mature and 
 
 Let's look at the example from the previous section:
 
-```antlr
+```langium
 X infers MyType: name=ID;
 Y infers MyType: name=ID count=INT;
 
@@ -283,7 +283,7 @@ We now explicitly declare `MyType` directly in the grammar with the keyword `int
 
 Contrary to [inferred types](#inferred-types), all properties must be explicitly declared in order to be valid inside of a parser rule. The following syntax:
 
-```antlr
+```langium
 Z returns MyType: name=ID age=INT;
 ```
 
@@ -291,7 +291,7 @@ will show the following validation error `A property 'age' is not expected` beca
 
 A declared type can also extend types, such as other declared types or types inferred from parser rules:
 
-```antlr
+```langium
 interface MyType {
     name: string
 }
@@ -325,7 +325,7 @@ Using `returns` always expects a reference to an already existing type. To creat
 
 Declared types come with special syntax to declare cross-references, arrays, and alternatives:
 
-```antlr
+```langium
 interface A {
     reference: @B
     array: B[]
@@ -352,7 +352,7 @@ Z returns C: 'Z' name=ID count=INT;
 
 Actions referring to a declared type have the following syntax:
 
-```antlr
+```langium
 interface A {
     name: string
 }
@@ -373,13 +373,13 @@ Note the absence of the keyword `infer` compared to [actions which infer a type]
 
 Trying to reference different types of elements can be an error prone process. Take a look at the following rule which tries to reference either a `Function` or a `Variable`:
 
-```antlr
+```langium
 MemberCall: (element=[Function:ID] | element=[Variable:ID]);
 ```
 
 As both alternatives are only an `ID` from a parser perspective, this grammar is not decidable and the `langium` CLI script will throw an error during generation. Luckily, we can improve on this by adding a layer of indirection using an additional parser rule:
 
-```antlr
+```langium
 NamedElement: Function | Variable;
 
 MemberCall: element=[NamedElement:ID];
@@ -387,7 +387,7 @@ MemberCall: element=[NamedElement:ID];
 
 This allows us to reference either `Function` or `Variable` using the common rule `NamedElement`. However, we have now introduced a rule which is never actually parsed, but only exists for the purpose of the type system to pick up on the correct target types of the reference. Using declared types, we are able to refactor this unused rule, making our grammar more resilient in the process:
 
-```antlr
+```langium
 // Note the `type` prefix here
 type NamedElement = Function | Variable;
 
@@ -396,7 +396,7 @@ MemberCall: element=[NamedElement:ID];
 
 We can also use interfaces in place of union types with similar results:
 
-```antlr
+```langium
 interface NamedElement {
     name: string
 }

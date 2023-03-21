@@ -42,7 +42,7 @@ We'll be overriding the existing langium grammar file completely, so delete the 
 
 The first line that we'll then add is the declaration of our grammar.
 
-```antlr
+```langium
 grammar MiniLogo
 ```
 
@@ -50,7 +50,7 @@ This simply describes the name of the grammar that will be proceeding, and is re
 
 Next, we'll need to describe an entry rule. This will be a parser rule that must be matched first when recognizing a MiniLogo program. This rule is particularly special, because it will become the root of the resulting abstract syntax tree, which captures the essential structure of our program. For MiniLogo, our entry rule Will be `Model`. You could also make it `Program`, but whatever you choose it should capture the same notion. Regardless of your choice, this rule should match any number of Statements and/or Definitions to follow the MiniLogo specification.
 
-```antlr
+```langium
 entry Model: (stmts+=Stmt | defs+=Def)*;
 ```
 
@@ -78,7 +78,7 @@ def anotherDef(x,y,z) {
 
 We can recognize this concrete syntax, and capture the relevant information for our AST, with the following rule:
 
-```antlr
+```langium
 Def: 'def' name=ID '(' (params+=Param (',' params+=Param)*)? ')' Block;
 ```
 
@@ -86,19 +86,19 @@ As an additional note, much like regular expressions we use modifiers in our gra
 
 You may be wondering what `Block` is as well. Block corresponds to a rule *fragment*, which is akin to a reusable rule body. It's not a rule itself, but an reusable piece that can be reused to complete rules. It's particularly handy when you find yourself writing the same pattern repeatedly, and want to factor it out.
 
-```antlr
+```langium
 fragment Block: '{' body+=Stmt* '}';
 ```
 
 Then we have **Statements**, which consist of Commands or Macros. 
 
-```antlr
+```langium
 Stmt: Cmd | Macro;
 ```
 
 A **Command** describes an action that transforms the drawing state (which connects to our semantic domain from before). The commands in MiniLogo can be expressed like so:
 
-```antlr
+```langium
 Cmd: Pen | Move | Color | For;
 ```
 
@@ -126,7 +126,7 @@ anotherMacro(1, 2, 3 * 3)
 
 We can encode this in MiniLogo like so:
 
-```antlr
+```langium
 Macro:  def=[Def:ID] '(' (args+=Expr (',' args+=Expr)*)? ')';
 ```
 
@@ -134,7 +134,7 @@ In this case `def` will be a **Cross Reference** to an existing Definition. This
 
 We also want to add the notion of a Parameter, which is quite simple to write in:
 
-```antlr
+```langium
 Param: name=ID;
 ```
 
@@ -154,7 +154,7 @@ pen(down)
 
 We can express this with the following parser rule.
 
-```antlr
+```langium
 Pen:    'pen' '(' mode=('up' | 'down') ')';
 ```
 
@@ -168,7 +168,7 @@ move(x * 10, y * 10)
 
 We haven't defined it yet, but we can use an **Expr** rule to represent where our expressions will go, and capture this command like this:
 
-```antlr
+```langium
 Move:   'move' '(' ex=Expr ',' ey=Expr ')';
 ```
 
@@ -184,7 +184,7 @@ for x = 0 to 10 {
 
 Again, we don't have **Expr** defined yet, but we can still use it here. Also, since we have a block of statements, we can reuse that `Block` fragment that was defined earlier.
 
-```antlr
+```langium
 For: 'for' var=Param '=' e1=Expr 'to' e2=Expr Block;
 ```
 
@@ -215,7 +215,7 @@ The corresponding rule for this syntax is a special case where we have 3 differe
 
 We can encode this like so:
 
-```antlr
+```langium
 Color:  'color' '(' ((r = Expr ',' g=Expr ',' b=Expr) | color=ID | color=HEX) ')';
 ```
 
@@ -227,13 +227,13 @@ Now we're at the core of our language, **Expressions**. In MiniLogo we want to b
 
 However, we can work around this. We can introduce expressions and avoid left-recursion by writing them from the bottom up in terms of order of operations. We'll start with `Add` (which also includes subtraction):
 
-```antlr
+```langium
 Expr: Add;
 ```
 
 Then writing a rule to handle the addition (and subtraction) case.
 
-```antlr
+```langium
 Add  infers Expr: 
     Mult ({infer BinExpr.e1=current} op=('+'|'-') e2=Mult)*;
 ```
@@ -251,14 +251,14 @@ To explain a bit, the `Add` rule introduces:
 
 We can then repeat this pattern with the `Mult` rule:
 
-```antlr
+```langium
 Mult infers Expr: 
     PrimExpr ({infer BinExpr.e1=current} op=('*'|'/') e2=PrimExpr)*;
 ```
 
 Lastly we can then introduce `Primary` expressions, or `PrimExpr`. This rule will match all the primitive cases, such as literals, references, groupings, and negation.
 
-```antlr
+```langium
 PrimExpr: Lit | Ref | Group | NegExpr;
 
 // literal int
@@ -279,7 +279,7 @@ As a note, we could also write these rules *without using actions to rewrite our
 
 Now that we're almost done with our grammar, we need to add in the terminal rules. Conveniently, the body of a terminal rule can be defined as a Javascript regular expression; sharing the same syntax. This makes it very clear to determine what our terminals should recognize.
 
-```antlr
+```langium
 // recognize a hexadecimal sequence, used to recognize colors for the 'Color' command
 terminal HEX returns string:    /#(\d|[a-fA-F])+/;
 
@@ -292,7 +292,7 @@ terminal INT returns number:    /-?[0-9]+/;
 
 Then, lastly, we want to add *hidden terminals*. These will describe tokens that we want to parse and *discard* while parsing any input. Since we're adding whitespace & comments as hidden terminals, it's the same as saying we do *not* care about these tokens while parsing, but we do recognize that they are tokens; they just don't play a role in capturing the structure of our language.
 
-```antlr
+```langium
 hidden terminal WS:             /\s+/;
 hidden terminal ML_COMMENT:     /\/\*[\s\S]*?\*\//;
 hidden terminal SL_COMMENT:     /\/\/[^\n\r]*/;
