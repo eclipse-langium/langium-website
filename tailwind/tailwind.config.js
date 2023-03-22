@@ -2,7 +2,7 @@ const colors = require('tailwindcss/colors')
 
 module.exports = {
   mode: 'jit',
-  purge: ['../hugo/layouts/**/*.html','../hugo/content/**/*.html','../hugo/content/**/*.ts','../hugo/content/**/*.tsx','../hugo/static/**/*.html','../hugo/static/**/*.js'],
+  content: ['../hugo/layouts/**/*.html','../hugo/content/**/*.html','../hugo/content/**/*.ts','../hugo/content/**/*.tsx','../hugo/static/**/*.html','../hugo/static/**/*.js', '../hugo/assets/scripts/**/*.tsx'],
   darkMode: 'class',
   theme: {
     colors: {
@@ -10,7 +10,7 @@ module.exports = {
       current: 'currentColor',
       black: colors.black,
       white: colors.white,
-      gray: colors.trueGray
+      gray: colors.neutral
     },
     extend: {
       fontFamily: {
@@ -29,12 +29,14 @@ module.exports = {
       },
       colors: {
         emeraldLangium: '#26888C',
+        emeraldLangiumABitDarker: '#207578',
         emeraldLangiumDarker: '#0A4340',
         emeraldLangiumDarkest: '#042424',
         accentBlue: '#1FCDEB',
+        accentRed: '#8c2626',
         accentGreen: '#B6F059',
         accentViolet: '#D568E7',
-        accentLightBlue: '#BCDBEF'
+        accentLightBlue: '#BCDBEF',
       },
       backgroundImage: {
         'office': "url('../assets/office.jpg')"

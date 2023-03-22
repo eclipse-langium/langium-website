@@ -4,8 +4,7 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { AstNode, DocumentState, startLanguageServer } from 'langium';
-import { createServicesForGrammar } from 'langium/lib/grammar/grammar-util';
+import { AstNode, DocumentState, createServicesForGrammar, startLanguageServer } from 'langium';
 import { createConnection } from 'vscode-languageserver/browser';
 import { PlaygroundWrapper, ByPassingMessageReader, ByPassingMessageWriter } from './monaco-utils';
 import { throttle } from './utils';
@@ -23,19 +22,19 @@ messageReader.listenByPass(message => {
     if(message.type === 'validated') {
         sendAst.clear();
         const connection = createConnection(messageReader, messageWriter);
-        const { shared } = createServicesForGrammar({
+        createServicesForGrammar({
             grammar: message.grammar, 
             sharedModule: {
                 lsp: { Connection: () => connection}
             }
+        }).then(({ shared }) => {
+            shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, ([document]) => {
+                const ast = document.parseResult.value;
+                sendAst.call(ast);
+                return Promise.resolve();
+            });
+    
+            startLanguageServer(shared);
         });
-
-        shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, ([document]) => {
-            const ast = document.parseResult.value;
-            sendAst.call(ast);
-            return Promise.resolve();
-        });
-
-        startLanguageServer(shared);
     }
 });
