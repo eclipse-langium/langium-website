@@ -3,8 +3,6 @@ title = "Langium"
 theme = "hugo-geekdoc"
 
 # Required to get well formatted code blocks
-pygmentsUseClasses = true
-pygmentsCodeFences = true
 disablePathToLower = true
 enableGitInfo = true
 # Required if you want to render robots.txt template
@@ -14,6 +12,8 @@ enableRobotsTXT = true
   [markup.goldmark.renderer]
     # Needed for mermaid shortcode
     unsafe = true
+  [markup.highlight]
+    codeFences = false  # Disable Hugo's code highlighter as it conflicts with prism's highligher.
   [markup.tableOfContents]
     startLevel = 1
     endLevel = 9
