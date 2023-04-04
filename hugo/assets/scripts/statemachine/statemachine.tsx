@@ -130,7 +130,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
     }
 
     // if the code doesn't contain any errors
-    if (this.state.diagnostics == null || (this.state.diagnostics.length == 0)) {
+    if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
       let states: State[] = [];
       let events: Event[] = [];
 
