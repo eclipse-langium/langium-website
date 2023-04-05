@@ -58,10 +58,10 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
             return (
                 <div className="text-white rounded-md p-4 text-left text-sm cursor-default">
                     {this.state.evaluations.map((evaluation, index) =>
-                        <div key={index} className="pt-4 cursor-pointer" onClick={() => this.state.focusLine(evaluation.range.start.line)}>
+                        <div key={index} className="pt-4 cursor-pointer" onClick={() => this.state.focusLine(evaluation.range.start.line + 1)}>
                             <p>
-                                {evaluation.range.start.line == evaluation.range.end.line && <span>{`Line ${evaluation.range.start.line}: `}</span>}
-                                {evaluation.range.start.line != evaluation.range.end.line && <span>{`Line ${evaluation.range.start.line}-${evaluation.range.end.line}: `}</span>}
+                                {evaluation.range.start.line == evaluation.range.end.line && <span>{`Line ${evaluation.range.start.line + 1}: `}</span>}
+                                {evaluation.range.start.line != evaluation.range.end.line && <span>{`Line ${evaluation.range.start.line + 1}-${evaluation.range.end.line + 1}: `}</span>}
                                 <span className="text-accentBlue">{evaluation.text}</span> = <span className="text-accentGreen">{evaluation.value}</span>
                             </p>
                         </div>
