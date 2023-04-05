@@ -10,10 +10,11 @@
     "copy:monaco-editor-wrapper": "npm run copy:libs:prepare && npx shx cp -fr ../node_modules/monaco-editor-wrapper/bundle ./static/libs/monaco-editor-wrapper",
     "copy:monaco-workers": "npm run copy:libs:prepare && npx shx cp -f ../node_modules/monaco-editor-workers/dist/index.* ./static/libs/monaco-editor-workers && npx shx cp -f ../node_modules/monaco-editor-workers/dist/workers/editorWorker-iife.js ./static/libs/monaco-editor-workers/workers",
     "build:worker/statemachine": "esbuild ../node_modules/langium-statemachine-dsl/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/statemachineServerWorker.js",
+    "build:worker/arithmetics": "esbuild ../node_modules/langium-arithmetics-dsl/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/arithmeticsServerWorker.js",
     "build:worker/playground-langium": "esbuild ./content/playground/langium-worker.ts --bundle --format=iife --outfile=./static/playground/libs/worker/langiumServerWorker.js",
     "build:worker/playground-user": "esbuild ./content/playground/user-worker.ts --bundle --format=iife --outfile=./static/playground/libs/worker/userServerWorker.js",
     "build:worker/playground-common": "esbuild ./content/playground/common.ts --bundle --format=esm --outfile=./static/playground/libs/worker/common.js",
-    "build:static": "npm run clean:static && npm run build:worker/statemachine && npm run build:worker/playground-common && npm run build:worker/playground-langium && npm run build:worker/playground-user && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers",
+    "build:static": "npm run clean:static && npm run build:worker/statemachine && npm run build:worker/arithmetics && npm run build:worker/playground-common && npm run build:worker/playground-langium && npm run build:worker/playground-user && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers",
     "build": "npm run build:static && cross-env NODE_ENV=production  hugo        --config ./config.toml    -b /              -d ../public --gc --minify    ",
     "watch": "npm run build:static && cross-env NODE_ENV=development hugo server --config ./config.toml -D -b localhost:1313 -d ../public --appendPort=false",
     "watch:gitpod": "npm run build:static && cross-env NODE_ENV=development hugo server --config ./config.toml -D -b `gp url 1313` -d ../public --appendPort=false"
