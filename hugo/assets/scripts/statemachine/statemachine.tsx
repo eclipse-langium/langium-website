@@ -189,7 +189,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
     return (
       <div className="flex flex-col h-full w-full p-4 justify-start items-center my-10" >
         <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-left text-sm cursor-default">
-        {this.state.diagnostics.map((diagnostic, index) => 
+        {this.state.diagnostics.filter((i) => i.severity === 1).map((diagnostic, index) => 
           <details key={index}>
             <summary>{`Line ${diagnostic.range.start.line + 1}-${diagnostic.range.end.line + 1}: ${diagnostic.message}`}</summary>
             <p>Source: {diagnostic.source} | Code: {diagnostic.code}</p>
