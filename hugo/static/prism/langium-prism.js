@@ -21,7 +21,7 @@ Prism.languages.langium = {
         pattern: /\b(interface|fragment|terminal|boolean|current|extends|grammar|returns|bigint|hidden|import|infers|number|string|entry|false|infer|Date|true|type|with)\b/
     },
     property: {
-        pattern: /\b[a-z][\w]*(?==|\?=|\+=|:|>)\b/
+        pattern: /\b[a-z][\w]*(?==|\?=|\+=|\??:|>)\b/
     },
     entity: {
         pattern: /\b[A-Z][\w]*\b/

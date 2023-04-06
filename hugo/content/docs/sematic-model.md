@@ -20,7 +20,7 @@ The simplest way to write a parser rule is as follows:
 X: name=ID;
 ```
 With this syntax, Langium will **infer** the type of the node to be generated when parsing the rule. By convention, the type of the node will be named after the name of the rule, resulting in this **TypeScript interface** in the semantic model:
-```ts
+```langium
 interface X extends AstNode {
     name: string
 }
@@ -30,7 +30,7 @@ It is also possible to control the naming of the interface by using the followin
 X infers MyType: name=ID;
 ```
 resulting in the following interface in the semantic model:
-```ts
+```langium
 interface MyType extends AstNode {
     name: string
 }
@@ -45,7 +45,7 @@ X infers MyType: name=ID;
 Y infers MyType: name=ID count=INT;
 ```
 This result in the creation of a single interface in the semantic model 'merging' the two parser rules with non-common properties made optional:
-```ts
+```langium
 interface MyType extends AstNode {
     count?: number
     name: string
@@ -61,7 +61,7 @@ terminal ID returns string: /[a-zA-Z_][a-zA-Z0-9_]*/;
 X: name=ID count=INT;
 ```
 
-```ts
+```langium
 // generated interface
 interface X extends AstNode {
     name: string
@@ -79,7 +79,7 @@ QualifiedName returns string: ID '.' ID;
 X: name=QualifiedName;
 ```
 
-```ts
+```langium
 // generated types
 type QualifiedName = string;
 
@@ -99,7 +99,7 @@ There are three available kinds of [assignments](../grammar-language/#assignment
 X: name=ID numbers+=INT (numbers+=INT)* isValid?='valid'?;
 ```
 
-```ts
+```langium
 // generated interface
 interface X extends AstNode {
     name: string
@@ -120,7 +120,7 @@ X: 'x' name=ID;
 Y: crossValue=[X:ID] alt=(INT | X | [X:ID]);
 ```
 
-```ts
+```langium
 // generated types
 interface X extends AstNode {
     name: string
@@ -141,10 +141,9 @@ X: A | B;
 
 A: 'A' name=ID;
 B: 'B' name=ID count=INT;
-
 ```
 
-```ts
+```langium
 // generated types
 type X = A | B;
 
@@ -173,7 +172,7 @@ A: 'A' name=ID;
 B: 'B' name=ID count=INT;
 ```
 
-```ts
+```langium
 // generated types
 type X = A | B;
 
@@ -305,9 +304,11 @@ Y returns MyOtherType: name=ID count=INT;
 
 Explicitly declaring union types in the grammar is achieved with the keyword `type`:
 
-```ts
+```langium
 type X = A | B;
+```
 
+```langium
 // generates:
 type X = A | B;
 ```
