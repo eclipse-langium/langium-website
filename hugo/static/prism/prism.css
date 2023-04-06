@@ -61,11 +61,11 @@ https://prismjs.com/download.html#themes=prism-dark */
 :root,
 :root[color-mode="light"] {
     --token-comment: #008000;
-        --token-constants: #001080;
-        --token-string: #A31515;
-        --token-entity: #267F99;
-        --token-keyword: #0000FF;
-        --token-regex: #D16969;
+    --token-constants: #001080;
+    --token-string: #A31515;
+    --token-entity: #267F99;
+    --token-keyword: #0000FF;
+    --token-regex: #D16969;
 }
 
 @media (prefers-color-scheme: dark) {
