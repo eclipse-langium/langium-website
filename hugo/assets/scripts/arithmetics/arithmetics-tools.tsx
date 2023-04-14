@@ -9,23 +9,23 @@ export interface Evaluation {
     text: string;
     value: number;
 }
-export const defaultText = `Module example1
+export const defaultText = `Module basicMath
 
-Def y: 1 + 3 - 99828932 / 2 + 2 - 1;
+def a: 5;
+def b: 3;
+def c: a + b;
 
-DEF x: 12 / 3 - 1; // 3
-
-x * 2 - 4;
-
-def t: 4;
-
-DEF func(t, x):
-    t * t * t + x;
+def sqrt(x, y):
+    x^(1/y);
 
 // This language is case-insensitive regarding symbol names
-Func(T, X); // 67
-Func(X, T); // 31
-Func(T, Func(T, X)); // 131`;
+Sqrt(c, 2); // 4
+Sqrt(81, 2); // 9
+Sqrt(81, 3); // 4
+
+2 * c; // 16
+c % 2; // 1
+`
 
 
 export const syntaxHighlighting = {
