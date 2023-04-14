@@ -13,7 +13,8 @@ export const defaultText = `Module basicMath
 
 def a: 5;
 def b: 3;
-def c: a + b;
+def c: a + b; // 8
+def d: (a ^ b); // 164
 
 def sqrt(x, y):
     x^(1/y);
@@ -22,9 +23,9 @@ def sqrt(x, y):
 2 * c; // 16
 c % 2; // 1
 
-Sqrt(c, 2); // 4
+sqrt(d, 3); // 32
 Sqrt(81, 2); // 9
-Sqrt(81, 3); // 4
+Sqrt(64, 3); // 4
 `
 
 
