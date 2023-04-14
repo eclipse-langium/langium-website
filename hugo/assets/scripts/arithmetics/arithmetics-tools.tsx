@@ -19,12 +19,12 @@ def sqrt(x, y):
     x^(1/y);
 
 // This language is case-insensitive regarding symbol names
+2 * c; // 16
+c % 2; // 1
+
 Sqrt(c, 2); // 4
 Sqrt(81, 2); // 9
 Sqrt(81, 3); // 4
-
-2 * c; // 16
-c % 2; // 1
 `
 
 
