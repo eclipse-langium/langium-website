@@ -110,7 +110,7 @@ export class DslLibraryFileSystemProvider implements vscode.FileSystemProvider {
         return {
             ctime: date,
             mtime: date,
-            size: builtinHelloWorld.length,
+            size: Buffer.from(builtinHelloWorld).length,
             type: vscode.FileType.File
         };
     }
