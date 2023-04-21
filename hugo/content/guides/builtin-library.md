@@ -43,6 +43,7 @@ export class HelloWorldWorkspaceManager extends DefaultWorkspaceManager {
         folders: WorkspaceFolder[],
         collector: (document: LangiumDocument<AstNode>) => void
     ): Promise<void> {
+        await super.loadAdditionalDocuments(folders, collector);
         // Load our library using the `builtin` URI schema
         collector(this.documentFactory.fromString(builtinHelloWorld, URI.parse('builtin:///library.hello')));
     }
