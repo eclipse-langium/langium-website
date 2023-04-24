@@ -56,7 +56,7 @@ As a last step, we have to bind our newly created workspace manager:
 // Add this to the `hello-world-module.ts` included in the yeoman generated project
 export type HelloWorldSharedServices = LangiumSharedServices;
 
-export const HelloWorldSharedModule: Module<HelloWorldSharedServices, DeepPartial<LangiumSharedServices>> = {
+export const HelloWorldSharedModule: Module<HelloWorldSharedServices, DeepPartial<HelloWorldSharedServices>> = {
     workspace: {
         WorkspaceManager: (services) => new HelloWorldWorkspaceManager(services)
     }
