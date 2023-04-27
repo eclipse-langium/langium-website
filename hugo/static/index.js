@@ -206,9 +206,9 @@ const boxes = gsap.utils.toArray(".feature-item-container");
 if(Array.isArray(boxes) && boxes.length && boxes.every(b => b && 'offsetLeft' in b)) {
     const loop = horizontalLoop(boxes, {paused: true, draggable: true});
     boxes.forEach((box, i) => box.addEventListener("click", () => loop.toIndex(i, {duration: 0.8, ease: "power1.inOut"})));    
+    document.querySelector("#features-right")?.addEventListener("click", () => loop.next({duration: 0.4, ease: "power1.inOut"}));
+    document.querySelector("#features-left")?.addEventListener("click", () => loop.previous({duration: 0.4, ease: "power1.inOut"}));
 }
-document.querySelector("#features-right")?.addEventListener("click", () => loop.next({duration: 0.4, ease: "power1.inOut"}));
-document.querySelector("#features-left")?.addEventListener("click", () => loop.previous({duration: 0.4, ease: "power1.inOut"}));
 
 // copied from here: https://greensock.com/docs/v3/HelperFunctions
 /*
