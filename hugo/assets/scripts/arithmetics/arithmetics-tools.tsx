@@ -16,17 +16,19 @@ def b: 3;
 def c: a + b; // 8
 def d: (a ^ b); // 164
 
-def sqrt(x, y):
+def root(x, y):
     x^(1/y);
 
-// This language is case-insensitive regarding symbol names
-2 * c; // 16
-c % 2; // 1
+def sqrt(x):
+    root(x, 2);
 
-sqrt(d, 3); // 32
-Sqrt(81, 2); // 9
-Sqrt(64, 3); // 4
-`
+2 * c; // 16
+b % 2; // 1
+
+// This language is case-insensitive regarding symbol names
+Root(D, 3); // 32
+Root(64, 3); // 4
+Sqrt(81); // 9`
 
 
 export const syntaxHighlighting = {
