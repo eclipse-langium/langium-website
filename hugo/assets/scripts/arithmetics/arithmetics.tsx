@@ -129,7 +129,9 @@ class App extends React.Component<{}> {
     onDocumentChange(resp: DocumentChangeResponse) {
         // decode the received Asts
         let result = JSON.parse(resp.content)
-        this.preview.current?.startPreview(result.evaluations, resp.diagnostics);
+        let evaluations = result.evaluations;
+        delete result.evaluations;
+        this.preview.current?.startPreview(evaluations, resp.diagnostics);
     }
 
     render() {
