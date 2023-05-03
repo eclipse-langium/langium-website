@@ -1,19 +1,16 @@
-import {
-  MonacoEditorReactComp,
-  addMonacoStyles,
-} from "@typefox/monaco-editor-react/bundle";
+import { MonacoEditorReactComp } from "./static/showcase/libs/mer.js";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
-import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools, syntaxHighlighting } from "./statemachine-tools";
+import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools } from "./statemachine-tools";
+import { UserConfig } from "monaco-editor-wrapper";
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
   new URL("", window.location.href).href,
   false
 );
-addMonacoStyles("monaco-editor-styles");
 
 interface StateProps {
   name: string;
@@ -46,7 +43,7 @@ class State extends React.Component<StateProps, StateProps> {
 
   /**
    * set the state to active or inactive
-   * @param active true if the event should be aktive
+   * @param active true if the event should be active
    */
   setActive(active: boolean) {
     this.setState({ isActive: active });
@@ -203,9 +200,12 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
   }
 }
 
-class App extends React.Component<{}> {
+class StateMachineComponent extends React.Component<{
+  langiumConfig: UserConfig
+}> {
   monacoEditor: React.RefObject<MonacoEditorReactComp>;
   preview: React.RefObject<Preview>;
+
   constructor(props) {
     super(props);
 
@@ -265,14 +265,9 @@ class App extends React.Component<{}> {
           </div>
           <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
             <MonacoEditorReactComp
+              userConfig={this.props.langiumConfig}
               ref={this.monacoEditor}
               onLoad={this.onMonacoLoad}
-              webworkerUri="../showcase/libs/worker/statemachineServerWorker.js"
-              workerName="LS"
-              workerType="classic"
-              languageId="statemachine"
-              text={defaultText}
-              syntax={syntaxHighlighting}
               style={style}
             />
           </div>
@@ -290,5 +285,123 @@ class App extends React.Component<{}> {
   }
 }
 
-const root = createRoot(document.getElementById("root") as HTMLElement);
-root.render(<App />);
+/**
+ * Generates a userconfig for the Statemachine example, which is passed to the monaco componnent
+ * 
+ * @param code Program text to start with
+ * @param htmlElement Element to bind the editor to
+ * @returns A completed userconfig
+ */
+async function createStatemachineConfig (code: string, htmlElement: HTMLElement): Promise<UserConfig> {
+
+  // setup extension files/contents
+  const extensionFilesOrContents = new Map<string, string | URL>();
+  const configUrl = new URL('/showcase/statemachine-configuration.json', window.location.href);
+  const grammarUrl = new URL('/showcase/statemachine-grammar.json', window.location.href);
+
+  extensionFilesOrContents.set('/statemachine-configuration.json', configUrl);
+  extensionFilesOrContents.set('/statemachine-grammar.json', await (await fetch(grammarUrl)).text());
+
+  // Language Server preparation
+  const workerUrl = new URL('/showcase/libs/worker/statemachineServerWorker.js', window.location.href);
+
+  // generate langium config
+  return {
+      htmlElement,
+      wrapperConfig: {
+          useVscodeConfig: true,
+          serviceConfig: {
+              enableThemeService: true,
+              enableTextmateService: true,
+              enableModelEditorService: true,
+              modelEditorServiceConfig: {
+                  useDefaultFunction: true
+              },
+              enableConfigurationService: true,
+              configurationServiceConfig: {
+                  defaultWorkspaceUri: '/tmp/'
+              },
+              enableKeybindingsService: true,
+              enableLanguagesService: true,
+              debugLogging: true
+          },
+          monacoVscodeApiConfig: {
+              extension: {
+                  name: 'statemachine',
+                  publisher: 'typefox',
+                  version: '1.0.0',
+                  engines: {
+                      vscode: '*'
+                  },
+                  contributes: {
+                      languages: [{
+                          id: 'statemachine',
+                          extensions: [
+                              '.statemachine'
+                          ],
+                          aliases: [
+                              'statemachine',
+                              'Statemachine'
+                          ],
+                          configuration: './statemachine-configuration.json'
+                      }],
+                      grammars: [{
+                          language: 'statemachine',
+                          scopeName: 'source.statemachine',
+                          path: './statemachine-grammar.json'
+                      }],
+                      keybindings: [{
+                          key: 'ctrl+p',
+                          command: 'editor.action.quickCommand',
+                          when: 'editorTextFocus'
+                      }, {
+                          key: 'ctrl+shift+c',
+                          command: 'editor.action.commentLine',
+                          when: 'editorTextFocus'
+                      }]
+                  }
+              },
+              extensionFilesOrContents,
+              userConfiguration: {
+                  json: `{
+  "workbench.colorTheme": "Default Dark+ Experimental",
+  "editor.fontSize": 14,
+  "editor.lightbulb.enabled": true,
+  "editor.lineHeight": 20,
+  "editor.guides.bracketPairsHorizontal": "active",
+  "editor.lightbulb.enabled": true
+}`
+              }
+          }
+      },
+      editorConfig: {
+          languageId: 'statemachine',
+          code,
+          useDiffEditor: false,
+          automaticLayout: true,
+          theme: 'vs-dark',
+      },
+      languageClientConfig: {
+          enabled: true,
+          useWebSocket: false,
+          workerConfigOptions: {
+              url: workerUrl,
+              type: 'module',
+              name: 'LS',
+          }
+      }
+  };
+}
+
+/**
+ * Constructs the statemachine langium config before rendering
+ */
+async function startEditor() {
+  // setup the global config before rendering
+  const langiumGlobalConfig: UserConfig = await createStatemachineConfig(defaultText, document.getElementById('root')!);
+
+  const root = createRoot(document.getElementById("root") as HTMLElement);
+  root.render(<StateMachineComponent langiumConfig={langiumGlobalConfig}/>);
+}
+
+startEditor();
