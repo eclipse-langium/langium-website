@@ -93,7 +93,7 @@ For convenience, we're going to use two helper libraries from npm that wrap arou
 - [monaco-editor-wrapper](https://www.npmjs.com/package/monaco-editor-wrapper)
 - [monaco-editor-workers](https://www.npmjs.com/package/monaco-editor-workers)
 
-Both these packages should be installed as dependencies for your language. In particular, it's important that you're using version **1.4.0** or later of the monaco-editor-wrapper.
+Both these packages should be installed as dependencies for your language. In particular, this guide will assume that you're using version **2.0.0** or later of the monaco-editor-wrapper package, and version **0.34.2** of the monaco-editor-workers package.
 
 Additionally, we'll want to add `express` as a development dependency (don't forget to also add `@types/express` too), since we'll be using that to run a local web server to test our standalone webpage.
 
@@ -199,14 +199,14 @@ import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
 
 buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
 
-MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
+// MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
 ```
 
 Then, we'll want to instantiate our language client wrapper. We'll also need to get a handle for the editor configuration, and set the current language id to `minilogo`. This should match the id of the language that will be recognized by our language server.
 
 ```js
 const client = new MonacoEditorLanguageClientWrapper();
-const editorConfig = client.getEditorConfig();
+// const editorConfig = client.getEditorConfig();
 editorConfig.setMainLanguageId('minilogo');
 ```
 
@@ -280,6 +280,7 @@ test()
 Lastly, we'll cap off our JS file with some final configurations to setup the theme, configure how we use Langium's language server, and finish setting up the editor.
 
 ```js
+// TODO @montymxb all this editor config stuff needs to be updated BEFORE merging in
 editorConfig.theme = 'vs-dark';
 editorConfig.useLanguageClient = true;
 editorConfig.useWebSocket = false;

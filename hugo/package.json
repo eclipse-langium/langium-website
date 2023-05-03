@@ -7,7 +7,7 @@
   "scripts": {
     "clean:static": "npx shx rm -rf ./static/showcase ./static/playground ./static/libs",
     "copy:libs:prepare": "npx shx mkdir -p ./static/libs/monaco-editor-workers/workers",
-    "copy:monaco-editor-wrapper": "npm run copy:libs:prepare && npx shx cp -fr ../node_modules/monaco-editor-wrapper/bundle ./static/libs/monaco-editor-wrapper",
+    "copy:monaco-editor-wrapper": "npm run copy:libs:prepare && npx shx cp -fr ./node_modules/monaco-editor-wrapper/bundle ./static/libs/monaco-editor-wrapper",
     "copy:monaco-workers": "npm run copy:libs:prepare && npx shx cp -f ../node_modules/monaco-editor-workers/dist/index.* ./static/libs/monaco-editor-workers && npx shx cp -f ../node_modules/monaco-editor-workers/dist/workers/editorWorker-iife.js ./static/libs/monaco-editor-workers/workers",
     "build:worker/statemachine": "esbuild ../node_modules/langium-statemachine-dsl/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/statemachineServerWorker.js",
     "build:worker/playground-langium": "esbuild ./content/playground/langium-worker.ts --bundle --format=iife --outfile=./static/playground/libs/worker/langiumServerWorker.js",
@@ -34,15 +34,14 @@
     "@babel/core": "~7.20.5",
     "@babel/preset-react": "~7.18.6",
     "@babel/preset-typescript": "~7.18.6",
-    "@typefox/monaco-editor-react": "1.0.0-next.6",
+    "@typefox/monaco-editor-react": "1.0.0-next.9",
     "hugo-extended": "~0.89.4",
     "langium": "1.1.0",
     "langium-arithmetics-dsl": "~1.1.0",
     "langium-domainmodel-dsl": "~1.1.0",
     "langium-statemachine-dsl": "~1.1.0",
     "lz-string": "^1.4.4",
-    "monaco-editor-workers": "0.34.2",
-    "monaco-editor-wrapper": "1.4.1",
+    "monaco-editor-workers": "0.37.0",
     "vscode-languageserver": "8.0.2"
   },
   "volta": {
