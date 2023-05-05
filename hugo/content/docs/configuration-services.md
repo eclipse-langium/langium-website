@@ -146,7 +146,9 @@ export class ServiceClass {
         this.serviceOne = () => services.ServiceOne; // <-- lazy evaluated service
     }
     /* service logic */
-    this.serviceOne().methodOne();
+    method() {
+        this.serviceOne().methodOne();
+    }
 }
 ```
 
