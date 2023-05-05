@@ -13,8 +13,8 @@ export const defaultText = `Module basicMath
 
 def a: 5;
 def b: 3;
-def c: a + b; // 8
-def d: (a ^ b); // 164
+def c: a + b;
+def d: (a ^ b);
 
 def root(x, y):
     x^(1/y);
@@ -22,13 +22,13 @@ def root(x, y):
 def sqrt(x):
     root(x, 2);
 
-2 * c; // 16
-b % 2; // 1
+2 * c;
+b % 2;
 
 // This language is case-insensitive regarding symbol names
-Root(D, 3); // 32
-Root(64, 3); // 4
-Sqrt(81); // 9`
+Root(D, 3);
+Root(64, 3);
+Sqrt(81);`
 
 
 export const syntaxHighlighting = {
