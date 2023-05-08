@@ -135,6 +135,23 @@ export class ServiceClass {
 }
 ```
 
+#### Resolving cyclic dependencies
+
+In case one of the services the `ServiceClass` above depends on, also has a dependency back to the `ServiceClass`, your module will throw an error similar to this: `Cycle detected. Please make "ServiceClass" lazy.` Ideally, such cyclic dependencies between services should be avoided. Sometimes, cycles are unavoidable though. In order to make them lazy, assign a lambda function that returns the service in the constructor. You can then invoke this function in your service logic to get access to the depending service:
+```Typescript
+export class ServiceClass {
+    private readonly serviceOne: () => ServiceOne;
+
+    constructor(services: ArithmeticsServices) {
+        this.serviceOne = () => services.ServiceOne; // <-- lazy evaluated service
+    }
+    /* service logic */
+    method() {
+        this.serviceOne().methodOne();
+    }
+}
+```
+
 #### Using ArithmeticsValidator in other services
 The `ArithmeticsValidator` needs to be registered inside of the `ValidationRegistry`. This done by [overriding](#overriding-and-extending-services) `ValidationRegistry` with `ArithmeticsValidationRegistry`.
 
