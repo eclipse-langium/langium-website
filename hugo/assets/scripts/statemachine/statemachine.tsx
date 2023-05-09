@@ -386,6 +386,8 @@ class App extends React.Component<{}> {
     // };
 
     // let langiumGlobalConfig: UserConfig = this.createStatemachineConfig(defaultText, document.getElementById('monaco-root')!);
+
+    // this.langiumGlobalConfig = this.createStatemachineConfig(defaultText, this.monacoEditor.current as unknown as HTMLElement);
     this.langiumGlobalConfig = this.createStatemachineConfig(defaultText, document.getElementById('root')!);
 
     return (
