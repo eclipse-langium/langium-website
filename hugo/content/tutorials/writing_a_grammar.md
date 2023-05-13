@@ -221,7 +221,7 @@ Color:  'color' '(' ((r = Expr ',' g=Expr ',' b=Expr) | color=ID | color=HEX) ')
 
 What's interesting here is that the color & r,g,b properties are *both* optional. Since in either case only one or the other will be defined. With the two forms, this is enough information to quickly determine what kind of color command we have, and to handle it correctly later on.
 
-## Addding Expressions
+## Adding Expressions
 
 Now we're at the core of our language, **Expressions**. In MiniLogo we want to be able to express not only literal values, but also references and arithmetic operations such as addition, subtraction, multiplication, and division. When implementing expressions, we need to keep in mind that Langium is based off of Chevrotain, which produces top-down parsers. This means we have to watch out for cases that lead to left-recursion. In order to avoid this, we need to be careful not to define a rule with itself on the left-hand side. For example, something like `Expr: e1=Expr ...` would not work, because the parser would infinitely try to parse another expression forever.
 
