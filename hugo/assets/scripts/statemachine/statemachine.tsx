@@ -59,7 +59,7 @@ class State extends React.Component<StateProps, StateProps> {
         ref={this.stateRef}
       >
         {this.state.isActive ? (
-          <div className="text-emeraldLangium border-2 border-solid border-emeraldLangium rounded-md p-4 text-center text-sm shadow-opacity-50 shadow-[0px_0px_15px_0px] shadow-emeraldLangium">
+          <div className="text-emeraldLangium border-2 border-solid transition-shadow border-emeraldLangium rounded-md p-4 text-center text-sm shadow-opacity-50 shadow-[0px_0px_15px_0px] shadow-emeraldLangium">
             {this.state.name}
           </div>
         ) : (
@@ -94,7 +94,7 @@ class Event extends React.Component<EventProps, EventProps> {
       <button
         onClick={this.props.handleClick}
         disabled={this.state.isEnabled}
-        className="text-white border-2 border-solid bg-emeraldLangiumABitDarker rounded-md p-4 text-center text-sm enabled:hover:shadow-opacity-50 enabled:hover:shadow-[0px_0px_15px_0px] enabled:hover:shadow-emeraldLangium disabled:border-gray-400 disabled:text-gray-400 disabled:bg-emeraldLangiumDarker ">
+        className="text-white border-2 border-solid transition-shadow bg-emeraldLangiumABitDarker rounded-md p-4 text-center text-sm enabled:hover:shadow-opacity-50 enabled:hover:shadow-[0px_0px_15px_0px] enabled:hover:shadow-emeraldLangium disabled:border-gray-400 disabled:text-gray-400 disabled:bg-emeraldLangiumDarker ">
         {this.props.name}
       </button>
     );
