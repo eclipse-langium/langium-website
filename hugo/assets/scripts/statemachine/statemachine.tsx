@@ -258,7 +258,7 @@ class App extends React.Component<{}> {
     return (
       <div className="justify-center self-center flex flex-col md:flex-row h-full w-full">
         <div className="float-left w-full h-full flex flex-col">
-          <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-4 text-white font-mono">
+          <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono">
             Editor
           </div>
           <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
@@ -276,11 +276,11 @@ class App extends React.Component<{}> {
           </div>
         </div>
         <div className="float-left w-full h-full flex flex-col" id="preview">
-          <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-4 text-white font-mono ">
+          <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono ">
             Preview
           </div>
           <div className="border border-emeraldLangium h-full w-full">
-            <Preview ref={this.preview}/>
+            <Preview ref={this.preview} />
           </div>
         </div>
       </div>
