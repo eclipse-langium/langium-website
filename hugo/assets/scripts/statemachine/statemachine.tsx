@@ -113,7 +113,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
   }
 
   startPreview(ast: StateMachineAstNode, diagnostics: Diagnostic[]) {
-    this.setState({astNode: ast, diagnostics: diagnostics });
+    this.setState({ astNode: ast, diagnostics: diagnostics });
   }
 
   render() {
@@ -136,7 +136,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 
       let statemachineTools = new StateMachineTools(this.state.astNode);
       // update the aktive state
-      const changeStates = function(state: StateMachineState) {
+      const changeStates = function (state: StateMachineState) {
         statemachineTools.setState(state);
 
         // loop through all states and set the active state
@@ -147,7 +147,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
         states.forEach((i) => {
           i.setActive(statemachineTools.isCurrentState(statemachineTools.getStateByName(i.props.name)!));
         });
-   
+
       }
 
       return (
@@ -165,7 +165,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
                 ></Event>
               );
             })}
-          </div> 
+          </div>
           <p className="text-white text-lg w-full my-4">States</p>
           <div className="flex flex-wrap w-full gap-2 justify-start ">
             { // loop through every state and display it check if the state is active
@@ -189,12 +189,12 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
     return (
       <div className="flex flex-col h-full w-full p-4 justify-start items-center my-10" >
         <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-left text-sm cursor-default">
-        {this.state.diagnostics.filter((i) => i.severity === 1).map((diagnostic, index) => 
-          <details key={index}>
-            <summary>{`Line ${diagnostic.range.start.line + 1}-${diagnostic.range.end.line + 1}: ${diagnostic.message}`}</summary>
-            <p>Source: {diagnostic.source} | Code: {diagnostic.code}</p>
-          </details>
-        )}
+          {this.state.diagnostics.filter((i) => i.severity === 1).map((diagnostic, index) =>
+            <details key={index}>
+              <summary>{`Line ${diagnostic.range.start.line + 1}-${diagnostic.range.end.line + 1}: ${diagnostic.message}`}</summary>
+              <p>Source: {diagnostic.source} | Code: {diagnostic.code}</p>
+            </details>
+          )}
         </div>
       </div>
     );
@@ -251,15 +251,17 @@ class App extends React.Component<{}> {
 
   render() {
     const style = {
-      paddingTop: "5px",
       height: "100%",
       width: "100%",
     };
 
     return (
-      <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
-        <div className="float-left w-1/2 h-full border-r border-emeraldLangium">
-          <div className="wrapper relative bg-white dark:bg-gray-900">
+      <div className="justify-center self-center flex flex-col md:flex-row h-full w-full">
+        <div className="float-left w-full h-full flex flex-col">
+          <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-4 text-white font-mono">
+            Editor
+          </div>
+          <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
             <MonacoEditorReactComp
               ref={this.monacoEditor}
               onLoad={this.onMonacoLoad}
@@ -273,8 +275,13 @@ class App extends React.Component<{}> {
             />
           </div>
         </div>
-        <div className="float-right w-1/2 h-full" id="preview">
-          <Preview ref={this.preview} />
+        <div className="float-left w-full h-full flex flex-col" id="preview">
+          <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-4 text-white font-mono ">
+            Preview
+          </div>
+          <div className="border border-emeraldLangium h-full w-full">
+            <Preview ref={this.preview}/>
+          </div>
         </div>
       </div>
     );

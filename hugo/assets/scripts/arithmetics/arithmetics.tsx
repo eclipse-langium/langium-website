@@ -33,7 +33,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 
         this.startPreview = this.startPreview.bind(this);
     }
-    
+
     startPreview(evaluations: Evaluation[], diagnostics: Diagnostic[]) {
         this.setState({ focusLine: this.state.focusLine.bind(this) })
         this.setState({ evaluations: evaluations, diagnostics: diagnostics });
@@ -141,9 +141,12 @@ class App extends React.Component<{}> {
         };
 
         return (
-            <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
-                <div className="float-left w-1/2 h-full border-r border-emeraldLangium">
-                    <div className="wrapper relative bg-white dark:bg-gray-900">
+            <div className="justify-center self-center flex flex-col md:flex-row h-full w-full">
+                <div className="float-left w-full h-full flex flex-col">
+                    <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-4 text-white font-mono">
+                        Editor
+                    </div>
+                    <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
                         <MonacoEditorReactComp
                             ref={this.monacoEditor}
                             onLoad={this.onMonacoLoad}
@@ -157,12 +160,17 @@ class App extends React.Component<{}> {
                         />
                     </div>
                 </div>
-                <div className="float-right w-1/2 h-full" id="preview">
-                    <Preview ref={this.preview} focusLine={(line: number) => {
-                        this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.revealLineInCenter(line);
-                        this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setPosition({ lineNumber: line, column: 1 });
-                        this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.focus();
-                    }} />
+                <div className="float-left w-full h-full flex flex-col" id="preview">
+                    <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-4 text-white font-mono ">
+                        Preview
+                    </div>
+                    <div className="border border-emeraldLangium h-full w-full">
+                        <Preview ref={this.preview} focusLine={(line: number) => {
+                            this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.revealLineInCenter(line);
+                            this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setPosition({ lineNumber: line, column: 1 });
+                            this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.focus();
+                        }} />
+                    </div>
                 </div>
             </div>
         );
