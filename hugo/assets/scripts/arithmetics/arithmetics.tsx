@@ -6,8 +6,8 @@ import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast";
-import { Evaluation, defaultText, syntaxHighlighting } from "./arithmetics-tools";
-
+import { Evaluation, examples, syntaxHighlighting } from "./arithmetics-tools";
+ 
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
     new URL("", window.location.href).href,
@@ -84,7 +84,11 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
     }
 }
 
-class App extends React.Component<{}> {
+
+interface AppState {
+    exampleIndex: number;
+}
+class App extends React.Component<{}, AppState> {
     monacoEditor: React.RefObject<MonacoEditorReactComp>;
     preview: React.RefObject<Preview>;
     constructor(props) {
@@ -95,6 +99,10 @@ class App extends React.Component<{}> {
         this.onDocumentChange = this.onDocumentChange.bind(this);
         this.monacoEditor = React.createRef();
         this.preview = React.createRef();
+
+        this.state = {
+            exampleIndex: 0,
+        };
     }
 
     /**
@@ -133,6 +141,11 @@ class App extends React.Component<{}> {
         this.preview.current?.startPreview(evaluations, resp.diagnostics);
     }
 
+    setExample(index: number) {
+        this.setState({ exampleIndex: index });
+        this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setValue(examples[this.state.exampleIndex]);
+    }
+
     render() {
         const style = {
             height: "100%",
@@ -143,7 +156,11 @@ class App extends React.Component<{}> {
             <div className="justify-center self-center flex flex-col md:flex-row h-full w-full">
                 <div className="float-left w-full h-full flex flex-col">
                     <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono">
-                        Editor
+                        <span>Editor</span>
+                        <select className="ml-4 bg-emeraldLangiumDarker cursor-pointer border-0 border-b" onChange={(e) => this.setExample(parseInt(e.target.value))}>
+                            <option className="hover:bg-emeraldLangiumABitDarker" value="0">Basic Math</option>
+                            <option className="hover:bg-emeraldLangiumABitDarker" value="1">Price calculator</option>
+                        </select>    
                     </div>
                     <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
                         <MonacoEditorReactComp
@@ -153,7 +170,7 @@ class App extends React.Component<{}> {
                             workerName="LS"
                             workerType="classic"
                             languageId="arithmetics"
-                            text={defaultText}
+                            text={examples[this.state.exampleIndex]}
                             syntax={syntaxHighlighting}
                             style={style}
                         />

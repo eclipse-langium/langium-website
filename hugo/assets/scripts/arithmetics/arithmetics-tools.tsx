@@ -9,7 +9,7 @@ export interface Evaluation {
     text: string;
     value: number;
 }
-export const defaultText = `Module basicMath
+export const examples = [`Module basicMath
 
 def a: 5;
 def b: 3;
@@ -28,7 +28,42 @@ b % 2;
 // This language is case-insensitive regarding symbol names
 Root(D, 3);
 Root(64, 3);
-Sqrt(81);`
+Sqrt(81);`,
+`MODULE priceCalculator
+
+
+DEF materialPerUnit:               100;
+
+DEF laborPerUnit:                  200;
+
+DEF costPerUnit:                   materialPerUnit + laborPerUnit;
+
+
+DEF expectedNoOfSales:             200;
+
+DEF costOfGoodsSold:               expectedNoOfSales * costPerUnit;
+
+
+DEF generalExpensesAndSales:       10000;
+
+DEF desiredProfitPerUnit:          50;
+
+DEF netPrice:
+
+    (costOfGoodsSold + generalExpensesAndSales) / expectedNoOfSales + desiredProfitPerUnit;
+
+
+DEF vat:                           0.15;
+
+
+DEF calcGrossListPrice(net, tax):
+
+    net / (1 - tax);
+
+
+calcGrossListPrice(netPrice, vat);`
+]
+
 
 
 export const syntaxHighlighting = {
