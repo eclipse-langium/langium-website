@@ -6,9 +6,7 @@ import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import {
-  Diagnostic,
   DocumentChangeResponse,
-  LangiumAST,
 } from "../langium-utils/langium-ast";
 import {
   defaultText,
@@ -24,14 +22,16 @@ addMonacoStyles("monaco-editor-styles");
 
 
 class App extends React.Component<{}> {
-  monacoEditor: React.RefObject<MonacoEditorReactComp>;
+  private monacoEditorLeft: React.RefObject<MonacoEditorReactComp>;
+  private monacoEditorRight: React.RefObject<MonacoEditorReactComp>;
   constructor(props) {
     super(props);
 
     // bind 'this' ref for callbacks to maintain parent context
     this.onMonacoLoad = this.onMonacoLoad.bind(this);
     this.onDocumentChange = this.onDocumentChange.bind(this);
-    this.monacoEditor = React.createRef();
+    this.monacoEditorLeft = React.createRef();
+    this.monacoEditorRight = React.createRef();
   }
 
   /**
@@ -40,14 +40,14 @@ class App extends React.Component<{}> {
    *
    * @throws Error on inability to ref the Monaco component or to get the language client
    */
-  onMonacoLoad() {
+  onMonacoLoad(editor: React.RefObject<MonacoEditorReactComp>) {
     // verify we can get a ref to the editor
-    if (!this.monacoEditor.current) {
+    if (!editor.current) {
       throw new Error("Unable to get a reference to the Monaco Editor");
     }
 
     // verify we can get a ref to the language client
-    const lc = this.monacoEditor.current
+    const lc = editor.current
       ?.getEditorWrapper()
       ?.getLanguageClient();
     if (!lc) {
@@ -75,19 +75,31 @@ class App extends React.Component<{}> {
     const style = {
       paddingTop: "5px",
       height: "100%",
-      width: "100%",
     };
 
     return (
       <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
         <MonacoEditorReactComp
-          ref={this.monacoEditor}
-          onLoad={this.onMonacoLoad}
+          className="w-1/2"
+          ref={this.monacoEditorLeft}
+          onLoad={() => this.onMonacoLoad(this.monacoEditorLeft)}
           webworkerUri="../showcase/libs/worker/sqlServerWorker.js"
           workerName="LS"
           workerType="classic"
           languageId="sql"
           text={defaultText}
+          syntax={syntaxHighlighting}
+          style={style}
+        />
+        <MonacoEditorReactComp
+          className="w-1/2"
+          ref={this.monacoEditorRight}
+          onLoad={() => this.onMonacoLoad(this.monacoEditorRight)}
+          webworkerUri="../showcase/libs/worker/sqlServerWorker.js"
+          workerName="LS"
+          workerType="classic"
+          languageId="sql"
+          text={''}
           syntax={syntaxHighlighting}
           style={style}
         />
