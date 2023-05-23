@@ -157,9 +157,9 @@ class App extends React.Component<{}, AppState> {
                 <div className="float-left w-full h-full flex flex-col">
                     <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono">
                         <span>Editor</span>
-                        <select className="ml-4 bg-emeraldLangiumDarker cursor-pointer border-0 border-b" onChange={(e) => this.setExample(parseInt(e.target.value))}>
-                            <option className="hover:bg-emeraldLangiumABitDarker" value="0">Basic Math</option>
-                            <option className="hover:bg-emeraldLangiumABitDarker" value="1">Price calculator</option>
+                        <select className="ml-4 bg-emeraldLangiumDarker cursor-pointer border-0 border-b invalid:bg-emeraldLangiumABitDarker" onChange={(e) => this.setExample(parseInt(e.target.value))}>
+                            <option value="0">Basic Math</option>
+                            <option value="1">Price calculator</option>
                         </select>    
                     </div>
                     <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">

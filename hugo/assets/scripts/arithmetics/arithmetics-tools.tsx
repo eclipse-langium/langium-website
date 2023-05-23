@@ -29,37 +29,31 @@ b % 2;
 Root(D, 3);
 Root(64, 3);
 Sqrt(81);`,
+
 `MODULE priceCalculator
 
+DEF materialPerUnit: 100;
 
-DEF materialPerUnit:               100;
+DEF laborPerUnit: 200;
 
-DEF laborPerUnit:                  200;
+DEF costPerUnit: materialPerUnit + laborPerUnit;
 
-DEF costPerUnit:                   materialPerUnit + laborPerUnit;
+DEF expectedNoOfSales: 200;
 
+DEF costOfGoodsSold: expectedNoOfSales * costPerUnit;
 
-DEF expectedNoOfSales:             200;
+DEF generalExpensesAndSales: 10000;
 
-DEF costOfGoodsSold:               expectedNoOfSales * costPerUnit;
-
-
-DEF generalExpensesAndSales:       10000;
-
-DEF desiredProfitPerUnit:          50;
+DEF desiredProfitPerUnit: 50;
 
 DEF netPrice:
-
     (costOfGoodsSold + generalExpensesAndSales) / expectedNoOfSales + desiredProfitPerUnit;
 
-
-DEF vat:                           0.15;
+DEF vat: 0.15;
 
 
 DEF calcGrossListPrice(net, tax):
-
     net / (1 - tax);
-
 
 calcGrossListPrice(netPrice, vat);`
 ]
