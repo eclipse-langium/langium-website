@@ -102,7 +102,7 @@ export class LangiumAST {
 /**
  * General position data for diagnostics
  */
-type Pos = {
+export type Pos = {
     character: number;
     line: number;
 }
