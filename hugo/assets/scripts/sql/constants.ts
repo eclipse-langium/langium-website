@@ -133,7 +133,12 @@ export const syntaxHighlighting: monaco.languages.IMonarchLanguage = {
   ],
 };
 
-export const defaultText = `CREATE TABLE airline (
+export const defaultText = `SELECT * FROM airplane a;
+
+--
+-- Database schemes
+--
+CREATE TABLE airline (
   airline_id INT NOT NULL,
   iata CHAR NOT NULL,
   airlinename CHAR,

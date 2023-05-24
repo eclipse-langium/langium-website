@@ -23,7 +23,6 @@ addMonacoStyles("monaco-editor-styles");
 
 class App extends React.Component<{}> {
   private monacoEditorLeft: React.RefObject<MonacoEditorReactComp>;
-  private monacoEditorRight: React.RefObject<MonacoEditorReactComp>;
   constructor(props) {
     super(props);
 
@@ -31,7 +30,6 @@ class App extends React.Component<{}> {
     this.onMonacoLoad = this.onMonacoLoad.bind(this);
     this.onDocumentChange = this.onDocumentChange.bind(this);
     this.monacoEditorLeft = React.createRef();
-    this.monacoEditorRight = React.createRef();
   }
 
   /**
@@ -91,18 +89,9 @@ class App extends React.Component<{}> {
           syntax={syntaxHighlighting}
           style={style}
         />
-        <MonacoEditorReactComp
-          className="w-1/2"
-          ref={this.monacoEditorRight}
-          onLoad={() => this.onMonacoLoad(this.monacoEditorRight)}
-          webworkerUri="../showcase/libs/worker/sqlServerWorker.js"
-          workerName="LS"
-          workerType="classic"
-          languageId="sql"
-          text={''}
-          syntax={syntaxHighlighting}
-          style={style}
-        />
+        <div className="w-1/2 h-full border-l border-l-emeraldLangium p-4 text-white">
+          Space for explanations
+        </div>
       </div>
     );
   }
