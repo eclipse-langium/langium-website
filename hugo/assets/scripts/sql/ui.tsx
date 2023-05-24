@@ -74,14 +74,13 @@ class App extends React.Component<{}> {
       paddingTop: "5px",
       height: "100%",
     };
-
     return (
       <div className="w-full h-full border border-emeraldLangium justify-center self-center flex">
         <MonacoEditorReactComp
           className="w-1/2"
           ref={this.monacoEditorLeft}
           onLoad={() => this.onMonacoLoad(this.monacoEditorLeft)}
-          webworkerUri="../showcase/libs/worker/sqlServerWorker.js"
+          webworkerUri={"showcase/libs/worker/sqlServerWorker.js"}
           workerName="LS"
           workerType="classic"
           languageId="sql"

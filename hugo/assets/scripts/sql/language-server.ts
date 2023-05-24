@@ -24,7 +24,7 @@ const connection = createConnection(messageReader, messageWriter);
 const { shared } = createSqlServices({
   connection,
   ...EmptyFileSystem,
-  module: { dialect: { dataTypes: new DialectTypes(MySqlDialectTypes) } },
+  module: { dialect: { dataTypes: () => new DialectTypes(MySqlDialectTypes) } },
 });
 
 // Start the language server with the shared services
