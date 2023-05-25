@@ -133,10 +133,10 @@ export const syntaxHighlighting: monaco.languages.IMonarchLanguage = {
   ],
 };
 
-export const defaultText = `SELECT * FROM airplane a;
+export const defaultText = `SELECT * FROM airplane a JOIN flight f ON a.airplane_id=f.airplane_id;
 
 --
--- Database schemes
+-- Airport schema
 --
 CREATE TABLE airline (
   airline_id INT NOT NULL,
@@ -326,9 +326,4 @@ CREATE TABLE weatherdata (
   winddirection INT NOT NULL,
   PRIMARY KEY (log_date,time,station)
 );
-
--- The Flughafen DB by Stefan Proell, Eva Zangerle, Wolfgang Gassler 
--- is located under https://github.com/stefanproell/flughafendb
--- and is licensed under CC BY 4.0. To view a copy of this license, 
--- visit https://creativecommons.org/licenses/by/4.0
 `;
