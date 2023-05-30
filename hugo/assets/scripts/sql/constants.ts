@@ -133,7 +133,19 @@ export const syntaxHighlighting: monaco.languages.IMonarchLanguage = {
   ],
 };
 
-export const defaultText = `SELECT * FROM airplane a JOIN flight f ON a.airplane_id=f.airplane_id;
+export const defaultText = `SELECT p.firstname, p.lastname
+FROM
+  passenger p
+  JOIN passengerdetails d
+  ON p.passenger_id=d.passenger_id
+WHERE
+  d.sex = 'm';
+
+SELECT *
+FROM
+  airplane a
+  JOIN flight f
+  ON a.airplane_id=f.airplane_id;
 
 --
 -- Airport schema
