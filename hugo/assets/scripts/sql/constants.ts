@@ -147,6 +147,14 @@ FROM
   JOIN flight f
   ON a.airplane_id=f.airplane_id;
 
+SELECT SUM(b.price)
+FROM
+  booking b
+  JOIN flight f
+  ON b.flight_id=f.flight_id
+WHERE
+  f.flight_id = 123;
+
 --
 -- Airport schema
 --
@@ -338,4 +346,6 @@ CREATE TABLE weatherdata (
   winddirection INT NOT NULL,
   PRIMARY KEY (log_date,time,station)
 );
+
+CREATE FUNCTION SUM(column REAL) AS REAL;
 `;
