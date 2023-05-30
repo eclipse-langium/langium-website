@@ -87,7 +87,7 @@ class App extends React.Component<{}> {
           syntax={syntaxHighlighting}
           style={style}
         />
-        <div className="w-1/2 h-auto p-4 text-white overflow-auto">
+        <div className="w-1/2 p-4 text-white overflow-auto">
           <h1 className="text-2xl">Langium/SQL</h1>
           <p className="pt-2">
             This is a showcase of <a className="text-emeraldLangium" href="https://github.com/langium/langium-sql" target="_blank">Langium/SQL</a>. The editor on the
@@ -117,5 +117,7 @@ class App extends React.Component<{}> {
   }
 }
 
-const root = createRoot(document.getElementById("root") as HTMLElement);
+const element = document.getElementById("root") as HTMLElement;
+element.className = 'w-full'
+const root = createRoot(element);
 root.render(<App />);
