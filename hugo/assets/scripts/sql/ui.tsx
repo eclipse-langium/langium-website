@@ -90,19 +90,19 @@ class App extends React.Component<{}> {
         <div className="w-1/2 p-4 text-white overflow-auto">
           <h1 className="text-2xl">Langium/SQL</h1>
           <p className="pt-2">
-            This is a showcase of <a className="text-emeraldLangium" href="https://github.com/langium/langium-sql" target="_blank">Langium/SQL</a>. The editor on the
-            left is a Monaco editor driven by our SQL language server. The current setup mimics <a className="text-emeraldLangium" href="https://www.mysql.com" target="_blank">MySQL</a>.
+            This is a showcase of <a className="text-emeraldLangium" href="https://github.com/langium/langium-sql" target="_blank">Langium/SQL</a>. The editor above
+            is a Monaco editor driven by our SQL language server. The current setup mimics <a className="text-emeraldLangium" href="https://www.mysql.com" target="_blank">MySQL</a>.
           </p>
           <h2 className="text-xl pt-4 underline">Features</h2>
           <p className="pt-2">
             <ul className="list-disc list-inside">
-              <li><strong>Schema-driven</strong>: Add an amount of table definitions to spread out the world for your SELECT queries.</li>
-              <li><strong>Code completion</strong>: Press Cmd or Ctrl + Space keys to trigger the completion directly. You will get suggestions for the current context.</li>
-              <li><strong>Syntax highlighting</strong>: to distiguish what are keywords, identifiers, numeric literals and for a better perception of the SQL syntax.</li>
+              <li><strong>Schema-driven</strong>: Add a set of table definitions to spread out the world for your SELECT queries. The table definitions can be located in a different file of the same workspace. You can keep definitions and queries separated.</li>
+              <li><strong>Code completion</strong>: Press Ctrl + Space keys to trigger the completion directly. You will get suggestions for the current context.</li>
+              <li><strong>Syntax highlighting</strong>: to distinguish what are keywords, identifiers, numeric literals and for a better perception of the SQL syntax.</li>
               <li><strong>Symbol search</strong>: Use Cmd or Ctrl + mouse click on a column name to find the definition of it or explore the places where a column is used.</li>
               <li><strong>Fast feedback</strong> about contextual correctness: Whether referenced columns exist or types on certain operators are matching.</li>
-              <li><strong>Super-set approach</strong>: Any piece of any dialect that is missing, can be added to the main grammar and be protected from other dialects using validations.</li>
-              <li><strong>Highly customizable</strong>: Any behaviour or aspect that is missing, can be overwritten pretty simple.</li>
+              <li><strong>Super-set approach</strong>: Any piece of any dialect that is missing can be added to the main grammar and be protected from other dialects using validations.</li>
+              <li><strong>Highly customizable</strong>: Any behavior or aspect that is missing for your specific use case can be easily overwritten.</li>
             </ul>
           </p>
           <h2 className="text-xl pt-4 underline">About the given SQL document</h2>
