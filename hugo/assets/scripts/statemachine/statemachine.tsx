@@ -1,4 +1,4 @@
-import { MonacoEditorReactComp } from "@typefox/monaco-editor-react/bundle";
+import { MonacoEditorReactComp } from "./static/showcase/libs/mer.js";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
