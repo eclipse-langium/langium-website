@@ -313,12 +313,12 @@ async function createStatemachineConfig (code: string, htmlElement: HTMLElement)
           serviceConfig: {
               enableThemeService: true,
               enableTextmateService: true,
-              enableModelEditorService: true,
-              modelEditorServiceConfig: {
-                  useDefaultFunction: true
+              enableModelService: true,
+              configureEditorOrViewsServiceConfig: {
+                  enableViewsService: false,
+                  useDefaultOpenEditorFunction: true
               },
-              enableConfigurationService: true,
-              configurationServiceConfig: {
+              configureConfigurationServiceConfig: {
                   defaultWorkspaceUri: '/tmp/'
               },
               enableKeybindingsService: true,
