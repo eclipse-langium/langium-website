@@ -9,8 +9,8 @@ const config = defineConfig({
             fileName: () => 'mer.js',
             formats: ['es']
         },
-        outDir: resolve(__dirname, 'static/showcase/libs/'),
-        assetsDir: resolve(__dirname, 'static/showcase/libs/assets'),
+        outDir: resolve(__dirname, 'static/libs/mer'),
+        assetsDir: resolve(__dirname, 'static/libs/mer/assets'),
         emptyOutDir: false,
         cssCodeSplit: false,
         commonjsOptions: {

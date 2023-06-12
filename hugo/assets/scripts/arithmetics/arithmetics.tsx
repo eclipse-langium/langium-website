@@ -1,7 +1,4 @@
-import {
-    MonacoEditorReactComp,
-    addMonacoStyles,
-} from "@typefox/monaco-editor-react/bundle";
+import { MonacoEditorReactComp } from "./static/libs/mer/mer.js";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -13,8 +10,6 @@ buildWorkerDefinition(
     new URL("", window.location.href).href,
     false
 );
-addMonacoStyles("monaco-editor-styles");
-
 
 interface PreviewProps {
     evaluations?: Evaluation[];

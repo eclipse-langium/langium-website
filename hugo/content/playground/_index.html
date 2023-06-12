@@ -10,6 +10,7 @@ draft: false
 noMain: true
 playground: true
 ---
+<link rel="stylesheet" href="../libs/mer/assets/style.css">
 <link rel="preload" as="script" href="./libs/worker/common.js"/>
 <link rel="preload" as="script" href="./libs/worker/langiumServerWorker.js"/>
 <link rel="preload" as="script" href="./libs/worker/userServerWorker.js"/>
@@ -23,9 +24,6 @@ playground: true
     new URL("", window.location.href).href,
     false
   );
-  
-  // helper function for adding monaco styles with embedded codicon TTF
-  // MonacoEditorLanguageClientWrapper.addMonacoStyles("monaco-editor-styles");
   
   addEventListener('load', function() {
     let getState = null; //: () => PlaygroundParameters
