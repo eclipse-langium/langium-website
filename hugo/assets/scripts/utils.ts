@@ -131,6 +131,9 @@ export async function createMonacoEditorReactConfig(config: MonacoReactConfig): 
               }
           },
           monacoEditorConfig: {
+            languageExtensionConfig: {
+                id
+            },
             languageDef: config.monarchSyntax
           }
       },

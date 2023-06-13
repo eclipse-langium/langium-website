@@ -9,6 +9,8 @@ import {
   defaultText,
   syntaxHighlighting,
 } from "./constants";
+import { UserConfig } from "monaco-editor-wrapper";
+import { createMonacoEditorReactConfig } from '../utils';
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
@@ -16,6 +18,7 @@ buildWorkerDefinition(
   false
 );
 
+let userConfig: UserConfig;
 
 class App extends React.Component<{}> {
   private monacoEditorLeft: React.RefObject<MonacoEditorReactComp>;
@@ -72,15 +75,10 @@ class App extends React.Component<{}> {
     return (
       <div className="w-full justify-center flex flex-col items-center">
         <MonacoEditorReactComp
+          userConfig={userConfig}
           className="w-1/2 border border-emeraldLangium h-[50vh] min-h-[300px]"
           ref={this.monacoEditorLeft}
           onLoad={() => this.onMonacoLoad(this.monacoEditorLeft)}
-          webworkerUri={"showcase/libs/worker/sqlServerWorker.js"}
-          workerName="LS"
-          workerType="classic"
-          languageId="sql"
-          text={defaultText}
-          syntax={syntaxHighlighting}
           style={style}
         />
         <div className="w-1/2 p-4 text-white overflow-auto">
@@ -113,7 +111,24 @@ class App extends React.Component<{}> {
   }
 }
 
-const element = document.getElementById("root") as HTMLElement;
-element.className = 'w-full'
-const root = createRoot(element);
-root.render(<App />);
+/**
+ * Constructs the SQL langium config before rendering
+ */
+async function startEditor() {
+  // setup the global config before rendering
+  userConfig = await createMonacoEditorReactConfig({
+    languageId: 'sql',
+    code: defaultText,
+    htmlElement: document.getElementById('root')!,
+    languageGrammar: '',
+    serverWorkerUrl: '/showcase/libs/worker/sqlServerWorker.js',
+    monarchSyntax: syntaxHighlighting
+  });
+
+  const element = document.getElementById("root") as HTMLElement;
+  element.className = 'w-full'
+  const root = createRoot(element);
+  root.render(<App />);
+}
+
+startEditor();
