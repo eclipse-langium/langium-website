@@ -364,7 +364,7 @@ async function createStatemachineConfig (code: string, htmlElement: HTMLElement)
               extensionFilesOrContents,
               userConfiguration: {
                   json: `{
-  "workbench.colorTheme": "Default Dark+ Experimental",
+  "workbench.colorTheme": "Default Dark Modern",
   "editor.fontSize": 14,
   "editor.lightbulb.enabled": true,
   "editor.lineHeight": 20,
