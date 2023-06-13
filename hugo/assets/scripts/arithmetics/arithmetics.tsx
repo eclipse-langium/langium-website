@@ -4,7 +4,9 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast";
 import { Evaluation, examples, syntaxHighlighting } from "./arithmetics-tools";
- 
+import { UserConfig } from "monaco-editor-wrapper"; 
+import { createMonacoEditorReactConfig } from "../utils";
+
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
     new URL("", window.location.href).href,
@@ -15,8 +17,11 @@ interface PreviewProps {
     evaluations?: Evaluation[];
     diagnostics?: Diagnostic[];
     focusLine: (line: number) => void;
-
 }
+
+let userConfig: UserConfig;
+
+
 class Preview extends React.Component<PreviewProps, PreviewProps> {
     constructor(props: PreviewProps) {
         super(props);
@@ -138,7 +143,7 @@ class App extends React.Component<{}, AppState> {
 
     setExample(index: number) {
         this.setState({ exampleIndex: index });
-        this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setValue(examples[this.state.exampleIndex]);
+        this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setValue(examples[index]);
     }
 
     render() {
@@ -161,12 +166,7 @@ class App extends React.Component<{}, AppState> {
                         <MonacoEditorReactComp
                             ref={this.monacoEditor}
                             onLoad={this.onMonacoLoad}
-                            webworkerUri="../showcase/libs/worker/arithmeticsServerWorker.js"
-                            workerName="LS"
-                            workerType="classic"
-                            languageId="arithmetics"
-                            text={examples[this.state.exampleIndex]}
-                            syntax={syntaxHighlighting}
+                            userConfig={userConfig}
                             style={style}
                         />
                     </div>
@@ -188,5 +188,18 @@ class App extends React.Component<{}, AppState> {
     }
 }
 
-const root = createRoot(document.getElementById("root") as HTMLElement);
-root.render(<App />);
+async function startEditor() {
+    // setup arithmetics config before rendering
+    userConfig = await createMonacoEditorReactConfig({
+        languageId: 'arithmetics',
+        code: examples[0],
+        htmlElement: document.getElementById('root')!,
+        languageConfigUrl: '/showcase/arithmetics-configuration.json',
+        languageGrammarUrl: '/showcase/arithmetics-grammar.json',
+        serverWorkerUrl: '/showcase/libs/worker/arithmeticsServerWorker.js'
+    });
+    const root = createRoot(document.getElementById("root") as HTMLElement);
+    root.render(<App />);
+}
+
+startEditor();
