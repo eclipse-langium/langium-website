@@ -6,6 +6,7 @@ import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils
 import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools } from "./statemachine-tools";
 import { UserConfig } from "monaco-editor-wrapper";
 import { createMonacoEditorReactConfig } from '../utils';
+import statemachineGrammar from 'langium-statemachine-dsl/syntaxes/statemachine.tmLanguage.json';
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
@@ -295,8 +296,7 @@ async function startEditor() {
     languageId: 'statemachine',
     code: defaultText,
     htmlElement: document.getElementById('root')!,
-    languageConfigUrl: '/showcase/statemachine-configuration.json',
-    languageGrammarUrl: '/showcase/statemachine-grammar.json',
+    languageGrammar: statemachineGrammar,
     serverWorkerUrl: '/showcase/libs/worker/statemachineServerWorker.js'
   });
 

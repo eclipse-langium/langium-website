@@ -1,16 +1,46 @@
 import { UserConfig } from "monaco-editor-wrapper";
+import { monaco } from "monaco-editor-wrapper/.";
 
 /**
- * Generalized configuration used with 'getMonacEditorReactConfig' to generate a working configuratio for monaco-editor-react
+ * Generalized configuration used with 'getMonacoEditorReactConfig' to generate a working configuration for monaco-editor-react
  */
 export interface MonacoReactConfig {
     code: string,
     htmlElement: HTMLElement,
-    languageConfigUrl: string,
-    languageGrammarUrl: string,
+    languageGrammar: any,
     languageId: string,
-    serverWorkerUrl: string
+    serverWorkerUrl: string,
+    monarchSyntax?: monaco.languages.IMonarchLanguage
 }
+
+/**
+ * Default language configuration, common to most Langium DSLs
+ */
+const defaultLanguageConfig = {
+    "comments": {
+        "lineComment": "//",
+        "blockComment": [ "/*", "*/" ]
+    },
+    "brackets": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"]
+    ],
+    "autoClosingPairs": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["\"", "\""],
+        ["'", "'"]
+    ],
+    "surroundingPairs": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["\"", "\""],
+        ["'", "'"]
+    ]
+};
 
 /**
  * Generates a UserConfig for a given Langium example, which is then passed to the monaco-editor-react component
@@ -20,21 +50,19 @@ export interface MonacoReactConfig {
  * @returns A completed UserConfig
  */
 export async function createMonacoEditorReactConfig(config: MonacoReactConfig): Promise<UserConfig> {
-    // setup extension files/contents
-  const extensionFilesOrContents = new Map<string, string | URL>();
-  const configUrl = new URL(config.languageConfigUrl, window.location.href);
-  const grammarUrl = new URL(config.languageGrammarUrl, window.location.href);
+    // setup extension contents
+  const extensionContents = new Map<string, string>();
 
   // setup urls for config & grammar
   const id = config.languageId;
   const languageConfigUrl = `/${id}-configuration.json`;
   const languageGrammarUrl = `/${id}-grammar.json`;
 
-  // set extensions for the aforementioned urls
-  extensionFilesOrContents.set(languageConfigUrl, configUrl);
-  extensionFilesOrContents.set(languageGrammarUrl, await (await fetch(grammarUrl)).text());
+  // set extension contents
+  extensionContents.set(languageConfigUrl, JSON.stringify(defaultLanguageConfig));
+  extensionContents.set(languageGrammarUrl, JSON.stringify(config.languageGrammar));
 
-  // Language Server preparation
+  // create a worker url for our LS
   const workerUrl = new URL(config.serverWorkerUrl, window.location.href);
 
   // generate langium config
@@ -90,7 +118,7 @@ export async function createMonacoEditorReactConfig(config: MonacoReactConfig): 
                       }]
                   }
               },
-              extensionFilesOrContents,
+              extensionFilesOrContents: extensionContents,
               userConfiguration: {
                   json: `{
   "workbench.colorTheme": "Default Dark Modern",
@@ -101,6 +129,9 @@ export async function createMonacoEditorReactConfig(config: MonacoReactConfig): 
   "editor.lightbulb.enabled": true
 }`
               }
+          },
+          monacoEditorConfig: {
+            languageDef: config.monarchSyntax
           }
       },
       editorConfig: {
@@ -108,7 +139,7 @@ export async function createMonacoEditorReactConfig(config: MonacoReactConfig): 
           code: config.code,
           useDiffEditor: false,
           automaticLayout: true,
-          theme: 'vs-dark',
+          theme: 'vs-dark'
       },
       languageClientConfig: {
           enabled: true,

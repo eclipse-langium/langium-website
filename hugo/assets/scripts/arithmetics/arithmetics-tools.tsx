@@ -1,5 +1,5 @@
 import { monaco } from "monaco-editor-wrapper/.";
-import { AstNode, Diagnostic, Pos } from "../langium-utils/langium-ast";
+import { Pos } from "../langium-utils/langium-ast";
 
 export interface Evaluation {
     range: {
@@ -30,7 +30,7 @@ Root(D, 3);
 Root(64, 3);
 Sqrt(81);`,
 
-`MODULE priceCalculator
+    `MODULE priceCalculator
 
 DEF materialPerUnit: 100;
 
@@ -58,33 +58,85 @@ DEF calcGrossListPrice(net, tax):
 calcGrossListPrice(netPrice, vat);`
 ]
 
+/**
+ * @montymxb Temporary duplication of the arithmetics textmate grammar
+ * The textmate grammar is not exported from the current package, needs to be changed
+ */
+export const grammarConfig = {
+    "name": "arithmetics",
+    "scopeName": "source.arithmetics",
+    "fileTypes": [
+        ".calc"
+    ],
+    "patterns": [
+        {
+            "include": "#comments"
+        },
+        {
+            "name": "keyword.control.arithmetics",
+            "match": "\\b([dD][eE][fF]|[mM][oO][dD][uU][lL][eE])\\b"
+        }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.block.arithmetics",
+                    "begin": "/\\*",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.arithmetics"
+                        }
+                    },
+                    "end": "\\*/",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.arithmetics"
+                        }
+                    }
+                },
+                {
+                    "begin": "//",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.whitespace.comment.leading.arithmetics"
+                        }
+                    },
+                    "end": "(?=$)",
+                    "name": "comment.line.arithmetics"
+                }
+            ]
+        }
+    }
+}
+
 
 
 export const syntaxHighlighting = {
     ignoreCase: true,
     keywords: [
-        'def','module'
+        'def', 'module'
     ],
     operators: [
-        '*','+',',','-','/',':',';'
+        '*', '+', ',', '-', '/', ':', ';'
     ],
-    symbols:  /\(|\)|\*|\+|,|-|\/|:|;/,
+    symbols: /\(|\)|\*|\+|,|-|\/|:|;/,
     tokenizer: {
         initial: [
-            { regex: /[_a-zA-Z][\w_]*/, action: { cases: { '@keywords': {"token":"keyword"}, '@default': {"token":"ID"} }} },
-            { regex: /[0-9]+(\.[0-9]*)?/, action: {"token":"number"} },
+            { regex: /[_a-zA-Z][\w_]*/, action: { cases: { '@keywords': { "token": "keyword" }, '@default': { "token": "ID" } } } },
+            { regex: /[0-9]+(\.[0-9]*)?/, action: { "token": "number" } },
             { include: '@whitespace' },
-            { regex: /@symbols/, action: { cases: { '@operators': {"token":"operator"}, '@default': {"token":""} }} },
+            { regex: /@symbols/, action: { cases: { '@operators': { "token": "operator" }, '@default': { "token": "" } } } },
         ],
         whitespace: [
-            { regex: /\s+/, action: {"token":"white"} },
-            { regex: /\/\*/, action: {"token":"comment","next":"@comment"} },
-            { regex: /\/\/[^\n\r]*/, action: {"token":"comment"} },
+            { regex: /\s+/, action: { "token": "white" } },
+            { regex: /\/\*/, action: { "token": "comment", "next": "@comment" } },
+            { regex: /\/\/[^\n\r]*/, action: { "token": "comment" } },
         ],
         comment: [
-            { regex: /[^\/\*]+/, action: {"token":"comment"} },
-            { regex: /\*\//, action: {"token":"comment","next":"@pop"} },
-            { regex: /[\/\*]/, action: {"token":"comment"} },
+            { regex: /[^\/\*]+/, action: { "token": "comment" } },
+            { regex: /\*\//, action: { "token": "comment", "next": "@pop" } },
+            { regex: /[\/\*]/, action: { "token": "comment" } },
         ],
     }
 } as monaco.languages.IMonarchLanguage;

@@ -6,6 +6,7 @@ import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast
 import { Evaluation, examples, syntaxHighlighting } from "./arithmetics-tools";
 import { UserConfig } from "monaco-editor-wrapper"; 
 import { createMonacoEditorReactConfig } from "../utils";
+import arithmeticsGrammar from 'langium-arithmetics-dsl/syntaxes/arithmetics.tmLanguage.json';
 
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
@@ -194,9 +195,9 @@ async function startEditor() {
         languageId: 'arithmetics',
         code: examples[0],
         htmlElement: document.getElementById('root')!,
-        languageConfigUrl: '/showcase/arithmetics-configuration.json',
-        languageGrammarUrl: '/showcase/arithmetics-grammar.json',
-        serverWorkerUrl: '/showcase/libs/worker/arithmeticsServerWorker.js'
+        languageGrammar: arithmeticsGrammar,
+        serverWorkerUrl: '/showcase/libs/worker/arithmeticsServerWorker.js',
+        monarchSyntax: syntaxHighlighting
     });
     const root = createRoot(document.getElementById("root") as HTMLElement);
     root.render(<App />);
