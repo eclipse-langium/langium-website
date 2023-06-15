@@ -7,266 +7,43 @@
 import {
   LangiumInitialContent,
   LangiumMonarchContent,
-  StateMachineInitialContent,
+  DSLInitialContent,
 } from "./data";
 import { generateMonarch } from "./monarch-generator";
 import { decompressFromEncodedURIComponent } from 'lz-string';
-import { Diagnostic } from "vscode-languageserver";
-import { ByPassingMessageReader, ByPassingMessageWriter, MonacoConnection, MonacoEditorResult } from "./monaco-utils";
-import { AstNode, createServicesForGrammar } from "langium";
+import { Disposable } from "vscode-languageserver";
+import { DefaultAstNodeLocator, createServicesForGrammar } from "langium";
 import { render } from './Tree';
 import { overlay } from "./utils";
-import { DefaultAstNodeLocator } from "langium/lib/workspace/ast-node-locator";
+import { createUserConfig } from "../../assets/scripts/utils";
 export { share, overlay } from './utils'
-
-export type PlaygroundMessageType = "validated" | "changing" | "error" | "ast";
-
-export interface PlaygroundMessageBase {
-  type: PlaygroundMessageType;
-}
-
-export interface PlaygroundError extends PlaygroundMessageBase {
-  type: "error";
-  errors: Diagnostic[];
-}
-
-export interface PlaygroundAst extends PlaygroundMessageBase {
-  type: "ast";
-  root: AstNode;
-}
-
-export interface PlaygroundOK extends PlaygroundMessageBase {
-  type: "validated";
-  grammar: string;
-}
-
-export interface PlaygroundChanging extends PlaygroundMessageBase {
-  type: "changing";
-}
-
-export type PlaygroundMessage =
-  | PlaygroundChanging
-  | PlaygroundError
-  | PlaygroundOK
-  | PlaygroundAst;
-
-export interface MessageBase {
-  jsonrpc: "2.0";
-}
-
-export interface Request extends MessageBase {
-  method: string;
-  params?: any[];
-  id: string;
-}
-
-export interface ResponseOK extends MessageBase {
-  result: any;
-  id: string;
-}
-
-export interface ResponseError extends MessageBase {
-  error: any;
-  id: string;
-}
-
-export interface Notification extends MessageBase {
-  method: string;
-  params?: any[];
-}
+import { MonacoEditorLanguageClientWrapper } from "monaco-editor-wrapper/bundle";
+import { DocumentChangeResponse, LangiumAST } from "../../assets/scripts/langium-utils/langium-ast";
 
 export interface PlaygroundParameters {
   grammar: string;
   content: string;
 }
 
-export function isNotification(msg: Message): msg is Notification {
-  return !msg["id"] && msg["method"];
-}
+let dslWrapper: MonacoEditorLanguageClientWrapper | undefined;
 
-type Message = Request | ResponseError | ResponseOK | Notification;
+export let currentGrammarContent = '';
+export let currentDSLContent = '';
 
-const MagicAction = "PlaygroundMagic";
+let documentChangeListener: Disposable;
 
-export interface MessageWrapper<T> {
-  wrap(message: T): Message;
-  unwrap(message: Message): T | null;
-}
-
-export type MessageCallback<T> = (data: T) => void;
-
-export class PlaygroundWrapper implements MessageWrapper<PlaygroundMessage> {
-  wrap(message: PlaygroundMessage): Message {
-    return {
-      jsonrpc: "2.0",
-      method: MagicAction,
-      params: [message],
-    } as Notification;
-  }
-  unwrap(message: Message): PlaygroundMessage | null {
-    if (isNotification(message) && message.method === MagicAction) {
-      return message.params![0] as PlaygroundMessage;
-    }
-    return null;
-  }
-}
-
-export interface MonacoConfig {
-  getMainCode(): string;
-  setMainCode(code: string): void;
-  setMainLanguageId(name: string): void;
-  setMonarchTokensProvider(monarch: any): void;
-  theme: string;
-  useLanguageClient: boolean;
-  useWebSocket: boolean;
-  setMonacoEditorOptions(monacoEditorOptions: Record<string, unknown>): void;
-}
-
-export interface MonacoClient {
-  getEditorConfig(): MonacoConfig;
-  setWorker(worker: Worker, connection: MonacoConnection): void;
-  startEditor(domElement: HTMLElement): void;
-  updateLayout(): void;
-  dispose(): Promise<void>;
-  getMainCode(): string;
-}
-
-export function setupEditor(
-  domElement: HTMLElement,
-  name: string,
-  syntax: any,
-  content: string,
-  relativeWorkerURL: string,
-  monacoFactory: () => MonacoClient,
-  readerFactory: (worker: Worker) => ByPassingMessageReader<PlaygroundMessage>,
-  writerFactory: (worker: Worker) => ByPassingMessageWriter<PlaygroundMessage>,
-  onReady: () => void
-) {
-  const client = monacoFactory();
-
-  const editorConfig = client.getEditorConfig();
-  editorConfig.setMainLanguageId(name);
-  editorConfig.setMonarchTokensProvider(syntax);
-  editorConfig.setMonacoEditorOptions({
-    minimap: {
-      enabled: false,
-    },
-  });
-
-  editorConfig.setMainCode(content);
-  editorConfig.theme = "vs-dark";
-
-  editorConfig.useLanguageClient = true;
-  editorConfig.useWebSocket = false;
-
-  const workerURL = new URL(relativeWorkerURL, import.meta.url);
-
-  const worker = new Worker(workerURL.href, {
-    type: "classic",
-    name: "LS",
-  });
-  const result: MonacoEditorResult = {
-    out: readerFactory(worker),
-    in: writerFactory(worker),
-    editor: client
-  };
-  client.setWorker(worker, {
-    reader: result.out,
-    writer: result.in,
-  });
-
-  client.startEditor(domElement);
-
-  onReady();
-
-  return result;
-}
-
-interface ActionRequest {
-  message: PlaygroundMessage;
-  element: HTMLElement;
-  monacoFactory: (name: string) => MonacoClient;
-  editor?: MonacoEditorResult;
-  content: string;
-}
-
-type Action = (
-  params: ActionRequest
-) => Promise<MonacoEditorResult | undefined>;
-type Actions = Record<PlaygroundMessageType, Action>;
-
-const messageWrapper = new PlaygroundWrapper();
-
-const PlaygroundActions: Actions = {
-  ast: () => Promise.resolve(undefined),
-  changing: async ({ message, editor }) => {
-    if(message.type != "changing" || !editor) {
-      return editor;
-    }
-    overlay(true, false);
-    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
-    return Promise.resolve(editor);
-  },
-  error: async ({ message, editor }) => {
-    overlay(true, true);
-    if(message.type != "error" || !editor) {
-      return editor;
-    }
-    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: true});
-    return Promise.resolve(editor);
-  },
-  validated: async ({ message, element, monacoFactory, editor, content }): Promise<MonacoEditorResult | undefined> => {
-    if(message.type != "validated") {
-      return editor;
-    }
-
-    if (editor) {
-      content = editor.editor.getMainCode();
-      // attempt to dispose
-      await editor.editor.dispose().catch((e) => {
-        // report & discard this error
-        // can happen when a previous editor was not started correctly
-        console.error(e);
-      });
-    }
-
-    const { Grammar } = await createServicesForGrammar({ grammar: message.grammar });
-    const syntax = generateMonarch(Grammar, "user");
-    
-    editor = setupEditor(
-      element,
-      "user",
-      syntax,
-      content,
-      "../../libs/worker/userServerWorker.js",
-      () => monacoFactory("user"),
-      (worker) => new ByPassingMessageReader(worker, messageWrapper),
-      (worker) => new ByPassingMessageWriter(worker, messageWrapper),
-      () => { }
-    );
-    
-    editor.editor.getEditorConfig().setMonacoEditorOptions({readOnly: false});
-
-    await editor.in.byPassWrite(message);
-
-    overlay(false, false);
-
-    return editor;
-  },
-};
-
-let userDefined: MonacoEditorResult | undefined;
-
-export function setupPlayground(
-  monacoFactory: (name: string) => MonacoClient,
+export async function setupPlayground(
   leftEditor: HTMLElement,
   rightEditor: HTMLElement,
   grammar?: string,
   content?: string,
-  overlay?: (visible: boolean, hasError: boolean) => void
-) {
+  // overlay?: (visible: boolean, hasError: boolean) => void
+): Promise<() => PlaygroundParameters> {
   let langiumContent = LangiumInitialContent;
-  let dslContent = StateMachineInitialContent;
+  let dslContent = DSLInitialContent;
+
+  currentGrammarContent = langiumContent;
+  currentDSLContent = dslContent;
 
   if (grammar) {
     const decompressedGrammar = decompressFromEncodedURIComponent(grammar);
@@ -281,44 +58,94 @@ export function setupPlayground(
     }
   }
 
-  const langium = setupEditor(
-    leftEditor,
-    "langium",
-    LangiumMonarchContent,
-    langiumContent,
-    "../../libs/worker/langiumServerWorker.js",
-    () => monacoFactory("langium"),
-    (worker) => new ByPassingMessageReader(worker, messageWrapper),
-    (worker) => new ByPassingMessageWriter(worker, messageWrapper),
-    () => {}
-  );
+  // setup langium wrapper
+  const langiumWrapper = new MonacoEditorLanguageClientWrapper();
+  await langiumWrapper.start(createUserConfig({
+    htmlElement: leftEditor,
+    languageId: "langium",
+    code: langiumContent,
+    serverWorkerUrl: "/playground/libs/worker/langiumServerWorker.js",
+    languageGrammar: {},
+    monarchSyntax: LangiumMonarchContent
+  }));
 
-  langium.out.listenByPass(async (message) => {
-    userDefined = await PlaygroundActions[message.type]({
-      message: message,
-      element: rightEditor,
-      monacoFactory,
-      editor: userDefined,
-      content: dslContent,
+  const { Grammar } = await createServicesForGrammar({ grammar: langiumContent });
+  const dslMonarchSyntax = generateMonarch(Grammar, "user");
+
+  // setup DSL wrapper
+  dslWrapper = new MonacoEditorLanguageClientWrapper();
+  await dslWrapper.start(createUserConfig({
+    htmlElement: rightEditor,
+    languageId: "user",
+    code: dslContent,
+    serverWorkerUrl: "/playground/libs/worker/userServerWorker.js",
+    languageGrammar: {},
+    monarchSyntax: dslMonarchSyntax
+  }));
+
+  // retrieve the langium language client
+  const langiumClient = langiumWrapper.getLanguageClient();
+  if (!langiumClient) {
+    throw new Error('Unable to obtain language client for editor!');
+  }
+
+  // retrieve the dsl language client
+  let dslClient = dslWrapper?.getLanguageClient();
+  if (!dslClient) {
+    throw new Error('Unable to obtain language client for user editor!');
+  }
+
+  /**
+   * Helper for registering to receive new ASTs from parsed DSL programs
+   */
+  function registerForDocumentChanges() {
+    if (documentChangeListener) {
+      documentChangeListener.dispose();
+    }
+    // register to receive new ASTs from parsed DSL programs
+    documentChangeListener = dslClient!.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
+      console.log('* Notification received!');
+      const ast = (new LangiumAST()).deserializeAST(resp.content);
+      render(ast, new DefaultAstNodeLocator());
+    });
+  }
+
+  registerForDocumentChanges();
+
+  // register to receive new grammars from langium, and send them to the DSL language client
+  langiumClient.onNotification('browser/DocumentChange', async (resp: DocumentChangeResponse) => {
+    // this will trigger the DSL client to rebuild its language server
+    await dslClient?.sendNotification('browser/SetNewGrammar', {
+      grammar: resp.content
     });
 
-    userDefined?.out.listenByPass((data) => {
-      if (data.type !== "ast") {
-        return;
-      }
-      render(data.root, new DefaultAstNodeLocator());
-    });
+    // restart the language client, but don't toss the old worker
+    // TODO this needs the new monaco-editor-wrapper API, to avoid tossing the existing worker
+    // ...(undefined, true)
+    await dslWrapper?.restartLanguageClient();
+    // get a fresh client
+    dslClient = dslWrapper?.getLanguageClient();
+    // re-register
+    registerForDocumentChanges();
+
+    // construct and set a new monarch syntax onto the editor
+    const { Grammar } = await createServicesForGrammar({ grammar: langiumContent });
+    const dslMonarchSyntax = generateMonarch(Grammar, "user");
+    
   });
 
   window.addEventListener("resize", () => {
-    userDefined?.editor.updateLayout();
-    langium.editor.updateLayout();
+    dslWrapper?.updateLayout();
+    langiumWrapper.updateLayout();
   });
+
+  // drop the overlay once done here
+  overlay(false, false);
 
   return () => {
     return {
-      grammar: langium.editor.getMainCode(),
-      content: userDefined?.editor.getMainCode() ?? "",
+      grammar: langiumWrapper.getMonacoEditorWrapper()?.getEditorConfig()?.code,
+      content: dslWrapper?.getMonacoEditorWrapper()?.getEditorConfig()?.code ?? "",
     } as PlaygroundParameters;
   };
 }

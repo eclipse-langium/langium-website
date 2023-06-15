@@ -24,7 +24,7 @@ playground: true
     new URL("", window.location.href).href,
     false
   );
-  
+
   addEventListener('load', function() {
     let getState = null; //: () => PlaygroundParameters
 
@@ -60,13 +60,14 @@ playground: true
     const grammar = url.searchParams.get('grammar');
     const content = url.searchParams.get('content');
 
-    getState = setupPlayground(
-      (name) => new MonacoEditorLanguageClientWrapper(name),
+    setupPlayground(
       grammarRoot,
       contentRoot,
       grammar,
       content,
       overlay
-    );
+    ).then((res) => {
+      getState = res;
+    });
   });
 </script>

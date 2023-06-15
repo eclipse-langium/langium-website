@@ -62,7 +62,7 @@ calcGrossListPrice(netPrice, vat);`
  * @montymxb Temporary duplication of the arithmetics textmate grammar
  * The textmate grammar is not exported from the current package, needs to be changed
  */
-export const grammarConfig = {
+export const arithmeticsGrammar = {
     "name": "arithmetics",
     "scopeName": "source.arithmetics",
     "fileTypes": [
@@ -110,8 +110,9 @@ export const grammarConfig = {
     }
 }
 
-
-
+/**
+ * Monarch grammar for arithmetics
+ */
 export const syntaxHighlighting = {
     ignoreCase: true,
     keywords: [

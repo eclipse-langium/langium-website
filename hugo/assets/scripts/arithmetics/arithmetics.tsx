@@ -3,10 +3,9 @@ import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast";
-import { Evaluation, examples, syntaxHighlighting } from "./arithmetics-tools";
+import { Evaluation, arithmeticsGrammar, examples, syntaxHighlighting } from "./arithmetics-tools";
 import { UserConfig } from "monaco-editor-wrapper"; 
-import { createMonacoEditorReactConfig } from "../utils";
-import arithmeticsGrammar from 'langium-arithmetics-dsl/syntaxes/arithmetics.tmLanguage.json';
+import { createUserConfig } from "../utils";
 
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
@@ -191,7 +190,8 @@ class App extends React.Component<{}, AppState> {
 
 async function startEditor() {
     // setup arithmetics config before rendering
-    userConfig = await createMonacoEditorReactConfig({
+    // TODO @montymxb no longer async, can move this upwards
+    userConfig = createUserConfig({
         languageId: 'arithmetics',
         code: examples[0],
         htmlElement: document.getElementById('root')!,

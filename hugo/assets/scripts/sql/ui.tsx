@@ -10,7 +10,7 @@ import {
   syntaxHighlighting,
 } from "./constants";
 import { UserConfig } from "monaco-editor-wrapper";
-import { createMonacoEditorReactConfig } from '../utils';
+import { createUserConfig } from '../utils';
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
@@ -116,11 +116,10 @@ class App extends React.Component<{}> {
  */
 async function startEditor() {
   // setup the global config before rendering
-  userConfig = await createMonacoEditorReactConfig({
+  userConfig = await createUserConfig({
     languageId: 'sql',
     code: defaultText,
     htmlElement: document.getElementById('root')!,
-    languageGrammar: '',
     serverWorkerUrl: '/showcase/libs/worker/sqlServerWorker.js',
     monarchSyntax: syntaxHighlighting
   });

@@ -7,19 +7,20 @@ import { monaco } from "monaco-editor-wrapper/.";
 export interface MonacoReactConfig {
     code: string,
     htmlElement: HTMLElement,
-    languageGrammar: any,
+    languageGrammar?: any,
     languageId: string,
     serverWorkerUrl: string,
-    monarchSyntax?: monaco.languages.IMonarchLanguage
+    monarchSyntax?: monaco.languages.IMonarchLanguage,
+    readonly?: boolean // whether to make the editor readonly or not (by default is false)
 }
 
 /**
  * Default language configuration, common to most Langium DSLs
  */
-const defaultLanguageConfig = {
+export const defaultLanguageConfig = {
     "comments": {
         "lineComment": "//",
-        "blockComment": [ "/*", "*/" ]
+        "blockComment": ["/*", "*/"]
     },
     "brackets": [
         ["{", "}"],
@@ -49,78 +50,81 @@ const defaultLanguageConfig = {
  * @param htmlElement Element to bind the editor to
  * @returns A completed UserConfig
  */
-export async function createMonacoEditorReactConfig(config: MonacoReactConfig): Promise<UserConfig> {
+export function createUserConfig(config: MonacoReactConfig): UserConfig {
     // setup extension contents
-  const extensionContents = new Map<string, string>();
+    const extensionContents = new Map<string, string>();
 
-  // setup urls for config & grammar
-  const id = config.languageId;
-  const languageConfigUrl = `/${id}-configuration.json`;
-  const languageGrammarUrl = `/${id}-grammar.json`;
+    // setup urls for config & grammar
+    const id = config.languageId;
+    const languageConfigUrl = `/${id}-configuration.json`;
+    const languageGrammarUrl = `/${id}-grammar.json`;
 
-  // set extension contents
-  extensionContents.set(languageConfigUrl, JSON.stringify(defaultLanguageConfig));
-  extensionContents.set(languageGrammarUrl, JSON.stringify(config.languageGrammar));
+    // set extension contents
+    extensionContents.set(languageConfigUrl, JSON.stringify(defaultLanguageConfig));
 
-  // create a worker url for our LS
-  const workerUrl = new URL(config.serverWorkerUrl, window.location.href);
+    if (config.languageGrammar) {
+        extensionContents.set(languageGrammarUrl, JSON.stringify(config.languageGrammar));
+    }
 
-  // generate langium config
-  return {
-      htmlElement: config.htmlElement,
-      wrapperConfig: {
-          useVscodeConfig: true,
-          serviceConfig: {
-              enableThemeService: true,
-              enableTextmateService: true,
-              enableModelService: true,
-              configureEditorOrViewsServiceConfig: {
-                  enableViewsService: false,
-                  useDefaultOpenEditorFunction: true
-              },
-              configureConfigurationServiceConfig: {
-                  defaultWorkspaceUri: '/tmp/'
-              },
-              enableKeybindingsService: true,
-              enableLanguagesService: true,
-              debugLogging: true
-          },
-          monacoVscodeApiConfig: {
-              extension: {
-                  name: id,
-                  publisher: 'TypeFox',
-                  version: '1.0.0',
-                  engines: {
-                      vscode: '*'
-                  },
-                  contributes: {
-                      languages: [{
-                          id: id,
-                          extensions: [],
-                          aliases: [
-                            id
-                          ],
-                          configuration: `.${languageConfigUrl}`
-                      }],
-                      grammars: [{
-                          language: id,
-                          scopeName: `source.${id}`,
-                          path: `.${languageGrammarUrl}`
-                      }],
-                      keybindings: [{
-                          key: 'ctrl+p',
-                          command: 'editor.action.quickCommand',
-                          when: 'editorTextFocus'
-                      }, {
-                          key: 'ctrl+shift+c',
-                          command: 'editor.action.commentLine',
-                          when: 'editorTextFocus'
-                      }]
-                  }
-              },
-              extensionFilesOrContents: extensionContents,
-              userConfiguration: {
-                  json: `{
+    // create a worker url for our LS
+    const workerUrl = new URL(config.serverWorkerUrl, window.location.href);
+
+    // generate langium config
+    return {
+        htmlElement: config.htmlElement,
+        wrapperConfig: {
+            useVscodeConfig: true,
+            serviceConfig: {
+                enableThemeService: true,
+                enableTextmateService: true,
+                enableModelService: true,
+                configureEditorOrViewsServiceConfig: {
+                    enableViewsService: false,
+                    useDefaultOpenEditorFunction: true
+                },
+                configureConfigurationServiceConfig: {
+                    defaultWorkspaceUri: '/tmp/'
+                },
+                enableKeybindingsService: true,
+                enableLanguagesService: true,
+                debugLogging: true
+            },
+            monacoVscodeApiConfig: {
+                extension: {
+                    name: id,
+                    publisher: 'TypeFox',
+                    version: '1.0.0',
+                    engines: {
+                        vscode: '*'
+                    },
+                    contributes: {
+                        languages: [{
+                            id: id,
+                            extensions: [],
+                            aliases: [
+                                id
+                            ],
+                            configuration: `.${languageConfigUrl}`
+                        }],
+                        grammars: config.languageGrammar ? [{
+                            language: id,
+                            scopeName: `source.${id}`,
+                            path: `.${languageGrammarUrl}`
+                        }] : undefined,
+                        keybindings: [{
+                            key: 'ctrl+p',
+                            command: 'editor.action.quickCommand',
+                            when: 'editorTextFocus'
+                        }, {
+                            key: 'ctrl+shift+c',
+                            command: 'editor.action.commentLine',
+                            when: 'editorTextFocus'
+                        }]
+                    }
+                },
+                extensionFilesOrContents: extensionContents,
+                userConfiguration: {
+                    json: `{
   "workbench.colorTheme": "Default Dark Modern",
   "editor.fontSize": 14,
   "editor.lightbulb.enabled": true,
@@ -128,30 +132,33 @@ export async function createMonacoEditorReactConfig(config: MonacoReactConfig): 
   "editor.guides.bracketPairsHorizontal": "active",
   "editor.lightbulb.enabled": true
 }`
-              }
-          },
-          monacoEditorConfig: {
-            languageExtensionConfig: {
-                id
+                }
             },
-            languageDef: config.monarchSyntax
-          }
-      },
-      editorConfig: {
-          languageId: id,
-          code: config.code,
-          useDiffEditor: false,
-          automaticLayout: true,
-          theme: 'vs-dark'
-      },
-      languageClientConfig: {
-          enabled: true,
-          useWebSocket: false,
-          workerConfigOptions: {
-              url: workerUrl,
-              type: 'module',
-              name: `${id}-language-server-worker`,
-          }
-      }
-  };
+            monacoEditorConfig: {
+                languageExtensionConfig: {
+                    id
+                },
+                languageDef: config.monarchSyntax
+            }
+        },
+        editorConfig: {
+            languageId: id,
+            code: config.code,
+            useDiffEditor: false,
+            automaticLayout: true,
+            theme: 'vs-dark',
+            editorOptions: {
+                readOnly: config.readonly
+            }
+        },
+        languageClientConfig: {
+            enabled: true,
+            useWebSocket: false,
+            workerConfigOptions: {
+                url: workerUrl,
+                type: 'module',
+                name: `${id}-language-server-worker`,
+            }
+        }
+    };
 }

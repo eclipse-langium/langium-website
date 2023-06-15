@@ -5,7 +5,7 @@ import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
 import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools } from "./statemachine-tools";
 import { UserConfig } from "monaco-editor-wrapper";
-import { createMonacoEditorReactConfig } from '../utils';
+import { createUserConfig } from '../utils';
 import statemachineGrammar from 'langium-statemachine-dsl/syntaxes/statemachine.tmLanguage.json';
 
 buildWorkerDefinition(
@@ -292,7 +292,8 @@ class StateMachineComponent extends React.Component<{
  */
 async function startEditor() {
   // setup the global config before rendering
-  const langiumGlobalConfig: UserConfig = await createMonacoEditorReactConfig({
+  // TODO @montymxb no longer async, move this up
+  const langiumGlobalConfig: UserConfig = createUserConfig({
     languageId: 'statemachine',
     code: defaultText,
     htmlElement: document.getElementById('root')!,
