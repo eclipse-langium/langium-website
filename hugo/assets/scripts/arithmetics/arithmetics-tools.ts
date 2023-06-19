@@ -1,5 +1,5 @@
 import { monaco } from "monaco-editor-wrapper/.";
-import { AstNode, Diagnostic, Pos } from "../langium-utils/langium-ast";
+import { Pos } from "../langium-utils/langium-ast";
 
 export interface Evaluation {
     range: {
