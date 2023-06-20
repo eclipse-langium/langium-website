@@ -46,7 +46,15 @@ class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
   }
 
   componentDidMount() {
-    const commands = this.state.commands;
+    this.updatePreview();
+  }
+
+  componentDidUpdate() {
+    this.updatePreview();
+  }
+
+  updatePreview() {
+    const commands = this.props.commands;
     const canvas = this.canvasRef.current;
     if (canvas && commands.length > 0) {
       const ctx = canvas.getContext('2d')!;
@@ -59,7 +67,6 @@ class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
           if (this.drawing) {
             ctx.stroke();
           }
-
           clearInterval(id);
         }
       }, 1);
@@ -69,6 +76,7 @@ class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
   init(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     ctx.canvas.width = screen.availWidth;
     ctx.canvas.height = screen.availHeight;
+    ctx.strokeStyle = 'white';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.strokeStyle = '#333';
@@ -81,8 +89,13 @@ class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
       ctx.lineTo(canvas.width, y);
     }
     ctx.stroke();
-    ctx.strokeStyle = 'white';
     ctx.scale(this.scale, this.scale);
+
+    // reset 
+    this.posX = 0;
+    this.posY = 0;
+    this.scale = 1.8;
+    this.drawing = false;
   }
 
   dispatchCommand(command: Command, context: CanvasRenderingContext2D) {
@@ -137,7 +150,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
   }
 
   startPreview(commands: Command[], diagnostics: Diagnostic[]) {
-    this.setState({ commands: commands, diagnostics: diagnostics });
+    this.setState({ commands, diagnostics });
   }
 
   render() {
