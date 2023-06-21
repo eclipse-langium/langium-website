@@ -39,8 +39,8 @@ if (watch) {
     await ctx.watch();
 } else {
     await ctx.rebuild();
+    ctx.dispose();
 }
-ctx.dispose();
 ```
 
 Store it in a module JavaScript file (`.mjs`) and create a corresponding script in your `package.json` file:
