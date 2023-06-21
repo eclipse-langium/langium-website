@@ -14,34 +14,44 @@ We generally recommend using [esbuild](https://esbuild.github.io/) to bundle Lan
 npm i --save-dev esbuild
 ```
 
-You can see a minimal configuration file below that bundles both your language server and your extension. It will run as a simple `node` script.
+You can see a minimal configuration file below that bundles both your language server and your extension.
 
-```js
+```ts
+//@ts-check
+import * as esbuild from 'esbuild';
+
 const watch = process.argv.includes('--watch');
-const minify = process.argv.includes('--minify'); // Use this flag for production usage
-const success = watch ? 'Watch build succeeded' : 'Build succeeded';
+const minify = process.argv.includes('--minify');
 
-require('esbuild').build({
-    // Two entry points, one for the extension, one for the language server
-    entryPoints: ['src/extension.ts', 'src/language-server/main.ts'],
-    outdir: 'out', // All bundles are put into this directory
-    bundle: true, // We want to create bundles for the extension and language server
-    external: ['vscode'], // the vscode-module is created on-the-fly during runtime and must be excluded
+const ctx = await esbuild.context({
+    entryPoints: ['src/extension.ts', 'src/language/main.ts'],
+    outdir: 'out',
+    bundle: true,
+    target: "es6",
+    loader: { '.ts': 'ts' },
+    external: ['vscode'], // the vscode-module is created on-the-fly and must be excluded.
     platform: 'node', // VSCode extensions run in a node process
-    sourcemap: !minify, // Sourcemaps help us debug our original TypeScript code even after bundling
-    watch: watch ? {
-        onRebuild(error) {
-            if (error) console.error('Watch build failed')
-            else console.log(success)
-        }
-    } : false,
+    sourcemap: !minify,
     minify
-})
-    .then(() => console.log(success))
-    .catch(() => process.exit(1));
+});
+
+if (watch) {
+    await ctx.watch();
+} else {
+    await ctx.rebuild();
+}
+ctx.dispose();
 ```
 
-If you want to use a Langium language server in the browser, you can get away with an even smaller setup with the following script in your `package.json` file:
+Store it in a module JavaScript file (`.mjs`) and create a corresponding script in your `package.json` file:
+
+```js
+"scripts": {
+  "build": "node ./esbuild.mjs"
+}
+```
+
+If you want to use a Langium language server in the browser, you can get away with an even smaller setup with the following script:
 
 ```js
 "scripts": {
@@ -86,9 +96,9 @@ const commonConfig = {
 }
 const lspConfig = {
     ...commonConfig,
-    entry: './src/language-server/main.ts', // the entry point of the language server
+    entry: './src/language/main.ts', // the entry point of the language server
     output: {
-        path: path.resolve(__dirname, 'out', 'language-server'),
+        path: path.resolve(__dirname, 'out', 'language'),
         filename: 'main.js',
         libraryTarget: 'commonjs2',
         devtoolModuleFilenameTemplate: '../../[resource-path]',
