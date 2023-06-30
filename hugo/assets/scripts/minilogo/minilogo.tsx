@@ -16,6 +16,7 @@ buildWorkerDefinition(
 );
 addMonacoStyles("monaco-editor-styles");
 
+let shouldAnimate = true;
 
 interface PreviewProps {
   commands?: Command[];
@@ -32,6 +33,7 @@ class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
   posY: number;
   scale: number;
   drawing: boolean;
+  interval: NodeJS.Timer;
 
   constructor(props: DrawCanvasProps) {
     super(props);
@@ -46,37 +48,17 @@ class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
   }
 
   componentDidMount() {
-    this.updatePreview();
+    this.draw(!shouldAnimate);
   }
 
   componentDidUpdate() {
-    this.updatePreview();
-  }
-
-  updatePreview() {
-    const commands = this.props.commands;
-    const canvas = this.canvasRef.current;
-    if (canvas && commands.length > 0) {
-      const ctx = canvas.getContext('2d')!;
-      this.init(canvas, ctx);
-      const id = setInterval(() => {
-        if (commands.length > 0) {
-          this.dispatchCommand(commands.shift()!, ctx);
-        } else {
-          // finish existing draw
-          if (this.drawing) {
-            ctx.stroke();
-          }
-          clearInterval(id);
-        }
-      }, 1);
-    }
+    this.draw(!shouldAnimate);
   }
 
   init(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+    this.stopDrawing();
     ctx.canvas.width = screen.availWidth;
     ctx.canvas.height = screen.availHeight;
-    ctx.strokeStyle = 'white';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.strokeStyle = '#333';
@@ -92,10 +74,45 @@ class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
     ctx.scale(this.scale, this.scale);
 
     // reset 
+    ctx.strokeStyle = 'white';
     this.posX = 0;
     this.posY = 0;
     this.scale = 1.8;
     this.drawing = false;
+  }
+
+  draw(instant: boolean) {
+    const commands = this.props.commands;
+    const canvas = this.canvasRef.current;
+    if (canvas && commands.length > 0) {
+      const ctx = canvas.getContext('2d')!;
+      this.init(canvas, ctx);
+      if (instant) {
+        while (commands.length > 0) {
+          this.dispatchCommand(commands.shift()!, ctx);
+        }
+        return;
+      }
+      this.interval = setInterval(() => {
+        if (commands.length > 0) {
+          this.dispatchCommand(commands.shift()!, ctx);
+        } else {
+          // finish existing draw
+          if (this.drawing) {
+            ctx.stroke();
+          }
+          shouldAnimate = false;
+          this.stopDrawing();
+        }
+      }, 1);
+    }
+  }
+
+  stopDrawing() {
+    this.drawing = false;
+    this.posX = 0;
+    this.posY = 0;
+    clearInterval(this.interval);
   }
 
   dispatchCommand(command: Command, context: CanvasRenderingContext2D) {
@@ -120,6 +137,7 @@ class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
           // move & draw
           context.lineTo(this.posX, this.posY);
         }
+
         break;
       case 'color':
         let color = command.args as ColorArgs;
@@ -253,7 +271,8 @@ class App extends React.Component<{}, AppState> {
 
   setExample(example: number) {
     this.setState({ currentExample: example });
-    this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setValue(examples[0].code);
+    this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setValue(examples[example].code);
+    shouldAnimate = true;
   }
 
   async copyLink() {
