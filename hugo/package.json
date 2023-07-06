@@ -15,7 +15,8 @@
     "build:worker/playground-user": "esbuild ./content/playground/user-worker.ts --bundle --format=iife --outfile=./static/playground/libs/worker/userServerWorker.js",
     "build:worker/playground-common": "esbuild ./content/playground/common.ts --bundle --format=esm --outfile=./static/playground/libs/worker/common.js",
     "build:worker/sql": "esbuild ./assets/scripts/sql/language-server.ts --bundle --format=iife --outfile=./static/showcase/libs/worker/sqlServerWorker.js",
-    "build:static": "npm run clean:static && npm run build:worker/statemachine && npm run build:worker/sql && npm run build:worker/arithmetics && npm run build:worker/playground-common && npm run build:worker/playground-langium && npm run build:worker/playground-user && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers",
+    "build:worker/minilogo": "esbuild ../node_modules/langium-minilogo/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/minilogoServerWorker.js",
+    "build:static": "npm run clean:static && npm run build:worker/statemachine && npm run build:worker/sql && npm run build:worker/minilogo && npm run build:worker/arithmetics && npm run build:worker/playground-common && npm run build:worker/playground-langium && npm run build:worker/playground-user && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers",
     "build": "npm run build:static && cross-env NODE_ENV=production  hugo        --config ./config.toml    -b /              -d ../public --gc --minify    ",
     "watch": "npm run build:static && cross-env NODE_ENV=development hugo server --config ./config.toml -D -b localhost:1313 -d ../public --appendPort=false",
     "watch:gitpod": "npm run build:static && cross-env NODE_ENV=development hugo server --config ./config.toml -D -b `gp url 1313` -d ../public --appendPort=false"
@@ -40,6 +41,7 @@
     "langium-arithmetics-dsl": "~1.2.1",
     "langium-domainmodel-dsl": "~1.2.0",
     "langium-sql": "^0.2.3",
+    "langium-minilogo": "^1.2.0",
     "langium-statemachine-dsl": "~1.2.0",
     "lz-string": "^1.4.4",
     "monaco-editor-workers": "0.34.2",
