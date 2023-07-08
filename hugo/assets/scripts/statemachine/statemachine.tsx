@@ -279,7 +279,7 @@ class App extends React.Component<{}> {
           <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono ">
             Preview
           </div>
-          <div className="border border-emeraldLangium h-full w-full">
+          <div className="border border-emeraldLangium h-full w-full overflow-hidden overflow-y-scroll">
             <Preview ref={this.preview} />
           </div>
         </div>
