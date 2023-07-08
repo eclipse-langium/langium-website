@@ -1,73 +1,70 @@
-import { MonacoEditorReactComp } from "./static/libs/monaco-editor-react/monaco-editor-react.js";
+import {
+    MonacoEditorReactComp,
+    addMonacoStyles,
+} from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
-import React from "react";
+import React  from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast";
-import { Evaluation, examples, syntaxHighlighting } from "./arithmetics-tools";
-import { UserConfig } from "monaco-editor-wrapper"; 
-import { createUserConfig } from "../utils";
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
+import { LoxMessage, exampleCode, syntaxHighlighting } from "./lox-tools";
 
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
     new URL("", window.location.href).href,
     false
 );
+addMonacoStyles("monaco-editor-styles");
 
 interface PreviewProps {
-    evaluations?: Evaluation[];
     diagnostics?: Diagnostic[];
-    focusLine: (line: number) => void;
 }
 
-let userConfig: UserConfig;
+interface PreviewState {
+    diagnostics?: Diagnostic[];
+    content: string[];
+}
 
-
-class Preview extends React.Component<PreviewProps, PreviewProps> {
+class Preview extends React.Component<PreviewProps, PreviewState> {
     constructor(props: PreviewProps) {
         super(props);
         this.state = {
-            evaluations: props.evaluations,
             diagnostics: props.diagnostics,
-            focusLine: props.focusLine,
+            content: [],
         };
-
-        this.startPreview = this.startPreview.bind(this);
     }
 
-    startPreview(evaluations: Evaluation[], diagnostics: Diagnostic[]) {
-        this.setState({ focusLine: this.state.focusLine.bind(this) })
-        this.setState({ evaluations: evaluations, diagnostics: diagnostics });
+    println(text: string) {
+        this.setState((state) => ({
+            content: [...state.content, text],
+        }));
     }
+
+    clear() {
+        this.setState({ content: [] });
+    }
+
+    setDiagnostics(diagnostics: Diagnostic[]) {
+        this.setState({ diagnostics: diagnostics });
+
+    }
+
 
     render() {
-        // check if code contains an astNode
-        if (!this.state.evaluations) {
-            // Show the exception
-            return (
-                <div className="flex flex-col h-full w-full p-4 justify-start items-center my-10">
-                    <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-center text-sm cursor-default">
-                        No Ast found
-                    </div>
-                </div>
-            );
-        }
-
         // if the code doesn't contain any errors and the diagnostics aren't warnings
         if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
             return (
-                <div className="text-white rounded-md p-4 text-left text-sm cursor-default">
-                    {this.state.evaluations.map((evaluation, index) =>
-                        <div key={index} className="pt-2 cursor-pointer hover:border-emeraldLangium hover:border-l-2" onClick={() => this.state.focusLine(evaluation.range.start.line + 1)}>
-                            <p className="inline p-2">
-                                {evaluation.range.start.line == evaluation.range.end.line && <span>{`Line ${evaluation.range.start.line + 1}: `}</span>}
-                                {evaluation.range.start.line != evaluation.range.end.line && <span>{`Line ${evaluation.range.start.line + 1}-${evaluation.range.end.line + 1}: `}</span>}
-                                <span className="text-accentBlue">{evaluation.text}</span> = <span className="text-accentGreen">{evaluation.value}</span>
-                            </p>
-                        </div>
-                    )}
+                <div>
+                    <div className="text-sm flex flex-col text-white p-4 overflow-hidden overflow-y-scroll">
+                            {this.state.content.map((line, index) =>
+                                <p key={index}>{line}</p>
+                            )}
+                    </div>
                 </div>
+
             );
         }
+
         // Show the exception
         return (
             <div className="flex flex-col h-full w-full p-4 justify-start items-center my-10" >
@@ -75,7 +72,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
                     {this.state.diagnostics.filter((i) => i.severity === 1).map((diagnostic, index) =>
                         <details key={index}>
                             <summary>{`Line ${diagnostic.range.start.line}-${diagnostic.range.end.line}: ${diagnostic.message}`}</summary>
-                            <p>Source: {diagnostic.source} | Code: {diagnostic.code}</p>
+                              <p>Source: {diagnostic.source} | Code: {diagnostic.code}</p>
                         </details>
                     )}
                 </div>
@@ -85,24 +82,23 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 }
 
 
-interface AppState {
-    exampleIndex: number;
-}
-class App extends React.Component<{}, AppState> {
+
+class App extends React.Component<{}, {}> {
     monacoEditor: React.RefObject<MonacoEditorReactComp>;
     preview: React.RefObject<Preview>;
+    copyHint: React.RefObject<HTMLDivElement>;
+    shareButton: React.RefObject<HTMLImageElement>;
     constructor(props) {
         super(props);
 
         // bind 'this' ref for callbacks to maintain parent context
         this.onMonacoLoad = this.onMonacoLoad.bind(this);
         this.onDocumentChange = this.onDocumentChange.bind(this);
+        this.copyLink = this.copyLink.bind(this);
         this.monacoEditor = React.createRef();
         this.preview = React.createRef();
-
-        this.state = {
-            exampleIndex: 0,
-        };
+        this.copyHint = React.createRef();
+        this.shareButton = React.createRef();
     }
 
     /**
@@ -136,14 +132,42 @@ class App extends React.Component<{}, AppState> {
      */
     onDocumentChange(resp: DocumentChangeResponse) {
         // decode the received Asts
-        let result = JSON.parse(resp.content)
-        let evaluations = result.$evaluations;
-        this.preview.current?.startPreview(evaluations, resp.diagnostics);
+        const message = JSON.parse(resp.content) as LoxMessage;
+        switch (message.type) {
+            case "notification":
+                switch (message.content) {
+                    case "startInterpreter":
+                        this.preview.current?.clear();
+                        break;
+                }
+                break;
+            case "output":
+                this.preview.current?.println(message.content as string);
+                break;
+        }
+        this.preview.current?.setDiagnostics(resp.diagnostics);
     }
 
-    setExample(index: number) {
-        this.setState({ exampleIndex: index });
-        this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setValue(examples[index]);
+
+    async copyLink() {
+        const code = this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.getValue()!;
+        const url = new URL("/showcase/lox", window.origin);
+        url.searchParams.append("code", compressToEncodedURIComponent(code));
+
+        this.copyHint.current!.style.display = "block";
+        this.shareButton.current!.src = '/assets/checkmark.svg';
+        setTimeout(() => {
+            this.shareButton.current!.src = '/assets/share.svg';
+            this.copyHint.current!.style.display = 'none';
+        }, 1000);
+
+        navigator.clipboard.writeText(window.location.href);
+
+        await navigator.clipboard.writeText(url.toString());
+    }
+
+    componentDidMount() {
+        this.shareButton.current!.addEventListener('click', this.copyLink);
     }
 
     render() {
@@ -151,36 +175,42 @@ class App extends React.Component<{}, AppState> {
             height: "100%",
             width: "100%",
         };
+        const url = new URL(window.location.toString());
+        let code = url.searchParams.get("code");
+        if (code) {
+            code = decompressFromEncodedURIComponent(code);
+        }
 
         return (
             <div className="justify-center self-center flex flex-col md:flex-row h-full w-full">
                 <div className="float-left w-full h-full flex flex-col">
-                    <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono">
+                    <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono ">
                         <span>Editor</span>
-                        <select className="ml-4 bg-emeraldLangiumDarker cursor-pointer border-0 border-b invalid:bg-emeraldLangiumABitDarker" onChange={(e) => this.setExample(parseInt(e.target.value))}>
-                            <option value="0">Basic Math</option>
-                            <option value="1">Price calculator</option>
-                        </select>    
+                        <div className="flex flex-row justify-end w-full h-full gap-2">
+                            <div className="text-sm hidden" ref={this.copyHint}>Link was copied!</div>
+                            <img src="/assets/share.svg" title="Copy URL to this grammar and content" className="inline w-4 h-4 cursor-pointer" ref={this.shareButton}></img>
+                        </div>
                     </div>
                     <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
                         <MonacoEditorReactComp
                             ref={this.monacoEditor}
                             onLoad={this.onMonacoLoad}
-                            userConfig={userConfig}
+                            webworkerUri="../showcase/libs/worker/loxServerWorker.js"
+                            workerName="LS"
+                            workerType="classic"
+                            languageId="lox"
+                            text={code ? code : exampleCode}
+                            syntax={syntaxHighlighting}
                             style={style}
                         />
                     </div>
                 </div>
                 <div className="float-left w-full h-full flex flex-col" id="preview">
                     <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono ">
-                        Preview
+                        <span>Output</span>
                     </div>
                     <div className="border border-emeraldLangium h-full w-full overflow-hidden overflow-y-scroll">
-                        <Preview ref={this.preview} focusLine={(line: number) => {
-                            this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.revealLineInCenter(line);
-                            this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setPosition({ lineNumber: line, column: 1 });
-                            this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.focus();
-                        }} />
+                        <Preview ref={this.preview} />
                     </div>
                 </div>
             </div>
@@ -188,13 +218,12 @@ class App extends React.Component<{}, AppState> {
     }
 }
 
-// setup config & render
-userConfig = createUserConfig({
-    languageId: 'arithmetics',
-    code: examples[0],
-    htmlElement: document.getElementById('root')!,
-    worker: '/showcase/libs/worker/arithmeticsServerWorker.js',
-    monarchGrammar: syntaxHighlighting
-});
+export async function share(code: string): Promise<void> {
+    const url = new URL("/showcase/lox", window.origin);
+    url.searchParams.append("code", compressToEncodedURIComponent(code));
+    await navigator.clipboard.writeText(url.toString());
+}
+
+
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(<App />);
