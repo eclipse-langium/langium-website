@@ -22,7 +22,12 @@ interface PreviewProps {
 
 interface PreviewState {
     diagnostics?: Diagnostic[];
-    content: string[];
+    messages: TerminalMessage[];
+}
+
+interface TerminalMessage {
+    type: "notification" | "error" | "output";
+    content: string | string[];
 }
 
 class Preview extends React.Component<PreviewProps, PreviewState> {
@@ -30,18 +35,24 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
         super(props);
         this.state = {
             diagnostics: props.diagnostics,
-            content: [],
+            messages: [],
         };
     }
 
     println(text: string) {
         this.setState((state) => ({
-            content: [...state.content, text],
+            messages: [...state.messages, { type: "output", content: text }],
+        }));
+    }
+
+    error(text: string) {
+        this.setState((state) => ({
+            messages: [...state.messages, { type: "error", content: text }],
         }));
     }
 
     clear() {
-        this.setState({ content: [] });
+        this.setState({ messages: [] });
     }
 
     setDiagnostics(diagnostics: Diagnostic[]) {
@@ -55,9 +66,9 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
         if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
             return (
                 <div>
-                    <div className="text-sm flex flex-col text-white p-4 overflow-hidden overflow-y-scroll">
-                            {this.state.content.map((line, index) =>
-                                <p key={index}>{line}</p>
+                    <div className="text-sm flex flex-col p-4 overflow-hidden overflow-y-scroll">
+                            {this.state.messages.map((message, index) =>
+                                <p key={index} className={message.type == "error" ? "text-base text-accentRed" : "text-white"}>{message.type == "error" ? "An error occurred: " : ""} {message.content}</p>
                             )}
                     </div>
                 </div>
@@ -140,6 +151,9 @@ class App extends React.Component<{}, {}> {
                         this.preview.current?.clear();
                         break;
                 }
+                break;
+            case "error":
+                this.preview.current?.error(message.content as string);
                 break;
             case "output":
                 this.preview.current?.println(message.content as string);
