@@ -5,13 +5,6 @@ module.exports = {
   content: ['../hugo/layouts/**/*.html','../hugo/content/**/*.html','../hugo/content/**/*.ts','../hugo/content/**/*.tsx','../hugo/static/**/*.html','../hugo/static/**/*.js', '../hugo/assets/scripts/**/*.tsx'],
   darkMode: 'class',
   theme: {
-    colors: {
-      transparent: 'transparent',
-      current: 'currentColor',
-      black: colors.black,
-      white: colors.white,
-      gray: colors.neutral
-    },
     extend: {
       fontFamily: {
         'mono': ['Menlo', 'ui-monospace', 'SFMono-Regular', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
@@ -28,7 +21,13 @@ module.exports = {
         'featureItem': '420px'
       },
       colors: {
+        transparent: 'transparent',
+        current: 'currentColor',
+        black: colors.black,
+        white: colors.white,
+        gray: colors.neutral,
         emeraldLangium: '#26888C',
+        danger: '#8c2626',
         emeraldLangiumABitDarker: '#207578',
         emeraldLangiumDarker: '#0A4340',
         emeraldLangiumDarkest: '#042424',
