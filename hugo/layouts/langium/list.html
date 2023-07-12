@@ -6,7 +6,11 @@
     <div class="rounded-lg border shadow-md bg-gray-800 border-gray-600 w-[300px] overflow-hidden self-stretch text-white">   
         <a href="{{.Params.url}}" class="self-stretch">
             <img src="{{.Params.img}}" class="object-fill min-h-[300px]"/>
-            <h2 class="text-center text-xl mt-10 mb-5">{{.Title}}</h2>
+            <h2 class="flex flex-row items-center justify-center text-center text-xl mt-10 mb-5 gap-2">{{.Title}} 
+                {{if .Params.beta}}
+                    <div class="flex flex-row items-center justify-center border border-emeraldLangium p-1 rounded-xl text-xs text-emeraldLangium mb-8" title="This showcase is still in progress and may include some errors.">Beta</div>
+                {{ end }}
+            </h2>
             <p class="line-clamp-[8] px-5 mb-10 text-sm">
                 {{.Params.description}}
             </p>

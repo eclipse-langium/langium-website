@@ -60,7 +60,6 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
 
     }
 
-
     render() {
         // if the code doesn't contain any errors and the diagnostics aren't warnings
         if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
@@ -72,7 +71,6 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
                             )}
                     </div>
                 </div>
-
             );
         }
 
