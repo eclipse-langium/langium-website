@@ -14,8 +14,37 @@ export const exampleCode = `fun factorial(n: number): number {
   }
 }
 
-var result = factorial(5);
-print(result); // Output: 120`;
+fun binomial(n: number, k: number): number {
+    return factorial(n) / (factorial(k) * factorial(n - k));
+}
+
+fun pow(x: number, n: number): number {
+    var result = 1;
+    for (var i = 0; i < n; i = i + 1) {
+        result = result * x;
+    }
+    return result;
+}
+
+fun mod(x: number, y: number): number {
+    return x - y * (x / y);
+}
+
+fun floor(x: number): number {
+    return x - mod(x, 1);
+}
+
+fun ceil(x: number): number {
+    return floor(x) + 1;
+}
+
+print("factorial(5) = " + factorial(5));
+print("binomial(5, 2) = " + binomial(5, 2));
+print("pow(2, 10) = " + pow(2, 10));
+print("mod(10, 3) = " + mod(10, 3));
+print("floor(3.14) = " + floor(3.14));
+print("ceil(3.14) = " + ceil(3.14));
+`;
 
 export const syntaxHighlighting = {
     keywords: [
