@@ -247,7 +247,6 @@ class App extends React.Component<{}> {
    */
   onDocumentChange(resp: DocumentChangeResponse) {
     // decode the received Ast
-    console.log("doucment change");
     const statemachineAst = new LangiumAST().deserializeAST(resp.content) as StateMachineAstNode;
     this.preview.current?.startPreview(statemachineAst, resp.diagnostics);
   }
