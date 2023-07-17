@@ -3,7 +3,7 @@ import {
     addMonacoStyles,
 } from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
-import React  from "react";
+import React, { createRef, useRef }  from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
@@ -31,12 +31,15 @@ interface TerminalMessage {
 }
 
 class Preview extends React.Component<PreviewProps, PreviewState> {
+    ref: React.RefObject<HTMLDivElement>;
     constructor(props: PreviewProps) {
         super(props);
         this.state = {
             diagnostics: props.diagnostics,
             messages: [],
         };
+
+        this.ref = createRef<HTMLDivElement>();
     }
 
     println(text: string) {
@@ -63,9 +66,12 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
     render() {
         // if the code doesn't contain any errors and the diagnostics aren't warnings
         if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
+            const lastChildElement = this.ref.current?.lastElementChild;
+            lastChildElement?.scrollIntoView({ behavior: 'auto' });
+
             return (
                 <div>
-                    <div className="text-sm flex flex-col p-4 overflow-hidden overflow-y-scroll">
+                    <div className="text-sm flex flex-col p-4 overflow-hidden overflow-y-scroll" ref={this.ref}>
                             {this.state.messages.map((message, index) =>
                                 <p key={index} className={message.type == "error" ? "text-base text-accentRed" : "text-white"}>{message.type == "error" ? "An error occurred: " : ""} {message.content}</p>
                             )}
