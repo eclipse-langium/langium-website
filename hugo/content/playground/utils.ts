@@ -15,25 +15,32 @@ export async function share(grammar: string, content: string): Promise<void> {
   await navigator.clipboard.writeText(url.toString());
 }
 
-export function throttle<T>(milliseconds: number, action: (input: T) => void) {
-  let timeout: NodeJS.Timeout | undefined = undefined;
+/**
+ * Map of actions that are throttled, with the key being the unique id
+ * Used to clear them out if a subsequent action is dispatched
+ */
+const throttleMap = new Map<number, NodeJS.Timeout>();
 
-  function clear() {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = undefined;
-    }
+/**
+ * Throttles an action with a fixed delay, such that subsequent attempts to dispatch
+ * the same action clear out the previous action, and reset the delay.
+ * 
+ * @param id Unique id to associate with this action
+ * @param delay In milliseconds to delay the action
+ * @param action Action to perform (function to invoke)
+ */
+export function throttle<T>(id: number, delay: number, action: () => void): void {
+  // clear out any previous action
+  if (throttleMap.has(id)) {
+    clearTimeout(throttleMap.get(id)!);
   }
 
-  return {
-    clear,
-    call: (input: T) => {
-      clear();
-      timeout = setTimeout(() => {
-        action(input);
-      }, milliseconds);
-    },
-  };
+  // set a new timeout to perform the action
+  throttleMap.set(id, setTimeout(() => {
+      action();
+      throttleMap.delete(id);
+    }, delay)
+  );
 }
 
 export function overlay(visible: boolean, hasError: boolean) {

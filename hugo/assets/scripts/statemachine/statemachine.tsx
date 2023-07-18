@@ -1,19 +1,18 @@
-import {
-  MonacoEditorReactComp,
-  addMonacoStyles,
-} from "@typefox/monaco-editor-react/bundle";
+import { MonacoEditorReactComp } from "./static/libs/monaco-editor-react/monaco-editor-react.js";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
-import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools, syntaxHighlighting } from "./statemachine-tools";
+import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools } from "./statemachine-tools";
+import { UserConfig } from "monaco-editor-wrapper";
+import { createUserConfig } from '../utils';
+import statemachineGrammar from 'langium-statemachine-dsl/syntaxes/statemachine.tmLanguage.json';
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
   new URL("", window.location.href).href,
   false
 );
-addMonacoStyles("monaco-editor-styles");
 
 interface StateProps {
   name: string;
@@ -40,12 +39,13 @@ class State extends React.Component<StateProps, StateProps> {
       name: props.name,
       isActive: props.isActive,
     };
+
     this.stateRef = React.createRef<HTMLInputElement>();
   }
 
   /**
    * set the state to active or inactive
-   * @param active true if the event should be aktive
+   * @param active true if the event should be active
    */
   setActive(active: boolean) {
     this.setState({ isActive: active });
@@ -60,11 +60,11 @@ class State extends React.Component<StateProps, StateProps> {
       >
         {this.state.isActive ? (
           <div className="text-emeraldLangium border-2 border-solid transition-shadow border-emeraldLangium rounded-md p-4 text-center text-sm shadow-opacity-50 shadow-[0px_0px_15px_0px] shadow-emeraldLangium">
-            {this.state.name}
+            {this.props.name}
           </div>
         ) : (
           <div className="border-2 text-emeraldLangiumDarker border-solid border-emeraldLangiumDarker rounded-md p-4 text-center text-sm">
-            {this.state.name}
+            {this.props.name}
           </div>
         )}
       </div>
@@ -131,19 +131,20 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 
     // if the code doesn't contain any errors
     if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
-      let states: State[] = [];
-      let events: Event[] = [];
+      const statemachineTools = new StateMachineTools(this.state.astNode);
 
-      let statemachineTools = new StateMachineTools(this.state.astNode);
+      const states: State[] = [];
+      const events: Event[] = [];
+
       // update the aktive state
       const changeStates = function (state: StateMachineState) {
         statemachineTools.setState(state);
-
+        
         // loop through all states and set the active state
         events.forEach((i) => {
           i.setEnabled(statemachineTools.isEventEnabled(statemachineTools.getEventByName(i.props.name)!));
         });
-
+        
         states.forEach((i) => {
           i.setActive(statemachineTools.isCurrentState(statemachineTools.getStateByName(i.props.name)!));
         });
@@ -201,9 +202,12 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
   }
 }
 
-class App extends React.Component<{}> {
+class StateMachineComponent extends React.Component<{
+  langiumConfig: UserConfig
+}> {
   monacoEditor: React.RefObject<MonacoEditorReactComp>;
   preview: React.RefObject<Preview>;
+
   constructor(props) {
     super(props);
 
@@ -263,14 +267,9 @@ class App extends React.Component<{}> {
           </div>
           <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
             <MonacoEditorReactComp
+              userConfig={this.props.langiumConfig}
               ref={this.monacoEditor}
               onLoad={this.onMonacoLoad}
-              webworkerUri="../showcase/libs/worker/statemachineServerWorker.js"
-              workerName="LS"
-              workerType="classic"
-              languageId="statemachine"
-              text={defaultText}
-              syntax={syntaxHighlighting}
               style={style}
             />
           </div>
@@ -288,5 +287,14 @@ class App extends React.Component<{}> {
   }
 }
 
+// setup config & render
+const langiumGlobalConfig: UserConfig = createUserConfig({
+  languageId: 'statemachine',
+  code: defaultText,
+  htmlElement: document.getElementById('root')!,
+  textmateGrammar: statemachineGrammar,
+  worker: '/showcase/libs/worker/statemachineServerWorker.js'
+});
+
 const root = createRoot(document.getElementById("root") as HTMLElement);
-root.render(<App />);
+root.render(<StateMachineComponent langiumConfig={langiumGlobalConfig}/>);
