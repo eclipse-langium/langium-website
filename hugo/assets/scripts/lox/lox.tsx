@@ -66,9 +66,6 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
     render() {
         // if the code doesn't contain any errors and the diagnostics aren't warnings
         if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
-            const lastChildElement = this.ref.current?.lastElementChild;
-            lastChildElement?.scrollIntoView({ behavior: 'auto' });
-
             return (
                 <div>
                     <div className="text-sm flex flex-col p-4 overflow-hidden overflow-y-scroll" ref={this.ref}>
