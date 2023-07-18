@@ -40,6 +40,7 @@ class State extends React.Component<StateProps, StateProps> {
       name: props.name,
       isActive: props.isActive,
     };
+
     this.stateRef = React.createRef<HTMLInputElement>();
   }
 
@@ -60,11 +61,11 @@ class State extends React.Component<StateProps, StateProps> {
       >
         {this.state.isActive ? (
           <div className="text-emeraldLangium border-2 border-solid transition-shadow border-emeraldLangium rounded-md p-4 text-center text-sm shadow-opacity-50 shadow-[0px_0px_15px_0px] shadow-emeraldLangium">
-            {this.state.name}
+            {this.props.name}
           </div>
         ) : (
           <div className="border-2 text-emeraldLangiumDarker border-solid border-emeraldLangiumDarker rounded-md p-4 text-center text-sm">
-            {this.state.name}
+            {this.props.name}
           </div>
         )}
       </div>
@@ -131,19 +132,20 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 
     // if the code doesn't contain any errors
     if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
-      let states: State[] = [];
-      let events: Event[] = [];
+      const statemachineTools = new StateMachineTools(this.state.astNode);
 
-      let statemachineTools = new StateMachineTools(this.state.astNode);
+      const states: State[] = [];
+      const events: Event[] = [];
+
       // update the aktive state
       const changeStates = function (state: StateMachineState) {
         statemachineTools.setState(state);
-
+        
         // loop through all states and set the active state
         events.forEach((i) => {
           i.setEnabled(statemachineTools.isEventEnabled(statemachineTools.getEventByName(i.props.name)!));
         });
-
+        
         states.forEach((i) => {
           i.setActive(statemachineTools.isCurrentState(statemachineTools.getStateByName(i.props.name)!));
         });
