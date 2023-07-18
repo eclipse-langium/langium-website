@@ -31,7 +31,7 @@ interface TerminalMessage {
 }
 
 class Preview extends React.Component<PreviewProps, PreviewState> {
-    ref: React.RefObject<HTMLDivElement>;
+    terminalContainer: React.RefObject<HTMLDivElement>;
     constructor(props: PreviewProps) {
         super(props);
         this.state = {
@@ -39,7 +39,7 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
             messages: [],
         };
 
-        this.ref = createRef<HTMLDivElement>();
+        this.terminalContainer = createRef<HTMLDivElement>();
     }
 
     println(text: string) {
@@ -66,9 +66,20 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
     render() {
         // if the code doesn't contain any errors and the diagnostics aren't warnings
         if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
+            
+            // auto scroll to bottom
+            const terminal = this.terminalContainer.current;
+            const newLine = terminal?.lastElementChild;
+            if (newLine && terminal) {
+                const rect = newLine.getBoundingClientRect();
+                if (rect.bottom <= terminal.getBoundingClientRect().bottom) {
+                    newLine.scrollIntoView();
+                }
+            }
+
             return (
                 <div>
-                    <div className="text-sm flex flex-col p-4 overflow-hidden overflow-y-scroll" ref={this.ref}>
+                    <div className="text-sm flex flex-col p-4 overflow-hidden overflow-y-scroll" ref={this.terminalContainer}>
                             {this.state.messages.map((message, index) =>
                                 <p key={index} className={message.type == "error" ? "text-base text-accentRed" : "text-white"}>{message.type == "error" ? "An error occurred: " : ""} {message.content}</p>
                             )}
