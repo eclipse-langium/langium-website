@@ -1,5 +1,31 @@
 import { monaco } from "monaco-editor-wrapper/.";
+import { AstNode } from "../langium-utils/langium-ast";
 
+export interface DomainModelAstNode extends AstNode  {
+    elements: PackageDeclaration[] | Entity[] | DataType[];
+}
+
+
+export interface PackageDeclaration {
+    name: string;
+    elements: DataType[];
+}
+
+export interface Entity {
+    name: string;
+    features: Feature[];
+    superType?: Entity;
+}
+
+export interface Feature { 
+    name: string;
+    type: DataType;
+    many: boolean;
+}
+
+export interface DataType {
+    name: string;
+}
 
 export const example = `// Define all datatypes
 datatype String
