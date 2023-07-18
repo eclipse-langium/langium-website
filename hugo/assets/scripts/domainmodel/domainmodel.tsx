@@ -7,6 +7,8 @@ import { example, syntaxHighlighting } from "./domainmodel-tools";
 import { UserConfig } from "monaco-editor-wrapper"; 
 import { createUserConfig } from "../utils";
  
+import { DomainModelAstNode, example, syntaxHighlighting } from "./domainmodel-tools";
+
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
     new URL("", window.location.href).href,
@@ -57,9 +59,8 @@ class App extends React.Component<{}> {
      */
     onDocumentChange(resp: DocumentChangeResponse) {
         // decode the received Asts
-        // let result = JSON.parse(resp.content)
-        // let evaluations = result.$evaluations;
-        // this.preview.current?.startPreview(evaluations, resp.diagnostics);
+        let result = JSON.parse(resp.content) as DomainModelAstNode;
+        console.dir(result.elements)
     }
 
     render() {
@@ -70,7 +71,11 @@ class App extends React.Component<{}> {
 
         return (
             <div className="justify-center self-center flex flex-col md:flex-row h-full w-full p-4">
-                <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-[50vh] min-h-[300px]">
+                <div className="float-left w-full h-full flex flex-col">
+                    <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono">
+                        Editor
+                    </div>
+                    <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-[50vh] min-h-[300px]">
                         <MonacoEditorReactComp
                             ref={this.monacoEditor}
                             onLoad={this.onMonacoLoad}
@@ -78,6 +83,15 @@ class App extends React.Component<{}> {
                             style={style}
                         />
                     </div>
+                </div>
+                <div className="float-left w-full h-full flex flex-col" id="preview">
+                    <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono ">
+                        Preview
+                    </div>
+                    <div className="border border-emeraldLangium h-full w-full">
+                       <span className="text-white">Preview using Sprotty</span>
+                    </div>
+                </div>
             </div>
         );
     }
