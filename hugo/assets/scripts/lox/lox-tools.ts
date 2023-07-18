@@ -39,12 +39,6 @@ print("binomial(5, 2) = " + binomial(5, 2));
 print("pow(2, 10) = " + pow(2, 10));
 print("mod(10, 3) = " + mod(10, 3));
 print("floor(3.14) = " + floor(3.14));
-
-
-for (var i = 0; i <= 1000; i = i + 1) {
-    print(i);
-}
-
 `;
 
 export const syntaxHighlighting = {
