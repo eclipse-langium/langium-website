@@ -74,9 +74,9 @@ class App extends React.Component<{}> {
       paddingTop: "5px",
     };
     return (
-      <div className="w-full justify-center flex flex-col items-center">
+      <div className="w-full justify-center flex flex-col items-center md:px-[20vh] lg:px-[30vh]">
         <MonacoEditorReactComp
-          className="w-1/2 border border-emeraldLangium h-[50vh] min-h-[300px]"
+          className="w-full border border-emeraldLangium h-[50vh] min-h-[300px]"
           ref={this.monacoEditorLeft}
           onLoad={() => this.onMonacoLoad(this.monacoEditorLeft)}
           webworkerUri={"showcase/libs/worker/sqlServerWorker.js"}
@@ -87,7 +87,7 @@ class App extends React.Component<{}> {
           syntax={syntaxHighlighting}
           style={style}
         />
-        <div className="w-1/2 p-4 text-white overflow-auto">
+        <div className="w-full p-4 text-white overflow-auto">
           <h1 className="text-2xl">Langium/SQL</h1>
           <p className="pt-2">
             This is a showcase of <a className="text-emeraldLangium" href="https://github.com/langium/langium-sql" target="_blank">Langium/SQL</a>. The editor above
