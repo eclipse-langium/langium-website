@@ -222,7 +222,12 @@ const PlaygroundActions: Actions = {
 
     if (editor) {
       content = editor.editor.getMainCode();
-      await editor.editor.dispose();
+      // attempt to dispose
+      await editor.editor.dispose().catch((e) => {
+        // report & discard this error
+        // can happen when a previous editor was not started correctly
+        console.error(e);
+      });
     }
 
     const { Grammar } = await createServicesForGrammar({ grammar: message.grammar });
