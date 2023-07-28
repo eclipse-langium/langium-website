@@ -196,7 +196,7 @@ async function startEditor() {
         code: examples[0],
         htmlElement: document.getElementById('root')!,
         languageGrammar: arithmeticsGrammar,
-        serverWorkerUrl: '/showcase/libs/worker/arithmeticsServerWorker.js',
+        worker: '/showcase/libs/worker/arithmeticsServerWorker.js',
         monarchSyntax: syntaxHighlighting
     });
     const root = createRoot(document.getElementById("root") as HTMLElement);

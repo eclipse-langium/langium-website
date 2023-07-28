@@ -1,6 +1,8 @@
 import { UserConfig } from "monaco-editor-wrapper";
 import { monaco } from "monaco-editor-wrapper/.";
 
+export type WorkerUrl = string;
+
 /**
  * Generalized configuration used with 'getMonacoEditorReactConfig' to generate a working configuration for monaco-editor-react
  */
@@ -9,7 +11,7 @@ export interface MonacoReactConfig {
     htmlElement: HTMLElement,
     languageGrammar?: any,
     languageId: string,
-    serverWorkerUrl: string,
+    worker: WorkerUrl | Worker,
     monarchSyntax?: monaco.languages.IMonarchLanguage,
     readonly?: boolean // whether to make the editor readonly or not (by default is false)
 }
@@ -66,9 +68,6 @@ export function createUserConfig(config: MonacoReactConfig): UserConfig {
         extensionContents.set(languageGrammarUrl, JSON.stringify(config.languageGrammar));
     }
 
-    // create a worker url for our LS
-    const workerUrl = new URL(config.serverWorkerUrl, window.location.href);
-
     // generate langium config
     return {
         htmlElement: config.htmlElement,
@@ -99,7 +98,7 @@ export function createUserConfig(config: MonacoReactConfig): UserConfig {
                     },
                     contributes: {
                         languages: [{
-                            id: id,
+                            id,
                             extensions: [],
                             aliases: [
                                 id
@@ -154,11 +153,12 @@ export function createUserConfig(config: MonacoReactConfig): UserConfig {
         languageClientConfig: {
             enabled: true,
             useWebSocket: false,
-            workerConfigOptions: {
-                url: workerUrl,
+            // build a worker config from a worker URL string, or just copy in the entire worker
+            workerConfigOptions: typeof config.worker === 'string' ? {
+                url: new URL(config.worker, window.location.href),
                 type: 'module',
                 name: `${id}-language-server-worker`,
-            }
+            } : config.worker
         }
     };
 }

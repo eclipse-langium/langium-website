@@ -120,7 +120,7 @@ async function startEditor() {
     languageId: 'sql',
     code: defaultText,
     htmlElement: document.getElementById('root')!,
-    serverWorkerUrl: '/showcase/libs/worker/sqlServerWorker.js',
+    worker: '/showcase/libs/worker/sqlServerWorker.js',
     monarchSyntax: syntaxHighlighting
   });
 

@@ -27,35 +27,80 @@ export interface PlaygroundParameters {
 
 let dslWrapper: MonacoEditorLanguageClientWrapper | undefined;
 
-export let currentGrammarContent = '';
-export let currentDSLContent = '';
+/**
+ * Current langium grammar in the playground
+ */
+let currentGrammarContent = '';
 
-let documentChangeListener: Disposable;
+/**
+ * Current DSL program in the playground
+ */
+let currentDSLContent = '';
 
+/**
+ * Document change listener for modified DSL programs
+ */
+let dslDocumentChangeListener: Disposable;
+
+/**
+ * Update delay for new grammars & DSL programs to be processed
+ * Any new updates occurring during this delay will cause an existing update to be cancelled,
+ * and will reset the delay again
+ */
+const languageUpdateDelay = 150;
+
+/**
+ * Counter for language ids, which are incremented on each change
+ */
+let nextIdCounter = 0;
+
+
+/**
+ * Helper for retrieving the next language id to use, to avoid conflicting with prior ones
+ */
+function nextId(): string {
+  return (nextIdCounter++).toString();
+}
+
+
+/**
+ * Helper to retrieve the current grammar & program in the playground.
+ * Typically used to generate a save link to this state
+ */
+export function getPlaygroundState(): PlaygroundParameters {
+  return {
+    grammar: currentGrammarContent,
+    content: currentDSLContent
+  };
+}
+
+
+/**
+ * Starts the playground
+ * 
+ * @param leftEditor Left editor element
+ * @param rightEditor Right editor element
+ * @param encodedGrammar Encoded grammar to optionally use
+ * @param encodedContent Encoded content to optionally use
+ */
 export async function setupPlayground(
   leftEditor: HTMLElement,
   rightEditor: HTMLElement,
-  grammar?: string,
-  content?: string,
-  // overlay?: (visible: boolean, hasError: boolean) => void
-): Promise<() => PlaygroundParameters> {
-  let langiumContent = LangiumInitialContent;
-  let dslContent = DSLInitialContent;
+  encodedGrammar?: string,
+  encodedContent?: string
+): Promise<void> {
+  // setup initial contents for the grammar & dsl (Hello World)
+  currentGrammarContent = LangiumInitialContent;
+  currentDSLContent = DSLInitialContent;
 
-  currentGrammarContent = langiumContent;
-  currentDSLContent = dslContent;
-
-  if (grammar) {
-    const decompressedGrammar = decompressFromEncodedURIComponent(grammar);
-    if (decompressedGrammar) {
-      langiumContent = decompressedGrammar;
-    }
+  // check to use existing grammar from URI
+  if (encodedGrammar) {
+    currentGrammarContent = decompressFromEncodedURIComponent(encodedGrammar) ?? currentGrammarContent;
   }
-  if (content) {
-    const decompressedContent = decompressFromEncodedURIComponent(content);
-    if (decompressedContent) {
-      dslContent = decompressedContent;
-    }
+
+  // check to use existing content from URI
+  if (encodedContent) {
+    currentDSLContent = decompressFromEncodedURIComponent(encodedContent) ?? currentDSLContent;
   }
 
   // setup langium wrapper
@@ -63,24 +108,25 @@ export async function setupPlayground(
   await langiumWrapper.start(createUserConfig({
     htmlElement: leftEditor,
     languageId: "langium",
-    code: langiumContent,
-    serverWorkerUrl: "/playground/libs/worker/langiumServerWorker.js",
+    code: currentGrammarContent,
+    worker: "/playground/libs/worker/langiumServerWorker.js",
     languageGrammar: {},
     monarchSyntax: LangiumMonarchContent
   }));
 
-  const { Grammar } = await createServicesForGrammar({ grammar: langiumContent });
-  const dslMonarchSyntax = generateMonarch(Grammar, "user");
+  // TODO @montymxb Make this a TextMate grammar instead
+  // setup services
+  const { Grammar } = await createServicesForGrammar({ grammar: currentGrammarContent });
 
   // setup DSL wrapper
   dslWrapper = new MonacoEditorLanguageClientWrapper();
   await dslWrapper.start(createUserConfig({
     htmlElement: rightEditor,
     languageId: "user",
-    code: dslContent,
-    serverWorkerUrl: "/playground/libs/worker/userServerWorker.js",
+    code: currentDSLContent,
+    worker: await getLSWorkerForGrammar(currentGrammarContent),
     languageGrammar: {},
-    monarchSyntax: dslMonarchSyntax
+    monarchSyntax: generateMonarch(Grammar, "user")
   }));
 
   // retrieve the langium language client
@@ -95,43 +141,64 @@ export async function setupPlayground(
     throw new Error('Unable to obtain language client for user editor!');
   }
 
-  /**
-   * Helper for registering to receive new ASTs from parsed DSL programs
-   */
-  function registerForDocumentChanges() {
-    if (documentChangeListener) {
-      documentChangeListener.dispose();
-    }
-    // register to receive new ASTs from parsed DSL programs
-    documentChangeListener = dslClient!.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
-      console.log('* Notification received!');
-      const ast = (new LangiumAST()).deserializeAST(resp.content);
-      render(ast, new DefaultAstNodeLocator());
-    });
-  }
+  // listen for document changes, to render new ASTs on the fly
+  registerForDocumentChanges(dslClient);
 
-  registerForDocumentChanges();
+  let dslGrammarUpdateTimeout: NodeJS.Timeout | undefined = undefined;
 
   // register to receive new grammars from langium, and send them to the DSL language client
-  langiumClient.onNotification('browser/DocumentChange', async (resp: DocumentChangeResponse) => {
-    // this will trigger the DSL client to rebuild its language server
-    await dslClient?.sendNotification('browser/SetNewGrammar', {
-      grammar: resp.content
-    });
+  langiumClient.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
 
-    // restart the language client, but don't toss the old worker
-    // TODO this needs the new monaco-editor-wrapper API, to avoid tossing the existing worker
-    // ...(undefined, true)
-    await dslWrapper?.restartLanguageClient();
-    // get a fresh client
-    dslClient = dslWrapper?.getLanguageClient();
-    // re-register
-    registerForDocumentChanges();
+    // extract & update current grammar
+    currentGrammarContent = resp.content;
 
-    // construct and set a new monarch syntax onto the editor
-    const { Grammar } = await createServicesForGrammar({ grammar: langiumContent });
-    const dslMonarchSyntax = generateMonarch(Grammar, "user");
-    
+    // clear existing update timeout
+    clearTimeout(dslGrammarUpdateTimeout);
+    // set a new timeout for updating our DSL grammar & editor, 200ms, to avoid intermediate states
+    dslGrammarUpdateTimeout = setTimeout(async () => {
+      if (!dslClient?.isRunning()) {
+        return;
+      }
+
+      overlay(true, false);
+
+      // retrieve existing code from the model
+      currentDSLContent = dslWrapper?.getModel()?.getValue() as string;
+
+      // console.info('* DSL wrapper resources cleaned up');
+      await dslWrapper?.dispose();
+
+      // construct and set a new monarch syntax onto the editor
+      const { Grammar } = await createServicesForGrammar({ grammar: currentGrammarContent });
+
+      // setup a new id
+      const newId = nextId();
+
+      // re-create the wrapper
+      dslWrapper = new MonacoEditorLanguageClientWrapper();
+      await dslWrapper.start(createUserConfig({
+        htmlElement: rightEditor,
+        languageId: newId,
+        code: currentDSLContent,
+        worker: await getLSWorkerForGrammar(currentGrammarContent),
+        languageGrammar: {},
+        monarchSyntax: generateMonarch(Grammar, newId)
+      }));
+
+      // get a fresh client
+      dslClient = dslWrapper?.getLanguageClient();
+
+      if (!dslClient) {
+        throw new Error('Failed to retrieve fresh DSL LS client');
+      }
+
+      // re-register
+      registerForDocumentChanges(dslClient);
+
+      // reset overlay
+      overlay(false, false);
+
+    }, languageUpdateDelay);
   });
 
   window.addEventListener("resize", () => {
@@ -141,11 +208,59 @@ export async function setupPlayground(
 
   // drop the overlay once done here
   overlay(false, false);
+}
 
-  return () => {
-    return {
-      grammar: langiumWrapper.getMonacoEditorWrapper()?.getEditorConfig()?.code,
-      content: dslWrapper?.getMonacoEditorWrapper()?.getEditorConfig()?.code ?? "",
-    } as PlaygroundParameters;
-  };
+
+/**
+  * Helper for registering to receive new ASTs from parsed DSL programs
+  */
+function registerForDocumentChanges(dslClient: any | undefined) {
+  // dispose of any existing listener
+  if (dslDocumentChangeListener) {
+    dslDocumentChangeListener.dispose();
+  }
+
+  let dslClentTimeout: NodeJS.Timeout | undefined = undefined;
+
+  // register to receive new ASTs from parsed DSL programs
+  dslDocumentChangeListener = dslClient!.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
+    // delay changes by 200ms, to avoid getting too many intermediate states
+    clearTimeout(dslClentTimeout);
+    dslClentTimeout = setTimeout(() => {
+      render(
+        (new LangiumAST()).deserializeAST(resp.content),
+        new DefaultAstNodeLocator()
+      );
+    }, languageUpdateDelay);
+  });
+}
+
+
+/**
+ * Produce a new LS worker for a given grammar, which returns a Promise once it's finished starting
+ * 
+ * @param grammar To setup LS for
+ * @returns Configured LS worker
+ */
+async function getLSWorkerForGrammar(grammar: string): Promise<Worker> {
+  return new Promise((resolve, reject) => {
+    // create & notify the worker to setup w/ this grammar
+    const worker = new Worker("/playground/libs/worker/userServerWorker.js");
+    worker.postMessage({
+      type: "startWithGrammar",
+      grammar
+    });
+
+    // wait for the worker to finish starting
+    worker.onmessage = (event) => {
+      if (event.data.type === "lsStartedWithGrammar") {
+        resolve(worker);
+      }
+    };
+
+    worker.onerror = (event) => {
+      reject(event);
+    };
+
+  });
 }

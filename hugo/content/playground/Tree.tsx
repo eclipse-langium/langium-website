@@ -16,7 +16,6 @@ export let treeRoot: ReactDOM.Root;
 export function render(root: AstNode, locator: AstNodeLocator) {
   const location = document.getElementById("ast-body")!;
   const data = preprocessAstNodeObject(root, locator);
-  console.log(data);
   if (!treeRoot) {
     // create a fresh root, if not already present
     treeRoot = ReactDOM.createRoot(location);

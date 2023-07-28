@@ -298,7 +298,7 @@ async function startEditor() {
     code: defaultText,
     htmlElement: document.getElementById('root')!,
     languageGrammar: statemachineGrammar,
-    serverWorkerUrl: '/showcase/libs/worker/statemachineServerWorker.js'
+    worker: '/showcase/libs/worker/statemachineServerWorker.js'
   });
 
   const root = createRoot(document.getElementById("root") as HTMLElement);

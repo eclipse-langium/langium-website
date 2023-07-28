@@ -5,34 +5,23 @@
  ******************************************************************************/
 
 import { DocumentState, createServicesForGrammar, startLanguageServer } from 'langium';
-import { BrowserMessageReader, BrowserMessageWriter, createConnection, Diagnostic, Disposable, NotificationType } from 'vscode-languageserver/browser';
+import { BrowserMessageReader, BrowserMessageWriter, createConnection, Diagnostic, Disposable, NotificationType } from 'vscode-languageserver/browser.js';
 
-/**
- * Starting grammar, but this text can be changed as needed for the worker
- */
-let grammarText = `grammar HelloWorld
-
-entry Model:
-    (persons+=Person | greetings+=Greeting)*;
-
-Person:
-    'person' name=ID;
-
-Greeting:
-    'Hello' person=[Person:ID] '!';
-
-hidden terminal WS: /\\s+/;
-terminal ID: /[_a-zA-Z][\\w_]*/;
-
-hidden terminal ML_COMMENT: /\\/\\*[\\s\\S]*?\\*\\//;
-hidden terminal SL_COMMENT: /\\/\\/[^\\n\\r]*/;
-`;
-
-type DocumentChange = { uri: string, content: string, diagnostics: Diagnostic[] };
+// listen for messages to trigger starting the LS with a given grammar
+addEventListener('message', async (event) => {
+    if (event.data.type && event.data.type === 'startWithGrammar') {
+        if (event.data.grammar === undefined) {
+            throw new Error('User worker was started without a grammar!');
+        }
+        await startWithGrammar(event.data.grammar as string);
+    }
+});
 
 // disposable to remove previous build phase listeners
 let buildPhaseListener: Disposable;
 let newGrammarListener: Disposable;
+
+type DocumentChange = { uri: string, content: string, diagnostics: Diagnostic[] };
 
 const documentChangeNotification = new NotificationType<DocumentChange>('browser/DocumentChange');
 
@@ -40,24 +29,22 @@ const documentChangeNotification = new NotificationType<DocumentChange>('browser
 const messageReader = new BrowserMessageReader(self);
 const messageWriter = new BrowserMessageWriter(self);
 
-async function setupWorker() {
-
-    // // hold a ref to the connection, so we can dispose of it later
-    // let connection;
-
-    // check to dispose of an existing connection
-    // if (connection) {
-    //     connection.dispose();
-    // }
+/**
+ * Starts up a LS with a given grammar.
+ * Upon completion posts a message back to the main thread that it's done
+ * 
+ * @param grammarText Grammar string to create an LS for
+ */
+async function startWithGrammar(grammarText: string): Promise<void> {
 
     // create a fresh connection
     const connection = createConnection(messageReader, messageWriter);
- 
+
     // create shared services & serializer for the given grammar grammar
-    let { shared, serializer } = await createServicesForGrammar({
+    const { shared, serializer } = await createServicesForGrammar({
         grammar: grammarText,
         sharedModule: {
-            lsp: { 
+            lsp: {
                 Connection: () => connection,
             }
         }
@@ -68,22 +55,15 @@ async function setupWorker() {
         newGrammarListener.dispose();
     }
 
-    // register to handle receiving new grammars, this will create a new LS
-    newGrammarListener = connection.onNotification('browser/SetNewGrammar', async (resp: { grammar: string }) => {
-        // change grammar & setup worker again
-        grammarText = resp.grammar;
-        await setupWorker();
-    });
-
     // toss out any previous build phase listeners
     if (buildPhaseListener) {
         buildPhaseListener.dispose();
     }
 
+    // listen for validated documents, and send the AST back to the language client
     buildPhaseListener = shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents => {
         for (const document of documents) {
             const json = serializer.JsonSerializer.serialize(document.parseResult.value);
-            // console.dir(json);
             connection.sendNotification(documentChangeNotification, {
                 uri: document.uri.toString(),
                 content: json,
@@ -92,7 +72,9 @@ async function setupWorker() {
         }
     });
 
+    // start the LS
     startLanguageServer(shared);
-}
 
-setupWorker();
+    // notify the main thread that the LS is ready
+    postMessage({ type: 'lsStartedWithGrammar' });
+}

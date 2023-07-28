@@ -6,7 +6,6 @@
 
 import { DocumentState, startLanguageServer, EmptyFileSystem, createLangiumGrammarServices } from 'langium';
 import { BrowserMessageReader, BrowserMessageWriter, createConnection, Diagnostic, NotificationType } from 'vscode-languageserver/browser';
-import { throttle } from './utils';
 
 /* browser specific setup code */
 const messageReader = new BrowserMessageReader(self);

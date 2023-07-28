@@ -17,7 +17,7 @@ playground: true
 <script type="module">
   import { MonacoEditorLanguageClientWrapper } from "../libs/monaco-editor-wrapper/index.js";
   import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
-  import { setupPlayground, share, overlay } from "./libs/worker/common.js";
+  import { setupPlayground, share, overlay, getPlaygroundState } from "./libs/worker/common.js";
 
   buildWorkerDefinition(
     "../libs/monaco-editor-workers/workers",
@@ -25,18 +25,26 @@ playground: true
     false
   );
 
+  // on doc load
   addEventListener('load', function() {
-    let getState = null; //: () => PlaygroundParameters
 
+    // get a handle to our various interactive buttons
     const copiedHint = document.getElementById('copiedHint');
     const shareButton = document.getElementById('shareButton');
     const grammarRoot = document.getElementById('grammar-root');
     const contentRoot = document.getElementById('content-root');
+
+    // register a listener for the share button
     shareButton.onclick = () => {
-      const parameters = getState();
-      share(parameters.grammar, parameters.content);
+      // retrieve the current playground state (grammar + content/program)
+      const playgroundState = getPlaygroundState();
+      share(playgroundState.grammar, playgroundState.content);
+
+      // update the display to indicate that the text has been shared
       shareButton.src = '/assets/checkmark.svg';
       copiedHint.style.display = 'block';
+
+      // reset again after a second...
       setTimeout(() => {
         shareButton.src = '/assets/share.svg';
         copiedHint.style.display = 'none';
@@ -66,8 +74,6 @@ playground: true
       grammar,
       content,
       overlay
-    ).then((res) => {
-      getState = res;
-    });
+    );
   });
 </script>
