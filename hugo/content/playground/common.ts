@@ -25,8 +25,6 @@ export interface PlaygroundParameters {
   content: string;
 }
 
-let dslWrapper: MonacoEditorLanguageClientWrapper | undefined;
-
 /**
  * Current langium grammar in the playground
  */
@@ -38,9 +36,9 @@ let currentGrammarContent = '';
 let currentDSLContent = '';
 
 /**
- * Document change listener for modified DSL programs
+ * DSL wrapper, allowing us to quickly access the current in-model code
  */
-let dslDocumentChangeListener: Disposable;
+let dslWrapper: MonacoEditorLanguageClientWrapper | undefined = undefined;
 
 /**
  * Update delay for new grammars & DSL programs to be processed
@@ -93,6 +91,9 @@ export async function setupPlayground(
   currentGrammarContent = LangiumInitialContent;
   currentDSLContent = DSLInitialContent;
 
+  // handle to a Monaco language client instance for the DSL (program) editor
+  let dslClient;
+
   // check to use existing grammar from URI
   if (encodedGrammar) {
     currentGrammarContent = decompressFromEncodedURIComponent(encodedGrammar) ?? currentGrammarContent;
@@ -104,102 +105,96 @@ export async function setupPlayground(
   }
 
   // setup langium wrapper
-  const langiumWrapper = new MonacoEditorLanguageClientWrapper();
-  await langiumWrapper.start(createUserConfig({
-    htmlElement: leftEditor,
-    languageId: "langium",
-    code: currentGrammarContent,
-    worker: "/playground/libs/worker/langiumServerWorker.js",
-    languageGrammar: {},
-    monarchSyntax: LangiumMonarchContent
-  }));
-
-  // TODO @montymxb Make this a TextMate grammar instead
-  // setup services
-  const { Grammar } = await createServicesForGrammar({ grammar: currentGrammarContent });
+  const langiumWrapper = await getFreshLangiumWrapper(leftEditor);
 
   // setup DSL wrapper
-  dslWrapper = new MonacoEditorLanguageClientWrapper();
-  await dslWrapper.start(createUserConfig({
-    htmlElement: rightEditor,
-    languageId: "user",
-    code: currentDSLContent,
-    worker: await getLSWorkerForGrammar(currentGrammarContent),
-    languageGrammar: {},
-    monarchSyntax: generateMonarch(Grammar, "user")
-  }));
+  await setupDSLWrapper().catch((e) => {
+    // failed to setup, can happen with a bad Langium grammar, report it & discard
+    console.error('DSL editor setup error: ' + e);
+    overlay(true, true);
+  });
 
   // retrieve the langium language client
   const langiumClient = langiumWrapper.getLanguageClient();
   if (!langiumClient) {
-    throw new Error('Unable to obtain language client for editor!');
+    throw new Error('Unable to obtain language client for the Langium editor!');
   }
-
-  // retrieve the dsl language client
-  let dslClient = dslWrapper?.getLanguageClient();
-  if (!dslClient) {
-    throw new Error('Unable to obtain language client for user editor!');
-  }
-
-  // listen for document changes, to render new ASTs on the fly
-  registerForDocumentChanges(dslClient);
 
   let dslGrammarUpdateTimeout: NodeJS.Timeout | undefined = undefined;
 
   // register to receive new grammars from langium, and send them to the DSL language client
   langiumClient.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
 
+    // verify the langium client is still running, and didn't crash due to a grammar issue
+    if (!langiumClient.isRunning()) {
+      throw new Error('Langium client is not running');
+    }
+
     // extract & update current grammar
     currentGrammarContent = resp.content;
+
+    if (resp.diagnostics.filter(d => d.severity === 1).length) {
+      // error in the grammar, report an error & stop here
+      overlay(true, true);
+      return;
+    }
 
     // clear existing update timeout
     clearTimeout(dslGrammarUpdateTimeout);
     // set a new timeout for updating our DSL grammar & editor, 200ms, to avoid intermediate states
     dslGrammarUpdateTimeout = setTimeout(async () => {
-      if (!dslClient?.isRunning()) {
-        return;
-      }
 
+      // display 'Loading...' while we regenerate the DSL editor
       overlay(true, false);
 
-      // retrieve existing code from the model
-      currentDSLContent = dslWrapper?.getModel()?.getValue() as string;
-
-      // console.info('* DSL wrapper resources cleaned up');
-      await dslWrapper?.dispose();
-
-      // construct and set a new monarch syntax onto the editor
-      const { Grammar } = await createServicesForGrammar({ grammar: currentGrammarContent });
-
-      // setup a new id
-      const newId = nextId();
-
-      // re-create the wrapper
-      dslWrapper = new MonacoEditorLanguageClientWrapper();
-      await dslWrapper.start(createUserConfig({
-        htmlElement: rightEditor,
-        languageId: newId,
-        code: currentDSLContent,
-        worker: await getLSWorkerForGrammar(currentGrammarContent),
-        languageGrammar: {},
-        monarchSyntax: generateMonarch(Grammar, newId)
-      }));
-
-      // get a fresh client
-      dslClient = dslWrapper?.getLanguageClient();
-
-      if (!dslClient) {
-        throw new Error('Failed to retrieve fresh DSL LS client');
+      if (!dslWrapper) {
+        // no dsl wrapper to start (or previously crashed), setup from scratch
+        // no exception handling here, as we're 'assuming' the Langium grammar is valid at this point
+        // or we already have a wrapper that crashed (2nd case here)
+        await setupDSLWrapper();
+        overlay(false, false);
+      } else {
+        // existing wrapper, attempt to first dispose
+        await dslWrapper?.dispose().then(async () => {
+          // disposed successfully, setup & clear overlay
+          await setupDSLWrapper();
+          overlay(false, false);
+  
+        }).catch(async (e) => {
+          // failed to dispose, report & discard this error
+          // can happen when a previous editor was not started correctly
+          console.error('DSL editor disposal error: ' + e);
+          overlay(true, true);
+  
+        });
       }
-
-      // re-register
-      registerForDocumentChanges(dslClient);
-
-      // reset overlay
-      overlay(false, false);
 
     }, languageUpdateDelay);
   });
+
+  /**
+   * Helper to configure & retrieve a fresh DSL wrapper
+   */
+  async function setupDSLWrapper(): Promise<void> {
+    // get a fresh DSL wrapper
+    dslWrapper = await getFreshDSLWrapper(rightEditor, nextId(), currentDSLContent, currentGrammarContent);
+
+    // get a fresh client
+    dslClient = dslWrapper?.getLanguageClient();
+    if (!dslClient) {
+      // attempt to tear down parts of this editor, before throwing an error
+      // TODO for Monday, double check this, helps address the issue of leftover editors when working with #161 style grammars
+      dslWrapper?.getEditor()?.dispose();
+      dslWrapper?.getDiffEditor()?.dispose();
+      dslWrapper?.disposeLanguageClient();
+      dslWrapper = undefined;
+      rightEditor.innerHTML = '';
+      throw new Error('Failed to retrieve fresh DSL LS client');
+    }
+
+    // re-register
+    registerForDocumentChanges(dslClient);
+  }
 
   window.addEventListener("resize", () => {
     dslWrapper?.updateLayout();
@@ -212,21 +207,87 @@ export async function setupPlayground(
 
 
 /**
-  * Helper for registering to receive new ASTs from parsed DSL programs
-  */
+ * Starts a fresh Monaco LC wrapper
+ * 
+ * @param htmlElement Element to attach the editor to
+ * @param languageId ID of the language to use
+ * @param code Program to show in the editor
+ * @param grammarText Grammar text to use for the worker & monarch syntax
+ * @returns A promise resolving to a configured & started DSL wrapper
+ */
+async function getFreshDSLWrapper(
+  htmlElement: HTMLElement,
+  languageId: string,
+  code: string,
+  grammarText: string
+): Promise<MonacoEditorLanguageClientWrapper | undefined> {
+
+  // construct and set a new monarch syntax onto the editor
+  const { Grammar } = await createServicesForGrammar({ grammar: grammarText });
+
+  const wrapper = new MonacoEditorLanguageClientWrapper();
+  return wrapper.start(createUserConfig({
+    htmlElement,
+    languageId,
+    code,
+    worker: await getLSWorkerForGrammar(grammarText),
+    languageGrammar: {},
+    monarchSyntax: generateMonarch(Grammar, languageId)
+  })).then(() => {
+    return wrapper;
+  }).catch((e) => {
+    console.error('Failed to start DSL wrapper: ' + e);
+    return undefined;
+  });
+}
+
+
+/**
+ * Gets a fresh langium wrapper
+ * 
+ * @param htmlElement Element to attach the wrapper to
+ * @returns A promise resolving to a configured & started Langium wrapper
+ */
+async function getFreshLangiumWrapper(htmlElement: HTMLElement): Promise<MonacoEditorLanguageClientWrapper> {
+  const langiumWrapper = new MonacoEditorLanguageClientWrapper();
+  await langiumWrapper.start(createUserConfig({
+    htmlElement,
+    languageId: "langium",
+    code: currentGrammarContent,
+    worker: "/playground/libs/worker/langiumServerWorker.js",
+    languageGrammar: {},
+    monarchSyntax: LangiumMonarchContent
+  }));
+  return langiumWrapper;
+}
+
+
+/**
+ * Document change listener for modified DSL programs
+ */
+let dslDocumentChangeListener: Disposable;
+
+/**
+ * Helper for registering to receive new ASTs from parsed DSL programs
+ */
 function registerForDocumentChanges(dslClient: any | undefined) {
   // dispose of any existing listener
   if (dslDocumentChangeListener) {
     dslDocumentChangeListener.dispose();
   }
 
-  let dslClentTimeout: NodeJS.Timeout | undefined = undefined;
+  // create a timeout for delaying the rendering of new ASTs
+  let dslClientTimeout: NodeJS.Timeout | undefined = undefined;
 
   // register to receive new ASTs from parsed DSL programs
   dslDocumentChangeListener = dslClient!.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
+
+    // retrieve existing code from the model
+    currentDSLContent = dslWrapper?.getModel()?.getValue() as string;
+
     // delay changes by 200ms, to avoid getting too many intermediate states
-    clearTimeout(dslClentTimeout);
-    dslClentTimeout = setTimeout(() => {
+    clearTimeout(dslClientTimeout);
+    dslClientTimeout = setTimeout(() => {
       render(
         (new LangiumAST()).deserializeAST(resp.content),
         new DefaultAstNodeLocator()
