@@ -182,12 +182,11 @@ export async function setupPlayground(
     // get a fresh client
     dslClient = dslWrapper?.getLanguageClient();
     if (!dslClient) {
-      // attempt to tear down parts of this editor, before throwing an error
-      // TODO for Monday, double check this, helps address the issue of leftover editors when working with #161 style grammars
+      // setup failed, attempt to teardown resources piece by piece, before throwing an error
       dslWrapper?.getEditor()?.dispose();
-      dslWrapper?.getDiffEditor()?.dispose();
       dslWrapper?.disposeLanguageClient();
       dslWrapper = undefined;
+      // clean up the UI, so the old editor is visually removed (tends to linger otherwise)
       rightEditor.innerHTML = '';
       throw new Error('Failed to retrieve fresh DSL LS client');
     }
@@ -225,18 +224,21 @@ async function getFreshDSLWrapper(
   // construct and set a new monarch syntax onto the editor
   const { Grammar } = await createServicesForGrammar({ grammar: grammarText });
 
+  const worker = await getLSWorkerForGrammar(grammarText);
   const wrapper = new MonacoEditorLanguageClientWrapper();
   return wrapper.start(createUserConfig({
     htmlElement,
     languageId,
     code,
-    worker: await getLSWorkerForGrammar(grammarText),
+    worker,
     languageGrammar: {},
     monarchSyntax: generateMonarch(Grammar, languageId)
   })).then(() => {
     return wrapper;
   }).catch((e) => {
     console.error('Failed to start DSL wrapper: ' + e);
+    // don't leak the worker...
+    worker.terminate();
     return undefined;
   });
 }
