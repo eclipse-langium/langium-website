@@ -290,14 +290,14 @@ class StateMachineComponent extends React.Component<{
 /**
  * Constructs the statemachine langium config before rendering
  */
-async function startEditor() {
+function startEditor() {
   // setup the global config before rendering
   // TODO @montymxb no longer async, move this up
   const langiumGlobalConfig: UserConfig = createUserConfig({
     languageId: 'statemachine',
     code: defaultText,
     htmlElement: document.getElementById('root')!,
-    languageGrammar: statemachineGrammar,
+    textmateGrammar: statemachineGrammar,
     worker: '/showcase/libs/worker/statemachineServerWorker.js'
   });
 

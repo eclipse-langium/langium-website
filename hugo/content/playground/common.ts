@@ -231,13 +231,12 @@ async function getFreshDSLWrapper(
     languageId,
     code,
     worker,
-    languageGrammar: {},
-    monarchSyntax: generateMonarch(Grammar, languageId)
+    monarchGrammar: generateMonarch(Grammar, languageId)
   })).then(() => {
     return wrapper;
   }).catch((e) => {
     console.error('Failed to start DSL wrapper: ' + e);
-    // don't leak the worker...
+    // don't leak the worker on failure to start
     worker.terminate();
     return undefined;
   });
@@ -257,8 +256,7 @@ async function getFreshLangiumWrapper(htmlElement: HTMLElement): Promise<MonacoE
     languageId: "langium",
     code: currentGrammarContent,
     worker: "/playground/libs/worker/langiumServerWorker.js",
-    languageGrammar: {},
-    monarchSyntax: LangiumMonarchContent
+    monarchGrammar: LangiumMonarchContent
   }));
   return langiumWrapper;
 }
@@ -290,8 +288,9 @@ function registerForDocumentChanges(dslClient: any | undefined) {
     // delay changes by 200ms, to avoid getting too many intermediate states
     clearTimeout(dslClientTimeout);
     dslClientTimeout = setTimeout(() => {
+      // render the AST in the far-right window
       render(
-        (new LangiumAST()).deserializeAST(resp.content),
+        JSON.parse(resp.content),
         new DefaultAstNodeLocator()
       );
     }, languageUpdateDelay);

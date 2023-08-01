@@ -121,7 +121,7 @@ async function startEditor() {
     code: defaultText,
     htmlElement: document.getElementById('root')!,
     worker: '/showcase/libs/worker/sqlServerWorker.js',
-    monarchSyntax: syntaxHighlighting
+    monarchGrammar: syntaxHighlighting
   });
 
   const element = document.getElementById("root") as HTMLElement;

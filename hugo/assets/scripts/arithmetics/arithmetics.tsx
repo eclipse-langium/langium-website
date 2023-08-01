@@ -3,7 +3,7 @@ import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast";
-import { Evaluation, arithmeticsGrammar, examples, syntaxHighlighting } from "./arithmetics-tools";
+import { Evaluation, examples, syntaxHighlighting } from "./arithmetics-tools";
 import { UserConfig } from "monaco-editor-wrapper"; 
 import { createUserConfig } from "../utils";
 
@@ -188,16 +188,15 @@ class App extends React.Component<{}, AppState> {
     }
 }
 
-async function startEditor() {
+function startEditor() {
     // setup arithmetics config before rendering
     // TODO @montymxb no longer async, can move this upwards
     userConfig = createUserConfig({
         languageId: 'arithmetics',
         code: examples[0],
         htmlElement: document.getElementById('root')!,
-        languageGrammar: arithmeticsGrammar,
         worker: '/showcase/libs/worker/arithmeticsServerWorker.js',
-        monarchSyntax: syntaxHighlighting
+        monarchGrammar: syntaxHighlighting
     });
     const root = createRoot(document.getElementById("root") as HTMLElement);
     root.render(<App />);

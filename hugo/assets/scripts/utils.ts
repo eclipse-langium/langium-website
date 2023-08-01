@@ -9,11 +9,37 @@ export type WorkerUrl = string;
 export interface MonacoReactConfig {
     code: string,
     htmlElement: HTMLElement,
-    languageGrammar?: any,
     languageId: string,
     worker: WorkerUrl | Worker,
-    monarchSyntax?: monaco.languages.IMonarchLanguage,
     readonly?: boolean // whether to make the editor readonly or not (by default is false)
+}
+
+/**
+ * VSCode API config, specifically for textmate usage
+ */
+export interface MonacoVSCodeReactConfig extends MonacoReactConfig {
+    textmateGrammar: any;
+}
+
+/**
+ * Editor config, specifically for monarch grammar usage
+ */
+export interface MonacoEditorReactConfig extends MonacoReactConfig {
+    monarchGrammar?: monaco.languages.IMonarchLanguage;
+}
+
+/**
+ * Helper to identify a VSCode API config, for use with TextMate
+ */
+function isMonacoVSCodeReactConfig(config: unknown): config is MonacoVSCodeReactConfig {
+    return (config as MonacoVSCodeReactConfig).textmateGrammar !== undefined;
+}
+
+/**
+ * Helper to identify an editor config (classic), for use with Monarch
+ */
+function isMonacoEditorReactConfig(config: unknown): config is MonacoEditorReactConfig {
+    return (config as MonacoEditorReactConfig).monarchGrammar !== undefined;
 }
 
 /**
@@ -48,11 +74,10 @@ export const defaultLanguageConfig = {
 /**
  * Generates a UserConfig for a given Langium example, which is then passed to the monaco-editor-react component
  * 
- * @param code Program text to start with
- * @param htmlElement Element to bind the editor to
+ * @param config A VSCode API or classic editor config to generate a UserConfig from
  * @returns A completed UserConfig
  */
-export function createUserConfig(config: MonacoReactConfig): UserConfig {
+export function createUserConfig(config: MonacoVSCodeReactConfig | MonacoEditorReactConfig): UserConfig {
     // setup extension contents
     const extensionContents = new Map<string, string>();
 
@@ -64,18 +89,28 @@ export function createUserConfig(config: MonacoReactConfig): UserConfig {
     // set extension contents
     extensionContents.set(languageConfigUrl, JSON.stringify(defaultLanguageConfig));
 
-    if (config.languageGrammar) {
-        extensionContents.set(languageGrammarUrl, JSON.stringify(config.languageGrammar));
+    // check whether to use the VSCode API config (TM), or the classic editor config (Monarch)
+    const useVscodeConfig = isMonacoVSCodeReactConfig(config);
+
+    if (isMonacoVSCodeReactConfig(config)) {
+        extensionContents.set(languageGrammarUrl, JSON.stringify(config.textmateGrammar));
     }
 
     // generate langium config
     return {
         htmlElement: config.htmlElement,
         wrapperConfig: {
-            useVscodeConfig: true,
+            // have to disable this for Monarch
+            // generally true otherwise (toggles using monacoVscodeApiConfig / monacoEditorConfig)
+            useVscodeConfig,
+
             serviceConfig: {
-                enableThemeService: true,
-                enableTextmateService: true,
+                // the theme service & textmate services are dependent, they need to both be enabled or disabled together
+                // this explicitly disables the Monarch capabilities
+                // both are tied to whether we are using the VSCode config as well
+                enableThemeService: useVscodeConfig,
+                enableTextmateService: useVscodeConfig,
+
                 enableModelService: true,
                 configureEditorOrViewsServiceConfig: {
                     enableViewsService: false,
@@ -88,6 +123,7 @@ export function createUserConfig(config: MonacoReactConfig): UserConfig {
                 enableLanguagesService: true,
                 debugLogging: true
             },
+            // VSCode config (for TextMate grammars)
             monacoVscodeApiConfig: {
                 extension: {
                     name: id,
@@ -105,7 +141,7 @@ export function createUserConfig(config: MonacoReactConfig): UserConfig {
                             ],
                             configuration: `.${languageConfigUrl}`
                         }],
-                        grammars: config.languageGrammar ? [{
+                        grammars: isMonacoVSCodeReactConfig(config) ? [{
                             language: id,
                             scopeName: `source.${id}`,
                             path: `.${languageGrammarUrl}`
@@ -133,11 +169,12 @@ export function createUserConfig(config: MonacoReactConfig): UserConfig {
 }`
                 }
             },
+            // Editor config (classic) (for Monarch)
             monacoEditorConfig: {
                 languageExtensionConfig: {
                     id
                 },
-                languageDef: config.monarchSyntax
+                languageDef: isMonacoEditorReactConfig(config) ? config.monarchGrammar : undefined
             }
         },
         editorConfig: {

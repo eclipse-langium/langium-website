@@ -4,8 +4,16 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { AstNode, Reference } from "langium";
+import { AstNode } from "langium";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
+
+/**
+ * Represents a serialized version of a reference to an AstNode
+ */
+export interface Reference<T extends AstNode = AstNode> {
+  ref?: T;
+  $ref: string
+}
 
 export interface ValueNodeBase {
   kind: "object" | "array" | "string" | "boolean" | "number" | "reference" | "undefined";
@@ -68,7 +76,7 @@ export function preprocessAstNodeValue(
   } else if (typeof valueOrValues === "object" || typeof valueOrValues === "undefined") {
     if(!valueOrValues) {
       return {kind: "undefined"};
-    } else if ("$refText" in valueOrValues) {
+    } else if ("$ref" in valueOrValues) {
       return preprocessReferenceNode(valueOrValues, locator);
     }
     return preprocessAstNodeObject(valueOrValues, locator);
@@ -127,10 +135,11 @@ export function preprocessReferenceNode(
   node: Reference<AstNode>,
   locator: AstNodeLocator
 ): ReferenceValueNode {
-  return node.ref
+  // check to display a valid reference, when present
+  return node.$ref
     ? {
         kind: "reference",
-        $text: locator.getAstNodePath(node.ref!),
+        $text: node.$ref
       }
     : {
         kind: "reference",
