@@ -59,58 +59,6 @@ calcGrossListPrice(netPrice, vat);`
 ]
 
 /**
- * @montymxb Temporary duplication of the arithmetics textmate grammar
- * The textmate grammar is not exported from the current package, needs to be changed
- */
-export const arithmeticsGrammar = {
-    "name": "arithmetics",
-    "scopeName": "source.arithmetics",
-    "fileTypes": [
-        ".calc"
-    ],
-    "patterns": [
-        {
-            "include": "#comments"
-        },
-        {
-            "name": "keyword.control.arithmetics",
-            "match": "\\b([dD][eE][fF]|[mM][oO][dD][uU][lL][eE])\\b"
-        }
-    ],
-    "repository": {
-        "comments": {
-            "patterns": [
-                {
-                    "name": "comment.block.arithmetics",
-                    "begin": "/\\*",
-                    "beginCaptures": {
-                        "0": {
-                            "name": "punctuation.definition.comment.arithmetics"
-                        }
-                    },
-                    "end": "\\*/",
-                    "endCaptures": {
-                        "0": {
-                            "name": "punctuation.definition.comment.arithmetics"
-                        }
-                    }
-                },
-                {
-                    "begin": "//",
-                    "beginCaptures": {
-                        "1": {
-                            "name": "punctuation.whitespace.comment.leading.arithmetics"
-                        }
-                    },
-                    "end": "(?=$)",
-                    "name": "comment.line.arithmetics"
-                }
-            ]
-        }
-    }
-}
-
-/**
  * Monarch grammar for arithmetics
  */
 export const syntaxHighlighting = {
