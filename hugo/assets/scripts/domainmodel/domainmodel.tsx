@@ -1,7 +1,4 @@
-import {
-    MonacoEditorReactComp,
-    addMonacoStyles,
-} from "@typefox/monaco-editor-react/bundle";
+import { MonacoEditorReactComp } from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -13,8 +10,6 @@ buildWorkerDefinition(
     new URL("", window.location.href).href,
     false
 );
-addMonacoStyles("monaco-editor-styles");
-
 
 class App extends React.Component<{}> {
     monacoEditor: React.RefObject<MonacoEditorReactComp>;
