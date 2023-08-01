@@ -188,18 +188,13 @@ class App extends React.Component<{}, AppState> {
     }
 }
 
-function startEditor() {
-    // setup arithmetics config before rendering
-    // TODO @montymxb no longer async, can move this upwards
-    userConfig = createUserConfig({
-        languageId: 'arithmetics',
-        code: examples[0],
-        htmlElement: document.getElementById('root')!,
-        worker: '/showcase/libs/worker/arithmeticsServerWorker.js',
-        monarchGrammar: syntaxHighlighting
-    });
-    const root = createRoot(document.getElementById("root") as HTMLElement);
-    root.render(<App />);
-}
-
-startEditor();
+// setup config & render
+userConfig = createUserConfig({
+    languageId: 'arithmetics',
+    code: examples[0],
+    htmlElement: document.getElementById('root')!,
+    worker: '/showcase/libs/worker/arithmeticsServerWorker.js',
+    monarchGrammar: syntaxHighlighting
+});
+const root = createRoot(document.getElementById("root") as HTMLElement);
+root.render(<App />);

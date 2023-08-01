@@ -111,23 +111,16 @@ class App extends React.Component<{}> {
   }
 }
 
-/**
- * Constructs the SQL langium config before rendering
- */
-async function startEditor() {
-  // setup the global config before rendering
-  userConfig = await createUserConfig({
-    languageId: 'sql',
-    code: defaultText,
-    htmlElement: document.getElementById('root')!,
-    worker: '/showcase/libs/worker/sqlServerWorker.js',
-    monarchGrammar: syntaxHighlighting
-  });
+// setup the global config before rendering
+userConfig = createUserConfig({
+  languageId: 'sql',
+  code: defaultText,
+  htmlElement: document.getElementById('root')!,
+  worker: '/showcase/libs/worker/sqlServerWorker.js',
+  monarchGrammar: syntaxHighlighting
+});
 
-  const element = document.getElementById("root") as HTMLElement;
-  element.className = 'w-full'
-  const root = createRoot(element);
-  root.render(<App />);
-}
-
-startEditor();
+const element = document.getElementById("root") as HTMLElement;
+element.className = 'w-full'
+const root = createRoot(element);
+root.render(<App />);
