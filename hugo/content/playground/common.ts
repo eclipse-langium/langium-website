@@ -14,7 +14,7 @@ import { decompressFromEncodedURIComponent } from 'lz-string';
 import { Disposable } from "vscode-languageserver";
 import { DefaultAstNodeLocator, createServicesForGrammar } from "langium";
 import { render } from './Tree';
-import { overlay } from "./utils";
+import { overlay, throttle } from "./utils";
 import { createUserConfig } from "../../assets/scripts/utils";
 export { share, overlay } from './utils'
 import { MonacoEditorLanguageClientWrapper } from "monaco-editor-wrapper/bundle";
@@ -120,8 +120,6 @@ export async function setupPlayground(
     throw new Error('Unable to obtain language client for the Langium editor!');
   }
 
-  let dslGrammarUpdateTimeout: NodeJS.Timeout | undefined = undefined;
-
   // register to receive new grammars from langium, and send them to the DSL language client
   langiumClient.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
 
@@ -139,11 +137,8 @@ export async function setupPlayground(
       return;
     }
 
-    // clear existing update timeout
-    clearTimeout(dslGrammarUpdateTimeout);
     // set a new timeout for updating our DSL grammar & editor, 200ms, to avoid intermediate states
-    dslGrammarUpdateTimeout = setTimeout(async () => {
-
+    throttle(1, languageUpdateDelay, async () => {
       // display 'Loading...' while we regenerate the DSL editor
       overlay(true, false);
 
@@ -168,8 +163,7 @@ export async function setupPlayground(
   
         });
       }
-
-    }, languageUpdateDelay);
+    });
   });
 
   /**
@@ -182,7 +176,11 @@ export async function setupPlayground(
     // get a fresh client
     dslClient = dslWrapper?.getLanguageClient();
     if (!dslClient) {
-      // setup failed, attempt to teardown resources piece by piece, before throwing an error
+      // TODO @montymxb (Aug. 2nd, 2023) This is a hack to deal with the wrapper crashing when the LC tries to interface with
+      // an improperly configured LS (due to a bad grammar). The result is an editor that we cannot remove via 'dispose'.
+      // This should be removed once the issue is resolved in the monaco-components repo.
+
+      // Setup failed, attempt to teardown resources piece by piece, before throwing an error
       dslWrapper?.getEditor()?.dispose();
       dslWrapper?.disposeLanguageClient();
       dslWrapper = undefined;
@@ -276,24 +274,20 @@ function registerForDocumentChanges(dslClient: any | undefined) {
     dslDocumentChangeListener.dispose();
   }
 
-  // create a timeout for delaying the rendering of new ASTs
-  let dslClientTimeout: NodeJS.Timeout | undefined = undefined;
-
   // register to receive new ASTs from parsed DSL programs
   dslDocumentChangeListener = dslClient!.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
 
     // retrieve existing code from the model
     currentDSLContent = dslWrapper?.getModel()?.getValue() as string;
-
+    
     // delay changes by 200ms, to avoid getting too many intermediate states
-    clearTimeout(dslClientTimeout);
-    dslClientTimeout = setTimeout(() => {
+    throttle(2, languageUpdateDelay, () => {
       // render the AST in the far-right window
       render(
         JSON.parse(resp.content),
         new DefaultAstNodeLocator()
       );
-    }, languageUpdateDelay);
+    });
   });
 }
 
