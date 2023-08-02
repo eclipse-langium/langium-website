@@ -95,7 +95,7 @@ For convenience, we're going to use two helper libraries from npm that wrap arou
 - [monaco-editor-wrapper](https://www.npmjs.com/package/monaco-editor-wrapper)
 - [monaco-editor-workers](https://www.npmjs.com/package/monaco-editor-workers)
 
-Both these packages should be installed as dependencies for your language. In particular, this guide will assume that you're using version **2.0.0** or later of the monaco-editor-wrapper package, and version **0.34.2** of the monaco-editor-workers package.
+Both these packages should be installed as dependencies for your language. In particular, this guide will assume that you're using version **2.1.1** or later of the monaco-editor-wrapper package, and version **0.39.0** of the monaco-editor-workers package.
 
 Additionally, we'll want to add `express` as a development dependency (don't forget to also add `@types/express` too), since we'll be using that to run a local web server to test our standalone webpage.
 
