@@ -5,6 +5,8 @@ weight: 6
 
 {{< toc format=html >}}
 
+*Updated on Aug. 2nd, 2023 for usage with monaco-editor-wrapper 2.1.1 & above.*
+
 In this tutorial we'll be talking about running Langium in the web with the Monaco editor. If you're not familiar with Monaco, it's the editor that powers VS Code. We're quite fond of it at TypeFox, so we've taken the time to write up this tutorial to explain how to integrate Langium in the web with Monaco, no backend required.
 
 As a disclaimer, just because we are using Monaco in this tutorial does not mean that you cannot use another code editor of your choice. For example, you can use Code Mirror with Langium as well. Generally, if an editor has LSP support, it is very likely you can integrate it quite easily with Langium, since it's LSP compatible.
@@ -93,7 +95,7 @@ For convenience, we're going to use two helper libraries from npm that wrap arou
 - [monaco-editor-wrapper](https://www.npmjs.com/package/monaco-editor-wrapper)
 - [monaco-editor-workers](https://www.npmjs.com/package/monaco-editor-workers)
 
-Both these packages should be installed as dependencies for your language. In particular, it's important that you're using version **1.4.0** or later of the monaco-editor-wrapper.
+Both these packages should be installed as dependencies for your language. In particular, this guide will assume that you're using version **2.1.1** or later of the monaco-editor-wrapper package, and version **0.39.0** of the monaco-editor-workers package.
 
 Additionally, we'll want to add `express` as a development dependency (don't forget to also add `@types/express` too), since we'll be using that to run a local web server to test our standalone webpage.
 
@@ -102,9 +104,9 @@ We'll also want to add some more scripts to our package.json to copy over the ne
 ```json
 {
     ...
-    "prepare:public": "npx shx mkdir -p ./public && npx shx cp -fr ./src/static/* ./public/",
-    "copy:monaco-editor-wrapper": "npx shx cp -fr ./node_modules/monaco-editor-wrapper/bundle ./public/monaco-editor-wrapper",
-    "copy:monaco-workers": "npx shx cp -fr ./node_modules/monaco-editor-workers/dist/ ./public/monaco-editor-workers",
+    "prepare:public": "shx mkdir -p ./public && shx cp -fr ./src/static/* ./public/",
+    "copy:monaco-editor-wrapper": "shx cp -fr ./node_modules/monaco-editor-wrapper/bundle ./public/monaco-editor-wrapper",
+    "copy:monaco-workers": "shx cp -fr ./node_modules/monaco-editor-workers/dist/ ./public/monaco-editor-workers",
     "build:web": "npm run build && npm run prepare:public && npm run build:worker && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers"
 }
 ```
@@ -198,53 +200,65 @@ import { MonacoEditorLanguageClientWrapper } from './monaco-editor-wrapper/index
 import { buildWorkerDefinition } from "./monaco-editor-workers/index.js";
 
 buildWorkerDefinition('./monaco-editor-workers/workers', new URL('', window.location.href).href, false);
-
-MonacoEditorLanguageClientWrapper.addMonacoStyles('monaco-editor-styles');
 ```
 
-Then, we'll want to instantiate our language client wrapper. We'll also need to get a handle for the editor configuration, and set the current language id to `minilogo`. This should match the id of the language that will be recognized by our language server.
+Then, we'll want to instantiate our language client wrapper. In previous versions of the `monaco-editor-wrapper` package (before 2.0.0), configuration was performed by manually setting properties on the `MonacoEditorLanguageClientWrapper` instance. However, as of 2.1.1 (at the time of writing this), the constructor for `MonacoEditorLanguageClientWrapper` now takes a configuration object as its first argument. This configuration object allows us to set the same properties as before, but with more fine-grained control over all the properties that are set.
+
+The configuration itself can be quite large, so we're going to walk through the parts that will be used to build up this configuration first, and then joining the actual configuration object together afterwards.
+
+To start, let's mark our current language id as `minilogo`. This should match the id of the language that will be recognized by our language server.
 
 ```js
-const client = new MonacoEditorLanguageClientWrapper();
-const editorConfig = client.getEditorConfig();
-editorConfig.setMainLanguageId('minilogo');
+const languageId = 'minilogo';
 ```
 
-Then, we'll want to add some static syntax highlighting. This part is a bit verbose, but suffice it to say that the single argument passed to `setMonarchTokensProvider` is a JSON object that allows recognizing tokens in MiniLogo and applying styling to those tokens. It represents a Monarch grammar that achieves this express purpose.
+Then, we'll want to add some static syntax highlighting. To do this we have a couple choices, using a TextMate or a [Monarch grammar](https://microsoft.github.io/monaco-editor/monarch.html). Both will provide us with the ability to parse our language, and apply styling to our tokens. However we have to choose one, we cannot use both simultaneously. This is related to how Monaco itself is configured with regards to whether we're using the VSCode API config, or the classic editor config. This makes sense to a degree, as we can only prepare the editor one way or the other.
+
+For MiniLogo, our monarch grammar will look like so:
 
 ```js
-editorConfig.setMonarchTokensProvider({
+const monarchGrammar = {
+    // recognized keywords
     keywords: [
         'color','def','down','for','move','pen','to','up'
     ],
+    // recognized operators
     operators: [
         '-',',','*','/','+','='
     ],
+    // pattern for symbols we want to highlight
     symbols:  /-|,|\(|\)|\{|\}|\*|\/|\+|=/,
 
+    // tokenizer itself, starts at the first 'state' (entry), which happens to be 'initial'
     tokenizer: {
+        // initial tokenizer state
         initial: [
             { regex: /#(\d|[a-fA-F])+/, action: {"token":"string"} },
             { regex: /[_a-zA-Z][\w_]*/, action: { cases: { '@keywords': {"token":"keyword"}, '@default': {"token":"string"} }} },
             { regex: /-?[0-9]+/, action: {"token":"number"} },
+            // inject the rules for the 'whitespace' state here, effectively inlined
             { include: '@whitespace' },
             { regex: /@symbols/, action: { cases: { '@operators': {"token":"operator"}, '@default': {"token":""} }} },
         ],
+        // state for parsing whitespace
         whitespace: [
             { regex: /\s+/, action: {"token":"white"} },
+            // for this rule, if we match, push up the next state as 'comment', advancing to the set of rules below
             { regex: /\/\*/, action: {"token":"comment","next":"@comment"} },
             { regex: /\/\/[^\n\r]*/, action: {"token":"comment"} },
         ],
+        // state for parsing a comment
         comment: [
             { regex: /[^\/\*]+/, action: {"token":"comment"} },
+            // done with this comment, pop the current state & roll back to the previous one
             { regex: /\*\//, action: {"token":"comment","next":"@pop"} },
             { regex: /[\/\*]/, action: {"token":"comment"} },
         ],
     }
-});
+};
 ```
 
-We can produce this Monarch grammar by updating our **langium-config.json** to also produce a Monarch file as output. Note that although we're talking about MiniLogo here, we based this example off of the hello-world example produced by the yeoman generator. As such, we still have hello world names here and there, and for this tutorial we'll just use the same name again as for the TextMate grammar.
+We can produce this Monarch grammar by updating our **langium-config.json** to produce a Monarch file as output. Note that although we're talking about MiniLogo here, we based this example off of the hello-world example produced by the yeoman generator. As such, we still have hello world names here and there, and for this tutorial we'll just use the same name again as for the TextMate grammar.
 
 ```json
 ...
@@ -261,7 +275,7 @@ To generate this file, run `npm run langium:generate`. You can then copy over th
 Then, we want to setup the code that shows up by default. The following is a fixed MiniLogo program that should display a white diamond in the top left corner of the screen.
 
 ```js
-editorConfig.setMainCode(`
+const code = `
 def test() {
     move(100, 0)
     pen(down)
@@ -273,31 +287,106 @@ def test() {
 }
 color(white)
 test()
-
-`);
+`;
 ```
 
-Lastly, we'll cap off our JS file with some final configurations to setup the theme, configure how we use Langium's language server, and finish setting up the editor.
+We'll want to setup the editor config as well. This will include configurations to setup the theme, languageId, main code, and some layout.
 
 ```js
-editorConfig.theme = 'vs-dark';
-editorConfig.useLanguageClient = true;
-editorConfig.useWebSocket = false;
-
-const workerURL = new URL('./minilogo-server-worker.js', import.meta.url);
-console.log(workerURL.href);
-
-const lsWorker = new Worker(workerURL.href, {
-    type: 'classic',
-    name: 'MiniLogo Language Server'
-});
-client.setWorker(lsWorker);
-
-// keep a reference to a promise for when the editor is finished starting, we'll use this to setup the canvas on load
-const startingPromise = client.startEditor(document.getElementById("monaco-editor-root"));
+const editorConfig = {
+    languageId,
+    code,
+    useDiffEditor: false,
+    automaticLayout: true,
+    theme: 'vs-dark'
+};
 ```
 
-Note the `startingPromise` that's returned from `startEditor`. We're not using this yet, but it will be important for our setup in the next tutorial.
+Since we're planning to use a language server with Monaco, we'll need to setup a language client config too. To do this we'll also need to generate a worker using our language server worker file, but that's fairly straightforward to setup here.
+
+```js
+// configure the worker
+const workerURL = new URL('./minilogo-server-worker.js', import.meta.url);
+const lsWorker = new Worker(workerURL.href, {
+    type: 'classic',
+    name: 'minilogo-language-server-worker'
+});
+
+// setup the language client config with the worker
+const languageClientConfig = {
+    enabled: true,
+    useWebSocket: false,
+    // can pass configuration data, or a pre-configured worker as well
+    // the later works better for us in this case
+    workerConfigOptions: lsWorker
+};
+```
+
+We can also pass more explicit config options to `workerConfigOptions` if we don't want to create the worker ourselves. For example:
+
+```js
+{
+    url: new URL('./minilogo-server-worker.js', import.meta.url),
+    type: 'classic',
+    name: 'minilogo-language-server-worker'
+}
+```
+
+Either case works, but by creating the worker in advance, we give ourselves the ability to directly interact with the worker/LS independent of the wrapper itself, and to even pre-configure it before use. This can hugely beneficial, especially if we expect to customize our LS on the fly.
+
+Lastly, let's put together the service config for our wrapper. Like the name suggests, this indicates what services should be enabled. It also influences whether we use the VSCode API config (with TextMate grammars) or the classic editor config (with Monarch grammars).
+
+```js
+const serviceConfig = {
+    // the theme service & textmate services are dependent, they need to both be enabled or disabled together
+    // this explicitly disables the Monarch capabilities
+    // both are tied to whether we are using the VSCode config as well
+    enableThemeService: false,
+    enableTextmateService: false,
+
+    enableModelService: true,
+    configureEditorOrViewsServiceConfig: {
+        enableViewsService: false,
+        useDefaultOpenEditorFunction: true
+    },
+    configureConfigurationServiceConfig: {
+        defaultWorkspaceUri: '/tmp/'
+    },
+    enableKeybindingsService: true,
+    enableLanguagesService: true,
+    // if you want debugging facilities, keep this on
+    debugLogging: true
+};
+```
+
+Now, getting back to building our configuration. We have built all the parts we needed to make this work, so let's put them all together and start the wrapper.
+
+```js
+// create a client wrapper
+const client = new MonacoEditorLanguageClientWrapper();
+// start the editor
+// keep a reference to a promise for when the editor is finished starting, we'll use this to setup the canvas on load
+const startingPromise = client.start({
+    htmlElement: document.getElementById("monaco-editor-root"),
+    wrapperConfig: {
+        // setting this to false disables using the VSCode config, and instead favors
+        // the monaco editor config (classic editor)
+        useVscodeConfig: false,
+        serviceConfig,
+        // Editor config (classic) (for Monarch)
+        monacoEditorConfig: {
+            languageExtensionConfig: { id: languageId },
+            languageDef: monarchGrammar
+        }
+    },
+    editorConfig,
+    languageClientConfig
+});
+```
+
+That's it! Now if everything was configured correctly, we should have a valid wrapper that will display the code we want in our browser.
+
+*Note the `startingPromise` that's returned from `startEditor`. We're not using this yet, but it will be important for our setup in the next tutorial.*
 
 ## Serving via Express
 

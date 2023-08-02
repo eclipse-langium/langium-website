@@ -4,37 +4,58 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { AstNode, DocumentState, createServicesForGrammar, startLanguageServer } from 'langium';
-import { createConnection } from 'vscode-languageserver/browser';
-import { PlaygroundWrapper, ByPassingMessageReader, ByPassingMessageWriter } from './monaco-utils';
-import { throttle } from './utils';
+import { DocumentState, createServicesForGrammar, startLanguageServer } from 'langium';
+import { NotificationType } from 'vscode-languageserver/browser.js';
+import { DocumentChange, createServerConnection } from './worker-utils';
 
-const messageWrapper = new PlaygroundWrapper();
-const messageReader = new ByPassingMessageReader(self, messageWrapper);
-const messageWriter = new ByPassingMessageWriter(self, messageWrapper);
-
-const sendAst = throttle<AstNode>(1000, root => messageWriter.byPassWrite({
-    type: 'ast',
-    root
-}));
-
-messageReader.listenByPass(message => {
-    if(message.type === 'validated') {
-        sendAst.clear();
-        const connection = createConnection(messageReader, messageWriter);
-        createServicesForGrammar({
-            grammar: message.grammar, 
-            sharedModule: {
-                lsp: { Connection: () => connection}
-            }
-        }).then(({ shared }) => {
-            shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, ([document]) => {
-                const ast = document.parseResult.value;
-                sendAst.call(ast);
-                return Promise.resolve();
-            });
-    
-            startLanguageServer(shared);
-        });
+// listen for messages to trigger starting the LS with a given grammar
+addEventListener('message', async (event) => {
+    if (event.data.type && event.data.type === 'startWithGrammar') {
+        if (event.data.grammar === undefined) {
+            throw new Error('User worker was started without a grammar!');
+        }
+        await startWithGrammar(event.data.grammar as string);
     }
 });
+
+const documentChangeNotification = new NotificationType<DocumentChange>('browser/DocumentChange');
+
+/**
+ * Starts up a LS with a given grammar.
+ * Upon completion posts a message back to the main thread that it's done
+ * 
+ * @param grammarText Grammar string to create an LS for
+ */
+async function startWithGrammar(grammarText: string): Promise<void> {
+
+    // create a fresh connection for the LS
+    const connection = createServerConnection();
+
+    // create shared services & serializer for the given grammar grammar
+    const { shared, serializer } = await createServicesForGrammar({
+        grammar: grammarText,
+        sharedModule: {
+            lsp: {
+                Connection: () => connection,
+            }
+        }
+    });
+
+    // listen for validated documents, and send the AST back to the language client
+    shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents => {
+        for (const document of documents) {
+            const json = serializer.JsonSerializer.serialize(document.parseResult.value);
+            connection.sendNotification(documentChangeNotification, {
+                uri: document.uri.toString(),
+                content: json,
+                diagnostics: document.diagnostics ?? []
+            });
+        }
+    });
+
+    // start the LS
+    startLanguageServer(shared);
+
+    // notify the main thread that the LS is ready
+    postMessage({ type: 'lsStartedWithGrammar' });
+}

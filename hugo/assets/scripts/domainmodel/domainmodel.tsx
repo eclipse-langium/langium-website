@@ -1,20 +1,19 @@
-import {
-    MonacoEditorReactComp,
-    addMonacoStyles,
-} from "@typefox/monaco-editor-react/bundle";
+import { MonacoEditorReactComp } from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { DocumentChangeResponse } from "../langium-utils/langium-ast";
 import { example, syntaxHighlighting } from "./domainmodel-tools";
+import { UserConfig } from "monaco-editor-wrapper"; 
+import { createUserConfig } from "../utils";
  
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
     new URL("", window.location.href).href,
     false
 );
-addMonacoStyles("monaco-editor-styles");
 
+let userConfig: UserConfig;
 
 class App extends React.Component<{}> {
     monacoEditor: React.RefObject<MonacoEditorReactComp>;
@@ -75,12 +74,7 @@ class App extends React.Component<{}> {
                         <MonacoEditorReactComp
                             ref={this.monacoEditor}
                             onLoad={this.onMonacoLoad}
-                            webworkerUri="../showcase/libs/worker/domainmodelServerWorker.js"
-                            workerName="LS"
-                            workerType="classic"
-                            languageId="domainmodel"
-                            text={example}
-                            syntax={syntaxHighlighting}
+                            userConfig={userConfig}
                             style={style}
                         />
                     </div>
@@ -89,5 +83,12 @@ class App extends React.Component<{}> {
     }
 }
 
+userConfig = createUserConfig({
+    languageId: 'domainmodel',
+    code: example,
+    htmlElement: document.getElementById('root')!,
+    worker: '/showcase/libs/worker/domainmodelServerWorker.js',
+    monarchGrammar: syntaxHighlighting
+});
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(<App />);
