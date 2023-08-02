@@ -5,7 +5,7 @@
  ******************************************************************************/
 
 import {
-  LangiumInitialContent,
+  HelloWorldGrammar,
   LangiumMonarchContent,
   DSLInitialContent,
 } from "./data";
@@ -88,7 +88,7 @@ export async function setupPlayground(
   encodedContent?: string
 ): Promise<void> {
   // setup initial contents for the grammar & dsl (Hello World)
-  currentGrammarContent = LangiumInitialContent;
+  currentGrammarContent = HelloWorldGrammar;
   currentDSLContent = DSLInitialContent;
 
   // handle to a Monaco language client instance for the DSL (program) editor

@@ -92,8 +92,7 @@ export const LangiumMonarchContent = {
   },
 };
 
-// hello world grammar
-export const LangiumInitialContent = `grammar HelloWorld
+export const HelloWorldGrammar = `grammar HelloWorld
 
 entry Model:
     (persons+=Person | greetings+=Greeting)*;

@@ -121,7 +121,7 @@ export function createUserConfig(config: MonacoVSCodeReactConfig | MonacoEditorR
                 },
                 enableKeybindingsService: true,
                 enableLanguagesService: true,
-                debugLogging: true
+                debugLogging: false
             },
             // VSCode config (for TextMate grammars)
             monacoVscodeApiConfig: {
