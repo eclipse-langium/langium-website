@@ -5,24 +5,20 @@
  ******************************************************************************/
 
 import { DocumentState, startLanguageServer, EmptyFileSystem, createLangiumGrammarServices } from 'langium';
-import { BrowserMessageReader, BrowserMessageWriter, createConnection, Diagnostic, NotificationType } from 'vscode-languageserver/browser';
+import { NotificationType } from 'vscode-languageserver/browser';
+import { DocumentChange, createServerConnection } from './worker-utils';
 
-/* browser specific setup code */
-const messageReader = new BrowserMessageReader(self);
-const messageWriter = new BrowserMessageWriter(self);
-
-const connection = createConnection(messageReader, messageWriter);
+// establish a browser server connection
+const connection = createServerConnection();
 
 // Inject the shared services and language-specific services
-const { shared, grammar } = createLangiumGrammarServices({ connection, ...EmptyFileSystem });
+const { shared } = createLangiumGrammarServices({ connection, ...EmptyFileSystem });
 
 // Start the language server with the shared services
 startLanguageServer(shared);
 
 // Send a notification with the serialized AST after every document change
-type DocumentChange = { uri: string, content: string, diagnostics: Diagnostic[] };
 const documentChangeNotification = new NotificationType<DocumentChange>('browser/DocumentChange');
-const jsonSerializer = grammar.serializer.JsonSerializer;
 shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents => {
     for (const document of documents) {
         connection.sendNotification(documentChangeNotification, {

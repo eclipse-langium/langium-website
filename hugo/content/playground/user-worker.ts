@@ -5,7 +5,8 @@
  ******************************************************************************/
 
 import { DocumentState, createServicesForGrammar, startLanguageServer } from 'langium';
-import { BrowserMessageReader, BrowserMessageWriter, createConnection, Diagnostic, Disposable, NotificationType } from 'vscode-languageserver/browser.js';
+import { NotificationType } from 'vscode-languageserver/browser.js';
+import { DocumentChange, createServerConnection } from './worker-utils';
 
 // listen for messages to trigger starting the LS with a given grammar
 addEventListener('message', async (event) => {
@@ -17,17 +18,7 @@ addEventListener('message', async (event) => {
     }
 });
 
-// disposable to remove previous build phase listeners
-let buildPhaseListener: Disposable;
-let newGrammarListener: Disposable;
-
-type DocumentChange = { uri: string, content: string, diagnostics: Diagnostic[] };
-
 const documentChangeNotification = new NotificationType<DocumentChange>('browser/DocumentChange');
-
-// readers & writers need to be kept alive throughout the process
-const messageReader = new BrowserMessageReader(self);
-const messageWriter = new BrowserMessageWriter(self);
 
 /**
  * Starts up a LS with a given grammar.
@@ -37,8 +28,8 @@ const messageWriter = new BrowserMessageWriter(self);
  */
 async function startWithGrammar(grammarText: string): Promise<void> {
 
-    // create a fresh connection
-    const connection = createConnection(messageReader, messageWriter);
+    // create a fresh connection for the LS
+    const connection = createServerConnection();
 
     // create shared services & serializer for the given grammar grammar
     const { shared, serializer } = await createServicesForGrammar({
@@ -50,18 +41,8 @@ async function startWithGrammar(grammarText: string): Promise<void> {
         }
     });
 
-    // toss out any prior grammar listener
-    if (newGrammarListener) {
-        newGrammarListener.dispose();
-    }
-
-    // toss out any previous build phase listeners
-    if (buildPhaseListener) {
-        buildPhaseListener.dispose();
-    }
-
     // listen for validated documents, and send the AST back to the language client
-    buildPhaseListener = shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents => {
+    shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents => {
         for (const document of documents) {
             const json = serializer.JsonSerializer.serialize(document.parseResult.value);
             connection.sendNotification(documentChangeNotification, {
