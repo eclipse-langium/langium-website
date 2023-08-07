@@ -79,7 +79,7 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
 
             return (
                 <div>
-                    <div className="text-sm flex flex-col p-4 overflow-hidden overflow-y-scroll" ref={this.terminalContainer}>
+                    <div className="text-sm flex flex-col p-4 overflow-x-hidden overflow-y-scroll" ref={this.terminalContainer}>
                             {this.state.messages.map((message, index) =>
                                 <p key={index} className={message.type == "error" ? "text-base text-accentRed" : "text-white"}>{message.type == "error" ? "An error occurred: " : ""} {message.content}</p>
                             )}
