@@ -39,7 +39,7 @@ export class HelloWorldWorkspaceManager extends DefaultWorkspaceManager {
         this.documentFactory = services.workspace.LangiumDocumentFactory;
     }
 
-    protected async loadAdditionalDocuments(
+    protected override async loadAdditionalDocuments(
         folders: WorkspaceFolder[],
         collector: (document: LangiumDocument<AstNode>) => void
     ): Promise<void> {
