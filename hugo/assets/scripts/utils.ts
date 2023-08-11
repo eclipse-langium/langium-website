@@ -1,4 +1,4 @@
-import { UserConfig } from "monaco-editor-wrapper";
+import { UserConfig, WorkerConfigOptions, WorkerConfigDirect, EditorAppConfigClassic, EditorAppConfigVscodeApi } from "monaco-editor-wrapper";
 import { monaco } from "monaco-editor-wrapper/.";
 
 export type WorkerUrl = string;
@@ -96,14 +96,89 @@ export function createUserConfig(config: MonacoVSCodeReactConfig | MonacoEditorR
         extensionContents.set(languageGrammarUrl, JSON.stringify(config.textmateGrammar));
     }
 
+    // setup language client config options (direct or via url)
+    let languageClientConfigOptions: WorkerConfigOptions | WorkerConfigDirect;
+    if (typeof config.worker === 'string') {
+        // prepare LS from a url
+        languageClientConfigOptions = {
+            $type: "WorkerConfig",
+            url: new URL(config.worker, window.location.href),
+            type: 'module',
+            name: `${id}-language-server-worker`,
+        };
+    } else {
+        // prepare LS from a pre-configured worker
+        languageClientConfigOptions = {
+            $type: "WorkerDirect",
+            worker: config.worker
+        };
+    }
+
+    // setup app config
+    let editorAppConfig: EditorAppConfigClassic | EditorAppConfigVscodeApi;
+
+    // shared config from both the classic & vscode configs
+    const sharedConfig = {
+        code: config.code,
+        languageId: id,
+        useDiffEditor: false
+    };
+
+    if (useVscodeConfig) {
+        // vscode config
+        editorAppConfig = {
+            ...sharedConfig,
+            $type: 'vscodeApi',
+            extension: {
+                name: id,
+                publisher: 'TypeFox',
+                contributes: {
+                    languages: [{
+                        id,
+                        extensions: [],
+                        aliases: [id],
+                        configuration: `.${languageConfigUrl}`
+                    }],
+                    grammars: isMonacoVSCodeReactConfig(config) ? [{
+                        language: id,
+                        scopeName: `source.${id}`,
+                        path: `.${languageGrammarUrl}`
+                    }] : undefined
+                }
+            },
+            extensionFilesOrContents: extensionContents,
+            userConfiguration: {
+                json: `{
+                "workbench.colorTheme": "Default Dark Modern",
+                "editor.fontSize": 14,
+                "editor.lightbulb.enabled": true,
+                "editor.lineHeight": 20,
+                "editor.guides.bracketPairsHorizontal": "active",
+                "editor.lightbulb.enabled": true
+                }`
+            }
+        };
+    } else {
+        // classic config
+        editorAppConfig = {
+            ...sharedConfig,
+            $type: 'classic',
+            automaticLayout: true,
+            theme: 'vs-dark',
+            editorOptions: {
+                readOnly: config.readonly,
+            },
+            languageExtensionConfig: {
+                id
+            },
+            languageDef: config.monarchGrammar,
+        };
+    }
+
     // generate langium config
-    return {
+    const userConfig: UserConfig = {
         htmlElement: config.htmlElement,
         wrapperConfig: {
-            // have to disable this for Monarch
-            // generally true otherwise (toggles using monacoVscodeApiConfig / monacoEditorConfig)
-            useVscodeConfig,
-
             serviceConfig: {
                 // the theme service & textmate services are dependent, they need to both be enabled or disabled together
                 // this explicitly disables the Monarch capabilities
@@ -114,7 +189,6 @@ export function createUserConfig(config: MonacoVSCodeReactConfig | MonacoEditorR
                 enableModelService: true,
                 configureEditorOrViewsServiceConfig: {
                     enableViewsService: false,
-                    useDefaultOpenEditorFunction: true
                 },
                 configureConfigurationServiceConfig: {
                     defaultWorkspaceUri: '/tmp/'
@@ -123,79 +197,11 @@ export function createUserConfig(config: MonacoVSCodeReactConfig | MonacoEditorR
                 enableLanguagesService: true,
                 debugLogging: false
             },
-            // VSCode config (for TextMate grammars)
-            monacoVscodeApiConfig: {
-                extension: {
-                    name: id,
-                    publisher: 'TypeFox',
-                    version: '1.0.0',
-                    engines: {
-                        vscode: '*'
-                    },
-                    contributes: {
-                        languages: [{
-                            id,
-                            extensions: [],
-                            aliases: [
-                                id
-                            ],
-                            configuration: `.${languageConfigUrl}`
-                        }],
-                        grammars: isMonacoVSCodeReactConfig(config) ? [{
-                            language: id,
-                            scopeName: `source.${id}`,
-                            path: `.${languageGrammarUrl}`
-                        }] : undefined,
-                        keybindings: [{
-                            key: 'ctrl+p',
-                            command: 'editor.action.quickCommand',
-                            when: 'editorTextFocus'
-                        }, {
-                            key: 'ctrl+shift+c',
-                            command: 'editor.action.commentLine',
-                            when: 'editorTextFocus'
-                        }]
-                    }
-                },
-                extensionFilesOrContents: extensionContents,
-                userConfiguration: {
-                    json: `{
-  "workbench.colorTheme": "Default Dark Modern",
-  "editor.fontSize": 14,
-  "editor.lightbulb.enabled": true,
-  "editor.lineHeight": 20,
-  "editor.guides.bracketPairsHorizontal": "active",
-  "editor.lightbulb.enabled": true
-}`
-                }
-            },
-            // Editor config (classic) (for Monarch)
-            monacoEditorConfig: {
-                languageExtensionConfig: {
-                    id
-                },
-                languageDef: isMonacoEditorReactConfig(config) ? config.monarchGrammar : undefined
-            }
-        },
-        editorConfig: {
-            languageId: id,
-            code: config.code,
-            useDiffEditor: false,
-            automaticLayout: true,
-            theme: 'vs-dark',
-            editorOptions: {
-                readOnly: config.readonly
-            }
+            editorAppConfig
         },
         languageClientConfig: {
-            enabled: true,
-            useWebSocket: false,
-            // build a worker config from a worker URL string, or just copy in the entire worker
-            workerConfigOptions: typeof config.worker === 'string' ? {
-                url: new URL(config.worker, window.location.href),
-                type: 'module',
-                name: `${id}-language-server-worker`,
-            } : config.worker
+            options: languageClientConfigOptions
         }
     };
+    return userConfig;
 }
