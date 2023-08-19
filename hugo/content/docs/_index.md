@@ -9,4 +9,4 @@ This reference documentation provides [an overview](/docs/langium-overview), a [
 
 ## Want to contribute?
 
-Visit the [Langium repository](https://github.com/langium/langium) to take part in improving Langium.
+Visit the [Langium repository](https://github.com/eclipse-langium/langium) to take part in improving Langium.

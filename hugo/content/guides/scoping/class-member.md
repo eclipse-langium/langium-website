@@ -23,7 +23,7 @@ function test(): void {
 
 Member based scoping like this requires not only a modification of the default scoping provider, but also some other prerequisites.
 This includes adding a member call mechanism in your grammar and a rudimentary type system.
-For this guide, we will use excerpts from the [langium-lox](https://github.com/langium/langium-lox) project to demonstrate how you can set this up yourself.
+For this guide, we will use excerpts from the [langium-lox](https://github.com/eclipse-langium/langium-lox) project to demonstrate how you can set this up yourself.
 This project implements a strongly-typed version of the [Lox language](https://craftinginterpreters.com/the-lox-language.html) from the popular book [Crafting Interpreters](https://craftinginterpreters.com/).
 
 We'll first start with the `MemberCall` grammar rule, which references one of our `NamedElements`. These elements could be variable declarations, functions, classes or methods and fields of those classes. Additionally, we want to allow function calls on elements. Note that the grammar has no notion of whether these elements can actually be executed as functions. Instead, we always allow function calls on every named element, and simply provide validation errors in case an element is called erroneously. After parsing the first member call, we continue parsing further members as long as the input text provides us with further references to elements; which are separated by dots.
@@ -97,7 +97,7 @@ export class LoxScopeProvider extends DefaultScopeProvider {
 }
 ```
 
-When trying to compute the type of an expression, we are only interested in the final piece of the member call. However, to derive the type and scope of the final member call, we have to recursively identify the type of the previous member call. This is done by looking at the member call stored in the `previous` property and inferring its type. See [here for the full implementation of the type inference system in Lox](https://github.com/langium/langium-lox/blob/main/src/language-server/type-system/infer.ts). This kind of type inference requires scoping.
+When trying to compute the type of an expression, we are only interested in the final piece of the member call. However, to derive the type and scope of the final member call, we have to recursively identify the type of the previous member call. This is done by looking at the member call stored in the `previous` property and inferring its type. See [here for the full implementation of the type inference system in Lox](https://github.com/eclipse-langium/langium-lox/blob/main/src/language-server/type-system/infer.ts). This kind of type inference requires scoping.
 
 To illustrate this behavior a bit better, take a look at the following code snippet:
 

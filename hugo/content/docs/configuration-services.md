@@ -23,14 +23,14 @@ The *language specific services* are services specific to one Langium language a
 ## Customization
 If you have used the [Yeoman generator](https://www.npmjs.com/package/generator-langium), the entry point to services customization is found in the `src/language-server/...-module.ts` file, where '...' is the name of your language. There you can register new services or override the default implementations of services. Langium implements the *Inversion of Control* principle via the *Dependency Injection* pattern, which promotes loosely-coupled architectures, maintainability, and extensibility.
 
-For the following sections, we will use the [arithmetics example](https://github.com/langium/langium/tree/main/examples/arithmetics) to describe the procedure for replacing or adding services. Note that all names prefixed with *Arithmetics* should be understood as being specific to the language named *Arithmetics*, and in your project those services' names will be prefixed with your own language name.
+For the following sections, we will use the [arithmetics example](https://github.com/eclipse-langium/langium/tree/main/examples/arithmetics) to describe the procedure for replacing or adding services. Note that all names prefixed with *Arithmetics* should be understood as being specific to the language named *Arithmetics*, and in your project those services' names will be prefixed with your own language name.
 
 Please note that it is *not mandatory* to implement all custom code via dependency injection. The main reason for using dependency injection is when your custom code *depends* on other services. In many cases you can use plain functions instead of service classes to implement your application logic.
 
 ### Overriding and Extending Services
 Thanks to the dependency injection pattern used in Langium, your can change the behavior of a service or add to its functionality in one place without having to modify every piece of code that depends on the service to be overridden or extended.
 
-The [arithmetics example](https://github.com/langium/langium/tree/main/examples/arithmetics) provides a custom implementation of the `ScopeProvider` service, which overrides functionalities from the default implementation `DefaultScopeProvider`.
+The [arithmetics example](https://github.com/eclipse-langium/langium/tree/main/examples/arithmetics) provides a custom implementation of the `ScopeProvider` service, which overrides functionalities from the default implementation `DefaultScopeProvider`.
 
 First, we need to register the new implementation of `ScopeProvider` inside of the `ArithmeticsModule`:
 
