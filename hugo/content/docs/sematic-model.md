@@ -190,7 +190,7 @@ interface B extends AstNode {
 
 Actions can also be used to control the structure of the semantic model types. This is a more advanced topic, so we recommend getting familiar with the rest of the documentation before diving into this section.
 
-Let's consider two different grammars derived from the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium). These grammars are designed to parse a document containing a single definition comprised of a name and an expression assignment, with an expression being any amount of additions or a numerical value.
+Let's consider two different grammars derived from the [Arithmetics example](https://github.com/eclipse-langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium). These grammars are designed to parse a document containing a single definition comprised of a name and an expression assignment, with an expression being any amount of additions or a numerical value.
 
 The first one does not use assigned actions:
 

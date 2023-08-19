@@ -4,6 +4,6 @@ more:
     external: true
     icon: "gdoc_download"
   - name: "View Source"
-    ref: "https://github.com/langium/langium"
+    ref: "https://github.com/eclipse-langium/langium"
     external: true
     icon: "gdoc_github"

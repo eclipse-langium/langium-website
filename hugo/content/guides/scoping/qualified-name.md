@@ -152,7 +152,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
 ```
 
 This new change now allows us to use local names of functions in the local scope, while they are still exported using their fully qualified name to the global scope.
-Another example for this style of scoping can be seen in the [domain-model example language](https://github.com/langium/langium/tree/main/examples/domainmodel).
+Another example for this style of scoping can be seen in the [domain-model example language](https://github.com/eclipse-langium/langium/tree/main/examples/domainmodel).
 Also, click the following note to see the full implementation of the scope computation service.
 
 <details>
