@@ -72,7 +72,7 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
       })
       .style('fill', 'none')
       .style('stroke', 'white')
-      .style('stroke-width', '0.8px')
+      .style('stroke-width', '1px')
       .style('stroke-dasharray', function (d) {
         if(d.target.data.tags?.includes('supertype')) return '10,5';
         if(d.source.data.tags?.includes('many')) return '5,5';

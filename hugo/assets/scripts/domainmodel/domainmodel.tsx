@@ -109,7 +109,7 @@ class App extends React.Component<{}, AppState> {
                     <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono ">
                         Preview
                     </div>
-                    <div className="border border-emeraldLangium h-full w-full overflow-hidden">
+                    <div className="border border-emeraldLangium h-full w-full">
                         {this.state.ast && this.renderAST(this.state.ast)}
                     </div>
                 </div>
