@@ -2,7 +2,7 @@ import { MonacoEditorReactComp } from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
+import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
 import { DomainModelAstNode, example, getDomainModelAst, getTreeNode, syntaxHighlighting } from "./domainmodel-tools";
 import { UserConfig } from "monaco-editor-wrapper";
 import { createUserConfig } from "../utils";
@@ -19,6 +19,7 @@ let userConfig: UserConfig;
 
 interface AppState {
     ast?: DomainModelAstNode;
+    diagnostics?: Diagnostic[];
 }
 
 class App extends React.Component<{}, AppState> {
@@ -34,6 +35,7 @@ class App extends React.Component<{}, AppState> {
         // set initial state
         this.state = {
             ast: undefined,
+            diagnostics: undefined,
         };
     }
 
@@ -71,17 +73,39 @@ class App extends React.Component<{}, AppState> {
         // update the state
 
         const ast = new LangiumAST().deserializeAST(resp.content) as DomainModelAstNode;
-        this.setState({ ast: getDomainModelAst(ast) });
+
+        this.setState({
+            ast: ast,
+            diagnostics: resp.diagnostics,
+        });
     }
 
     renderAST(ast: DomainModelAstNode): JSX.Element {
         if (!ast) {
             return <div>No AST available.</div>;
         }
-       
+
+        // if there are no errors, render the tree
+        if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
+            return (
+                <D3Tree data={getTreeNode(ast)} />
+            );
+        }
+        
+        // otherwise, render the errors
         return (
-            <D3Tree data={getTreeNode(ast)} />
-        );
+            <div className="flex flex-col h-full w-full p-4 justify-start items-center my-10" >
+              <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-left text-sm cursor-default">
+                {this.state.diagnostics.filter((i) => i.severity === 1).map((diagnostic, index) =>
+                  <details key={index}>
+                    <summary>{`Line ${diagnostic.range.start.line + 1}-${diagnostic.range.end.line + 1}: ${diagnostic.message}`}</summary>
+                    <p>Source: {diagnostic.source} | Code: {diagnostic.code}</p>
+                  </details>
+                )}
+              </div>
+            </div>
+          );
+
     }
 
     render() {
