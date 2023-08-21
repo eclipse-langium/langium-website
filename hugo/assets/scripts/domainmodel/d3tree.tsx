@@ -14,15 +14,32 @@ interface TreeProps {
   data: TreeNode;
 }
 
+
 const D3Tree: React.FC<TreeProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
     if (!svgRef.current) return;
 
-    const width = 500;
-    const height = 700;
 
+    // base height and width on the size tree
+    const getChildSize = (child: TreeNode): number => {
+      if (!child.children) return 1;
+      let amount = child.children.length;
+
+      // fastest way to iterate over an array
+      const length = child.children.length;
+      for (let i = 0; i < length; i++) {
+        amount += getChildSize(child.children[i]);
+      }
+      return amount;
+    };
+    const size = getChildSize(data);
+
+    const height = size * 20;
+    const width = size * 18;
+
+    console.log('size', size, width, height);
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
@@ -42,7 +59,7 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
     const g = svg.append('g');
 
     // zoom to show the whole tree
-    svg.call(zoom.transform, d3.zoomIdentity.translate(80, -20).scale(1));
+    svg.call(zoom.transform, d3.zoomIdentity.translate(width / size * 2.5, height / size * 2).scale(3 / (0.1 * size)));
 
 
     const link = g.selectAll('.link')
@@ -69,13 +86,15 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
       .style('fill', function (d) {
         switch (d.data.$type) {
           case 'PackageDeclaration':
-            return '#8c2626';
+            return '#8c2626'; // accentRed
           case 'DataType':
             return '#B6F059';
           case 'Entity':
-            return '#D568E7';
+            return '#D568E7'; // accentViolet
+          case 'Feature':
+            return '#1FCDEB'; // accentBlue
           default:
-            return '#BCDBEF';
+            return '#26888C';
         }
       });
 
@@ -88,7 +107,7 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
       .style('font-size', '1em')
       .style('font-weight', function (d) {
         switch (d.data.$type) {
-          case 'PackageDeclaration':
+          case 'Domainmodel':
             return 'bold';
           default:
             return 'normal';

@@ -2,12 +2,12 @@ import { MonacoEditorReactComp } from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { DocumentChangeResponse } from "../langium-utils/langium-ast";
+import { DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
 import { DomainModelAstNode, example, getDomainModelAst, getTreeNode, syntaxHighlighting } from "./domainmodel-tools";
 import { UserConfig } from "monaco-editor-wrapper";
 import { createUserConfig } from "../utils";
-import * as d3 from "d3";
 import D3Tree, { TreeNode } from "./d3tree";
+import { StateMachineAstNode } from "../statemachine/statemachine-tools";
 
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
@@ -69,7 +69,9 @@ class App extends React.Component<{}, AppState> {
     onDocumentChange(resp: DocumentChangeResponse) {
         // decode the received Asts
         // update the state
-        this.setState({ ast: getDomainModelAst(JSON.parse(resp.content) as DomainModelAstNode) });
+
+        const ast = new LangiumAST().deserializeAST(resp.content) as DomainModelAstNode;
+        this.setState({ ast: getDomainModelAst(ast) });
     }
 
     renderAST(ast: DomainModelAstNode): JSX.Element {

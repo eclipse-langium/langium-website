@@ -6,7 +6,6 @@ import { TreeNode } from "./d3tree";
 export function getTreeNode(ast: AstNode): TreeNode {
     const astNode = getDomainModelAst(ast as DomainModelAstNode);
     
-    console.log(astNode.elements.find(entity => entity.name === "HasAuthor"))
     const packageDeclarations = astNode.packageDeclarations.map(p => {
         const result: TreeNode = {
             ...p,
@@ -15,27 +14,35 @@ export function getTreeNode(ast: AstNode): TreeNode {
         return result;
     });
 
-    const datatypes = astNode.dataTypes.map(d => {
-        const children: TreeNode[] = [];
+    const getDataTypeTreeNode = (d: DataType): TreeNode => {
         const result: TreeNode = {
             ...d,
-            children: children
+            children: []
         }
         return result;
-    });
+    }
+
 
     const getEntityTreeNode = (entity: Entity): TreeNode => {
+
+        const getFeatureTreeNode = (feature: Feature): TreeNode => {
+            const result: TreeNode = {
+                name: `${feature.name}${feature.many ? '[]' : ''}`,
+                $type: feature.$type,
+                children: [getDataTypeTreeNode(feature.type.ref)]
+            }
+            return result;
+        }
+
         const getCildren = (e: Entity): TreeNode[] => {
-            /*
-                Doesn't work because e.superType returns a unresolved reference
-                const child = astNode.entities.find(entity => entity.name === e.superType?.name);
-            */
-            const children: TreeNode[] = e.superType ? [{ 
-                name: 'extends', 
-                $type: e.$type,
-                // you can only extend one entity
-                children: []
-            }] : [];
+            const superType = astNode.entities.find(entity => entity.name === e.superType?.ref.name);
+            const features = e.features.map(f => { return getFeatureTreeNode(f) });
+
+            const children: TreeNode[] = superType ? [...features, { 
+                name:  superType.name, 
+                $type: superType.$type,
+                children: superType?.features.map(f => { return getFeatureTreeNode(f) })
+            }] : features;
 
             return children;
         }
@@ -47,6 +54,7 @@ export function getTreeNode(ast: AstNode): TreeNode {
     }
 
     const entities = astNode.entities.map(e => { return getEntityTreeNode(e); });
+    const datatypes = astNode.dataTypes.map(d => { return getDataTypeTreeNode(d); });
   
     const children: TreeNode[] = [
         {name: 'DataTypes', $type: 'DataType', children: datatypes},
@@ -91,12 +99,16 @@ export interface PackageDeclaration extends DomainModelElement  {
 export interface Entity extends DomainModelElement  {
     $type: 'Entity';
     features: Feature[];
-    superType?: Entity;
+    superType?: {
+        ref: Entity
+    }
 }
 
 export interface Feature extends DomainModelElement  { 
     $type: 'Feature';
-    type: DataType;
+    type: {
+        ref: DataType
+    };
     many: boolean;
 }
 
