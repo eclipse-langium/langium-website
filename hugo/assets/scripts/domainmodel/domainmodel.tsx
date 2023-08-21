@@ -2,7 +2,7 @@ import { MonacoEditorReactComp } from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
+import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
 import { DomainModelAstNode, example, getTreeNode, syntaxHighlighting } from "./domainmodel-tools";
 import { UserConfig } from "monaco-editor-wrapper"; 
 import { createUserConfig } from "../utils";
@@ -16,7 +16,12 @@ buildWorkerDefinition(
 
 let userConfig: UserConfig;
 
-class App extends React.Component<{}> {
+interface AppState {
+    ast?: DomainModelAstNode;
+    diagnostics?: Diagnostic[];
+}
+
+class App extends React.Component<{}, AppState> {
     monacoEditor: React.RefObject<MonacoEditorReactComp>;
     constructor(props) {
         super(props);
@@ -25,6 +30,12 @@ class App extends React.Component<{}> {
         this.onMonacoLoad = this.onMonacoLoad.bind(this);
         this.onDocumentChange = this.onDocumentChange.bind(this);
         this.monacoEditor = React.createRef();
+
+        // set initial state
+        this.state = {
+            ast: undefined,
+            diagnostics: undefined,
+        };
     }
 
     /**
@@ -102,7 +113,11 @@ class App extends React.Component<{}> {
 
         return (
             <div className="justify-center self-center flex flex-col md:flex-row h-full w-full p-4">
-                <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-[50vh] min-h-[300px]">
+                <div className="float-left w-full h-full flex flex-col">
+                    <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono">
+                        Editor
+                    </div>
+                    <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-[50vh] min-h-[300px]">
                         <MonacoEditorReactComp
                             ref={this.monacoEditor}
                             onLoad={this.onMonacoLoad}
@@ -110,10 +125,20 @@ class App extends React.Component<{}> {
                             style={style}
                         />
                     </div>
+                </div>
+                <div className="float-left w-full h-full flex flex-col" id="preview">
+                    <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono ">
+                        Preview
+                    </div>
+                    <div className="border border-emeraldLangium h-full w-full">
+                        {this.state.ast && this.renderAST(this.state.ast)}
+                    </div>
+                </div>
             </div>
         );
     }
 }
+
 
 userConfig = createUserConfig({
     languageId: 'domainmodel',

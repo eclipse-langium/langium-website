@@ -77,6 +77,17 @@ export function getTreeNode(ast: AstNode): TreeNode {
     }
 }
 
+export function getDomainModelAst(ast: DomainModelAstNode ): DomainModelAstNode {
+    const result: DomainModelAstNode = {
+        name: ast.name,
+        $type: 'Domainmodel',
+        elements: ast.elements,
+        packageDeclarations: (ast.elements as DomainModelElement[]).filter(e => e.$type === 'PackageDeclaration') as PackageDeclaration[],
+        entities: (ast.elements as DomainModelElement[]).filter(e => e.$type === 'Entity') as Entity[],
+        dataTypes: (ast.elements as DomainModelElement[]).filter(e => e.$type === 'DataType') as DataType[],
+    }
+    return result;
+}
 
 /**
  * Returns a DomainModelAstNode from a given ast.
@@ -200,4 +211,4 @@ export const syntaxHighlighting =  {
             { regex: /[\/\*]/, action: {"token":"comment"} },
         ],
     }
-} as monaco.languages.IMonarchLanguage;
+};

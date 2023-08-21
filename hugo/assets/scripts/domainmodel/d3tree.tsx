@@ -11,7 +11,6 @@ export interface TreeNode {
 }
 
 export type TreeNodeTag = 'supertype' | 'many';
-
 interface TreeProps {
   data: TreeNode;
 }
