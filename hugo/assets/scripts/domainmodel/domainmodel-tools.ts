@@ -29,6 +29,7 @@ export function getTreeNode(ast: AstNode): TreeNode {
             const result: TreeNode = {
                 name: `${feature.name}${feature.many ? '[]' : ''}`,
                 $type: feature.$type,
+                tags: feature.many ? ['many'] : [],
                 children: [getDataTypeTreeNode(feature.type.ref)]
             }
             return result;
@@ -41,6 +42,7 @@ export function getTreeNode(ast: AstNode): TreeNode {
             const children: TreeNode[] = superType ? [...features, { 
                 name:  superType.name, 
                 $type: superType.$type,
+                tags: ['supertype'],
                 children: superType?.features.map(f => { return getFeatureTreeNode(f) })
             }] : features;
 

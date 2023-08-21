@@ -7,9 +7,11 @@ export interface TreeNode {
   name: string;
   children?: TreeNode[];
 
+  tags?: TreeNodeTag[];
   $type?: DomainModelElementTypeNames;
 }
 
+export type TreeNodeTag = 'supertype' | 'many';
 interface TreeProps {
   data: TreeNode;
 }
@@ -39,8 +41,6 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
     const height = size * 20;
     const width = size * 18;
 
-    console.log('size', size, width, height);
-
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
     svg.attr('width', '100%').attr('height', '100%')
@@ -59,7 +59,7 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
     const g = svg.append('g');
 
     // zoom to show the whole tree
-    svg.call(zoom.transform, d3.zoomIdentity.translate(width / size * 2.5, height / size * 2).scale(3 / (0.1 * size)));
+    svg.call(zoom.transform, d3.zoomIdentity.translate(width / size * 3, height / size * 2).scale(3 / (0.1 * size)));
 
 
     const link = g.selectAll('.link')
@@ -72,9 +72,15 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
       })
       .style('fill', 'none')
       .style('stroke', 'white')
-      .style('stroke-width', '0.5px');
+      .style('stroke-width', '0.8px')
+      .style('stroke-dasharray', function (d) {
+        if(d.target.data.tags?.includes('supertype')) return '10,5';
+        if(d.source.data.tags?.includes('many')) return '5,5';
+        return 'none';
+      })
+      .style('stroke-opacity', '0.4');
 
-
+    
     const node = g.selectAll('.node')
       .data(treeData.descendants())
       .enter().append('g')
