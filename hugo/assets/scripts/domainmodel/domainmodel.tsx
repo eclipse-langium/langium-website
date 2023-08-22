@@ -69,9 +69,7 @@ class App extends React.Component<{}, AppState> {
      * @param resp Response data
      */
     onDocumentChange(resp: DocumentChangeResponse) {
-        // decode the received Asts
-        // update the state
-
+        // get the AST from the response and deserialize it
         const ast = new LangiumAST().deserializeAST(resp.content) as DomainModelAstNode;
 
         this.setState({
@@ -142,7 +140,6 @@ class App extends React.Component<{}, AppState> {
     }
 }
 
-
 userConfig = createUserConfig({
     languageId: 'domainmodel',
     code: example,
@@ -150,5 +147,6 @@ userConfig = createUserConfig({
     worker: '/showcase/libs/worker/domainmodelServerWorker.js',
     monarchGrammar: syntaxHighlighting
 });
+
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(<App />);

@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import * as d3 from 'd3';
-import tailwindConfig from '../../../../tailwind/tailwind.config';
 import { DomainModelElementTypeNames } from './domainmodel-tools';
 
 export interface TreeNode {
@@ -12,19 +11,19 @@ export interface TreeNode {
 }
 
 export type TreeNodeTag = 'supertype' | 'many';
+
 interface TreeProps {
   data: TreeNode;
 }
 
 
-const D3Tree: React.FC<TreeProps> = ({ data }) => {
+export default function D3Tree({ data }: TreeProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
     if (!svgRef.current) return;
 
-
-    // base height and width on the size tree
+    // get the size of the tree
     const getChildSize = (child: TreeNode): number => {
       if (!child.children) return 1;
       let amount = child.children.length;
@@ -36,14 +35,18 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
       }
       return amount;
     };
-    const size = getChildSize(data);
 
+    const size = getChildSize(data);
     const height = size * 20;
     const width = size * 18;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
-    svg.attr('width', '100%').attr('height', '100%')
+
+    const hierarchy = d3.hierarchy(data);
+    const treeLayout = d3.tree<TreeNode>().size([height, width]);
+    const treeData = treeLayout(hierarchy);
+    const g = svg.append('g');
 
     const zoom = d3.zoom<SVGSVGElement, unknown>().on('zoom', (event) => {
       g.attr('transform', event.transform);
@@ -51,42 +54,36 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
 
     svg.call(zoom, d3.zoomIdentity.translate(50, 50));
 
-
-    const hierarchy = d3.hierarchy(data);
-    const treeLayout = d3.tree<TreeNode>().size([height, width]);
-
-    const treeData = treeLayout(hierarchy);
-    const g = svg.append('g');
-
     // zoom to show the whole tree
     svg.call(zoom.transform, d3.zoomIdentity.translate(width / size * 3, height / size * 2).scale(3 / (0.1 * size)));
 
-
-    const link = g.selectAll('.link')
+    // draw the links
+    g.selectAll('.link')
       .data(treeData.links())
       .enter().append('path')
       .attr('class', 'link')
       .attr('d', d => {
-        // connect parent node to child node with a bezier curve (quadratic)
+        // connect parent node to child node
         return `M${d.source.y},${d.source.x}C${d.source.y + 100},${d.source.x} ${d.target.y - 100},${d.target.x} ${d.target.y},${d.target.x}`;
       })
       .style('fill', 'none')
       .style('stroke', 'white')
       .style('stroke-width', '1px')
       .style('stroke-dasharray', function (d) {
-        if(d.target.data.tags?.includes('supertype')) return '10,5';
-        if(d.source.data.tags?.includes('many')) return '5,5';
+        if (d.target.data.tags?.includes('supertype')) return '10,5';
+        if (d.source.data.tags?.includes('many')) return '5,5';
         return 'none';
       })
       .style('stroke-opacity', '0.4');
 
-    
     const node = g.selectAll('.node')
       .data(treeData.descendants())
       .enter().append('g')
       .attr('class', 'node')
       .attr('transform', d => `translate(${d.y},${d.x})`);
 
+
+    // draw circle for nodes
     node.append('circle')
       .attr('r', 5)
       .style('fill', function (d) {
@@ -104,6 +101,7 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
         }
       });
 
+    // draw text for nodes
     node.append('text')
       .attr('dy', '0.31em')
       .attr('x', d => d.children ? -6 : 6)
@@ -132,15 +130,10 @@ const D3Tree: React.FC<TreeProps> = ({ data }) => {
         }
       });
 
-
-
   }, [data]);
 
   return (
-    <svg ref={svgRef} width="100%" height="100%" >
-      {/* SVG content will be rendered here */}
-    </svg>
+    <svg ref={svgRef} width="100%" height="100%" />
   );
 };
 
-export default D3Tree;
