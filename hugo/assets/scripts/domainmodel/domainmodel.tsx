@@ -2,10 +2,11 @@ import { MonacoEditorReactComp } from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { DocumentChangeResponse } from "../langium-utils/langium-ast";
-import { example, syntaxHighlighting } from "./domainmodel-tools";
+import { DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
+import { DomainModelAstNode, example, getTreeNode, syntaxHighlighting } from "./domainmodel-tools";
 import { UserConfig } from "monaco-editor-wrapper"; 
 import { createUserConfig } from "../utils";
+import D3Tree from "./d3tree";
  
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
@@ -56,10 +57,41 @@ class App extends React.Component<{}> {
      * @param resp Response data
      */
     onDocumentChange(resp: DocumentChangeResponse) {
-        // decode the received Asts
-        // let result = JSON.parse(resp.content)
-        // let evaluations = result.$evaluations;
-        // this.preview.current?.startPreview(evaluations, resp.diagnostics);
+        // get the AST from the response and deserialize it
+        const ast = new LangiumAST().deserializeAST(resp.content) as DomainModelAstNode;
+
+        this.setState({
+            ast: ast,
+            diagnostics: resp.diagnostics,
+        });
+    }
+
+    renderAST(ast: DomainModelAstNode): JSX.Element {
+        if (!ast) {
+            return <div>No AST available.</div>;
+        }
+
+        // if there are no errors, render the tree
+        if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
+            return (
+                <D3Tree data={getTreeNode(ast)} />
+            );
+        }
+        
+        // otherwise, render the errors
+        return (
+            <div className="flex flex-col h-full w-full p-4 justify-start items-center my-10" >
+              <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-left text-sm cursor-default">
+                {this.state.diagnostics.filter((i) => i.severity === 1).map((diagnostic, index) =>
+                  <details key={index}>
+                    <summary>{`Line ${diagnostic.range.start.line + 1}-${diagnostic.range.end.line + 1}: ${diagnostic.message}`}</summary>
+                    <p>Source: {diagnostic.source} | Code: {diagnostic.code}</p>
+                  </details>
+                )}
+              </div>
+            </div>
+          );
+
     }
 
     render() {
@@ -90,5 +122,6 @@ userConfig = createUserConfig({
     worker: '/showcase/libs/worker/domainmodelServerWorker.js',
     monarchGrammar: syntaxHighlighting
 });
+
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(<App />);
