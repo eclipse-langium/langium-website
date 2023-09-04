@@ -128,6 +128,7 @@ Here's the raw contents of the HTML content stored in **src/static/index.html**.
         <meta charset='utf-8'>
         <!-- Page & Monaco styling -->
         <link href="styles.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="./monaco-editor-wrapper/assets/style.css">
         <title>MiniLogo in Langium</title>
     </head>
     <body>
