@@ -84,7 +84,7 @@ class App extends React.Component<{}> {
         <div className="w-1/2 p-4 text-white overflow-auto">
           <h1 className="text-2xl">Langium/SQL</h1>
           <p className="pt-2">
-            This is a showcase of <a className="text-emeraldLangium" href="https://github.com/langium" target="_blank">Langium/SQL</a>. The editor above
+            This is a showcase of <a className="text-emeraldLangium" href="https://github.com/langium/langium-sql" target="_blank">Langium/SQL</a>. The editor above
             is a Monaco editor driven by our SQL language server. The current setup mimics <a className="text-emeraldLangium" href="https://www.mysql.com" target="_blank">MySQL</a>.
           </p>
           <h2 className="text-xl pt-4 underline">Features</h2>
