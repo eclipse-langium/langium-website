@@ -94,7 +94,7 @@ To fix this issue, we need to implement a custom `FileSystemProvider` on the cli
 
 ```ts
 import * as vscode from 'vscode';
-import { builtinHelloWorld } from './language-server/builtins';
+import { builtinHelloWorld } from './language/builtins';
 
 export class DslLibraryFileSystemProvider implements vscode.FileSystemProvider {
 

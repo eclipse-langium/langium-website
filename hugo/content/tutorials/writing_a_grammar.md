@@ -36,7 +36,7 @@ Now that we have an idea of our semantics and our concrete syntax, we can then s
 
 As an aside, our version of MiniLogo will be an *approximation* of Dr. Walkingshaw's version. We won't adhere to it completely, and we won't be incorporating some elements, such as variable declarations.
 
-To get started sketching the grammar we'll be using the **Hello World** example from the yeoman generator. You can read about how to get this setup in the [Getting Started](/docs/getting-started/) section of our docs. We'll be working with a fresh from the generator using only the defaults, and building up from that. We'll begin by modifying the default grammar file, and updating it to work for MiniLogo. You can find this file under **src/language-server/hello-world.langium** in your new project. If you used a name other than the default, the file will still be there, but using your custom name instead.
+To get started sketching the grammar we'll be using the **Hello World** example from the yeoman generator. You can read about how to get this setup in the [Getting Started](/docs/getting-started/) section of our docs. We'll be working with a fresh from the generator using only the defaults, and building up from that. We'll begin by modifying the default grammar file, and updating it to work for MiniLogo. You can find this file under **src/language/hello-world.langium** in your new project. If you used a name other than the default, the file will still be there, but using your custom name instead.
 
 We'll be overriding the existing langium grammar file completely, so delete the old contents before we begin.
 
