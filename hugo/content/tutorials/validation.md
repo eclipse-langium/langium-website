@@ -7,7 +7,7 @@ weight: 1
 
 In this tutorial, we will be talking about implementing validation for your Langium-based language. We recommend first reading the previous tutorial about [writing a grammar](/tutorials/writing_a_grammar/), as we will assume you're familiar with the topics covered there. We'll also assume that you have a working language to add validation to, so double check that `npm run langium:generate` succeeds without errors before you proceed.
 
-For this tutorial, we'll be implementing validation for the [MiniLogo language](https://github.com/eclipse-langium/langium-minilogo), but you can use your own language to follow along as well.
+For this tutorial, we'll be implementing validation for the [MiniLogo language](https://github.com/langium/langium-minilogo), but you can use your own language to follow along as well.
 
 ## Overview
 
