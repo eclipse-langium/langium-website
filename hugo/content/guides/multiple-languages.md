@@ -3,18 +3,18 @@ title: "Multiple dependent languages"
 weight: 400
 ---
 
-This tutorial is about integrating multiple dependent languages in one Langium project.
+This guide is about integrating multiple dependent languages in one Langium project.
 
-One common situation were it makes sense to create dependent languages is when you only want to read concepts in one language and predefine them in another file (probably also a built-in one). Think of splitting SQL into a defining `CREATE TABLE table (...)`) and a reading part (`SELECT * FROM table`).
+One common situation where it makes sense to create dependent languages is when you only want to read concepts in one language and predefine them in another file (probably also a built-in one). Think of splitting SQL into a defining `CREATE TABLE table (...)`) and a reading part (`SELECT * FROM table`).
 
-> Note, that for n independent languages can be simply made by creating n independent Langium projects.
+> Note that for `n` independent languages, you can simply create `n` independent Langium projects.
 
 ## Our plan
 
 The entire change touches several files. Let's summarize what needs to be done:
 
 1. the **grammar** (the `*.langium` file) needs to be split into the three parts that were discussed above
-2. the **Langium configuration** (the `langium-config.json` file in the Langium project root) needs to split the language configuration into thre new
+2. the **Langium configuration** (the `langium-config.json` file in the Langium project root) needs to split the language configuration into three parts
 3. the **`Djinject` module** of your language (`XXX-module.ts`) needs to create the new language services as well.
 4. Last, but not least, you have to **cleanup all dependent files**. Here we can give general hints.
 5. if you have a **VSCode extension**
@@ -26,11 +26,11 @@ The entire change touches several files. Let's summarize what needs to be done:
 
 To keep this guide easy, I will use the `hello-world` project.
 
-Let’s imagine to have three languages:
+Let’s imagine that we have three languages:
 
 * the first language **defines** persons
 * the second language **greets** persons of the first language
-* the third language **configures** which person you are+
+* the third language **configures** which person you are
 
 Just as a finger practice, let's require that you cannot greet yourself.
 
@@ -68,7 +68,7 @@ hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
 hidden terminal SL_COMMENT: /\/\/[^\n\r]*/; 
 ```
 
-Now, split it into three new files (let's call them units):
+Now, split it into three new files (let's call the entry rules units and the files we can name like `multiple-languages-(configuration|definition|implementation).langium`):
 
 Our definition grammar:
 ```langium
@@ -96,7 +96,7 @@ import "multiple-languages-definition";
 entry ConfigurationUnit: 'I' 'am' who=[Person:ID] '.';
 ```
 
-Our implementation grammar (note the imports again):
+Our implementation grammar (note the import again):
 ```langium
 grammar MultiImplementation
 
@@ -205,7 +205,7 @@ After adding two more languages, some important classes get generated - which ne
      MultipleLanguagesGeneratedSharedModule
    } from './generated/module.js';
    ```
-4. In the function `createMultipleLanguagesServices` you will notice an error line now, because we deleted the old class name by the previous step. The code there needs basically be tripled. But before we do this, we need to define the new output type of `createMultipleLanguagesServices`. In the end this should lead to this definition:
+4. In the function `createMultipleLanguagesServices` you will notice an error line now, because we deleted the old class name in the previous step. The code there needs to basically be tripled. But before we do this, we need to define the new output type of `createMultipleLanguagesServices`. In the end this should lead to this definition:
     ```ts
     export function createMultipleLanguagesServices(context: DefaultSharedModuleContext): {
         shared: LangiumSharedServices,
@@ -251,7 +251,7 @@ After this step, Langium is set up correctly. But if you try to build now, the c
 Let's clean up the error lines. Here are some general hints:
 
 * keep in mind, that you are dealing with three file types now, namely `*.me`, `*.who` and `*.hello`
-    * you can distinguish them very easy by selecting the right sub service from the result object of `createMultipleLanguagesServices`, which is either `Configuration`, `Definition` or `Implementation`, but not `shared`
+    * you can distinguish them very easily by selecting the right sub service from the result object of `createMultipleLanguagesServices`, which is either `Configuration`, `Definition` or `Implementation`, but not `shared`
     * all these services have a sub service with file extensions: `[Configuration,Definition,...].LanguageMetaData.fileExtensions: string[]`
     * so, when you are obtaining any documents from the `DocumentBuilder` you can be sure that they are parsed by the matching language service
     * to distinguish them on your own, use the AST functions for determining the root type, for example for the Configuration language use `isConfigurationUnit(document.parseResult.value)`
@@ -262,7 +262,7 @@ If you have a VSCode extension, you need to touch two files: `package.json` and 
 
 #### File `package.json`
 
-In this file we define, what services this extension will contribute to VSCode.
+In this file we define what services this extension will contribute to VSCode.
 
 Before the change only one language and grammar was defined:
 
@@ -291,7 +291,7 @@ Before the change only one language and grammar was defined:
 //...
 ```
 
-After the change, we tripled the information. Be aware of that the language ids must match the ids from the Langium configuration. Also make sure that the paths th the syntax files and the language configuration are correct.
+After the change, we tripled the information. Be aware of that the language ids must match the ids from the Langium configuration. Also make sure that the paths to the syntax files and the language configuration are correct.
 
 > For the language configuration for VSCode, we reused the old file three times. If you want to make a more precise configuration per language, you should also split this file. But let's use the same for a moment and for simplicity.
 
@@ -383,7 +383,7 @@ const clientOptions: LanguageClientOptions = {
 };
 ```
 
-> Be aware of that the file extensions can change over time, depending on your needs. You should actually use the `LanguageMetaData` of each language service. I have chosen the given implementation because of simplicity. You can do it better!
+> Be aware that the file extensions can change over time, depending on your needs. You should actually use the `LanguageMetaData` of each language service. I have chosen the given implementation because of simplicity. You can do it better!
 
 ## Test the extension!
 
@@ -417,7 +417,7 @@ Hello Michael!
 You should be able now...:
 * to see proper syntax highlighting
 * to trigger auto completion for keywords
-* to jump to the definitin by Cmd/Ctrl-clicking on a person's name
+* to jump to the definition by Cmd/Ctrl-clicking on a person's name
 
 # Add a validator (task)
 
@@ -440,7 +440,7 @@ checkNotGreetingYourself(greeting: Greeting, accept: ValidationAcceptor): void {
 }
 ```
 
-After doing so, your name should be have a warning, stating that you cannot greet yourself.
+After doing so, your name should display a warning, stating that you cannot greet yourself.
 
 # Troubleshooting
 
@@ -448,7 +448,7 @@ In this section we will list common mistakes.
 
 * One prominent mistake is forgetting to build Langium and Typescript files, before running the extension.
 
-* Since we are basically just copy-pasting given configuration, be aware what you are pasting. Make sure that the code still makes sense after copying. Probably you forgot to adapt the pasted code.
+* Since we are basically just copy-pasting given configuration, be aware of what you are pasting. Make sure that the code still makes sense after copying. You probably forgot to adapt the pasted code.
 
 If you encounter any problems, we are happy to help in our [discussions](https://github.com/eclipse-langium/langium/discussions) page or our [issue tracker](https://github.com/eclipse-langium/langium/issues).
 
