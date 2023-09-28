@@ -440,7 +440,7 @@ checkNotGreetingYourself(greeting: Greeting, accept: ValidationAcceptor): void {
 }
 ```
 
-After doing so, your name should be have a warning, stating that you cannot grret yourself.
+After doing so, your name should be have a warning, stating that you cannot greet yourself.
 
 # Troubleshooting
 
