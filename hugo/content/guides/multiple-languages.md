@@ -423,7 +423,7 @@ You should be able now...:
 
 As promised, let's add a simple validation rule, that you cannot greet yourself. Therefore we enter our name in the `thats.me` file like we did in the previous step.
 
-Try to include the follwing code to our validator. This is meant as task, try to find the missing pieces on your own :-).
+Try to include the following code to our validator. This is meant as task, try to find the missing pieces on your own :-).
 
 ```ts
 checkNotGreetingYourself(greeting: Greeting, accept: ValidationAcceptor): void {
