@@ -5,7 +5,7 @@ weight: 2
 
 {{< toc format=html >}}
 
-In this tutorial, we'll be talking about customizing the command line interface for your language. We recommend reading through previous tutorials about [writing a grammar](/tutorials/writing_a_grammar) and [validation](/tutorials/validation). Once you have a good grasp on those concepts, then you should be all set for setting up a CLI. We will also continue to use the [MiniLogo](https://github.com/eclipse-langium/langium-minilogo) language as a motivating example.
+In this tutorial, we'll be talking about customizing the command line interface for your language. We recommend reading through previous tutorials about [writing a grammar](/tutorials/writing_a_grammar) and [validation](/tutorials/validation). Once you have a good grasp on those concepts, then you should be all set for setting up a CLI. We will also continue to use the [MiniLogo](https://github.com/langium/langium-minilogo) language as a motivating example.
 
 ## Overview
 
