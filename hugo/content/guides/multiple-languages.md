@@ -15,7 +15,7 @@ The entire change touches several files. Let's summarize what needs to be done:
 
 1. the **grammar** (the `*.langium` file) needs to be split into the three parts that were discussed above
 2. the **Langium configuration** (the `langium-config.json` file in the Langium project root) needs to split the language configuration into three parts
-3. the **`Djinject` module** of your language (`XXX-module.ts`) needs to create the new language services as well.
+3. the **module file** of your language (`XXX-module.ts`) needs to create the new language services as well.
 4. Last, but not least, you have to **cleanup all dependent files**. Here we can give general hints.
 5. if you have a **VSCode extension**
     1. the `package.json` needs to be adapted
@@ -24,7 +24,7 @@ The entire change touches several files. Let's summarize what needs to be done:
 
 ## Our scenario
 
-To keep this guide easy, I will use the `hello-world` project.
+To keep this guide easy, I will use the [`hello-world` project](/docs/getting-started/).
 
 Let’s imagine that we have three languages:
 
@@ -181,9 +181,9 @@ For the next step you need to run the Langium generator once:
 npm run langium:generate
 ```
 
-### `Djinject` language module
+### Language module file
 
-The `Djinject` module describes how your language services are built.
+The module file describes how your language services are built.
 After adding two more languages, some important classes get generated - which need to be registered properly.
 
 1. Open the module file (`/src/language/multiple-languages-module.ts`).
