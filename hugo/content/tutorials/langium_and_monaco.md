@@ -30,13 +30,10 @@ Per usual, we'll be using MiniLogo as the motivating example here.
 In order to build for the browser, we need to create a bundle that is free of any browser-incompatible modules. To do this, let's create a new entry point for our language server in **src/language-server/main-browser.ts**. This will mirror the regular entry point that we use to build already, but will target a browser-based context instead. We'll start with the following content:
 
 ```ts
-import { startLanguageServer, EmptyFileSystem, DocumentState } from 'langium';
-import { BrowserMessageReader, BrowserMessageWriter, Diagnostic, NotificationType, createConnection } from 'vscode-languageserver/browser.js';
+import { startLanguageServer, EmptyFileSystem } from 'langium';
+import { BrowserMessageReader, BrowserMessageWriter, createConnection } from 'vscode-languageserver/browser.js';
 // your services & module name may differ based on your language's name
 import { createMiniLogoServices } from './minilogo-module.js';
-import { Model } from './generated/ast.js';
-import { Command, getCommands } from './minilogo-actions.js';
-import { generateMiniLogoCmds } from '../generator/generator.js';
 
 declare const self: DedicatedWorkerGlobalScope;
 
@@ -51,37 +48,6 @@ const { shared, MiniLogo } = createMiniLogoServices({connection, ...EmptyFileSys
 
 // Start the language server with the shared services
 startLanguageServer(shared);
-
-// Send a notification with the serialized AST after every document change
-type DocumentChange = { uri: string, content: string, diagnostics: Diagnostic[] };
-const documentChangeNotification = new NotificationType<DocumentChange>('browser/DocumentChange');
-// use the built-in AST serializer
-const jsonSerializer = MiniLogo.serializer.JsonSerializer;
-// listen on fully validated documents
-shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents => {
-    // perform this for every validated document in this build phase batch
-    for (const document of documents) {
-        const module = document.parseResult.value as Model;
-        let json: Command[] = [];
-        
-        // only generate commands if there are no errors
-        if(document.diagnostics === undefined  || document.diagnostics.filter((i) => i.severity === 1).length === 0) {
-            json = getCommands(generateMiniLogoCmds(module));
-        }
-        
-        // inject the commands into the module
-        // this is safe so long as you careful to not clobber existing properties
-        // and is incredibly helpful to enrich the feedback you get from the LS per document
-        (module as unknown as {$commands: Command[]}).$commands = json;
-
-        // send the notification for this validated document, with the serialized AST + generated commands as the content
-        connection.sendNotification(documentChangeNotification, {
-            uri: document.uri.toString(),
-            content: jsonSerializer.serialize(module, { sourceText: true, textRegions: true }),
-            diagnostics: document.diagnostics ?? []
-        });
-    }
-});
 ```
 
 Again, this is based on code that was originally produced by the yeoman generator, so it should look familiar.
@@ -639,4 +605,4 @@ npm run serve
 
 You should be greeted with a page that contains a working Monaco instance and a small MiniLogo program in the editor. This editor has the highlighting we would expect, and also is fully connected to the language server for our language. This means we have full LSP support for operations that we would expect to have in a native IDE, such as VSCode.
 
-And that's it, we have successfully implemented Langium + Monaco in the web for our language. It's not doing much at this time besides presenting us with an editor, but in the next tutorial we'll talk about [using the same setup to add generation in the web](/tutorials/generation_in_the_web). Since our generation has already been configured natively in prior tutorials, we can use what we've written to quickly implement a web application that translates MiniLogo programs into drawing instructions for an HTML5 canvas. The document notification we added to the LS will be used to generate commands from provided documents, and from that we can quickly generate commands in real-time.
+And that's it, we have successfully implemented Langium + Monaco in the web for our language. It's not doing much at this time besides presenting us with an editor, but in the next tutorial we'll talk about [using the same setup to add generation in the web](/tutorials/generation_in_the_web). Since our generation has already been configured natively in prior tutorials, we can use what we've written to quickly implement a web application that translates MiniLogo programs into drawing instructions for an HTML5 canvas.
