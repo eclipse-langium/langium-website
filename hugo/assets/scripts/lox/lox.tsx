@@ -1,6 +1,5 @@
 import {
     MonacoEditorReactComp,
-    addMonacoStyles,
 } from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React, { createRef, useRef }  from "react";
@@ -8,13 +7,15 @@ import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 import { LoxMessage, exampleCode, syntaxHighlighting } from "./lox-tools";
+import { UserConfig } from "monaco-editor-wrapper"; 
+import { createUserConfig } from "../utils";
 
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
     new URL("", window.location.href).href,
     false
 );
-addMonacoStyles("monaco-editor-styles");
+let userConfig: UserConfig;
 
 interface PreviewProps {
     diagnostics?: Diagnostic[];
@@ -218,15 +219,10 @@ class App extends React.Component<{}, {}> {
                         </div>
                     </div>
                     <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
-                        <MonacoEditorReactComp
+                    <MonacoEditorReactComp
                             ref={this.monacoEditor}
                             onLoad={this.onMonacoLoad}
-                            webworkerUri="../showcase/libs/worker/loxServerWorker.js"
-                            workerName="LS"
-                            workerType="classic"
-                            languageId="lox"
-                            text={code ? code : exampleCode}
-                            syntax={syntaxHighlighting}
+                            userConfig={userConfig}
                             style={style}
                         />
                     </div>
@@ -250,6 +246,12 @@ export async function share(code: string): Promise<void> {
     await navigator.clipboard.writeText(url.toString());
 }
 
-
+userConfig = createUserConfig({
+    languageId: 'lox',
+    code: exampleCode,
+    htmlElement: document.getElementById('root')!,
+    worker: '/showcase/libs/worker/loxServerWorker.js',
+    monarchGrammar: syntaxHighlighting
+});
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(<App />);
