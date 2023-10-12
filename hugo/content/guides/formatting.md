@@ -25,7 +25,7 @@ export const CustomModule: Module<CustomServices, PartialLangiumServices> = {
 
 The entry point for the formatter is the abstract `format(AstNode)` method. The `AbstractFormatter` calls this method for every node of our model.
 To perform custom formatting for every type of node, we will use pattern matching.
-In the following example, we will take a closer look at a formatter for the [domain-model](https://github.com/langium/langium/tree/main/examples/domainmodel) language.
+In the following example, we will take a closer look at a formatter for the [domain-model](https://github.com/eclipse-langium/langium/tree/main/examples/domainmodel) language.
 In particular, we will see how we can format the root of our model (`DomainModel`) and each nested element (`Entity` and `PackageDeclaration`).
 
 To format each node, we use the `getNodeFormatter` method of the `AbstractFormatter`. The resulting generic `NodeFormatter<T extends AstNode>` provides us with methods to select specific parts of a parsed `AstNode` such as properties or keywords.

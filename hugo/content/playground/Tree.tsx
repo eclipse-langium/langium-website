@@ -11,11 +11,16 @@ import { preprocessAstNodeObject, PropertyNode, ValueNode } from "./preprocess";
 import { clsx } from "clsx";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 
+export let treeRoot: ReactDOM.Root;
+
 export function render(root: AstNode, locator: AstNodeLocator) {
   const location = document.getElementById("ast-body")!;
   const data = preprocessAstNodeObject(root, locator);
-  console.log(data)
-  ReactDOM.createRoot(location).render(
+  if (!treeRoot) {
+    // create a fresh root, if not already present
+    treeRoot = ReactDOM.createRoot(location);
+  }
+  treeRoot.render(
     <ul>
       <TreeNode root={data} hidden={false} />
     </ul>

@@ -45,7 +45,7 @@ person Bob
 Hello Bob!
 ```
 
-The file `src/language-server/hello-world.langium` in your newly created project contains your grammar.
+The file `src/language/hello-world.langium` in your newly created project contains your grammar.
 
 ## Explaining the terms
 

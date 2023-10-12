@@ -5,9 +5,11 @@ weight: 7
 
 {{< toc format=html >}}
 
+*Updated on Aug. 2nd, 2023 for usage with monaco-editor-wrapper 2.1.1 & above.*
+
 In this tutorial we'll be talking about how to perform generation in the web by executing a custom LSP command. There are multiple ways to hook into Langium to utilize the generator, such as by directly exporting the generator API. However by using the LSP as is, we can save ourselves the effort of doing additional work. By using an LSP command, we can quickly and easily integrate new functionality into our existing Langium + Monaco integration.
 
-We'll assume that you've already looked over most of the other tutorials at this point. It is particularly important that you have a language with working generation, and have a working instance of Langium + Monaco for your language (or another editor of your choice). In the case that you don't have a language to work with, you can follow along with [MiniLogo](https://github.com/langium/langium-minilogo), which is the example language used throughout these tutorials.
+We'll assume that you've already looked over most of the other tutorials at this point. It is particularly important that you have a language with working generation, and have a working instance of Langium + Monaco for your language (or another editor of your choice). In the case that you don't have a language to work with, you can follow along with [MiniLogo](https://github.com/eclipse-langium/langium-minilogo), which is the example language used throughout these tutorials.
 
 Since we're working with MiniLogo, we already know that our generated output is in the form of drawing instructions that transform some drawing context. The generated output that we've implemented so far consists of a JSON array of commands, making it very easy to interpret. Now that we're working in a web-based context, this approach lends itself naturally towards manipulating an HTML5 canvas.
 
@@ -338,7 +340,7 @@ footer {
 
 At this point, running `npm run build:web && npm run serve` should show Monaco on the left, an empty space on the right (this is the canvas), along with an "Update Canvas" button at the bottom. If you see this, then you can trust that the layout was updated correctly.
 
-We'll also want to go into **setup.js** file, and add a small modification to the end. This change will create a global function on the window, giving us a callback that lets us execute our command to parse and generate data from the current program in Monaco. It's important that this goes into the same file as your Monaco setup code, as it directly interacts with the Monaco language client instance.
+We'll also want to go into **setup.js** file, and add a small modification to the end. This change will create a global function on the window, giving us a callback that lets us execute our command to parse and generate data from the current program in Monaco. It's important that this goes into the same file as your Monaco setup code, as it directly interacts with the Monaco editor language client instance.
 
 ```js
 // modify your previous import to bring in the appropriate monaco-vscode-api version
@@ -348,7 +350,7 @@ import { vscode } from './monaco-editor-wrapper/index.js';
 
 const generateAndDisplay = (async () => {
     console.info('generating & running current code...');
-    const value = client.editor.getValue();
+    const value = client.getEditor()?.getValue()!;
     // parse & generate commands for drawing an image
     // execute custom LSP command, and receive the response
     const minilogoCmds = await vscode.commands.executeCommand('parseAndGenerate', value);
@@ -497,6 +499,8 @@ function evalCmd(cmd, context) {
 
 Lastly, we want to view the page with some output on the canvas when our editor is finished starting, rather than an empty half of the screen to start. We can address this by setting the `generateAndDisplay` function to be called once the editor is finished loading. We can place this anywhere after our `startingPromise` has been created.
 
+*If you don't recall, this promise was returned by the previous call to `client.start({...})` in our last tutorial on Langium + Monaco. If you haven't read that, it would be good to double check it out now*.
+
 ```js
 startingPromise.then(() => {
     generateAndDisplay();
@@ -510,10 +514,13 @@ npm run build:web
 npm run serve
 ```
 
-If all went well, you should see a white diamond sketched out on the canvas when the page loads. If not, double check that you set the `mainCode` that will display in your application on loading in. If you didn't, you can add it like so:
+If all went well, you should see a white diamond sketched out on the canvas when the page loads. If not, double check that you set the `code` value correctly in your `client.start({...})` configuration. To be specific, it's under `editorConfig.code`. If you didn't, you can still add it to the underlying editor directly, assuming you have access to the client wrapper:
 
 ```js
-editorConfig.setMainCode(`
+// where client is an instance of MonacoEditorLanguageClientWrapper
+// retrieve the underlying editor, and set it's value
+// this is implicitly the 'main' code
+client.getEditor()?.setValue(`
 def test() {
     move(100, 0)
     pen(down)

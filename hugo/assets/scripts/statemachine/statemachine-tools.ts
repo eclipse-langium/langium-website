@@ -1,4 +1,3 @@
-import { monaco } from "@typefox/monaco-editor-react/.";
 import { AstNode } from "../langium-utils/langium-ast";
 
 export class StateMachineTools {
@@ -133,50 +132,6 @@ export type StateMachineState = {
         }
     }[]
 };
-
-export const syntaxHighlighting = {
-    keywords: [
-      "actions",
-      "commands",
-      "end",
-      "events",
-      "initialState",
-      "state",
-      "statemachine",
-    ],
-  
-    // The main tokenizer for our languages
-    tokenizer: {
-      root: [
-        // identifiers and keywords
-        [
-          /[a-z_$][\w$]*/,
-          {
-            cases: {
-              "@keywords": "keyword",
-              "@default": "identifier",
-            },
-          },
-        ],
-  
-        // whitespace
-        { include: "@whitespace" },
-      ],
-  
-      comment: [
-        [/[^\/*]+/, "comment"],
-        [/\/\*/, "comment", "@push"], // nested comment
-        ["\\*/", "comment", "@pop"],
-        [/[\/*]/, "comment"],
-      ],
-  
-      whitespace: [
-        [/[ \t\r\n]+/, "white"],
-        [/\/\*/, "comment", "@comment"],
-        [/\/\/.*$/, "comment"],
-      ],
-    },
-  } as monaco.languages.IMonarchLanguage;
   
 export const defaultText = `// Create your own statemachine here!
 statemachine TrafficLight

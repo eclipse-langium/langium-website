@@ -92,7 +92,7 @@ export const LangiumMonarchContent = {
   },
 };
 
-export const LangiumInitialContent = `grammar HelloWorld
+export const HelloWorldGrammar = `grammar HelloWorld
 
 entry Model:
     (persons+=Person | greetings+=Greeting)*;
@@ -110,7 +110,8 @@ hidden terminal ML_COMMENT: /\\/\\*[\\s\\S]*?\\*\\//;
 hidden terminal SL_COMMENT: /\\/\\/[^\\n\\r]*/;
 `;
 
-export const StateMachineInitialContent = `person John
+// hello world program
+export const DSLInitialContent = `person John
 person Jane
 
 Hello John!

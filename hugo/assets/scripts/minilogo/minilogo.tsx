@@ -1,20 +1,18 @@
-import {
-  MonacoEditorReactComp,
-  addMonacoStyles,
-} from "@typefox/monaco-editor-react/bundle";
+import { MonacoEditorReactComp } from "@typefox/monaco-editor-react/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
-import React, { createRef, useEffect, useRef } from "react";
+import React, { createRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
 import { ColorArgs, Command, MoveArgs, examples, syntaxHighlighting } from "./minilogo-tools";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
+import { UserConfig } from "monaco-editor-wrapper"; 
+import { createUserConfig } from "../utils";
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
   new URL("", window.location.href).href,
   false
 );
-addMonacoStyles("monaco-editor-styles");
 
 let shouldAnimate = true;
 
@@ -26,6 +24,8 @@ interface PreviewProps {
 interface DrawCanvasProps {
   commands: Command[];
 }
+
+let userConfig: UserConfig;
 
 class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -301,13 +301,6 @@ class App extends React.Component<{}, AppState> {
       height: "100%",
       width: "100%",
     };
-    const url = new URL(window.location.toString());
-    let code = url.searchParams.get("code");
-    if (code) {
-      code = decompressFromEncodedURIComponent(code);
-    } else {
-      code = examples[this.state.currentExample].code
-    }
 
     return (
       <div className="justify-center self-center flex flex-col md:flex-row h-full w-full">
@@ -328,12 +321,7 @@ class App extends React.Component<{}, AppState> {
             <MonacoEditorReactComp
               ref={this.monacoEditor}
               onLoad={this.onMonacoLoad}
-              webworkerUri="../showcase/libs/worker/minilogoServerWorker.js"
-              workerName="LS"
-              workerType="classic"
-              languageId="minilogo"
-              text={code ? code : examples[this.state.currentExample].code}
-              syntax={syntaxHighlighting}
+              userConfig={userConfig}
               style={style}
             />
           </div>
@@ -357,6 +345,15 @@ export async function share(code: string): Promise<void> {
   await navigator.clipboard.writeText(url.toString());
 }
 
-
+// setup config & render
+const url = new URL(window.location.toString());
+let code = url.searchParams.get("code");
+userConfig = createUserConfig({
+  languageId: 'minilogo',
+  code: code ? decompressFromEncodedURIComponent(code) : examples[0].code,
+  htmlElement: document.getElementById('root')!,
+  worker: '/showcase/libs/worker/minilogoServerWorker.js',
+  monarchGrammar: syntaxHighlighting
+});
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(<App />);

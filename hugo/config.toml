@@ -24,6 +24,9 @@ enableRobotsTXT = true
 
 [build]
   noJSConfigInAssets = true
+  minify = true
+  [build.options]
+    sourceMap = true
 
 [params]
   # (Optional, default 6) Set how many table of contents levels to be showed on page.
@@ -43,7 +46,7 @@ enableRobotsTXT = true
   # It can be either a remote url or a local file path relative to your content directory.
   # geekdocPrivacyPolicy = "https://www.typefox.io/imprint-privacy/#privacy"
 
-  geekdocRepo = "https://github.com/langium/langium-website"
+  geekdocRepo = "https://github.com/eclipse-langium/langium-website"
   geekdocEditPath = "blob/main/hugo/content"
 
   # (Optional, default true) Add an anchor link to headlines.

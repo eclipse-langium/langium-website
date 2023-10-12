@@ -10,35 +10,41 @@ draft: false
 noMain: true
 playground: true
 ---
+<link rel="stylesheet" href="../libs/monaco-editor-react/assets/style.css">
 <link rel="preload" as="script" href="./libs/worker/common.js"/>
 <link rel="preload" as="script" href="./libs/worker/langiumServerWorker.js"/>
 <link rel="preload" as="script" href="./libs/worker/userServerWorker.js"/>
 <script type="module">
   import { MonacoEditorLanguageClientWrapper } from "../libs/monaco-editor-wrapper/index.js";
   import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
-  import { setupPlayground, share, overlay } from "./libs/worker/common.js";
+  import { setupPlayground, share, overlay, getPlaygroundState } from "./libs/worker/common.js";
 
   buildWorkerDefinition(
     "../libs/monaco-editor-workers/workers",
     new URL("", window.location.href).href,
     false
   );
-  
-  // helper function for adding monaco styles with embedded codicon TTF
-  MonacoEditorLanguageClientWrapper.addMonacoStyles("monaco-editor-styles");
-  
-  addEventListener('load', function() {
-    let getState = null; //: () => PlaygroundParameters
 
+  // on doc load
+  addEventListener('load', function() {
+
+    // get a handle to our various interactive buttons
     const copiedHint = document.getElementById('copiedHint');
     const shareButton = document.getElementById('shareButton');
     const grammarRoot = document.getElementById('grammar-root');
     const contentRoot = document.getElementById('content-root');
+
+    // register a listener for the share button
     shareButton.onclick = () => {
-      const parameters = getState();
-      share(parameters.grammar, parameters.content);
+      // retrieve the current playground state (grammar + content/program)
+      const playgroundState = getPlaygroundState();
+      share(playgroundState.grammar, playgroundState.content);
+
+      // update the display to indicate that the text has been shared
       shareButton.src = '/assets/checkmark.svg';
       copiedHint.style.display = 'block';
+
+      // reset again after a second...
       setTimeout(() => {
         shareButton.src = '/assets/share.svg';
         copiedHint.style.display = 'none';
@@ -62,8 +68,7 @@ playground: true
     const grammar = url.searchParams.get('grammar');
     const content = url.searchParams.get('content');
 
-    getState = setupPlayground(
-      (name) => new MonacoEditorLanguageClientWrapper(name),
+    setupPlayground(
       grammarRoot,
       contentRoot,
       grammar,

@@ -2,7 +2,7 @@
 title: "The Grammar Language"
 weight: 100
 ---
-The grammar language describes the syntax and structure of your language. The [Langium grammar language](https://github.com/langium/langium/blob/main/packages/langium/src/grammar/langium-grammar.langium) is implemented using Langium itself and therefore follows the same syntactic rules as any language created with Langium. The grammar language will define the structure of the *abstract syntax tree* (AST) which in Langium is a collection of *TypeScript types* describing the content of a parsed document and organized hierarchically. The individual nodes of the tree are then represented with JavaScript objects at runtime.
+The grammar language describes the syntax and structure of your language. The [Langium grammar language](https://github.com/eclipse-langium/langium/blob/main/packages/langium/src/grammar/langium-grammar.langium) is implemented using Langium itself and therefore follows the same syntactic rules as any language created with Langium. The grammar language will define the structure of the *abstract syntax tree* (AST) which in Langium is a collection of *TypeScript types* describing the content of a parsed document and organized hierarchically. The individual nodes of the tree are then represented with JavaScript objects at runtime.
 
 In the following, we describe the Langium syntax and document structure.
 ## Language Declaration
@@ -168,7 +168,7 @@ will result in an error message since the cross reference resolution will fail b
 
 #### Unassigned Rule Calls
 Parser rules do not necessarily need to create an object, they can also refer to other parser rules which in turn will be responsible for returning the object.
-For example, in the [Arithmetics example](https://github.com/langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium):
+For example, in the [Arithmetics example](https://github.com/eclipse-langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium):
 ```langium
 AbstractDefinition:
 	Definition | DeclaredParameter;
@@ -274,7 +274,7 @@ Please refer to [this blog post](https://www.typefox.io/blog/parsing-expressions
 ### Data Type Rules
 Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and are therefore context-dependent. This allows for more flexible parsing, as they can be interspersed with hidden terminals, such as whitespaces or comments. Contrary to terminal rules, they cannot use *regular expressions* to match a stream of characters, so they have to be composed of keywords, terminal rules or other data type rules.
 
-The following example from the [domain model example](https://github.com/langium/langium/blob/main/examples/domainmodel/src/language-server/domain-model.langium) uses the `QualifiedName` data type rule to enable references to other elements using their fully qualified name.
+The following example from the [domain model example](https://github.com/eclipse-langium/langium/blob/main/examples/domainmodel/src/language-server/domain-model.langium) uses the `QualifiedName` data type rule to enable references to other elements using their fully qualified name.
 ```langium
 QualifiedName returns string:
     ID ('.' ID)*;

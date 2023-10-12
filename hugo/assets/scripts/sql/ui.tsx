@@ -1,7 +1,4 @@
-import {
-  MonacoEditorReactComp,
-  addMonacoStyles,
-} from "@typefox/monaco-editor-react/bundle";
+import { MonacoEditorReactComp } from "./static/libs/monaco-editor-react/monaco-editor-react.js";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -12,14 +9,16 @@ import {
   defaultText,
   syntaxHighlighting,
 } from "./constants";
+import { UserConfig } from "monaco-editor-wrapper";
+import { createUserConfig } from '../utils';
 
 buildWorkerDefinition(
   "../../libs/monaco-editor-workers/workers",
   new URL("", window.location.href).href,
   false
 );
-addMonacoStyles("monaco-editor-styles");
 
+let userConfig: UserConfig;
 
 class App extends React.Component<{}> {
   private monacoEditorLeft: React.RefObject<MonacoEditorReactComp>;
@@ -76,21 +75,16 @@ class App extends React.Component<{}> {
     return (
       <div className="w-full justify-center flex flex-col items-center">
         <MonacoEditorReactComp
+          userConfig={userConfig}
           className="w-1/2 border border-emeraldLangium h-[50vh] min-h-[300px]"
           ref={this.monacoEditorLeft}
           onLoad={() => this.onMonacoLoad(this.monacoEditorLeft)}
-          webworkerUri={"showcase/libs/worker/sqlServerWorker.js"}
-          workerName="LS"
-          workerType="classic"
-          languageId="sql"
-          text={defaultText}
-          syntax={syntaxHighlighting}
           style={style}
         />
         <div className="w-1/2 p-4 text-white overflow-auto">
           <h1 className="text-2xl">Langium/SQL</h1>
           <p className="pt-2">
-            This is a showcase of <a className="text-emeraldLangium" href="https://github.com/langium/langium-sql" target="_blank">Langium/SQL</a>. The editor above
+            This is a showcase of <a className="text-emeraldLangium" href="https://github.com/eclipse-langium/langium-sql" target="_blank">Langium/SQL</a>. The editor above
             is a Monaco editor driven by our SQL language server. The current setup mimics <a className="text-emeraldLangium" href="https://www.mysql.com" target="_blank">MySQL</a>.
           </p>
           <h2 className="text-xl pt-4 underline">Features</h2>
@@ -116,6 +110,15 @@ class App extends React.Component<{}> {
     );
   }
 }
+
+// setup the global config before rendering
+userConfig = createUserConfig({
+  languageId: 'sql',
+  code: defaultText,
+  htmlElement: document.getElementById('root')!,
+  worker: '/showcase/libs/worker/sqlServerWorker.js',
+  monarchGrammar: syntaxHighlighting
+});
 
 const element = document.getElementById("root") as HTMLElement;
 element.className = 'w-full'

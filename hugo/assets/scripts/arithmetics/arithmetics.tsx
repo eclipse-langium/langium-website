@@ -1,27 +1,27 @@
-import {
-    MonacoEditorReactComp,
-    addMonacoStyles,
-} from "@typefox/monaco-editor-react/bundle";
+import { MonacoEditorReactComp } from "./static/libs/monaco-editor-react/monaco-editor-react.js";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast";
 import { Evaluation, examples, syntaxHighlighting } from "./arithmetics-tools";
- 
+import { UserConfig } from "monaco-editor-wrapper"; 
+import { createUserConfig } from "../utils";
+
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
     new URL("", window.location.href).href,
     false
 );
-addMonacoStyles("monaco-editor-styles");
-
 
 interface PreviewProps {
     evaluations?: Evaluation[];
     diagnostics?: Diagnostic[];
     focusLine: (line: number) => void;
-
 }
+
+let userConfig: UserConfig;
+
+
 class Preview extends React.Component<PreviewProps, PreviewProps> {
     constructor(props: PreviewProps) {
         super(props);
@@ -143,7 +143,7 @@ class App extends React.Component<{}, AppState> {
 
     setExample(index: number) {
         this.setState({ exampleIndex: index });
-        this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setValue(examples[this.state.exampleIndex]);
+        this.monacoEditor.current?.getEditorWrapper()?.getEditor()?.setValue(examples[index]);
     }
 
     render() {
@@ -166,12 +166,7 @@ class App extends React.Component<{}, AppState> {
                         <MonacoEditorReactComp
                             ref={this.monacoEditor}
                             onLoad={this.onMonacoLoad}
-                            webworkerUri="../showcase/libs/worker/arithmeticsServerWorker.js"
-                            workerName="LS"
-                            workerType="classic"
-                            languageId="arithmetics"
-                            text={examples[this.state.exampleIndex]}
-                            syntax={syntaxHighlighting}
+                            userConfig={userConfig}
                             style={style}
                         />
                     </div>
@@ -193,5 +188,13 @@ class App extends React.Component<{}, AppState> {
     }
 }
 
+// setup config & render
+userConfig = createUserConfig({
+    languageId: 'arithmetics',
+    code: examples[0],
+    htmlElement: document.getElementById('root')!,
+    worker: '/showcase/libs/worker/arithmeticsServerWorker.js',
+    monarchGrammar: syntaxHighlighting
+});
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(<App />);

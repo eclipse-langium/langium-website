@@ -39,10 +39,11 @@ export class HelloWorldWorkspaceManager extends DefaultWorkspaceManager {
         this.documentFactory = services.workspace.LangiumDocumentFactory;
     }
 
-    protected async loadAdditionalDocuments(
+    protected override async loadAdditionalDocuments(
         folders: WorkspaceFolder[],
         collector: (document: LangiumDocument<AstNode>) => void
     ): Promise<void> {
+        await super.loadAdditionalDocuments(folders, collector);
         // Load our library using the `builtin` URI schema
         collector(this.documentFactory.fromString(builtinHelloWorld, URI.parse('builtin:///library.hello')));
     }
@@ -53,7 +54,9 @@ As a last step, we have to bind our newly created workspace manager:
 
 ```ts
 // Add this to the `hello-world-module.ts` included in the yeoman generated project
-export const HelloWorldSharedModule: Module<HelloWorldSharedServices, DeepPartial<LangiumSharedServices>> = {
+export type HelloWorldSharedServices = LangiumSharedServices;
+
+export const HelloWorldSharedModule: Module<HelloWorldSharedServices, DeepPartial<HelloWorldSharedServices>> = {
     workspace: {
         WorkspaceManager: (services) => new HelloWorldWorkspaceManager(services)
     }
@@ -108,7 +111,7 @@ export class DslLibraryFileSystemProvider implements vscode.FileSystemProvider {
         return {
             ctime: date,
             mtime: date,
-            size: builtinHelloWorld.length,
+            size: Buffer.from(builtinHelloWorld).length,
             type: vscode.FileType.File
         };
     }
