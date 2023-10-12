@@ -36,7 +36,14 @@ export default function D3Tree({ data }: TreeProps) {
       return amount;
     };
 
-    const size = getChildSize(data);
+    // increase the size of the svg to fit the tree
+    let size = getChildSize(data);
+    console.log(size);
+    if(size === 0) return;
+    if(size < 10) {
+      size = 10;
+    }
+
     const height = size * 20;
     const width = size * 18;
 
