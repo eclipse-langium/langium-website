@@ -5,22 +5,23 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "watch": "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch --workspace hugo\" \"npm run watch --workspace tailwind\"",
-    "watch:gitpod": "concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
-    "build": "npm run clean && npm run build --workspace=tailwind --workspace=hugo",
-    "clean": "shx rm -rf public && npm run clean --workspace=tailwind"
+    "watch": "npm run build --workspace foundation && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch --workspace hugo\" \"npm run watch --workspace tailwind\"",
+    "watch:gitpod": "npm run build --workspace foundation && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
+    "build": "npm run clean && npm run build --workspace foundation --workspace=tailwind --workspace=hugo",
+    "clean": "shx rm -rf public && npm run clean --workspace foundation --workspace=tailwind"
   },
   "devDependencies": {
-    "concurrently": "~7.6.0",
+    "concurrently": "~8.2.1",
     "cross-env": "~7.0.3",
     "shx": "~0.3.4"
   },
   "workspaces": [
+    "foundation",
     "hugo",
     "tailwind"
   ],
   "volta": {
-    "node": "18.17.0",
-    "npm": "9.6.7"
+    "node": "18.18.1",
+    "npm": "9.9.0"
   }
 }

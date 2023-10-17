@@ -6,12 +6,9 @@
   "private": true,
   "scripts": {
     "clean:static": "shx rm -rf ./static/showcase ./static/playground ./static/libs",
-    "copy:libs:prepare": "shx mkdir -p ./static/libs/monaco-editor-workers/workers",
-    "copy:monaco-editor-wrapper": "npm run copy:libs:prepare && shx cp -fr ../node_modules/monaco-editor-wrapper/bundle ./static/libs/monaco-editor-wrapper",
+    "copy:libs:prepare": "shx mkdir -p ./static/libs/monaco-editor-workers/workers && shx mkdir -p ./static/libs/langium-website-foundation",
     "copy:monaco-workers": "npm run copy:libs:prepare && shx cp -f ../node_modules/monaco-editor-workers/dist/index.* ./static/libs/monaco-editor-workers && shx cp -f ../node_modules/monaco-editor-workers/dist/workers/editorWorker-iife.js ./static/libs/monaco-editor-workers/workers",
     "build:worker/statemachine": "esbuild ../node_modules/langium-statemachine-dsl/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/statemachineServerWorker.js",
-    "vite:build:worker/statemachine": "vite --config  vite.showcase-worker.ts build",
-    "build:worker/monaco-editor-react": "vite --config  vite.bundle-monaco-editor-react.ts build",
     "build:worker/arithmetics": "esbuild ../node_modules/langium-arithmetics-dsl/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/arithmeticsServerWorker.js",
     "build:worker/domainmodel": "esbuild ../node_modules/langium-domainmodel-dsl/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/domainmodelServerWorker.js",
     "build:worker/playground-langium": "esbuild ./content/playground/langium-worker.ts --bundle --format=iife --outfile=./static/playground/libs/worker/langiumServerWorker.js",
@@ -19,25 +16,24 @@
     "build:worker/playground-common": "esbuild ./content/playground/common.ts --bundle --format=esm --outfile=./static/playground/libs/worker/common.js",
     "build:worker/sql": "esbuild ./assets/scripts/sql/language-server.ts --bundle --format=iife --outfile=./static/showcase/libs/worker/sqlServerWorker.js",
     "build:worker/minilogo": "esbuild ../node_modules/langium-minilogo/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/minilogoServerWorker.js",
-    "build:static": "npm run clean:static && npm run build:worker/monaco-editor-react && npm run build:worker/statemachine && npm run build:worker/domainmodel && npm run build:worker/sql && npm run build:worker/minilogo && npm run build:worker/arithmetics && npm run build:worker/playground-common && npm run build:worker/playground-langium && npm run build:worker/playground-user && npm run copy:monaco-editor-wrapper && npm run copy:monaco-workers",
+    "build:static": "npm run clean:static && npm run build:worker/statemachine && npm run build:worker/domainmodel && npm run build:worker/sql && npm run build:worker/minilogo && npm run build:worker/arithmetics && npm run build:worker/playground-common && npm run build:worker/playground-langium && npm run build:worker/playground-user && npm run copy:monaco-workers",
     "build": "npm run build:static && cross-env NODE_ENV=production  hugo        --config ./config.toml    -b /              -d ../public --gc --minify    ",
     "watch": "npm run build:static && cross-env NODE_ENV=development hugo server --config ./config.toml -D -b localhost:1313 -d ../public --appendPort=false",
     "watch:gitpod": "npm run build:static && cross-env NODE_ENV=development hugo server --config ./config.toml -D -b `gp url 1313` -d ../public --appendPort=false"
   },
   "devDependencies": {
-    "@rollup/plugin-inject": "^5.0.2",
+    "@rollup/plugin-inject": "~5.0.4",
     "@types/lz-string": "^1.3.34",
     "@types/mustache": "^4.2.1",
-    "@types/react": "^18.0.25",
-    "@types/react-dom": "^18.0.9",
-    "esbuild": "^0.15.7"
+    "@types/react": "~18.2.28",
+    "@types/react-dom": "~18.2.13",
+    "esbuild": "~0.19.4"
   },
   "dependencies": {
     "@babel/cli": "~7.19.3",
     "@babel/core": "~7.20.5",
     "@babel/preset-react": "~7.18.6",
     "@babel/preset-typescript": "~7.18.6",
-    "@typefox/monaco-editor-react": "1.1.1",
     "@types/d3": "^7.4.0",
     "clsx": "^1.2.1",
     "d3": "^7.8.5",
@@ -48,16 +44,15 @@
     "langium-minilogo": "^1.2.0",
     "langium-sql": "^0.2.3",
     "langium-statemachine-dsl": "~1.2.0",
+    "langium-website-foundation": "~1.0.0",
     "lz-string": "^1.4.4",
-    "monaco-editor-workers": "0.39.0",
-    "path-browserify": "~1.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "vite": "~4.3.9",
-    "vscode-languageserver": "8.0.2"
+    "monaco-editor-workers": "~0.44.0",
+    "react": "~18.2.0",
+    "react-dom": "~18.2.0",
+    "vscode-languageserver": "~8.0.2"
   },
   "volta": {
-    "node": "18.16.0",
-    "npm": "9.6.6"
+    "node": "18.18.1",
+    "npm": "9.9.0"
   }
 }

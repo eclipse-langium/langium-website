@@ -1,4 +1,4 @@
-import { monaco } from "monaco-editor-wrapper/.";
+import { monaco } from "langium-website-foundation/bundle";
 
 export interface Command {
     name: 'penUp' | 'penDown' | 'move' | 'color';

@@ -15,10 +15,11 @@ import { Disposable } from "vscode-languageserver";
 import { DefaultAstNodeLocator, createServicesForGrammar } from "langium";
 import { render } from './Tree';
 import { overlay, throttle } from "./utils";
-import { createUserConfig } from "../../assets/scripts/utils";
-export { share, overlay } from './utils'
-import { MonacoEditorLanguageClientWrapper } from "monaco-editor-wrapper/bundle";
-import { DocumentChangeResponse, LangiumAST } from "../../assets/scripts/langium-utils/langium-ast";
+import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-foundation/bundle";
+import { DocumentChangeResponse } from "../../assets/scripts/langium-utils/langium-ast";
+
+export { share, overlay } from './utils';
+export { addMonacoStyles, MonacoEditorLanguageClientWrapper };
 
 export interface PlaygroundParameters {
   grammar: string;
@@ -182,7 +183,7 @@ export async function setupPlayground(
 
       // Setup failed, attempt to teardown resources piece by piece, before throwing an error
       dslWrapper?.getEditor()?.dispose();
-      dslWrapper?.disposeLanguageClient();
+      dslWrapper?.getLanguageClient()?.dispose();
       dslWrapper = undefined;
       // clean up the UI, so the old editor is visually removed (tends to linger otherwise)
       rightEditor.innerHTML = '';
@@ -225,12 +226,11 @@ async function getFreshDSLWrapper(
   const worker = await getLSWorkerForGrammar(grammarText);
   const wrapper = new MonacoEditorLanguageClientWrapper();
   return wrapper.start(createUserConfig({
-    htmlElement,
     languageId,
     code,
     worker,
     monarchGrammar: generateMonarch(Grammar, languageId)
-  })).then(() => {
+  }), htmlElement).then(() => {
     return wrapper;
   }).catch((e) => {
     console.error('Failed to start DSL wrapper: ' + e);
@@ -250,12 +250,11 @@ async function getFreshDSLWrapper(
 async function getFreshLangiumWrapper(htmlElement: HTMLElement): Promise<MonacoEditorLanguageClientWrapper> {
   const langiumWrapper = new MonacoEditorLanguageClientWrapper();
   await langiumWrapper.start(createUserConfig({
-    htmlElement,
     languageId: "langium",
     code: currentGrammarContent,
     worker: "/playground/libs/worker/langiumServerWorker.js",
     monarchGrammar: LangiumMonarchContent
-  }));
+  }), htmlElement);
   return langiumWrapper;
 }
 

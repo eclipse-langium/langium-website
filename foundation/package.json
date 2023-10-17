@@ -1,0 +1,67 @@
+{
+  "name": "langium-website-foundation",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Bundling complex sources for hugo",
+  "author": "TypeFox",
+  "license": "MIT",
+  "private": true,  
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./bundle": {
+      "types": "./dist/index.d.ts",
+      "default": "./bundle/monaco-editor-wrapper-bundle/index.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "dist/index"
+      ],
+      "bundle": [
+        "dist/index"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "bundle",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "shx rm -rf ./bundle ./dist",
+    "compile": "tsc",
+    "build:bundle": "vite --config vite.bundle.ts build",
+    "build": "npm run clean && npm run compile && npm run build:bundle"
+  },
+  "devDependencies": {
+    "@types/react": "~18.2.28",
+    "@types/react-dom": "~18.2.13",
+    "@types/vscode": "~1.83.0",
+    "typescript": "~5.2.2",
+    "vite": "~4.4.11"
+  },
+  "dependencies": {
+    "@codingame/monaco-vscode-keybindings-service-override": "~1.83.2",
+    "@typefox/monaco-editor-react": "2.3.0",
+    "monaco-editor": "~0.44.0",
+    "monaco-editor-workers": "~0.44.0",
+    "monaco-editor-wrapper": "~3.3.0",
+    "monaco-languageclient": "~6.6.0",
+    "react": "~18.2.0",
+    "react-dom": "~18.2.0",
+    "vscode": "npm:@codingame/monaco-vscode-api@>=1.83.2 <1.84.0",
+    "vscode-languageserver": "~8.0.2"
+  },
+  "volta": {
+    "node": "18.18.1",
+    "npm": "9.9.0"
+  }
+}

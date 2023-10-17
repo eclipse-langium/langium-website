@@ -1,11 +1,11 @@
-import { MonacoEditorReactComp } from "./static/libs/monaco-editor-react/monaco-editor-react.js";
+import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } from "langium-website-foundation/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast";
 import { Evaluation, examples, syntaxHighlighting } from "./arithmetics-tools";
-import { UserConfig } from "monaco-editor-wrapper"; 
-import { createUserConfig } from "../utils";
+
+addMonacoStyles('monaco-styles-helper');
 
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
