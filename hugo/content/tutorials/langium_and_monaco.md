@@ -24,7 +24,7 @@ Once you have a language picked, you're going to want to add a script to your **
 ```json
 {
     ...
-    "build:worker": "esbuild --minify ./out/language-server/main.js --bundle --format=iife --outfile=./public/minilogo-server-worker.js"
+    "build:worker": "esbuild --minify ./out/language/main.js --bundle --format=iife --outfile=./public/minilogo-server-worker.js"
 }
 ```
 
@@ -36,7 +36,7 @@ This makes sense since we're bundling for the web, and we can't depend on packag
 
 ## Factoring out File System Dependencies
 
-First off, let's create a new entry point for our language server in **src/language-server/main-browser.ts**. This will mirror the regular entry point that we use to build already, but will allow us to target a web-based context instead. In this file, we'll have the following contents:
+First off, let's create a new entry point for our language server in **src/language/main-browser.ts**. This will mirror the regular entry point that we use to build already, but will allow us to target a web-based context instead. In this file, we'll have the following contents:
 
 ```ts
 import { startLanguageServer, EmptyFileSystem } from 'langium';
@@ -78,7 +78,7 @@ Going back to the script we wrote before in our **package.json**, we're now read
 ```json
 {
     ...
-    "build:worker": "esbuild --minify ./out/language-server/main-browser.js --bundle --format=iife --outfile=./public/minilogo-server-worker.js"
+    "build:worker": "esbuild --minify ./out/language/main-browser.js --bundle --format=iife --outfile=./public/minilogo-server-worker.js"
 }
 ```
 

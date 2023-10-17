@@ -65,8 +65,8 @@ Once we have this function in place, we can create our `parseAndGenerate` functi
 
 ```ts
 import { EmptyFileSystem } from "langium";
-import { createHelloWorldServices } from '../language-server/hello-world-module';
-import { Model } from "../language-server/generated/ast";
+import { createHelloWorldServices } from '../language/hello-world-module';
+import { Model } from "../language/generated/ast";
 import { generateCommands } from '../generator/generator';
 
 /**
@@ -134,7 +134,7 @@ Now the generator is cleanly separated from our CLI, and thus from our file syst
 
 ## Adding a Custom LSP Command Handler to Langium
 
-To add a custom command handler, start by modifying the existing module file for our language. For MiniLogo, this is located in **src/language-server/minilogo-module.ts**. In this file we can add our custom command handler as a special class:
+To add a custom command handler, start by modifying the existing module file for our language. For MiniLogo, this is located in **src/language/minilogo-module.ts**. In this file we can add our custom command handler as a special class:
 
 ```typescript
 import { AbstractExecuteCommandHandler, ExecuteCommandAcceptor } from 'langium';

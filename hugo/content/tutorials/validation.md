@@ -21,7 +21,7 @@ In this example we're going to *disallow* names that are non-unique for definiti
 
 ## The Validation Registry
 
-In order to express these constraints, we need to modify our language's **validator**. By default, this can be found in **src/language-server/YOUR-LANGUAGE-validator.ts**; with a name that corresponds to your language. This file begins with a validation registry that extends the default validation registry. The validation registry allows us to register validation checks for our language.
+In order to express these constraints, we need to modify our language's **validator**. By default, this can be found in **src/language/YOUR-LANGUAGE-validator.ts**; with a name that corresponds to your language. This file begins with a validation registry that extends the default validation registry. The validation registry allows us to register validation checks for our language.
 
 The constructor for the registry is of particular interest, as it allows associating validation functions with *specific* nodes in your AST. Here you can see an example of the constructor below for the default hello world language from the yeoman generator.
 
@@ -60,7 +60,7 @@ With this in mind, we can look back at our grammar that we've written for MiniLo
 - Validate that definitions have unique names in a Model
 - Validate that arguments have unique names in a Definition
 
-In order to perform a validation, we need to know the type of that node to validate. Beyond checking our grammar to find this, we can also check the semantic model (akin to the abstract syntax) of our language. This was generated while running `npm run langium:generate`, and is located in **src/language-server/generated/ast.ts**. Peeking into this model, we can see that our rule for `Model` was written like so:
+In order to perform a validation, we need to know the type of that node to validate. Beyond checking our grammar to find this, we can also check the semantic model (akin to the abstract syntax) of our language. This was generated while running `npm run langium:generate`, and is located in **src/language/generated/ast.ts**. Peeking into this model, we can see that our rule for `Model` was written like so:
 
 ```langium
 entry Model: (stmts+=Stmt | defs+=Def)*;

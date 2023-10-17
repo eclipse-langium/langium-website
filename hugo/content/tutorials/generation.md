@@ -17,7 +17,7 @@ To write the generator, we're going to work in the **src/cli/generator.ts** file
 
 ```ts
 // import the 'Model' type from our semantic model
-import { Model } from '../language-server/generated/ast.ts';
+import { Model } from '../language/generated/ast.ts';
 
 export function generateCommands(mode: Model, filePath: string, destination: string | undefined): string {
     // ...
@@ -84,7 +84,7 @@ Now, let's expand on `generateStatements`. From our grammar, there are 5 types o
 We we want to expand our function to handle each of these cases. This is easy to do using some special `isTYPE` functions made available from our semantic model. These are automatically generated from our grammar, and allow us to verify the type of a node from our AST at runtime.
 
 ```ts
-import { isPen, isMove, isMacro, isFor, isColor } from '../language-server/generated/ast';
+import { isPen, isMove, isMacro, isFor, isColor } from '../language/generated/ast';
 
 ...
 

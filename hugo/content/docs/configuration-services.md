@@ -21,7 +21,7 @@ The *language specific services* are services specific to one Langium language a
 * Utility services (e.g. `References`, `JsonSerializer`)
 
 ## Customization
-If you have used the [Yeoman generator](https://www.npmjs.com/package/generator-langium), the entry point to services customization is found in the `src/language-server/...-module.ts` file, where '...' is the name of your language. There you can register new services or override the default implementations of services. Langium implements the *Inversion of Control* principle via the *Dependency Injection* pattern, which promotes loosely-coupled architectures, maintainability, and extensibility.
+If you have used the [Yeoman generator](https://www.npmjs.com/package/generator-langium), the entry point to services customization is found in the `src/language/...-module.ts` file, where '...' is the name of your language. There you can register new services or override the default implementations of services. Langium implements the *Inversion of Control* principle via the *Dependency Injection* pattern, which promotes loosely-coupled architectures, maintainability, and extensibility.
 
 For the following sections, we will use the [arithmetics example](https://github.com/eclipse-langium/langium/tree/main/examples/arithmetics) to describe the procedure for replacing or adding services. Note that all names prefixed with *Arithmetics* should be understood as being specific to the language named *Arithmetics*, and in your project those services' names will be prefixed with your own language name.
 
