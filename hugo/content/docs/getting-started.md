@@ -75,7 +75,7 @@ Here's the grammar that parses the previous text snippet:
 grammar HelloWorld
 
 hidden terminal WS: /\s+/;
-terminal ID: /[_a-zA-Z][\w_]*/;
+terminal ID: /[_a-zA-Z][\w]*/;
 
 entry Model: (persons+=Person | greetings+=Greeting)*;
 
