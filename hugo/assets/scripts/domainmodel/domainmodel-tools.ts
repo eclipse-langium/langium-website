@@ -5,20 +5,29 @@ import { TreeNode } from "./d3tree";
 
 export function getTreeNode(ast: AstNode): TreeNode {
     const astNode = getDomainModelAst(ast as DomainModelAstNode);
-    
-    // create a TreeNode from all PackageDeclarations in the ast
-    const packageDeclarations = astNode.packageDeclarations.map(p => {
-        return {
-            ...p,
-            children: p.elements
-        } as TreeNode;
-    });
-
     // create a TreeNode a DataType
     const getDataTypeTreeNode = (d: DataType): TreeNode => {
         return {
             ...d,
             children: []
+        }
+    }
+
+    // create a TreeNode from a PackageDeclaration
+    const getPackageDeclarationTreeNode = (p: PackageDeclaration): TreeNode => {
+        return {
+            ...p,
+            children: p.elements.map(e => getTreeNode(e))
+        }
+    }
+
+    // create a TreeNode from any DomainModelElement
+    const getTreeNode = (e: DomainModelElement): TreeNode => {
+        switch(e.$type) {
+            case 'DataType': return getDataTypeTreeNode(e as DataType);
+            case 'Entity': return getEntityTreeNode(e as Entity);
+            case 'PackageDeclaration': return getPackageDeclarationTreeNode(e as PackageDeclaration);
+            default: return e as TreeNode;
         }
     }
 
@@ -58,16 +67,28 @@ export function getTreeNode(ast: AstNode): TreeNode {
 
     // create a TreeNode from all Entities in the ast
     const entities = astNode.entities.flatMap(e => getEntityTreeNode(e));
-
     // create a TreeNode from all DataTypes in the ast
     const datatypes = astNode.dataTypes.map(d => getDataTypeTreeNode(d));
-  
-    // combine them all to a single TreeNode
-    const children: TreeNode[] = [
-        {name: 'DataTypes', $type: 'DataType', children: datatypes},
-        {name: 'Entities', $type: 'Entity', children: entities},
-        {name: 'Packages', $type: 'PackageDeclaration', children: packageDeclarations},
-    ];
+    // create a TreeNode from all PackageDeclarations in the ast
+    const packageDeclarations = astNode.packageDeclarations.map(p => getPackageDeclarationTreeNode(p));
+
+    const children: TreeNode[] = [];
+
+    // if datatypes exist, add them to the children
+    if(datatypes.length > 0) {
+        children.push({ name: 'DataTypes', $type: 'DataType', children: datatypes });
+    }
+
+    // if entities exist, add them to the children
+    if(entities.length > 0) {
+        children.push({name: 'Entities', $type: 'Entity', children: entities});
+    }
+
+    // if packageDeclarations exist, add them to the children
+    if(packageDeclarations.length > 0) {
+        children.push({name: 'Packages', $type: 'PackageDeclaration', children: packageDeclarations});
+    }
+
     
     // return the root TreeNode
     return {
@@ -103,7 +124,7 @@ export interface DomainModelAstNode extends AstNode, DomainModelElement {
 
 export interface PackageDeclaration extends DomainModelElement  {
     $type: 'PackageDeclaration';
-    elements: DataType[];
+    elements: DomainModelElementType[];
 }
 
 export interface Entity extends DomainModelElement  {
