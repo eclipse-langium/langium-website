@@ -210,6 +210,10 @@ h4 {
     font-size: 1.125rem;
 }
 
+.gdoc-markdown pre code {
+    overflow-x: scroll;
+}
+
 .gdoc_heart {
     margin-left: 5px;
 }
