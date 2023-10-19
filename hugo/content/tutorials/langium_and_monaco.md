@@ -89,7 +89,7 @@ For convenience, we're going to use the Monaco Editor Wrapper (MER) to wrap arou
 - [Monaco Editor Wrapper](https://www.npmjs.com/package/monaco-editor-wrapper) version **3.1.0**
 - [monaco-editor-workers](https://www.npmjs.com/package/monaco-editor-workers) version **0.39.0**
 
-Both these packages should be installed as dependencies for your language. In particular, this guide will assume that you're using version **2.1.1** or later of the monaco-editor-wrapper package, and version **0.39.0** of the monaco-editor-workers package.
+Both these packages should be installed as dependencies for your language. In particular, this guide will assume that you're using version **3.1.0** or later of the monaco-editor-wrapper package, and version **0.39.0** of the monaco-editor-workers package.
 
 Additionally, we'll want a way to serve this bundled language server. The choice of how you want to go about this is ultimately up to you. Previously we've recommended `express` as a development dependency (don't forget to also add `@types/express` too), as a powerful & lightweight NodeJS server framework. However, we'll be going with the built-in NodeJS support for standing up a web-server; however again the choice is yours here.
 
@@ -133,9 +133,21 @@ import shell from 'shelljs'
 
 // copy workers to public
 shell.mkdir('-p', './public/monaco-editor-workers/workers');
-shell.cp('-fr', './node_modules/monaco-editor-workers/dist/index.js', './public/monaco-editor-workers/index.js');
-shell.cp('-fr', './node_modules/monaco-editor-workers/dist/workers/editorWorker-es.js', './public/monaco-editor-workers/workers/editorWorker-es.js');
-shell.cp('-fr', './node_modules/monaco-editor-workers/dist/workers/editorWorker-iife.js', './public/monaco-editor-workers/workers/editorWorker-iife.js');
+shell.cp(
+    '-fr',
+    './node_modules/monaco-editor-workers/dist/index.js',
+    './public/monaco-editor-workers/index.js'
+);
+shell.cp(
+    '-fr',
+    './node_modules/monaco-editor-workers/dist/workers/editorWorker-es.js',
+    './public/monaco-editor-workers/workers/editorWorker-es.js'
+);
+shell.cp(
+    '-fr',
+    './node_modules/monaco-editor-workers/dist/workers/editorWorker-iife.js',
+    './public/monaco-editor-workers/workers/editorWorker-iife.js'
+);
 ```
 
 This saves us from writing these extra details into our package json, and focusing on the overall goal each step.
@@ -298,7 +310,7 @@ import { buildWorkerDefinition } from "monaco-editor-workers";
 import { addMonacoStyles } from 'monaco-editor-wrapper/styles';
 
 /**
- * Prepare to setup the wrapper, building the worker def & setting up styles
+ * Setup Monaco's own workers and also incorporate the necessary styles for the monaco-editor
  */
 function setup() {
     buildWorkerDefinition(
@@ -429,7 +441,7 @@ Lastly, let's setup the user config, which will be used to startup the wrapper.
 type WorkerUrl = string;
 
 /**
- * Generalized configuration used with 'getMonacoEditorReactConfig' to generate a working configuration for monaco-editor-react
+ * Classic configuration for the monaco editor (for use with a Monarch grammar)
  */
 interface ClassicConfig {
     code: string,
@@ -440,9 +452,9 @@ interface ClassicConfig {
 }
 
 /**
- * Generates a UserConfig for a given Langium example, which is then passed to the monaco-editor-react component
+ * Generates a valid UserConfig for a given Langium example
  * 
- * @param config A VSCode API or classic editor config to generate a UserConfig from
+ * @param config An extended or classic editor config to generate a UserConfig from
  * @returns A completed UserConfig
  */
 function createUserConfig(config: ClassicConfig): UserConfig {
@@ -457,7 +469,6 @@ function createUserConfig(config: ClassicConfig): UserConfig {
                 $type: 'classic',
                 languageId: id,
                 useDiffEditor: false,
-                automaticLayout: true,
                 code: config.code,
                 theme: 'vs-dark',
                 languageDef: config.monarchGrammar
@@ -483,7 +494,7 @@ function createUserConfig(config: ClassicConfig): UserConfig {
 }
 ```
 
-This particular UserConfig will be for configuring a classic editor, rather than a VSCode API editor. This is because we're using a Monarch grammar, which is not supported by the VSCode API. However, if we wanted to use a TextMate grammar, we could use the VSCode API type instead.
+This particular UserConfig will be for configuring a classic editor, rather than a VSCode extension-based editor. This is because we're using a Monarch grammar, which is not supported by the extension configuration. However, if we wanted to use a TextMate grammar, we could use the extension based configuration instead.
 
 ```json
 editorAppConfig: {

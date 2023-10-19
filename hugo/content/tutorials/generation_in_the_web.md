@@ -115,7 +115,7 @@ Now this works, but when do we receive notifications, and how often? Well a good
 
 ```ts
 let running = false;
-let timeout: NodeJS.Timeout | null = null;
+let timeout: number | null = null;
 
 function onDocumentChange(resp: any) {
     // block until we're finished with a given run
@@ -128,7 +128,7 @@ function onDocumentChange(resp: any) {
         clearTimeout(timeout);
     }
 
-    timeout = setTimeout(async () => {
+    timeout = window.setTimeout(async () => {
         running = true;
         let commands = JSON.parse(resp.content).$commands;
         await updateMiniLogoCanvas(commands);
