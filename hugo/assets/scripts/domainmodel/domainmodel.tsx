@@ -1,13 +1,13 @@
-import { MonacoEditorReactComp } from "@typefox/monaco-editor-react/bundle";
+import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } from "langium-website-core/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
 import { DomainModelAstNode, example, getTreeNode, syntaxHighlighting } from "./domainmodel-tools";
-import { UserConfig } from "monaco-editor-wrapper"; 
-import { createUserConfig } from "../utils";
 import D3Tree from "./d3tree";
- 
+
+addMonacoStyles('monaco-styles-helper');
+
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
     new URL("", window.location.href).href,
