@@ -1,4 +1,4 @@
-import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } from "langium-website-foundation/bundle";
+import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } from "langium-website-core/bundle";
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React, { createRef } from "react";
 import { createRoot } from "react-dom/client";

@@ -1,4 +1,4 @@
-import { monaco } from "langium-website-foundation/bundle";
+import { monaco } from "langium-website-core/bundle";
 import { Pos } from "../langium-utils/langium-ast";
 
 export interface Evaluation {

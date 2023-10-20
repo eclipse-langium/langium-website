@@ -1,5 +1,5 @@
 {
-  "name": "langium-website-foundation",
+  "name": "langium-website-core",
   "version": "1.0.0",
   "type": "module",
   "description": "Bundling complex sources for hugo",

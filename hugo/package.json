@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "clean:static": "shx rm -rf ./static/showcase ./static/playground ./static/libs",
-    "copy:libs:prepare": "shx mkdir -p ./static/libs/monaco-editor-workers/workers && shx mkdir -p ./static/libs/langium-website-foundation",
+    "copy:libs:prepare": "shx mkdir -p ./static/libs/monaco-editor-workers/workers",
     "copy:monaco-workers": "npm run copy:libs:prepare && shx cp -f ../node_modules/monaco-editor-workers/dist/index.* ./static/libs/monaco-editor-workers && shx cp -f ../node_modules/monaco-editor-workers/dist/workers/editorWorker-iife.js ./static/libs/monaco-editor-workers/workers",
     "build:worker/statemachine": "esbuild ../node_modules/langium-statemachine-dsl/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/statemachineServerWorker.js",
     "build:worker/arithmetics": "esbuild ../node_modules/langium-arithmetics-dsl/out/language-server/main-browser.js --bundle --format=iife --outfile=./static/showcase/libs/worker/arithmeticsServerWorker.js",
@@ -44,7 +44,7 @@
     "langium-minilogo": "^1.2.0",
     "langium-sql": "^0.2.3",
     "langium-statemachine-dsl": "~1.2.0",
-    "langium-website-foundation": "~1.0.0",
+    "langium-website-core": "~1.0.0",
     "lz-string": "^1.4.4",
     "monaco-editor-workers": "~0.44.0",
     "react": "~18.2.0",

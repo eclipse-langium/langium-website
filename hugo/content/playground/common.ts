@@ -15,7 +15,7 @@ import { Disposable } from "vscode-languageserver";
 import { DefaultAstNodeLocator, createServicesForGrammar } from "langium";
 import { render } from './Tree';
 import { overlay, throttle } from "./utils";
-import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-foundation/bundle";
+import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
 import { DocumentChangeResponse } from "../../assets/scripts/langium-utils/langium-ast";
 
 export { share, overlay } from './utils';
@@ -34,6 +34,7 @@ let currentGrammarContent = '';
 /**
  * Current DSL program in the playground
  */
+
 let currentDSLContent = '';
 
 /**
