@@ -1,4 +1,4 @@
-import { monaco } from "@typefox/monaco-editor-react/.";
+import { monaco } from "langium-website-core/bundle";
 
 export const syntaxHighlighting: monaco.languages.IMonarchLanguage = {
   tokenizer: {

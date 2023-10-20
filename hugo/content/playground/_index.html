@@ -10,14 +10,14 @@ draft: false
 noMain: true
 playground: true
 ---
-<link rel="stylesheet" href="../libs/monaco-editor-react/assets/style.css">
 <link rel="preload" as="script" href="./libs/worker/common.js"/>
 <link rel="preload" as="script" href="./libs/worker/langiumServerWorker.js"/>
 <link rel="preload" as="script" href="./libs/worker/userServerWorker.js"/>
 <script type="module">
-  import { MonacoEditorLanguageClientWrapper } from "../libs/monaco-editor-wrapper/index.js";
+    import { addMonacoStyles, setupPlayground, share, overlay, getPlaygroundState, MonacoEditorLanguageClientWrapper } from "./libs/worker/common.js";
   import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
-  import { setupPlayground, share, overlay, getPlaygroundState } from "./libs/worker/common.js";
+
+  addMonacoStyles('monaco-styles-helper');
 
   buildWorkerDefinition(
     "../libs/monaco-editor-workers/workers",
