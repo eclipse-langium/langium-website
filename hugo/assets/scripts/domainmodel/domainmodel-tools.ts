@@ -3,7 +3,7 @@ import { AstNode } from "../langium-utils/langium-ast";
 import { TreeNode } from "./d3tree";
 
 
-export function getTreeNode(ast: AstNode): TreeNode {
+export function getMainTreeNode(ast: AstNode): TreeNode {
     const astNode = getDomainModelAst(ast as DomainModelAstNode);
     // create a TreeNode a DataType
     const getDataTypeTreeNode = (d: DataType): TreeNode => {
