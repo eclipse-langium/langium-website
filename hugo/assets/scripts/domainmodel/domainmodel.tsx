@@ -4,6 +4,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
 import { DomainModelAstNode, example, getMainTreeNode, syntaxHighlighting } from "./domainmodel-tools";
+
 import D3Tree from "./d3tree";
 
 addMonacoStyles('monaco-styles-helper');
