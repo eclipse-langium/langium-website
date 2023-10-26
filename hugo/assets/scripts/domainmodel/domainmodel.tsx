@@ -3,7 +3,8 @@ import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
-import { DomainModelAstNode, example, getTreeNode, syntaxHighlighting } from "./domainmodel-tools";
+import { DomainModelAstNode, example, getMainTreeNode, syntaxHighlighting } from "./domainmodel-tools";
+
 import D3Tree from "./d3tree";
 
 addMonacoStyles('monaco-styles-helper');
@@ -85,7 +86,7 @@ class App extends React.Component<{}, AppState> {
         // if there are no errors, render the tree
         if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
             return (
-                <D3Tree data={getTreeNode(ast)} />
+                <D3Tree data={getMainTreeNode(ast)} />
             );
         }
         

@@ -22,22 +22,22 @@ export default function D3Tree({ data }: TreeProps) {
   useEffect(() => {
     if (!svgRef.current) return;
 
-    // get the size of the tree
-    const getChildSize = (child: TreeNode): number => {
+    // get the leaf nodes of the tree
+    const getLeafNodes = (child: TreeNode): number  => {
       if (!child.children) return 1;
-      let amount = child.children.length;
-
-      // fastest way to iterate over an array
-      const length = child.children.length;
-      for (let i = 0; i < length; i++) {
-        amount += getChildSize(child.children[i]);
-      }
-      return amount;
+      if(child.children.length === 0) return 1;
+      return child.children.map(getLeafNodes).reduce((a, b) => a + b);
     };
 
-    const size = getChildSize(data);
-    const height = size * 20;
-    const width = size * 18;
+    // get the longest path in the tree
+    const getLongestPath = (child: TreeNode): number => {
+      if (!child.children) return 1;
+      if(child.children.length === 0) return 1;
+      return 1 + Math.max(...child.children.map(getLongestPath));
+    };
+
+    const height = getLeafNodes(data) * 60;
+    const width = getLongestPath(data) * 120;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
@@ -51,10 +51,10 @@ export default function D3Tree({ data }: TreeProps) {
       g.attr('transform', event.transform);
     });
 
-    svg.call(zoom, d3.zoomIdentity.translate(50, 50));
-
     // zoom to show the whole tree
-    svg.call(zoom.transform, d3.zoomIdentity.translate(width / size * 3, height / size * 2).scale(3 / (0.1 * size)));
+    svg.call(zoom.transform, d3.zoomIdentity.translate(width / 20, height / 30).scale(0.5));
+
+    svg.call(zoom, d3.zoomIdentity.translate(50, 50));
 
     // draw the links
     g.selectAll('.link')
