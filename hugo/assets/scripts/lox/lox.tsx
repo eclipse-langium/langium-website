@@ -9,6 +9,7 @@ import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from
 import { LoxMessage, exampleCode, syntaxHighlighting } from "./lox-tools";
 import { UserConfig } from "monaco-editor-wrapper"; 
 import { createUserConfig } from "../utils";
+import { LoxPreview } from "./preview";
 
 buildWorkerDefinition(
     "../../libs/monaco-editor-workers/workers",
@@ -17,99 +18,11 @@ buildWorkerDefinition(
 );
 let userConfig: UserConfig;
 
-interface PreviewProps {
-    diagnostics?: Diagnostic[];
-}
-
-interface PreviewState {
-    diagnostics?: Diagnostic[];
-    messages: TerminalMessage[];
-}
-
-interface TerminalMessage {
-    type: "notification" | "error" | "output";
-    content: string | string[];
-}
-
-class Preview extends React.Component<PreviewProps, PreviewState> {
-    terminalContainer: React.RefObject<HTMLDivElement>;
-    constructor(props: PreviewProps) {
-        super(props);
-        this.state = {
-            diagnostics: props.diagnostics,
-            messages: [],
-        };
-
-        this.terminalContainer = createRef<HTMLDivElement>();
-    }
-
-    println(text: string) {
-        this.setState((state) => ({
-            messages: [...state.messages, { type: "output", content: text }],
-        }));
-    }
-
-    error(text: string) {
-        this.setState((state) => ({
-            messages: [...state.messages, { type: "error", content: text }],
-        }));
-    }
-
-    clear() {
-        this.setState({ messages: [] });
-    }
-
-    setDiagnostics(diagnostics: Diagnostic[]) {
-        this.setState({ diagnostics: diagnostics });
-
-    }
-
-    render() {
-        // if the code doesn't contain any errors and the diagnostics aren't warnings
-        if (this.state.diagnostics == null || this.state.diagnostics.filter((i) => i.severity === 1).length == 0) {
-            
-            // auto scroll to bottom
-            const terminal = this.terminalContainer.current;
-            const newLine = terminal?.lastElementChild;
-            if (newLine && terminal) {
-                const rect = newLine.getBoundingClientRect();
-                if (rect.bottom <= terminal.getBoundingClientRect().bottom) {
-                    newLine.scrollIntoView();
-                }
-            }
-
-            return (
-                <div>
-                    <div className="text-sm flex flex-col p-4 overflow-x-hidden overflow-y-scroll" ref={this.terminalContainer}>
-                            {this.state.messages.map((message, index) =>
-                                <p key={index} className={message.type == "error" ? "text-base text-accentRed" : "text-white"}>{message.type == "error" ? "An error occurred: " : ""} {message.content}</p>
-                            )}
-                    </div>
-                </div>
-            );
-        }
-
-        // Show the exception
-        return (
-            <div className="flex flex-col h-full w-full p-4 justify-start items-center my-10" >
-                <div className="text-white border-2 border-solid border-accentRed rounded-md p-4 text-left text-sm cursor-default">
-                    {this.state.diagnostics.filter((i) => i.severity === 1).map((diagnostic, index) =>
-                        <details key={index}>
-                            <summary>{`Line ${diagnostic.range.start.line}-${diagnostic.range.end.line}: ${diagnostic.message}`}</summary>
-                              <p>Source: {diagnostic.source} | Code: {diagnostic.code}</p>
-                        </details>
-                    )}
-                </div>
-            </div>
-        );
-    }
-}
-
 
 
 class App extends React.Component<{}, {}> {
     monacoEditor: React.RefObject<MonacoEditorReactComp>;
-    preview: React.RefObject<Preview>;
+    preview: React.RefObject<LoxPreview>;
     copyHint: React.RefObject<HTMLDivElement>;
     shareButton: React.RefObject<HTMLImageElement>;
     constructor(props) {
@@ -232,7 +145,7 @@ class App extends React.Component<{}, {}> {
                         <span>Output</span>
                     </div>
                     <div className="border border-emeraldLangium h-full w-full overflow-hidden overflow-y-scroll">
-                        <Preview ref={this.preview} />
+                        <LoxPreview ref={this.preview} />
                     </div>
                 </div>
             </div>
