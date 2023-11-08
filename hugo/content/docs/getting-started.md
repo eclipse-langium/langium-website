@@ -5,7 +5,7 @@ weight: 50
 
 Before diving into Langium itself, let's get your environment ready for development:
 
-1. You have a working [Node environment](https://nodejs.org/en/download/) with version 12 or higher.
+1. You have a working [Node environment](https://nodejs.org/en/download/) with version 16 or higher.
 2. Install Yeoman and the Langium extension generator.
 ```bash
 npm i -g yo generator-langium
