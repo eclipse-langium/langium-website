@@ -7,7 +7,9 @@ This guide is about integrating multiple dependent languages in one Langium proj
 
 One common situation where it makes sense to create dependent languages is when you only want to read concepts in one language and predefine them in another file (probably also a built-in one). Think of splitting SQL into a defining `CREATE TABLE table (...)`) and a reading part (`SELECT * FROM table`).
 
-> Note that for `n` independent languages, you can simply create `n` independent Langium projects.
+> Notice that for `n` independent languages, you can simply create `n` independent Langium projects.
+
+If you want to see a living example, I recommend to visit the [`requirements` example](https://github.com/eclipse-langium/langium/tree/main/examples/requirements) of the main [Langium repository](https://github.com/eclipse-langium/langium).
 
 ## Our plan
 
