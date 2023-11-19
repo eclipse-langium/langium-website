@@ -2,9 +2,9 @@ import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } 
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
 import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools } from "./statemachine-tools";
 import statemachineGrammar from 'langium-statemachine-dsl/syntaxes/statemachine.tmLanguage.json';
+import { deserializeAST, Diagnostic, DocumentChangeResponse } from "langium-ast-helper";
 
 addMonacoStyles('monaco-styles-helper');
 
@@ -249,7 +249,7 @@ class StateMachineComponent extends React.Component<{
    */
   onDocumentChange(resp: DocumentChangeResponse) {
     // decode the received Ast
-    const statemachineAst = new LangiumAST().deserializeAST(resp.content) as StateMachineAstNode;
+    const statemachineAst = deserializeAST(resp.content) as StateMachineAstNode;
     this.preview.current?.startPreview(statemachineAst, resp.diagnostics);
   }
 

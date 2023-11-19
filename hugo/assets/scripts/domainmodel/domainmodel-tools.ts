@@ -1,5 +1,4 @@
-
-import { AstNode } from "../langium-utils/langium-ast";
+import { AstNode } from "langium-ast-helper";
 import { TreeNode } from "./d3tree";
 
 

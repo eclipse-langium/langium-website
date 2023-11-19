@@ -1,5 +1,9 @@
 import { monaco } from "langium-website-core/bundle";
-import { Pos } from "../langium-utils/langium-ast";
+
+type Pos = {
+    character: number;
+    line: number;
+}
 
 export interface Evaluation {
     range: {
