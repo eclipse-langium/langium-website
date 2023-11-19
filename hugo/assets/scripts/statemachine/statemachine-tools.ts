@@ -1,4 +1,4 @@
-import { AstNode } from "../langium-utils/langium-ast";
+import { AstNode } from "langium-ast-helper";
 
 export class StateMachineTools {
     currentState: StateMachineState;

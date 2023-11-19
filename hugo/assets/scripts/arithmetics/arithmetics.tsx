@@ -2,8 +2,8 @@ import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } 
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { Diagnostic, DocumentChangeResponse } from "../langium-utils/langium-ast";
 import { Evaluation, examples, syntaxHighlighting } from "./arithmetics-tools";
+import { Diagnostic, DocumentChangeResponse } from "langium-ast-helper";
 
 addMonacoStyles('monaco-styles-helper');
 
