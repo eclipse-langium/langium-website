@@ -4,9 +4,19 @@
 <div class="flex flex-wrap gap-10 justify-center mt-5 mx-5 "> 
 {{range where .Pages.ByWeight ".Params.draft" false}}
     <div class="rounded-lg border shadow-md bg-gray-800 border-gray-600 w-[300px] overflow-hidden self-stretch text-white">   
+        {{ if .Params.url }}
         <a href="{{.Params.url}}" class="self-stretch">
+        {{ else if .Params.externalUrl }}
+        <a href="{{.Params.externalUrl}}" onclick="return confirm('You will be redirected to a external website: \n{{.Params.externalUrl}}\n\nAre you sure you want to continue?')" target="_blank" class="self-stretch">
+        {{ end }}
             <img src="{{.Params.img}}" class="object-fill min-h-[300px]"/>
-            <h2 class="text-center text-xl mt-10 mb-5">{{.Title}}</h2>
+            <h2 class="text-center text-xl mt-10 mb-5">
+                {{.Title}} 
+                {{ if .Params.externalUrl }}
+                   <img src="/assets/external_link.svg" class="inline-block h-4 w-4 mb-2"/>
+                {{ end }}
+            
+            </h2>
             <p class="line-clamp-[8] px-5 mb-10 text-sm">
                 {{.Params.description}}
             </p>
