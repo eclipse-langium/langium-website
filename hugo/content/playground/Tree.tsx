@@ -7,20 +7,51 @@
 import { AstNode } from "langium";
 import React, { FC, useState } from "react";
 import * as ReactDOM from "react-dom/client";
-import { preprocessAstNodeObject, PropertyNode, ValueNode } from "./preprocess";
+import { preprocessAstNodeObject, preprocessAstNodeToForceGraphData, PropertyNode, ValueNode } from "./preprocess";
 import { clsx } from "clsx";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
+import { ForceGraph3D } from 'react-force-graph';
+import { convertASTtoGraph } from "langium-ast-helper";
 
 export let treeRoot: ReactDOM.Root;
+export type CurrentTreeWindow = "ast" | "grammar";
 
-export function render(root: AstNode, locator: AstNodeLocator) {
+export function render(root: AstNode, locator: AstNodeLocator, currentWindow: CurrentTreeWindow, grammar?: AstNode) {
   const location = document.getElementById("ast-body")!;
   const data = preprocessAstNodeObject(root, locator);
+
   if (!treeRoot) {
     // create a fresh root, if not already present
     treeRoot = ReactDOM.createRoot(location);
   }
-  treeRoot.render(
+
+  // check if the user wants the visualization to be interactive
+  if (currentWindow === "grammar" && grammar) {
+    const graphData = convertASTtoGraph(grammar);
+
+    const gData = {
+      nodes: graphData.nodes.map(node => ({
+        id: (node as unknown as { $__dotID: string }).$__dotID,
+        nodeType: node.$type,
+        nodeLabel: node,
+        node
+      })),
+      links: graphData.edges.map(edge => ({
+        source: (edge.from as unknown as { $__dotID: string }).$__dotID,
+        target: (edge.to as unknown as { $__dotID: string }).$__dotID
+      }))
+    };
+
+    return treeRoot.render(
+      <ForceGraph3D
+        graphData={gData}
+      />
+    );
+
+  }
+
+  // generate the interactive tree
+  return treeRoot.render(
     <ul>
       <TreeNode root={data} hidden={false} />
     </ul>
@@ -44,13 +75,13 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
     case "number":
     case "string":
       return (
-          <span className="literal">
-            {hidden
-              ? "..."
-              : root.kind === "string"
+        <span className="literal">
+          {hidden
+            ? "..."
+            : root.kind === "string"
               ? '"' + root.value + '"'
               : root.value.toString()}
-          </span>
+        </span>
       );
     case "object":
       return (
@@ -77,10 +108,10 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
         </>
       );
     case "array":
-      if(root.children.length === 0) {
+      if (root.children.length === 0) {
         return <span className="opening-brace">{"[]"}</span>
       }
-      if(hidden) {
+      if (hidden) {
         return <span className="opening-brace">{"[...]"}</span>
       }
       return (
@@ -108,7 +139,7 @@ const TreeContent: FC<TreeProps> = ({ root, hidden }) => {
       return (
         <>
           {hidden ? <span className="link">{"Reference(...)"}</span> :
-          <span className="link">Reference('{root.$text}')</span>}
+            <span className="link">Reference('{root.$text}')</span>}
         </>
       );
   }
@@ -125,6 +156,7 @@ const TreeNode: FC<TreeProps> = ({ root, hidden }) => {
 
 function Property({ p, comma }: { p: PropertyNode; comma: boolean }) {
   const [open, setOpen] = useState(true);
+
   return (
     <li className={clsx("entry toggable", { closed: !open })}>
       <span className={"value"}>

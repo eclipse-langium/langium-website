@@ -60,6 +60,16 @@ export interface PropertyNode {
   name: string;
   type: ValueNode;
 }
+
+export interface ForceGraphData {
+  nodes: ForceGraphNode[];
+  links: ForceGraphNode[];
+}
+export interface ForceGraphNode {
+  id: string;
+  group: number;
+}
+
 export function preprocessAstNodeValue(
   valueOrValues:
     | AstNode
@@ -97,6 +107,55 @@ export function preprocessAstNodeValue(
     };
   }
 }
+/*
+Data example:
+{
+  "nodes": [
+    {"id": "Myriel", "group": 1},
+    {"id": "Napoleon", "group": 1},
+    {"id": "Mlle.Baptistine", "group": 1},
+    {"id": "Mme.Magloire", "group": 1},
+  }
+}
+*/
+export function preprocessAstNodeToForceGraphData(
+  node: ValueNode,
+): any {
+  const nodes: ForceGraphNode[] = [];
+
+  Object.keys(node)
+    .filter((n) => !n.startsWith("$"))
+    .forEach((n) => {
+      const valueOrValues = node[n] as
+        | AstNode
+        | AstNode[]
+        | "string"
+        | "number"
+        | "boolean"
+        | Reference;
+      if (Array.isArray(valueOrValues)) {
+        valueOrValues.forEach((v) => {
+          if (typeof v === "object" && v !== null) {
+            nodes.push({
+              id: n,
+              group: 1,
+            });
+          }
+        });
+      } else if (typeof valueOrValues === "object" && valueOrValues !== null) {
+        nodes.push({
+          id: n,
+          group: 1,
+        });
+      }
+    });
+
+  return {
+    nodes: nodes,
+    links: [],
+  };
+}
+
 export function preprocessAstNodeObject(
   node: AstNode,
   locator: AstNodeLocator
