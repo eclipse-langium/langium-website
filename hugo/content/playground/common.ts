@@ -12,11 +12,12 @@ import {
 import { generateMonarch } from "./monarch-generator";
 import { decompressFromEncodedURIComponent } from 'lz-string';
 import { Disposable } from "vscode-languageserver";
-import { DefaultAstNodeLocator, createServicesForGrammar } from "langium";
+import { AstNode, DefaultAstNodeLocator, createServicesForGrammar } from "langium";
 import { render } from './Tree';
 import { overlay, throttle } from "./utils";
 import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
 import { DocumentChangeResponse } from "../../assets/scripts/langium-utils/langium-ast";
+import { deserializeAST } from "langium-ast-helper";
 
 export { share, overlay } from './utils';
 export { addMonacoStyles, MonacoEditorLanguageClientWrapper };
@@ -26,10 +27,17 @@ export interface PlaygroundParameters {
   content: string;
 }
 
+interface LangiumWorkerResponse {
+  content: string;
+  ast: string;
+}
 /**
  * Current langium grammar in the playground
  */
-let currentGrammarContent = '';
+let currentGrammarContent: LangiumWorkerResponse = {
+  content: '',
+  ast: ''
+};
 
 /**
  * Current DSL program in the playground
@@ -69,7 +77,7 @@ function nextId(): string {
  */
 export function getPlaygroundState(): PlaygroundParameters {
   return {
-    grammar: currentGrammarContent,
+    grammar: currentGrammarContent.content,
     content: currentDSLContent
   };
 }
@@ -90,7 +98,7 @@ export async function setupPlayground(
   encodedContent?: string
 ): Promise<void> {
   // setup initial contents for the grammar & dsl (Hello World)
-  currentGrammarContent = HelloWorldGrammar;
+  currentGrammarContent.content = HelloWorldGrammar;
   currentDSLContent = DSLInitialContent;
 
   // handle to a Monaco language client instance for the DSL (program) editor
@@ -98,7 +106,7 @@ export async function setupPlayground(
 
   // check to use existing grammar from URI
   if (encodedGrammar) {
-    currentGrammarContent = decompressFromEncodedURIComponent(encodedGrammar) ?? currentGrammarContent;
+    currentGrammarContent.content = decompressFromEncodedURIComponent(encodedGrammar) ?? currentGrammarContent.content;
   }
 
   // check to use existing content from URI
@@ -131,7 +139,8 @@ export async function setupPlayground(
     }
 
     // extract & update current grammar
-    currentGrammarContent = resp.content;
+    console.log("This one?");
+    currentGrammarContent = JSON.parse(resp.content) as LangiumWorkerResponse;
 
     if (resp.diagnostics.filter(d => d.severity === 1).length) {
       // error in the grammar, report an error & stop here
@@ -156,13 +165,13 @@ export async function setupPlayground(
           // disposed successfully, setup & clear overlay
           await setupDSLWrapper();
           overlay(false, false);
-  
+
         }).catch(async (e) => {
           // failed to dispose, report & discard this error
           // can happen when a previous editor was not started correctly
           console.error('DSL editor disposal error: ' + e);
           overlay(true, true);
-  
+
         });
       }
     });
@@ -173,7 +182,7 @@ export async function setupPlayground(
    */
   async function setupDSLWrapper(): Promise<void> {
     // get a fresh DSL wrapper
-    dslWrapper = await getFreshDSLWrapper(rightEditor, nextId(), currentDSLContent, currentGrammarContent);
+    dslWrapper = await getFreshDSLWrapper(rightEditor, nextId(), currentDSLContent, currentGrammarContent.content);
 
     // get a fresh client
     dslClient = dslWrapper?.getLanguageClient();
@@ -249,8 +258,8 @@ async function getFreshLangiumWrapper(htmlElement: HTMLElement): Promise<MonacoE
   const langiumWrapper = new MonacoEditorLanguageClientWrapper();
   await langiumWrapper.start(createUserConfig({
     languageId: "langium",
-    code: currentGrammarContent,
-    worker: "./libs/worker/langiumServerWorker.js",
+    code: currentGrammarContent.content,
+    worker: "/playground/libs/worker/langiumServerWorker.js",
     monarchGrammar: LangiumMonarchContent
   }), htmlElement);
   return langiumWrapper;
@@ -276,13 +285,19 @@ function registerForDocumentChanges(dslClient: any | undefined) {
 
     // retrieve existing code from the model
     currentDSLContent = dslWrapper?.getModel()?.getValue() as string;
-    
+
     // delay changes by 200ms, to avoid getting too many intermediate states
     throttle(2, languageUpdateDelay, () => {
+      // TODO: check if the user want the interactive version
+
+
       // render the AST in the far-right window
+      console.log("Ast", currentGrammarContent.ast);
       render(
-        JSON.parse(resp.content),
-        new DefaultAstNodeLocator()
+        deserializeAST(resp.content),
+        new DefaultAstNodeLocator(),
+        "grammar",
+        deserializeAST(currentGrammarContent.ast)
       );
     });
   });

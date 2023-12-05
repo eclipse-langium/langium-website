@@ -12,7 +12,7 @@ import { DocumentChange, createServerConnection } from './worker-utils';
 const connection = createServerConnection();
 
 // Inject the shared services and language-specific services
-const { shared } = createLangiumGrammarServices({ connection, ...EmptyFileSystem });
+const { shared, grammar } = createLangiumGrammarServices({ connection, ...EmptyFileSystem });
 
 // Start the language server with the shared services
 startLanguageServer(shared);
@@ -23,7 +23,11 @@ shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents
     for (const document of documents) {
         connection.sendNotification(documentChangeNotification, {
             uri: document.uri.toString(),
-            content: document.textDocument.getText(),
+            content: JSON.stringify({
+                // TODO: rename content to text
+                content: document.textDocument.getText(),
+                ast: grammar.serializer.JsonSerializer.serialize(document.parseResult.value)
+            }),
             diagnostics: document.diagnostics ?? []
         });
     }

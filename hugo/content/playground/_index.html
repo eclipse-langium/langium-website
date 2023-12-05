@@ -10,11 +10,11 @@ draft: false
 noMain: true
 playground: true
 ---
-<link rel="preload" as="script" href="./libs/worker/common.js"/>
-<link rel="preload" as="script" href="./libs/worker/langiumServerWorker.js"/>
-<link rel="preload" as="script" href="./libs/worker/userServerWorker.js"/>
+<link rel="preload" as="script" href="./libs/worker/common.js" />
+<link rel="preload" as="script" href="./libs/worker/langiumServerWorker.js" />
+<link rel="preload" as="script" href="./libs/worker/userServerWorker.js" />
 <script type="module">
-    import { addMonacoStyles, setupPlayground, share, overlay, getPlaygroundState, MonacoEditorLanguageClientWrapper } from "./libs/worker/common.js";
+  import { addMonacoStyles, setupPlayground, share, overlay, getPlaygroundState, MonacoEditorLanguageClientWrapper } from "./libs/worker/common.js";
   import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
 
   addMonacoStyles('monaco-styles-helper');
@@ -26,13 +26,27 @@ playground: true
   );
 
   // on doc load
-  addEventListener('load', function() {
+  addEventListener('load', function () {
 
     // get a handle to our various interactive buttons
     const copiedHint = document.getElementById('copiedHint');
     const shareButton = document.getElementById('shareButton');
     const grammarRoot = document.getElementById('grammar-root');
     const contentRoot = document.getElementById('content-root');
+    let isTreeInteractive = false;
+
+    
+    const toggleInteractiveTree = () => {
+      const astBody = document.getElementById('ast-body');
+      const interactive = localStorage.getItem('interactive') === 'yes';
+      if (interactive) {
+        interactiveButton.innerText = 'Close Interactive';
+        astBody.classList.add('interactive');
+      } else {
+        interactiveButton.innerText = 'Open Interactive';
+        astBody.classList.remove('interactive');
+      }
+    };
 
     // register a listener for the share button
     shareButton.onclick = () => {
@@ -52,16 +66,24 @@ playground: true
     };
 
     const treeButton = document.getElementById('treeButton');
+    const interactiveButton = document.getElementById('interactiveButton');
     const grid = document.getElementById('grid');
     const key = 'display-ast';
-    if(localStorage.getItem(key) === 'yes') {
+    if (localStorage.getItem(key) === 'yes') {
       grid.classList.toggle('without-tree');
     }
+    toggleInteractiveTree();
     treeButton.onclick = () => {
       const shown = !grid.classList.toggle('without-tree');
       localStorage.setItem(key, shown ? 'yes' : 'no');
       const resizeEvent = new Event('resize');
       window.dispatchEvent(resizeEvent);
+    };
+
+    interactiveButton.onclick = () => {
+      isTreeInteractive = !isTreeInteractive;
+      localStorage.setItem('interactive', isTreeInteractive ? 'yes' : 'no');
+      toggleInteractiveTree();
     };
 
     const url = new URL(window.location.toString());
