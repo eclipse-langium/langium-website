@@ -7,7 +7,7 @@
 import { AstNode } from "langium";
 import React, { FC, useState } from "react";
 import * as ReactDOM from "react-dom/client";
-import { preprocessAstNodeObject, preprocessAstNodeToForceGraphData, PropertyNode, ValueNode } from "./preprocess";
+import { preprocessAstNodeObject, preprocessAstNodeToForceGraphData, PropertyNode, toHex, ValueNode } from "./preprocess";
 import { clsx } from "clsx";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 import { ForceGraph3D } from 'react-force-graph';
@@ -27,13 +27,13 @@ export function render(root: AstNode, locator: AstNodeLocator, currentWindow: Cu
 
   // check if the user wants the visualization to be interactive
   if (currentWindow === "grammar" && grammar) {
+    // the follow code is taken from https://github.com/TypeFox/language-engineering-visualization/blob/main/packages/visuals/src/index.ts
     const graphData = convertASTtoGraph(grammar);
-
+    console.log(graphData);
     const gData = {
       nodes: graphData.nodes.map(node => ({
         id: (node as unknown as { $__dotID: string }).$__dotID,
         nodeType: node.$type,
-        nodeLabel: node,
         node
       })),
       links: graphData.edges.map(edge => ({
@@ -44,7 +44,12 @@ export function render(root: AstNode, locator: AstNodeLocator, currentWindow: Cu
 
     return treeRoot.render(
       <ForceGraph3D
+        showNavInfo={false}
+        width={window.innerWidth}
+        height={window.innerHeight}
         graphData={gData}
+        nodeColor={node => toHex((node as any).nodeType)}
+        nodeLabel={node => (node as any).node.name ? `${(node as any).nodeType} - ${(node as any).node.name}` : (node as any).nodeType}
       />
     );
 
