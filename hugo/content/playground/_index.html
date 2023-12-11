@@ -35,18 +35,7 @@ playground: true
     const contentRoot = document.getElementById('content-root');
     let isTreeInteractive = false;
 
-    
-    const toggleInteractiveTree = () => {
-      const astBody = document.getElementById('ast-body');
-      const interactive = localStorage.getItem('interactive') === 'yes';
-      if (interactive) {
-        interactiveButton.innerText = 'Close Interactive';
-        astBody.classList.add('interactive');
-      } else {
-        interactiveButton.innerText = 'Open Interactive';
-        astBody.classList.remove('interactive');
-      }
-    };
+  
 
     // register a listener for the share button
     shareButton.onclick = () => {
@@ -72,7 +61,7 @@ playground: true
     if (localStorage.getItem(key) === 'yes') {
       grid.classList.toggle('without-tree');
     }
-    toggleInteractiveTree();
+
     treeButton.onclick = () => {
       const shown = !grid.classList.toggle('without-tree');
       localStorage.setItem(key, shown ? 'yes' : 'no');
@@ -83,7 +72,7 @@ playground: true
     interactiveButton.onclick = () => {
       isTreeInteractive = !isTreeInteractive;
       localStorage.setItem('interactive', isTreeInteractive ? 'yes' : 'no');
-      toggleInteractiveTree();
+      window.dispatchEvent(resizeEvent);
     };
 
     const url = new URL(window.location.toString());

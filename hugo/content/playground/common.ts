@@ -12,12 +12,11 @@ import {
 import { generateMonarch } from "./monarch-generator";
 import { decompressFromEncodedURIComponent } from 'lz-string';
 import { Disposable } from "vscode-languageserver";
-import { AstNode, DefaultAstNodeLocator, createServicesForGrammar } from "langium";
+import { DefaultAstNodeLocator, createServicesForGrammar } from "langium";
 import { render } from './Tree';
 import { overlay, throttle } from "./utils";
 import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
-import { DocumentChangeResponse } from "../../assets/scripts/langium-utils/langium-ast";
-import { deserializeAST } from "langium-ast-helper";
+import { DocumentChangeResponse, deserializeAST } from "langium-ast-helper";
 
 export { share, overlay } from './utils';
 export { addMonacoStyles, MonacoEditorLanguageClientWrapper };
@@ -130,17 +129,18 @@ export async function setupPlayground(
     throw new Error('Unable to obtain language client for the Langium editor!');
   }
 
+  console.log("Starting Langium client");
+  langiumClient.start();
   // register to receive new grammars from langium, and send them to the DSL language client
   langiumClient.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
-
+    console.log("Received new grammar from Langium");
     // verify the langium client is still running, and didn't crash due to a grammar issue
     if (!langiumClient.isRunning()) {
       throw new Error('Langium client is not running');
     }
+    currentGrammarContent = JSON.parse(resp.content) as LangiumWorkerResponse;
 
     // extract & update current grammar
-    console.log("This one?");
-    currentGrammarContent = JSON.parse(resp.content) as LangiumWorkerResponse;
 
     if (resp.diagnostics.filter(d => d.severity === 1).length) {
       // error in the grammar, report an error & stop here
@@ -295,7 +295,6 @@ function registerForDocumentChanges(dslClient: any | undefined) {
 
 
       // render the AST in the far-right window
-      console.log("Ast", currentGrammarContent.ast);
       render(
         deserializeAST(resp.content),
         new DefaultAstNodeLocator(),
