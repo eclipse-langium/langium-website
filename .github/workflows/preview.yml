@@ -15,7 +15,7 @@ defaults:
     shell: bash
 
 jobs:
-  deploy-preview:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js
@@ -28,7 +28,23 @@ jobs:
         run: |
           npm install
           npm run build
-      - name: Deploy preview
-        uses: rossjrw/pr-preview-action@v1
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
         with:
-          source-dir: ./public
+          path: ./public
+
+  deploy-preview:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v3
+        with:
+          preview: true
