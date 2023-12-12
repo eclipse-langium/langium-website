@@ -1,7 +1,7 @@
 name: Deploy PR previews
 
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - synchronize
@@ -9,6 +9,10 @@ on:
       - closed
 
 concurrency: preview-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
 
 defaults:
   run:
