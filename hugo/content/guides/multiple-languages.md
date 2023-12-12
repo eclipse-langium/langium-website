@@ -349,43 +349,27 @@ After the change, we tripled the information. Be aware of that the language ids 
 
 #### File `src/extension/main.ts`
 
-And here is the extension file and how the file watcher in it worked before the change:
+And here is the extension file before the change:
 
 ```ts
-const fileSystemWatcher = vscode.workspace.createFileSystemWatcher('**/*.hello');
-context.subscriptions.push(fileSystemWatcher);
-
 // Options to control the language client
 const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ scheme: 'file', language: 'multiple-languages' }],
-    synchronize: {
-        // Notify the server about file changes to files contained in the workspace
-        fileEvents: fileSystemWatcher
-    }
+    documentSelector: [{ scheme: 'file', language: 'multiple-languages' }]
 };
 ```
 
 After the change, it should look like this (the language IDs should be the same as they are in the Langium configuration):
 
 ```ts
-const fileSystemWatcher = vscode.workspace.createFileSystemWatcher('**/*.(me|who|hello)');
-context.subscriptions.push(fileSystemWatcher);
-
 // Options to control the language client
 const clientOptions: LanguageClientOptions = {
     documentSelector: [
         { scheme: 'file', language: 'multiple-languages-configuration' },
         { scheme: 'file', language: 'multiple-languages-definition' },
         { scheme: 'file', language: 'multiple-languages-implementation' }
-    ],
-    synchronize: {
-        // Notify the server about file changes to files contained in the workspace
-        fileEvents: fileSystemWatcher
-    }
+    ]
 };
 ```
-
-> Be aware that the file extensions can change over time, depending on your needs. You should actually use the `LanguageMetaData` of each language service. I have chosen the given implementation because of simplicity. You can do it better!
 
 ## Test the extension!
 
