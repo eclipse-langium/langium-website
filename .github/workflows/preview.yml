@@ -6,8 +6,6 @@ on:
       - opened
       - synchronize
       - reopened
-  pull_request_target:
-    types:
       - closed
 
 concurrency: preview-${{ github.ref }}
