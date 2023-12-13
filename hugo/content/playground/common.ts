@@ -178,16 +178,6 @@ export async function setupPlayground(
     // get a fresh client
     dslClient = dslWrapper?.getLanguageClient();
     if (!dslClient) {
-      // TODO @montymxb (Aug. 2nd, 2023) This is a hack to deal with the wrapper crashing when the LC tries to interface with
-      // an improperly configured LS (due to a bad grammar). The result is an editor that we cannot remove via 'dispose'.
-      // This should be removed once the issue is resolved in the monaco-components repo.
-
-      // Setup failed, attempt to teardown resources piece by piece, before throwing an error
-      dslWrapper?.getEditor()?.dispose();
-      dslWrapper?.getLanguageClient()?.dispose();
-      dslWrapper = undefined;
-      // clean up the UI, so the old editor is visually removed (tends to linger otherwise)
-      rightEditor.innerHTML = '';
       throw new Error('Failed to retrieve fresh DSL LS client');
     }
 
@@ -233,10 +223,17 @@ async function getFreshDSLWrapper(
     monarchGrammar: generateMonarch(Grammar, languageId)
   }), htmlElement).then(() => {
     return wrapper;
-  }).catch((e) => {
+  }).catch(async (e) => {
     console.error('Failed to start DSL wrapper: ' + e);
     // don't leak the worker on failure to start
+    // normally we wouldn't need to manually terminate, but if the LC is stuck in the 'starting' state, the following dispose will fail prematurely
+    // and the worker will leak
     worker.terminate();
+    // try to cleanup the existing wrapper (but don't fail if we can't complete this action)
+    // particularly due to a stuck LC, which can cause this to fail part-ways through
+    try {
+      await wrapper.dispose();
+    } catch (e) {}
     return undefined;
   });
 }
