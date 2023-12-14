@@ -250,7 +250,7 @@ async function getFreshLangiumWrapper(htmlElement: HTMLElement): Promise<MonacoE
   await langiumWrapper.start(createUserConfig({
     languageId: "langium",
     code: currentGrammarContent,
-    worker: "/playground/libs/worker/langiumServerWorker.js",
+    worker: "./libs/worker/langiumServerWorker.js",
     monarchGrammar: LangiumMonarchContent
   }), htmlElement);
   return langiumWrapper;
@@ -298,7 +298,7 @@ function registerForDocumentChanges(dslClient: any | undefined) {
 async function getLSWorkerForGrammar(grammar: string): Promise<Worker> {
   return new Promise((resolve, reject) => {
     // create & notify the worker to setup w/ this grammar
-    const worker = new Worker("/playground/libs/worker/userServerWorker.js");
+    const worker = new Worker("./libs/worker/userServerWorker.js");
     worker.postMessage({
       type: "startWithGrammar",
       grammar

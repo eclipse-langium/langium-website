@@ -2,6 +2,9 @@ baseURL = "/"
 title = "Langium"
 theme = "hugo-geekdoc"
 
+# Required for publishing of previews as they are hosted in subdirs
+relativeURLs = true
+
 # Required to get well formatted code blocks
 disablePathToLower = true
 enableGitInfo = true
