@@ -61,7 +61,7 @@ jobs:
           source-dir: ./public
           preview-branch: previews
           umbrella-dir: pr-previews
-          deploy-repository: netomi/langium-previews
+          deploy-repository: eclipse-langium/langium-previews
           token: ${{ secrets.DEPLOY_PREVIEW_TOKEN }}
           action: auto
 
@@ -79,6 +79,6 @@ jobs:
         with:
           preview-branch: previews
           umbrella-dir: pr-previews
-          deploy-repository: netomi/langium-previews
+          deploy-repository: eclipse-langium/langium-previews
           token: ${{ secrets.DEPLOY_PREVIEW_TOKEN }}
           action: auto
