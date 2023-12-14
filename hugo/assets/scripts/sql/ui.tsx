@@ -116,7 +116,7 @@ userConfig = createUserConfig({
   languageId: 'sql',
   code: defaultText,
   htmlElement: document.getElementById('root')!,
-  worker: '/showcase/libs/worker/sqlServerWorker.js',
+  worker: '../../showcase/libs/worker/sqlServerWorker.js',
   monarchGrammar: syntaxHighlighting
 });
 

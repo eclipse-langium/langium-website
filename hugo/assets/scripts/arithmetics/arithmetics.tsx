@@ -160,7 +160,7 @@ class App extends React.Component<{}, AppState> {
                         <select className="ml-4 bg-emeraldLangiumDarker cursor-pointer border-0 border-b invalid:bg-emeraldLangiumABitDarker" onChange={(e) => this.setExample(parseInt(e.target.value))}>
                             <option value="0">Basic Math</option>
                             <option value="1">Price calculator</option>
-                        </select>    
+                        </select>
                     </div>
                     <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
                         <MonacoEditorReactComp
@@ -193,7 +193,7 @@ userConfig = createUserConfig({
     languageId: 'arithmetics',
     code: examples[0],
     htmlElement: document.getElementById('root')!,
-    worker: '/showcase/libs/worker/arithmeticsServerWorker.js',
+    worker: '../../showcase/libs/worker/arithmeticsServerWorker.js',
     monarchGrammar: syntaxHighlighting
 });
 const root = createRoot(document.getElementById("root") as HTMLElement);
