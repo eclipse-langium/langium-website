@@ -8,6 +8,7 @@ import {
   HelloWorldGrammar,
   LangiumMonarchContent,
   DSLInitialContent,
+  HelloWorldAst,
 } from "./data";
 import { generateMonarch } from "./monarch-generator";
 import { decompressFromEncodedURIComponent } from 'lz-string';
@@ -27,10 +28,14 @@ export interface PlaygroundParameters {
   content: string;
 }
 
+/**
+ * Content & AST responses from the Langium worker
+ */
 interface LangiumWorkerResponse {
   content: string;
   ast: string;
 }
+
 /**
  * Current langium grammar in the playground
  */
@@ -99,6 +104,7 @@ export async function setupPlayground(
 ): Promise<void> {
   // setup initial contents for the grammar & dsl (Hello World)
   currentGrammarContent.content = HelloWorldGrammar;
+  currentGrammarContent.ast = HelloWorldAst;
   currentDSLContent = DSLInitialContent;
 
   // handle to a Monaco language client instance for the DSL (program) editor
@@ -131,7 +137,7 @@ export async function setupPlayground(
   }
 
   console.log("Starting Langium client");
-  langiumClient.start();
+  await langiumClient.start();
   // register to receive new grammars from langium, and send them to the DSL language client
   langiumClient.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
     console.log("Received new grammar from Langium");
