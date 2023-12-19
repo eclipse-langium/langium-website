@@ -71,7 +71,9 @@ playground: true
 
     interactiveButton.onclick = () => {
       isTreeInteractive = !isTreeInteractive;
+      console.log("isTreeInteractive", isTreeInteractive);
       localStorage.setItem('interactive', isTreeInteractive ? 'yes' : 'no');
+      const resizeEvent = new Event('resize');
       window.dispatchEvent(resizeEvent);
     };
 

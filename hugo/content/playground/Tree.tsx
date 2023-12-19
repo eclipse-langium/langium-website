@@ -7,52 +7,20 @@
 import { AstNode } from "langium";
 import React, { FC, useState } from "react";
 import * as ReactDOM from "react-dom/client";
-import { preprocessAstNodeObject, preprocessAstNodeToForceGraphData, PropertyNode, toHex, ValueNode } from "./preprocess";
+import { preprocessAstNodeObject, PropertyNode, ValueNode } from "./preprocess";
 import { clsx } from "clsx";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
-import { ForceGraph3D } from 'react-force-graph';
-import { convertASTtoGraph } from "langium-ast-helper";
 
 export let treeRoot: ReactDOM.Root;
 export type CurrentTreeWindow = "ast" | "grammar";
 
-export function render(root: AstNode, locator: AstNodeLocator, currentWindow: CurrentTreeWindow, grammar?: AstNode) {
+export function render(root: AstNode, locator: AstNodeLocator) {
   const location = document.getElementById("ast-body")!;
   const data = preprocessAstNodeObject(root, locator);
 
   if (!treeRoot) {
     // create a fresh root, if not already present
     treeRoot = ReactDOM.createRoot(location);
-  }
-
-  // check if the user wants the visualization to be interactive
-  if (currentWindow === "grammar" && grammar) {
-    // the follow code is taken from https://github.com/TypeFox/language-engineering-visualization/blob/main/packages/visuals/src/index.ts
-    const graphData = convertASTtoGraph(grammar);
-    console.log(graphData);
-    const gData = {
-      nodes: graphData.nodes.map(node => ({
-        id: (node as unknown as { $__dotID: string }).$__dotID,
-        nodeType: node.$type,
-        node
-      })),
-      links: graphData.edges.map(edge => ({
-        source: (edge.from as unknown as { $__dotID: string }).$__dotID,
-        target: (edge.to as unknown as { $__dotID: string }).$__dotID
-      }))
-    };
-
-    return treeRoot.render(
-      <ForceGraph3D
-        showNavInfo={false}
-        width={window.innerWidth}
-        height={window.innerHeight}
-        graphData={gData}
-        nodeColor={node => toHex((node as any).nodeType)}
-        nodeLabel={node => (node as any).node.name ? `${(node as any).nodeType} - ${(node as any).node.name}` : (node as any).nodeType}
-      />
-    );
-
   }
 
   // generate the interactive tree

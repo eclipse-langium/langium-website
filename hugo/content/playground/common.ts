@@ -17,6 +17,7 @@ import { render } from './Tree';
 import { overlay, throttle } from "./utils";
 import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
 import { DocumentChangeResponse, deserializeAST } from "langium-ast-helper";
+import { renderForceGraph } from "./ForceGraph";
 
 export { share, overlay } from './utils';
 export { addMonacoStyles, MonacoEditorLanguageClientWrapper };
@@ -140,19 +141,19 @@ export async function setupPlayground(
     }
     currentGrammarContent = JSON.parse(resp.content) as LangiumWorkerResponse;
 
+  
     // extract & update current grammar
-
     if (resp.diagnostics.filter(d => d.severity === 1).length) {
       // error in the grammar, report an error & stop here
       overlay(true, true);
       return;
     }
-
     // set a new timeout for updating our DSL grammar & editor, 200ms, to avoid intermediate states
     throttle(1, languageUpdateDelay, async () => {
       // display 'Loading...' while we regenerate the DSL editor
       overlay(true, false);
-
+      
+      renderForceGraph(localStorage.getItem("interactive") === 'yes', deserializeAST(currentGrammarContent.ast));
       if (!dslWrapper) {
         // no dsl wrapper to start (or previously crashed), setup from scratch
         // no exception handling here, as we're 'assuming' the Langium grammar is valid at this point
@@ -297,9 +298,7 @@ function registerForDocumentChanges(dslClient: any | undefined) {
       // render the AST in the far-right window
       render(
         deserializeAST(resp.content),
-        new DefaultAstNodeLocator(),
-        "grammar",
-        deserializeAST(currentGrammarContent.ast)
+        new DefaultAstNodeLocator()
       );
     });
   });
