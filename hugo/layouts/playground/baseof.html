@@ -234,6 +234,7 @@ the imprint page */}} {{ $extraBodyClass := `font-mono` }} {{ if
 }}
 
 <body class="bg-white dark:bg-gray-900 {{ $extraBodyClass }} h-full m-0 p-0 relative">
+  <div id="forcegraph-root" class="h-full absolute top-0 left-0 w-full"></div>
   <div x-data="{ isOpen: false }" class="relative bg-white flex flex-col h-full dark:bg-gray-900">
     {{ partial "langium-header" . }}
     <div class="relative bg-white flex flex-col h-full dark:bg-gray-900">
@@ -279,6 +280,13 @@ the imprint page */}} {{ $extraBodyClass := `font-mono` }} {{ if
             <div id="grammar-root" class="h-full absolute top-0 left-0 w-full"></div>
           </div>
           <div id="content-body" class="border-solid border relative">
+            <div id="overlay" class="h-full absolute top-0 left-0 w-full bg-black" style="z-index: 100000">
+              <div class="block absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%)">
+                <div class="hint text-xs text-center w-48 font-mono" style="color: rgba(212, 212, 212, 1)">
+                  Loading...
+                </div>
+              </div>
+            </div>
             <div id="overlay" class="h-full absolute top-0 left-0 w-full bg-black" style="z-index: 100000">
               <div class="block absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%)">
                 <div class="hint text-xs text-center w-48 font-mono" style="color: rgba(212, 212, 212, 1)">
