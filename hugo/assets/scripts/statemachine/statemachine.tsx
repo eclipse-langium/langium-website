@@ -293,7 +293,7 @@ const langiumGlobalConfig: UserConfig = createUserConfig({
   code: defaultText,
   htmlElement: document.getElementById('root')!,
   textmateGrammar: statemachineGrammar,
-  worker: '/showcase/libs/worker/statemachineServerWorker.js'
+  worker: '../../showcase/libs/worker/statemachineServerWorker.js'
 });
 
 const root = createRoot(document.getElementById("root") as HTMLElement);

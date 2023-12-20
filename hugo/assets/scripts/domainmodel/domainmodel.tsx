@@ -145,7 +145,7 @@ userConfig = createUserConfig({
     languageId: 'domainmodel',
     code: example,
     htmlElement: document.getElementById('root')!,
-    worker: '/showcase/libs/worker/domainmodelServerWorker.js',
+    worker: '../../showcase/libs/worker/domainmodelServerWorker.js',
     monarchGrammar: syntaxHighlighting
 });
 

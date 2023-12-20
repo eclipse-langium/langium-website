@@ -352,7 +352,7 @@ userConfig = createUserConfig({
   languageId: 'minilogo',
   code: code ? decompressFromEncodedURIComponent(code) : examples[0].code,
   htmlElement: document.getElementById('root')!,
-  worker: '/showcase/libs/worker/minilogoServerWorker.js',
+  worker: '../../showcase/libs/worker/minilogoServerWorker.js',
   monarchGrammar: syntaxHighlighting
 });
 const root = createRoot(document.getElementById("root") as HTMLElement);
