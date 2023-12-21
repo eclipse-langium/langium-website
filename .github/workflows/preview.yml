@@ -69,6 +69,8 @@ jobs:
   remove-preview:
     if: github.event_name == 'pull_request_target' && github.event.action == 'closed'
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       # checkout required for pr-preview-action to succeed,
       # while the content will not be used
