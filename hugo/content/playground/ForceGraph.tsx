@@ -7,24 +7,17 @@ import * as ReactDOM from "react-dom/client";
 
 export let grammarRoot: ReactDOM.Root;
 
-export function renderForceGraph(isVisible: boolean, grammar?: AstNode) {
+export function renderForceGraph(grammar?: AstNode) {
     const location = document.getElementById("forcegraph-root")!;
-    console.log("Rendering ForceGraph", isVisible, grammar);
 
-    if (!isVisible) {
-        location.classList.remove("visible");
-        return;
-    }
-    
     if (!grammarRoot) {
         // create a fresh root, if not already present
         grammarRoot = ReactDOM.createRoot(location);
     }
 
-    if (isVisible && grammar) {
+    if (grammar) {
         // the follow code is taken from https://github.com/TypeFox/language-engineering-visualization/blob/main/packages/visuals/src/index.ts
         const graphData = convertASTtoGraph(grammar);
-        location.classList.add("visible");
         const gData = {
             nodes: graphData.nodes.map(node => ({
                 id: (node as unknown as { $__dotID: string }).$__dotID,
@@ -39,7 +32,7 @@ export function renderForceGraph(isVisible: boolean, grammar?: AstNode) {
 
         return grammarRoot.render(
             <ForceGraph3D
-                showNavInfo={false}
+                showNavInfo={true}
                 width={window.innerWidth}
                 height={window.innerHeight}
                 graphData={gData}

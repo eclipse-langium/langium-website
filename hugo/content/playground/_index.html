@@ -55,8 +55,14 @@ playground: true
     };
 
     const treeButton = document.getElementById('treeButton');
-    const interactiveButton = document.getElementById('interactiveButton');
+    const forceGraphCloseButton = document.getElementById('forcegraph-close');
+    const forceGraphOpenButton = document.getElementById('forcegraph-open');
+
+    const forceGraphRoot = document.getElementById('forcegraph-root');
+    const forceGraphModal = document.getElementById('forcegraph-modal');
+
     const grid = document.getElementById('grid');
+
     const key = 'display-ast';
     if (localStorage.getItem(key) === 'yes') {
       grid.classList.toggle('without-tree');
@@ -69,12 +75,12 @@ playground: true
       window.dispatchEvent(resizeEvent);
     };
 
-    interactiveButton.onclick = () => {
-      isTreeInteractive = !isTreeInteractive;
-      console.log("isTreeInteractive", isTreeInteractive);
-      localStorage.setItem('interactive', isTreeInteractive ? 'yes' : 'no');
-      const resizeEvent = new Event('resize');
-      window.dispatchEvent(resizeEvent);
+    forceGraphCloseButton.onclick = () => {
+      forceGraphModal.classList.toggle('invisible');
+    };
+
+    forceGraphOpenButton.onclick = () => {
+      forceGraphModal.classList.toggle('invisible');
     };
 
     const url = new URL(window.location.toString());

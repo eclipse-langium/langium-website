@@ -231,10 +231,20 @@
 {{/* Default is mono font, but use the regular font in special cases, like for
 the imprint page */}} {{ $extraBodyClass := `font-mono` }} {{ if
 .Params.useRegularFont }} {{ $extraBodyClass = `dark:text-gray-100` }} {{ end
-}}
+}} 
 
 <body class="bg-white dark:bg-gray-900 {{ $extraBodyClass }} h-full m-0 p-0 relative">
-  <div id="forcegraph-root" class="h-full absolute top-0 left-0 w-full"></div>
+  <div id="forcegraph-modal" class="absolute top-0 left-0 w-full h-full invisible" style="z-index: 1000001">
+     {{/*  Close Button  */}}
+     <div class="fixed top-0 right-0 p-2" style="z-index: 1000001">
+      <button id="forcegraph-close" class="text-white text-2xl font-bold border-2 px-4 py-2 rounded-lg" title="Close">&times;</button>
+    </div>
+
+    {{/*  Force Graph  */}}
+    <div class="h-max w-max block">
+      <div id="forcegraph-root"></div>
+    </div>
+  </div>
   <div x-data="{ isOpen: false }" class="relative bg-white flex flex-col h-full dark:bg-gray-900">
     {{ partial "langium-header" . }}
     <div class="relative bg-white flex flex-col h-full dark:bg-gray-900">
@@ -242,7 +252,7 @@ the imprint page */}} {{ $extraBodyClass := `font-mono` }} {{ if
         <div id="grid" class="without-tree">
           <div id="grammar-header" class="border-solid border flex items-center p-2 text-white font-mono relative">
             <span>Grammar</span>
-            <img id="interactiveButton" src="/assets/tree.svg" title="Toggle grammar syntax tree view" style="
+            <img id="forcegraph-open" src="/assets/tree.svg" title="Toggle grammar syntax tree view" style="
             display: inline;
             width: 1rem;
             height: 1rem;
@@ -280,13 +290,6 @@ the imprint page */}} {{ $extraBodyClass := `font-mono` }} {{ if
             <div id="grammar-root" class="h-full absolute top-0 left-0 w-full"></div>
           </div>
           <div id="content-body" class="border-solid border relative">
-            <div id="overlay" class="h-full absolute top-0 left-0 w-full bg-black" style="z-index: 100000">
-              <div class="block absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%)">
-                <div class="hint text-xs text-center w-48 font-mono" style="color: rgba(212, 212, 212, 1)">
-                  Loading...
-                </div>
-              </div>
-            </div>
             <div id="overlay" class="h-full absolute top-0 left-0 w-full bg-black" style="z-index: 100000">
               <div class="block absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%)">
                 <div class="hint text-xs text-center w-48 font-mono" style="color: rgba(212, 212, 212, 1)">
