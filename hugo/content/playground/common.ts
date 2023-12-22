@@ -138,6 +138,10 @@ export async function setupPlayground(
 
   console.log("Starting Langium client");
   await langiumClient.start();
+
+  // render the first force graph
+  renderForceGraph(deserializeAST(currentGrammarContent.ast));
+  
   // register to receive new grammars from langium, and send them to the DSL language client
   langiumClient.onNotification('browser/DocumentChange', (resp: DocumentChangeResponse) => {
     console.log("Received new grammar from Langium");
@@ -146,8 +150,6 @@ export async function setupPlayground(
       throw new Error('Langium client is not running');
     }
     currentGrammarContent = JSON.parse(resp.content) as LangiumWorkerResponse;
-
-  
     // extract & update current grammar
     if (resp.diagnostics.filter(d => d.severity === 1).length) {
       // error in the grammar, report an error & stop here
@@ -158,8 +160,8 @@ export async function setupPlayground(
     throttle(1, languageUpdateDelay, async () => {
       // display 'Loading...' while we regenerate the DSL editor
       overlay(true, false);
-      
-      renderForceGraph(localStorage.getItem("interactive") === 'yes', deserializeAST(currentGrammarContent.ast));
+
+      renderForceGraph(deserializeAST(currentGrammarContent.ast));
       if (!dslWrapper) {
         // no dsl wrapper to start (or previously crashed), setup from scratch
         // no exception handling here, as we're 'assuming' the Langium grammar is valid at this point
@@ -178,7 +180,6 @@ export async function setupPlayground(
           // can happen when a previous editor was not started correctly
           console.error('DSL editor disposal error: ' + e);
           overlay(true, true);
-
         });
       }
     });
