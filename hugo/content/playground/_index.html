@@ -35,7 +35,7 @@ playground: true
     const contentRoot = document.getElementById('content-root');
     let isTreeInteractive = false;
 
-  
+
 
     // register a listener for the share button
     shareButton.onclick = () => {
@@ -82,6 +82,13 @@ playground: true
     forceGraphOpenButton.onclick = () => {
       forceGraphModal.classList.toggle('invisible');
     };
+
+    document.addEventListener('keydown', (event) => {
+      const graphShown = !forceGraphModal.classList.contains('invisible');
+      if (event.key === 'Escape' && graphShown) {
+        forceGraphModal.classList.toggle('invisible');
+      }
+    });
 
     const url = new URL(window.location.toString());
     const grammar = url.searchParams.get('grammar');
