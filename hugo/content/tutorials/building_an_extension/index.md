@@ -17,7 +17,7 @@ Regardless of what you're working with, you'll want to make sure you have the fo
 {
     ...
     "vscode:prepublish": "npm run esbuild-base -- --minify && npm run lint",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild-base": "esbuild ./src/extension/main.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
     ...
 }
 ```
