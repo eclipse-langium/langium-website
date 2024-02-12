@@ -19,6 +19,7 @@ let shouldAnimate = true;
 interface PreviewProps {
   commands?: Command[];
   diagnostics?: Diagnostic[];
+  hidden?: boolean;
 }
 
 interface DrawCanvasProps {
@@ -157,11 +158,13 @@ class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
 }
 class Preview extends React.Component<PreviewProps, PreviewProps> {
   canvasRef: React.RefObject<HTMLCanvasElement>;
+  hidden: boolean;
   constructor(props: PreviewProps) {
     super(props);
     this.state = {
       commands: props.commands,
       diagnostics: props.diagnostics,
+      hidden: false,
     };
     this.canvasRef = createRef();
     this.startPreview = this.startPreview.bind(this);
@@ -171,7 +174,24 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
     this.setState({ commands, diagnostics });
   }
 
+  hide() {
+    this.setState({ hidden: true });
+  }
+
+  show() {
+    this.setState({ hidden: false });
+  }
+
+  isHidden(): boolean {
+    return this.hidden;
+  }
+
   render() {
+    if (this.props.hidden) {
+      return;
+    }
+
+
     // check if code contains an astNode
     if (!this.state.commands) {
       // Show the exception
@@ -210,12 +230,15 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 
 interface AppState {
   currentExample: number;
+  currentWindow: 'preview' | 'editor';
 }
 class App extends React.Component<{}, AppState> {
   monacoEditor: React.RefObject<MonacoEditorReactComp>;
   preview: React.RefObject<Preview>;
   copyHint: React.RefObject<HTMLDivElement>;
   shareButton: React.RefObject<HTMLImageElement>;
+
+
   constructor(props) {
     super(props);
 
@@ -230,6 +253,7 @@ class App extends React.Component<{}, AppState> {
 
     this.state = {
       currentExample: 0,
+      currentWindow: 'editor'
     };
   }
 
@@ -306,32 +330,56 @@ class App extends React.Component<{}, AppState> {
       <div className="justify-center self-center flex flex-col md:flex-row h-full w-full">
         <div className="float-left w-full h-full flex flex-col">
           <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono ">
-            <span>Editor</span>
+            <span id="title">Editor</span>
             <select className="ml-4 bg-emeraldLangiumDarker cursor-pointer border-0 border-b invalid:bg-emeraldLangiumABitDarker" onChange={(e) => this.setExample(parseInt(e.target.value))}>
               {examples.map((example, index) => (
                 <option key={index} value={index}>{example.name}</option>
               ))}
             </select>
             <div className="flex flex-row justify-end w-full h-full gap-2">
+              <div>
+                {/* Button to switch between preview and editor */}
+                <button
+                  className="bg-emeraldLangiumDarker hover:bg-emeraldLangiumABitDarker text-white border-emeraldLangium font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline sm:hidden"
+                  type="button"
+                  onClick={() => {
+                    const preview = this.preview.current!;
+                    if (preview.state.hidden) {
+                      preview.show();
+                    } else {
+                      preview.hide();
+                    }
+                  }}
+                >
+                  Switch
+                </button>
+              </div>
               <div className="text-sm hidden" ref={this.copyHint}>Link was copied!</div>
               <img src="/assets/share.svg" title="Copy URL to this grammar and content" className="inline w-4 h-4 cursor-pointer" ref={this.shareButton}></img>
             </div>
           </div>
           <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
-            <MonacoEditorReactComp
-              ref={this.monacoEditor}
-              onLoad={this.onMonacoLoad}
-              userConfig={userConfig}
-              style={style}
-            />
+            <div className="h-full w-full">
+              <MonacoEditorReactComp
+                ref={this.monacoEditor}
+                onLoad={this.onMonacoLoad}
+                userConfig={userConfig}
+                style={style}
+                className={this.preview.current && this.preview.current.state.hidden ? 'hidden' : ''}
+              />
+            </div>
+            <div className="sm:hidden">
+              <Preview ref={this.preview} hidden={true} />
+            </div>
+
           </div>
         </div>
-        <div className="float-left w-full h-full flex flex-col" id="preview">
+        <div className="float-left w-full h-full flex flex-col hidden sm:block" id="preview">
           <div className="border-solid border border-emeraldLangium bg-emeraldLangiumDarker flex items-center p-3 text-white font-mono ">
             <span>Preview</span>
           </div>
           <div className="border border-emeraldLangium h-full w-full">
-            <Preview ref={this.preview} />
+            <Preview ref={this.preview} hidden={true} />
           </div>
         </div>
       </div>
@@ -357,3 +405,4 @@ userConfig = createUserConfig({
 });
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(<App />);
+ 

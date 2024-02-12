@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g id="Ebene-1">
+        <g transform="matrix(1.23877,0,0,1.23877,-3.22767,-0.441436)">
+            <circle cx="22.753" cy="8.431" r="4.037" style="fill:white;"/>
+        </g>
+        <g transform="matrix(1.19656,0.320616,-0.320616,1.19656,-17.4796,-12.382)">
+            <circle cx="22.753" cy="8.431" r="4.037" style="fill:white;"/>
+        </g>
+        <g transform="matrix(1.19656,0.320616,-0.108166,0.40368,-2.01258,-1.26224)">
+            <rect x="8.37" y="6.911" width="13.583" height="3.915" style="fill:white;"/>
+        </g>
+        <g transform="matrix(0.619383,-1.0728,0.380906,0.219916,7.28076,32.8685)">
+            <rect x="8.37" y="6.911" width="13.583" height="3.915" style="fill:white;"/>
+        </g>
+        <g transform="matrix(1.23877,0,0,1.23877,-13.2285,16.5554)">
+            <circle cx="22.753" cy="8.431" r="4.037" style="fill:white;"/>
+        </g>
+    </g>
+</svg>

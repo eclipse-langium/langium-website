@@ -1,335 +1,315 @@
 <!DOCTYPE html>
 <html lang="en" class="dark h-full m-0 p-0 relative">
-  <head>
-    {{ partial "langium-head" . }}
-    <style>
-        #grid {
-            display: grid;
-            grid-template-rows: 3rem auto;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            position: relative;
-            height: 100%;
-        }
 
-        #grammar-header, #content-header, #ast-header {
-            border-color: rgba(38, 136, 140, 1);
-            background-color: rgba(38, 136, 140, 0.33);
-        }
+<head>
+  {{ partial "langium-head" . }}
+  <style>
+    #grid {
+      display: grid;
+      grid-template-rows: 3rem auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      position: relative;
+      height: 100%;
+    }
 
-        #grammar-body, #content-body, #ast-body {
-            border-color: rgba(38, 136, 140, 1);
-            min-height: 50vh;
-        }
+    #grammar-header,
+    #content-header,
+    #ast-header {
+      border-color: rgba(38, 136, 140, 1);
+      background-color: rgba(38, 136, 140, 0.33);
+    }
 
-        #grammar-header {
-            grid-column-start: 1;
-            grid-column-end: 2;
-            grid-row-start: 1;
-            grid-row-end: 2;
-        }
+    #grammar-body,
+    #content-body,
+    #ast-body {
+      border-color: rgba(38, 136, 140, 1);
+      min-height: 50vh;
+    }
 
-        #grammar-body {
-            grid-column-start: 1;
-            grid-column-end: 2;
-            grid-row-start: 2;
-            grid-row-end: 3;
-        }
+    #grammar-header {
+      grid-column-start: 1;
+      grid-column-end: 2;
+      grid-row-start: 1;
+      grid-row-end: 2;
+    }
 
-        #content-header {
-            grid-column-start: 2;
-            grid-column-end: 3;
-            grid-row-start: 1;
-            grid-row-end: 2;
-        }
+    #grammar-body {
+      grid-column-start: 1;
+      grid-column-end: 2;
+      grid-row-start: 2;
+      grid-row-end: 3;
+    }
 
-        #content-body {
-            grid-column-start: 2;
-            grid-column-end: 3;
-            grid-row-start: 2;
-            grid-row-end: 3;
-        }
+    #content-header {
+      grid-column-start: 2;
+      grid-column-end: 3;
+      grid-row-start: 1;
+      grid-row-end: 2;
+    }
 
-        #ast-header {
-            grid-column-start: 3;
-            grid-column-end: 4;
-            grid-row-start: 1;
-            grid-row-end: 2;
-        }
+    #content-body {
+      grid-column-start: 2;
+      grid-column-end: 3;
+      grid-row-start: 2;
+      grid-row-end: 3;
+    }
 
-        #ast-body {
-            grid-column-start: 3;
-            grid-column-end: 4;
-            grid-row-start: 2;
-            grid-row-end: 3;
-        }
+    #ast-header {
+      grid-column-start: 3;
+      grid-column-end: 4;
+      grid-row-start: 1;
+      grid-row-end: 2;
+    }
 
-        #grid.without-tree #ast-header, #grid.without-tree #ast-body {
-          display: none;
-        }
-        #grid.without-tree {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
+    #ast-body {
+      grid-column-start: 3;
+      grid-column-end: 4;
+      grid-row-start: 2;
+      grid-row-end: 3;
+    }
 
-        @media screen and (max-width: 600px), screen and (max-height: 400px) {
-            #website-header {
-                max-height: 33vh;
-                padding: 0 12px 0 0;
-            }
+    #grid.without-tree #ast-header,
+    #grid.without-tree #ast-body {
+      display: none;
+    }
 
-            #website-logo {
-                max-height: 33vh;
-                padding: 3px;
-            }
+    #grid.without-tree {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-            #website-footer {
-                display: none;
-            }
+    @media screen and (max-width: 600px),
+    screen and (max-height: 400px) {
+      #website-header {
+        max-height: 33vh;
+        padding: 0 12px 0 0;
+      }
 
-            #grid {
-                display: grid;
-                grid-template-rows: repeat(3, 3rem auto);
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-                position: relative;
-                height: 100%;
-            }
+      #website-logo {
+        max-height: 33vh;
+        padding: 3px;
+      }
 
-            #grid.without-tree {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-                grid-template-rows: repeat(2, 3rem auto);
-            }
+      #website-footer {
+        display: none;
+      }
 
-            #grammar-body, #content-body, #ast-body {
-                min-height: 20vh;
-            }
+      #grid {
+        display: grid;
+        grid-template-rows: repeat(3, 3rem auto);
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        position: relative;
+        height: 100%;
+      }
 
-            #grammar-header {
-                grid-column-start: 1;
-                grid-column-end: 2;
-                grid-row-start: 1;
-                grid-row-end: 2;
-            }
+      #grid.without-tree {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        grid-template-rows: repeat(2, 3rem auto);
+      }
 
-            #grammar-body {
-                grid-column-start: 1;
-                grid-column-end: 2;
-                grid-row-start: 2;
-                grid-row-end: 3;
-            }
+      #grammar-body,
+      #content-body,
+      #ast-body {
+        min-height: 20vh;
+      }
 
-            #content-header {
-                grid-column-start: 1;
-                grid-column-end: 2;
-                grid-row-start: 3;
-                grid-row-end: 4;
-            }
+      #grammar-header {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 1;
+        grid-row-end: 2;
+      }
 
-            #content-body {
-                grid-column-start: 1;
-                grid-column-end: 2;
-                grid-row-start: 4;
-                grid-row-end: 5;
-            }
+      #grammar-body {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 2;
+        grid-row-end: 3;
+      }
 
-            #ast-header {
-                grid-column-start: 1;
-                grid-column-end: 2;
-                grid-row-start: 5;
-                grid-row-end: 6;
-            }
+      #content-header {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 3;
+        grid-row-end: 4;
+      }
 
-            #ast-body {
-                grid-column-start: 1;
-                grid-column-end: 2;
-                grid-row-start: 6;
-                grid-row-end: 7;
-            }
-        }
+      #content-body {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 4;
+        grid-row-end: 5;
+      }
+
+      #ast-header {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 5;
+        grid-row-end: 6;
+      }
 
       #ast-body {
-        position: absolute;
-        right: 0;
-        height: 100%;
-        width: 100%;
-        padding: 0.5rem;
-        background-color: #1e1e1e;
-        z-index: 1000000;
-        overflow-y: scroll;
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 6;
+        grid-row-end: 7;
       }
+    }
 
-      #ast-body > ul {
-        cursor: default;
-        box-sizing: border-box;
-        font-family: monospace;
-        flex: 1;
-        margin: 0;
-        padding-left: 0px;
-        overflow: auto;
-      }
+    #ast-body {
+      position: absolute;
+      right: 0;
+      height: 100%;
+      width: 100%;
+      padding: 0.5rem;
+      background-color: #1e1e1e;
+      z-index: 1000000;
+      overflow-y: scroll;
+    }
 
-      .entry {
-        margin: 0;
-        list-style: none;
-        padding: 0px;
-        position: relative;
-      }
+    #ast-body>ul {
+      cursor: default;
+      box-sizing: border-box;
+      font-family: monospace;
+      flex: 1;
+      margin: 0;
+      padding-left: 0px;
+      overflow: auto;
+    }
 
-      .object-body > .entry {
-        padding-left: 0px;
-      }
-      .entry > .value {
-        list-style: none;
-      }
-      .property {
-        color: #d4d4d4;
-        cursor: pointer;
-      }
+    .entry {
+      margin: 0;
+      list-style: none;
+      padding: 0px;
+      position: relative;
+    }
 
-      .opening-brace,
-      .closing-brace,
-      .colon,
-      .comma {
-        color: #d4d4d4;
-      }
+    .object-body>.entry {
+      padding-left: 0px;
+    }
 
-      .literal {
-        color: #ce9178;
-      }
+    .entry>.value {
+      list-style: none;
+    }
 
-      .undefined {
-        color: #ce9178;
-      }
+    .property {
+      color: #d4d4d4;
+      cursor: pointer;
+    }
 
-      .object-body {
-        width: -webkit-fit-content;
-        width: -moz-fit-content;
-        width: fit-content;
-        margin: 0;
-        overflow: auto;
-      }
+    .opening-brace,
+    .closing-brace,
+    .colon,
+    .comma {
+      color: #d4d4d4;
+    }
 
-      .link {
-        color: white
-      }
+    .literal {
+      color: #ce9178;
+    }
 
-      .object-body {
-        padding-left: 20px;
-      }
-    </style>
-  </head>
-  {{/* Default is mono font, but use the regular font in special cases, like for
-  the imprint page */}} {{ $extraBodyClass := `font-mono` }} {{ if
-  .Params.useRegularFont }} {{ $extraBodyClass = `dark:text-gray-100` }} {{ end
-  }}
-  <body
-    class="bg-white dark:bg-gray-900 {{ $extraBodyClass }} h-full m-0 p-0 relative"
-  >
-    <div
-      x-data="{ isOpen: false }"
-      class="relative bg-white flex flex-col h-full dark:bg-gray-900"
-    >
-      {{ partial "langium-header" . }}
-      <div class="relative bg-white flex flex-col h-full dark:bg-gray-900">
-        <div class="dark:bg-gray-900 flex-grow" id="monaco-editor-root">
-          <div id="grid" class="without-tree">
-            <div
-              id="grammar-header"
-              class="border-solid border flex items-center p-2 text-white font-mono"
-            >
-              Grammar
-            </div>
-            <div
-              id="content-header"
-              class="border-solid border flex items-center p-2 text-white font-mono relative"
-            >
-              <span>Content</span>
-              <img
-                id="treeButton"
-                src="/assets/tree.svg"
-                title="Toggle syntax tree view"
-                style="
+    .undefined {
+      color: #ce9178;
+    }
+
+    .object-body {
+      width: -webkit-fit-content;
+      width: -moz-fit-content;
+      width: fit-content;
+      margin: 0;
+      overflow: auto;
+    }
+
+    .link {
+      color: white
+    }
+
+    .object-body {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+{{/* Default is mono font, but use the regular font in special cases, like for
+the imprint page */}} {{ $extraBodyClass := `font-mono` }} {{ if
+.Params.useRegularFont }} {{ $extraBodyClass = `dark:text-gray-100` }} {{ end
+}} 
+
+<body class="bg-white dark:bg-gray-900 {{ $extraBodyClass }} h-full m-0 p-0 relative">
+  <div id="forcegraph-modal" class="absolute top-0 left-0 w-full h-full invisible" style="z-index: 1000001">
+     {{/*  Close Button  */}}
+     <div class="fixed top-0 right-0 p-2" style="z-index: 1000001">
+      <button id="forcegraph-close" class="text-white text-2xl font-bold border-2 px-4 py-2 rounded-lg" title="Close">&times;</button>
+    </div>
+
+    {{/*  Force Graph  */}}
+    <div class="h-max w-max block">
+      <div id="forcegraph-root"></div>
+    </div>
+  </div>
+  <div x-data="{ isOpen: false }" class="relative bg-white flex flex-col h-full dark:bg-gray-900">
+    {{ partial "langium-header" . }}
+    <div class="relative bg-white flex flex-col h-full dark:bg-gray-900">
+      <div class="dark:bg-gray-900 flex-grow" id="monaco-editor-root">
+        <div id="grid" class="without-tree">
+          <div id="grammar-header" class="border-solid border flex items-center p-2 text-white font-mono relative">
+            <span>Grammar</span>
+            <img id="forcegraph-open" src="/assets/graph.svg" title="Toggle grammar syntax tree view" style="
+            display: inline;
+            width: 1rem;
+            height: 1rem;
+            cursor: pointer;
+            position: absolute;
+            right: 0.5rem;
+          " />
+          </div>
+          <div id="content-header" class="border-solid border flex items-center p-2 text-white font-mono relative">
+            <span>Content</span>
+            <img id="treeButton" src="/assets/tree.svg" title="Toggle syntax tree view" style="
                   display: inline;
                   width: 1rem;
                   height: 1rem;
                   cursor: pointer;
                   position: absolute;
                   right: 0.5rem;
-                "
-              />
-              <img
-                id="shareButton"
-                src="/assets/share.svg"
-                title="Copy URL to this grammar and content"
-                style="
+                " />
+            <img id="shareButton" src="/assets/share.svg" title="Copy URL to this grammar and content" style="
                   display: inline;
                   width: 1rem;
                   height: 1rem;
                   cursor: pointer;
                   position: absolute;
                   right: 2rem;
-                "
-              />
-              <span
-                id="copiedHint"
-                style="
+                " />
+            <span id="copiedHint" style="
                   display: none;
                   position: absolute;
                   right: 4rem;
                   font-size: 0.5rem;
-                "
-                >Link was copied!</span
-              >
-            </div>
-            <div
-              id="grammar-body"
-              class="border-solid border relative"
-            >
-              <div
-                id="grammar-root"
-                class="h-full absolute top-0 left-0 w-full"
-              ></div>
-            </div>
-            <div
-              id="content-body"
-              class="border-solid border relative"
-            >
-              <div
-                id="overlay"
-                class="h-full absolute top-0 left-0 w-full bg-black"
-                style="z-index: 100000"
-              >
-                <div
-                  class="block absolute"
-                  style="top: 50%; left: 50%; transform: translate(-50%, -50%)"
-                >
-                  <div
-                    class="hint text-xs text-center w-48 font-mono"
-                    style="color: rgba(212, 212, 212, 1)"
-                  >
-                    Loading...
-                  </div>
+                ">Link was copied!</span>
+          </div>
+          <div id="grammar-body" class="border-solid border relative">
+            <div id="grammar-root" class="h-full absolute top-0 left-0 w-full"></div>
+          </div>
+          <div id="content-body" class="border-solid border relative">
+            <div id="overlay" class="h-full absolute top-0 left-0 w-full bg-black" style="z-index: 100000">
+              <div class="block absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%)">
+                <div class="hint text-xs text-center w-48 font-mono" style="color: rgba(212, 212, 212, 1)">
+                  Loading...
                 </div>
               </div>
-              <div
-                id="content-root"
-                class="h-full absolute top-0 left-0 w-full"
-              ></div>
             </div>
-            <div
-              id="ast-header"
-              class="border-solid border flex items-center p-2 text-white font-mono"
-            >
-              Syntax tree
-            </div>
-            <div
-              id="ast-body"
-              class="absolute border"
-            ></div>
+            <div id="content-root" class="h-full absolute top-0 left-0 w-full"></div>
           </div>
+          <div id="ast-header" class="border-solid border flex items-center gap-2 p-2 text-white font-mono">
+            Syntax tree
+          </div>
+          <div id="ast-body" class="absolute border"></div>
         </div>
       </div>
-      {{ block "main" . }} {{ end }} {{ partial "langium-footer" . }} {{ partial
-      "langium-mobile-menu" . }}
     </div>
-    {{ partial "langium-scripts" . }}
-  </body>
+    {{ block "main" . }} {{ end }} {{ partial "langium-footer" . }} {{ partial
+    "langium-mobile-menu" . }}
+  </div>
+  {{ partial "langium-scripts" . }}
+</body>
+
 </html>
