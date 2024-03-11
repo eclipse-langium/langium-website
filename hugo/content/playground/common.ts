@@ -16,8 +16,7 @@ import { render } from './Tree';
 import { overlay, throttle } from "./utils";
 import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
 import { DocumentChangeResponse } from "langium-ast-helper";
-import { createServicesForGrammar } from "langium/lib/grammar";
-import { DefaultAstNodeLocator } from "langium/lib/workspace/ast-node-locator";
+import { createServicesForGrammar, DefaultAstNodeLocator } from "langium";
 
 export { share, overlay } from './utils';
 export { addMonacoStyles, MonacoEditorLanguageClientWrapper };

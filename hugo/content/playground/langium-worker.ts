@@ -6,10 +6,8 @@
 
 import { NotificationType } from 'vscode-languageserver/browser';
 import { DocumentChange, createServerConnection } from './worker-utils';
-import { createLangiumGrammarServices } from 'langium/lib/grammar';
-import { startLanguageServer } from 'langium/lib/lsp';
-import { DocumentState } from 'langium/lib/workspace/documents';
-import { EmptyFileSystem } from 'langium/lib/workspace/file-system-provider';
+import { EmptyFileSystem, createLangiumGrammarServices, DocumentState } from 'langium';
+import { startLanguageServer } from 'langium/lsp';
 
 // establish a browser server connection
 const connection = createServerConnection();

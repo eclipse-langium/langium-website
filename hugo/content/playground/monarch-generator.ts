@@ -4,10 +4,9 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { isCommentTerminal, terminalRegex } from "langium/lib/utils/grammar-utils";
-import { stream } from "langium/lib/utils/stream";
-import { escapeRegExp, getTerminalParts } from "langium/lib/utils/regexp-utils";
-import ast from "langium/lib/languages/generated/ast";
+import { isCommentTerminal, terminalRegex, stream, escapeRegExp, getTerminalParts } from "langium";
+import ast from "langium";
+import { languages } from "monaco-editor";
 
 /**
  * Monarch Language Definition, describes aspects & token categories of target language
@@ -120,7 +119,7 @@ interface MonarchGrammar {
  * @param config Langium Config to also use during generation
  * @returns Generated Monarch syntax highlighting file content
  */
-export function generateMonarch(grammar: ast.Grammar, id: string) {
+export function generateMonarch(grammar: ast.Grammar, id: string): languages.IMonarchLanguage {
   const symbols = getSymbols(grammar);
   const regex = /[{}[\]()]/;
   const operators = symbols.filter((s) => !regex.test(s));
@@ -195,14 +194,14 @@ function getTokenizerStates(grammar: ast.Grammar): State[] {
  * @param monarchGrammar Grammar to pretty print
  * @returns Monarch grammar in concrete form
  */
-function prettyPrint(monarchGrammar: MonarchGrammar) {
+function prettyPrint(monarchGrammar: MonarchGrammar): languages.IMonarchLanguage {
   const name = monarchGrammar.languageDefinition.name;
 
   const languages = prettyPrintLangDef(monarchGrammar.languageDefinition);
   const tokenizer = prettyPrintTokenizer(monarchGrammar.tokenizer);
   return {
     ...languages,
-    ...tokenizer
+    tokenizer
   };
 }
 
@@ -237,20 +236,20 @@ function prettyPrintLangDef(
  * Pretty prints the tokenizer portion of a Monarch grammar file
  * @param tokenizer Tokenizer portion to print out
  */
-function prettyPrintTokenizer(tokenizer: Tokenizer) {
+function prettyPrintTokenizer(tokenizer: Tokenizer): {
+  [name: string]: languages.IMonarchLanguageRule[];
+} {
   const result = tokenizer.states
     .map((s) => prettyPrintState(s))
     .reduce((lhs, rhs) => ({ ...lhs, ...rhs }), {});
-  return {
-    tokenizer: result,
-  };
+  return result;
 }
 
 /**
  * Pretty prints a tokenizer state, composed of various rules
  * @param state Tokenizer state to pretty print
  */
-function prettyPrintState(state: State) {
+function prettyPrintState(state: State): {[name: string]: languages.IMonarchLanguageRule[]} {
   return {
     [state.name]: state.rules.map((r) => prettyPrintRule(r)),
   };
@@ -262,15 +261,13 @@ function prettyPrintState(state: State) {
  * @param ruleOrState Rule to pretty print. If it's a state, we include that state's contents implicitly within this context.
  * @returns Generator node containing this printed rule
  */
-function prettyPrintRule(ruleOrState: Rule | State): Rule {
+function prettyPrintRule(ruleOrState: Rule | State): languages.IMonarchLanguageRule {
   if (isRegexRule(ruleOrState)) {
-    return {
-      regex:
-        ruleOrState.regex instanceof RegExp
-          ? ruleOrState.regex
-          : new RegExp(ruleOrState.regex),
-      action: prettyPrintAction(ruleOrState.action),
-    };
+    const regex = ruleOrState.regex instanceof RegExp
+      ? ruleOrState.regex
+      : new RegExp(ruleOrState.regex);
+    const action = prettyPrintAction(ruleOrState.action);
+    return [regex, action] as const;
   } else if (isIncludeRule(ruleOrState)) {
     return ruleOrState;
   } else {

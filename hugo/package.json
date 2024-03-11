@@ -4,6 +4,7 @@
   "author": "TypeFox",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "scripts": {
     "clean:static": "shx rm -rf ./static/showcase ./static/playground ./static/libs",
     "copy:libs:prepare": "shx mkdir -p ./static/libs/monaco-editor-workers/workers",
