@@ -12,11 +12,12 @@ import {
 import { generateMonarch } from "./monarch-generator";
 import { decompressFromEncodedURIComponent } from 'lz-string';
 import { Disposable } from "vscode-languageserver";
-import { DefaultAstNodeLocator, createServicesForGrammar } from "langium";
 import { render } from './Tree';
 import { overlay, throttle } from "./utils";
 import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
-import { DocumentChangeResponse } from "../../assets/scripts/langium-utils/langium-ast";
+import { DocumentChangeResponse } from "langium-ast-helper";
+import { createServicesForGrammar } from "langium/lib/grammar";
+import { DefaultAstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 
 export { share, overlay } from './utils';
 export { addMonacoStyles, MonacoEditorLanguageClientWrapper };

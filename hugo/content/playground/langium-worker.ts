@@ -4,9 +4,12 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { DocumentState, startLanguageServer, EmptyFileSystem, createLangiumGrammarServices } from 'langium';
 import { NotificationType } from 'vscode-languageserver/browser';
 import { DocumentChange, createServerConnection } from './worker-utils';
+import { createLangiumGrammarServices } from 'langium/lib/grammar';
+import { startLanguageServer } from 'langium/lib/lsp';
+import { DocumentState } from 'langium/lib/workspace/documents';
+import { EmptyFileSystem } from 'langium/lib/workspace/file-system-provider';
 
 // establish a browser server connection
 const connection = createServerConnection();

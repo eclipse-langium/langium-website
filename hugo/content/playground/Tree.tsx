@@ -4,12 +4,12 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { AstNode } from "langium";
 import React, { FC, useState } from "react";
 import * as ReactDOM from "react-dom/client";
 import { preprocessAstNodeObject, PropertyNode, ValueNode } from "./preprocess";
 import { clsx } from "clsx";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
+import { AstNode } from "langium/lib/syntax-tree";
 
 export let treeRoot: ReactDOM.Root;
 

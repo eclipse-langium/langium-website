@@ -4,15 +4,10 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import * as langium from "langium";
-import {
-  getTerminalParts,
-  isCommentTerminal,
-  escapeRegExp,
-  stream,
-} from "langium";
-import { isParserRule, isKeyword, isTerminalRule, isRegexToken, TerminalRule, AbstractElement, isAlternatives, isGroup, isUnorderedGroup, isAssignment } from "langium/lib/grammar/generated/ast";
-import { terminalRegex } from "langium/lib/grammar/internal-grammar-util";
+import { isCommentTerminal, terminalRegex } from "langium/lib/utils/grammar-utils";
+import { stream } from "langium/lib/utils/stream";
+import { escapeRegExp, getTerminalParts } from "langium/lib/utils/regexp-utils";
+import ast from "langium/lib/languages/generated/ast";
 
 /**
  * Monarch Language Definition, describes aspects & token categories of target language
@@ -125,7 +120,7 @@ interface MonarchGrammar {
  * @param config Langium Config to also use during generation
  * @returns Generated Monarch syntax highlighting file content
  */
-export function generateMonarch(grammar: langium.Grammar, id: string) {
+export function generateMonarch(grammar: ast.Grammar, id: string) {
   const symbols = getSymbols(grammar);
   const regex = /[{}[\]()]/;
   const operators = symbols.filter((s) => !regex.test(s));
@@ -153,7 +148,7 @@ export function generateMonarch(grammar: langium.Grammar, id: string) {
  * @param grammar Langium grammar to source tokenizer states from
  * @returns Array of tokenizer states
  */
-function getTokenizerStates(grammar: langium.Grammar): State[] {
+function getTokenizerStates(grammar: ast.Grammar): State[] {
   // initial state, name is arbitrary, just needs to come first
   const initialState: State = {
     name: "initial",
@@ -306,7 +301,7 @@ function prettyPrintAction(action: Action | Case[]): Action {
  * @param rule Rule to convert to a Monarch token name
  * @returns Returns the equivalent monarch token name, or the original rule name
  */
-function getMonarchTokenName(rule: TerminalRule): string {
+function getMonarchTokenName(rule: ast.TerminalRule): string {
   if (rule.name.toLowerCase() === "string") {
     // string is clarified as a terminal by name, but not necessarily by type
     return "string";
@@ -324,10 +319,10 @@ function getMonarchTokenName(rule: TerminalRule): string {
  * @param grammar Langium grammar to extract whitespace rules from
  * @returns Array of Monarch whitespace rules
  */
-function getWhitespaceRules(grammar: langium.Grammar): Rule[] {
+function getWhitespaceRules(grammar: ast.Grammar): Rule[] {
   const rules: Rule[] = [];
   for (const rule of grammar.rules) {
-    if (isTerminalRule(rule) && isRegexToken(rule.definition)) {
+    if (ast.isTerminalRule(rule) && ast.isRegexToken(rule.definition)) {
       const regex = new RegExp(terminalRegex(rule));
 
       if (!isCommentTerminal(rule) && !regex.test(" ")) {
@@ -365,13 +360,13 @@ function getWhitespaceRules(grammar: langium.Grammar): Rule[] {
  * @param grammar Langium grammar to extract comment rules from
  * @returns Array of Monarch comment rules
  */
-function getCommentRules(grammar: langium.Grammar): Rule[] {
+function getCommentRules(grammar: ast.Grammar): Rule[] {
   const rules: Rule[] = [];
   for (const rule of grammar.rules) {
     if (
-      isTerminalRule(rule) &&
+      ast.isTerminalRule(rule) &&
       isCommentTerminal(rule) &&
-      isRegexToken(rule.definition)
+      ast.isRegexToken(rule.definition)
     ) {
       const tokenName = "comment";
       const part = getTerminalParts(terminalRegex(rule))[0];
@@ -410,13 +405,13 @@ function getCommentRules(grammar: langium.Grammar): Rule[] {
  * @param grammar Grammar to get non-comment terminals from
  * @returns Array of Rules to add to a Monarch tokenizer state
  */
-function getTerminalRules(grammar: langium.Grammar): Rule[] {
+function getTerminalRules(grammar: ast.Grammar): Rule[] {
   const rules: Rule[] = [];
   for (const rule of grammar.rules) {
     if (
-      isTerminalRule(rule) &&
+      ast.isTerminalRule(rule) &&
       !isCommentTerminal(rule) &&
-      isRegexToken(rule.definition)
+      ast.isRegexToken(rule.definition)
     ) {
       const regex = new RegExp(terminalRegex(rule));
 
@@ -463,7 +458,7 @@ const KeywordRegex = /[A-Za-z]/;
  * @param grammar Grammar to get keywords from
  * @returns Array of keywords
  */
-function getKeywords(grammar: langium.Grammar): string[] {
+function getKeywords(grammar: ast.Grammar): string[] {
   return collectKeywords(grammar).filter((kw) => KeywordRegex.test(kw));
 }
 
@@ -472,14 +467,14 @@ function getKeywords(grammar: langium.Grammar): string[] {
  * @param grammar Grammar to get symbols from
  * @returns Array of symbols, effective inverse of getKeywords
  */
-function getSymbols(grammar: langium.Grammar): string[] {
+function getSymbols(grammar: ast.Grammar): string[] {
   return collectKeywords(grammar).filter((kw) => !KeywordRegex.test(kw));
 }
 
-export function collectKeywords(grammar: langium.Grammar): string[] {
+export function collectKeywords(grammar: ast.Grammar): string[] {
   const keywords = new Set<string>();
 
-  for (const rule of stream(grammar.rules).filter(isParserRule)) {
+  for (const rule of stream(grammar.rules).filter(ast.isParserRule)) {
     collectElementKeywords(rule.definition, keywords);
   }
 
@@ -487,20 +482,20 @@ export function collectKeywords(grammar: langium.Grammar): string[] {
 }
 
 function collectElementKeywords(
-  element: AbstractElement,
+  element: ast.AbstractElement,
   keywords: Set<string>
 ) {
   if (
-    isAlternatives(element) ||
-    isGroup(element) ||
-    isUnorderedGroup(element)
+    ast.isAlternatives(element) ||
+    ast.isGroup(element) ||
+    ast.isUnorderedGroup(element)
   ) {
     for (const item of element.elements) {
       collectElementKeywords(item, keywords);
     }
-  } else if (isAssignment(element)) {
+  } else if (ast.isAssignment(element)) {
     collectElementKeywords(element.terminal, keywords);
-  } else if (isKeyword(element)) {
+  } else if (ast.isKeyword(element)) {
     keywords.add(element.value);
   }
 }

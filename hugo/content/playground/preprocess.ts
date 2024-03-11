@@ -4,7 +4,7 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { AstNode } from "langium";
+import { AstNode } from "langium/lib/syntax-tree";
 import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
 
 /**
