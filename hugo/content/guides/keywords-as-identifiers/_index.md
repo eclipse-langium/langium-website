@@ -151,7 +151,7 @@ Whether it makes sense to support keywords as values in your language at all is 
 
 Some hints beyond this guide:
 
-- In [multi-grammar projects](/guides/multiple-languages.md), only keywords of the included grammars are affected by this general problem, but not keywords of other languages or Langium grammar files.
+- In [multi-grammar projects](/guides/multiple-languages), only keywords of the included grammars are affected by this general problem, but not keywords of other languages or Langium grammar files.
 - Read about the concept of semantic tokens in the [Language Server Protocol](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens) (LSP) including predefined semantic types for tokens.
 - Read, how [VS Code](https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide) realizes semantic highlighting using semantic tokens.
 - Dive into [tokenizing of Chevrotain](https://chevrotain.io/docs/features/token_alternative_matches.html) with regex.
