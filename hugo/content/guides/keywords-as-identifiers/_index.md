@@ -3,15 +3,17 @@ title: "Keywords as Identifiers"
 weight: 300
 ---
 
-When your language uses keywords, which is the usual case, e.g. `var` or `function` keywords in programming languages, all occurrances of these strings are treated as keyword tokens.
-That means, that these strings are marked like keywords (in blue in this tutorial, while other text is white/black) whenever they are used. In particular, these keywords cannot be used as values for names, identifiers or other properties.
+When your language uses keywords, which is the usual case, e.g. `var`, `const` or `function` keywords in programming languages, all occurrances of these strings are treated by Langium as keyword tokens by default, even at places which are not intended by the rules in the Langium grammar.
+Additionally, these strings are marked like keywords (in blue in this guide, while other text is white) whenever they are used.
+Summarizing, these keywords cannot be used as values for names, identifiers or other properties by default and need to be explicitly enabled.
+This guide explains, how to do that.
 
-To keep this tutorial short, let's look at the "hello-world" example, in the [playground](https://langium.org/playground?grammar=OYJwhgthYgBAEgUwDbIPYHU0mQEwFD6IB2ALiAJ6wCyauKAXPrC7ABQAOiIAzmsTwDUAXgAK3PsVgAfWKESJSAS2LAhwgOIgFy1QEoAVAG5C43vyatYAci7ni12MUiJhASQAiJ-Fp0rglqzWSKhojnaSwgDaZpIMngC6NgCE1t4AFkq49FKk3BAqYMiwGADKDLAA9AA6QpUmeSAFzsWeFZVRAPpgALQAXgCCPQBaCVHVAO6dCQb1hJnZJLCNzUU0ADKdAMIA8tTUAKIAcgAq7dU1BuM81aUzAPzVBhdzCznL%2BYXFpZu7%2B8dnKoXC5RAB61WI1RAMzmQA&content=A4UwTgzg9gdgBAKQIYxAKABIgDbaolEAQjTVElji1yjSA) or as a new local project created with `yo langium` (for details, how to set up your first Langium project, read [getting started](/docs/getting-started/)):
+To keep this guide short, let's look at the "hello-world" example, in the [playground](https://langium.org/playground?grammar=OYJwhgthYgBAEgUwDbIPYHU0mQEwFD6IB2ALiAJ6wCyauKAXPrC7ABQAOiIAzmsTwDUAXgAK3PsVgAfWKESJSAS2LAhwgOIgFy1QEoAVAG5C43vyatYAci7ni12MUiJhASQAiJ-Fp0rglqzWSKhojnaSwgDaZpIMngC6NgCE1t4AFkq49FKk3BAqYMiwGADKDLAA9AA6QpUmeSAFzsWeFZVRAPpgALQAXgCCPQBaCVHVAO6dCQb1hJnZJLCNzUU0ADKdAMIA8tTUAKIAcgAq7dU1BuM81aUzAPzVBhdzCznL%2BYXFpZu7%2B8dnKoXC5RAB61WI1RAMzmQA&content=A4UwTgzg9gdgBAKQIYxAKABIgDbaolEAQjTVElji1yjSA) or as a new local project created with `yo langium` (for details, how to set up your first Langium project, read [getting started](/docs/getting-started/)):
 
 ![screenshot with the editor, an example and an error message](problem.png)
 
 Here, it is not possible to introduce a person whose name is "Hello", since `Hello` is a dedicated keyword of the language. Additionally, we cannot greet a person called "Hello" as well.
-The same counts for the keyword "person", but in this tutorial, we focus on enabling "Hello" as name for persons. Afterwards, you will be able to add support for "person" as name by your own.
+The same counts for the keyword "person", but in this guide, we focus on enabling "Hello" as name for persons. After reading this guide, you will be able to add support for "person" as name by your own.
 
 To enable keywords as identifiers, you need to apply the following three steps:
 
@@ -28,21 +30,26 @@ Person: 'person' name=ID;
 terminal ID: /[_a-zA-Z][\w_]*/;
 ```
 
-Note, that the terminal rule for `ID` already includes the string "Hello",
+Note, that the terminal rule for `ID` already covers the string "Hello",
 but since the parser rule for greeting persons uses "Hello" as keyword, the keyword wins:
 
 ```langium
 Greeting: 'Hello' person=[Person:ID] '!';
 ```
 
+Roughly summarized, the background for this behaviour is, that Langium internally use [Chevrotain](https://chevrotain.io) for tokenizing, i.e. splitting text into single tokens, e.g. words separated by white space.
+Chevrotain uses regex for splitting text into tokens.
+Since keywords are realized as regex as well, *all* occurrances of "Hello" are treated as keywords for the parser rule for greetings,
+even "Hello" which are intented to be names, which causes the parsing problems (see the two errors in the "Problems" tab above).
+
 In order to explicitly enable parsing "Hello" as name as well, tweak the parser rule for persons in this way:
 
 ```langium
 Person: 'person' name=(ID | 'Hello');
-terminal ID: /[_a-zA-Z][\w_]*/; // this terminal rule is unchanged!
+terminal ID: /[_a-zA-Z][\w_]*/; // the terminal rule for ID is unchanged!
 ```
 
-Now Langium knows, that "Hello" not always indicates the keyword of the greeting parser rule, but can also be used as alternative value for the `name` property of the parser rule for persons.
+Now Langium knows, that "Hello" not always indicates the keyword of the greeting parser rule, but can also occur as explicit value for the `name` property of the parser rule for persons.
 That's it! (Don't forget to run `npm run langium:generate` after updating the grammar.)
 
 ![screenshot with fixed grammar](fixed-1-grammar.png)
@@ -62,12 +69,19 @@ As you can see, Langium accepts "Hello" as value for person's names now.
 Nevertheless, the name "Hello" still is marked in blue and looks like a keyword "Hello". This leads us to the second step.
 
 
-The __second step__ is to change the semantic type of the resulting token:
-In the token stream, a token called "Hello" now is supported by the grammar to be used for the `name` property, but it is marked as a keyword token (TODO überprüfen), due to the parser rule for greetings.
-Therefore, we need to change the semantic type of this token.
+The __second step__ is to change the semantic type of the resulting token in order to adjust the highlighting in the editor:
+While parsing text with Langium is done in a language server, the highlighting is done in editors (the language clients).
+Editors like VS Code usually use *syntax highlighting* basing on the tokenized text. This highlighting can be complemented by *semantic highlighting* with additional semantic information for the tokens from the language server.
 
-In Langium, the `SemanticTokenProvider` service is capable for doing this.
-Therefore, we need to customize the default semantic token provider like this:
+In case of Langium and VS Code, VS Code uses by default TextMate grammars, which can be seen as collections of regex (and which is generated by `npm run langium:generate`), to split the text into tokens and assigns a (syntactic) type to these tokens. The color for highlighting the token is chosen depending on the assigned type.
+In the example, a regex for the "Hello" keyword matches *all* strings "Hello" in text, resulting in the blue color even for "Hello" used as name.
+
+In contrast to this, Langium is able to distinguish "Hello" keywords and "Hello" names and therefore is able to assign different *semantic* types to "Hello" tokens.
+According to the Language Server Protocol (LSP), these semantic token types are sent to editors like VS Code, which complement the syntactic types of tokens with these semantic types.
+Color themes are able adjust the default highlighting of tokens, which depends on the syntactic type, according to the semantic token type now.
+
+In Langium, the `SemanticTokenProvider` service is responsible for assigning language-dependent semantic types to tokens.
+Therefore, we customize the default semantic token provider like this:
 
 ```ts
 import { AbstractSemanticTokenProvider, AstNode, SemanticTokenAcceptor } from "langium";
@@ -75,21 +89,22 @@ import { isPerson } from "./generated/ast.js";
 import { SemanticTokenTypes } from 'vscode-languageserver';
 
 export class HelloWorldSemanticTokenProvider extends AbstractSemanticTokenProvider {
-	protected override highlightElement(node: AstNode, acceptor: SemanticTokenAcceptor): void | "prune" | undefined {
-		if (isPerson(node)) {
-			acceptor({
-				node,
-				property: 'name',
-				type: SemanticTokenTypes.class
-			});
-		}
-	}
+    protected override highlightElement(node: AstNode, acceptor: SemanticTokenAcceptor): void | "prune" | undefined {
+        if (isPerson(node)) {
+            acceptor({
+                node,
+                property: 'name',
+                type: SemanticTokenTypes.class
+            });
+        }
+    }
 }
-``````
+```
 
-For all persons (`isPerson(...)` in line 7), we explicitly specify the semantic type for the token of their `'name'` properties.
+For all persons (`isPerson(...)` in line 7), we explicitly specify the semantic type for the token of their `'name'` property.
 Here, we use `SemanticTokenTypes.class` as semantic type.
 For your case, select a predefined type which fits your domain best.
+Since the name is used as cross-reference by greetings, a similar check and assignment of a semantic token type needs to be done for the `person` property of `Greeting` as well.
 
 After creating the semantic token provider, you need to register the `HelloWorldSemanticTokenProvider` in `hello-world-module.ts` in the following way:
 
@@ -108,27 +123,35 @@ Now rebuild and restart your application and test the improvements of the second
 
 ![screenshot with fixed semantic token](fixed-2-token.png)
 
-The `HelloWorldSemanticTokenProvider` works, but you might see or might not see any difference, e.g. "Hello" is still blue here. This leads us to the third step.
+The `HelloWorldSemanticTokenProvider` works, and you might see a different highlighting XOR you might not see any difference, e.g. "Hello" is still blue here. This leads us to the third step.
 
-The __third step__ is to ensure, that your editor supports semantic tokens:
-Depending on your editor and the currently selected color theme, the semantic token type selected in `HelloWorldSemanticTokenProvider` might not be supported and didn't got a different color in the color theme.
-The easiest way to detect this possible problem is to change the current color theme and to try some others.
+The __third step__ is to ensure, that your editor supports the assigned semantic tokens:
+Depending on your editor and the currently selected color theme, the semantic token type selected in `HelloWorldSemanticTokenProvider` might not be supported or didn't got a different color in the color theme.
+The easiest way to detect such problems is to change the current color theme and to try some others.
+Note, that VS Code allows to switch off semantic highlighting for all themes with the setting `editor.semanticHighlighting.enabled`.
 
 After switching from "Dark (Visual Studio)" to "Dark Modern" in VS Code, the example looks as expected.
 You can switch the current color theme in VS Code with `cmd + K` `cmd + T` (or via the menu: Code -> Settings... -> Theme -> Color Theme).
 
 ![screenshot with supporting color theme](fixed-3-style-2.png)
 
-"Hello" is marked in purple, when it is used as keyword, and in green, when it is used as value for the name of a person.
-As another solution is to select another semantic type for your token in step two.
-A more elaborate solution is to create your own color theme and to ship it with your VS Code extension of your DSL.
+Now "Hello" is marked in purple, when it is used as keyword, and in green, when it is used as value for the name of a person.
+Another solution is to select a different semantic type for your token in step two.
+A more elaborate solution is to create your own color theme and to ship it with your VS Code extension of your language.
 
 While __step one__ is mandatory to enable keywords as values in general,
-__step two__ improves the user experience of your DSL.
-While step one and step two can be handled in the LSP server once for your DSL, __step three__ highly depends on your editor and its color themes (in the LSP clients), which makes step three quite complicated to handle.
+__step two__ improves the user experience of your language.
+While step one and step two can be handled in the LSP server once for your language, __step three__ highly depends on your editor and its color themes (in the LSP clients), which makes step three quite complicated to handle.
 
-Note, that in [multi-grammar projects](/guides/multiple-languages.md), only keywords of the included grammars are affected by this general problem, not keywords of other languages.
 
 Now you know, how to technically enable keywords as regular values for properties.
-As "home work", it is your task to enable the keyword "person" as name for persons in the example.
-Whether it makes sense to support keywords as values at all in your DSL is up to you to discuss with the users of your DSL!
+As home work, it is your task to enable the keyword "person" as name for persons in the example.
+Whether it makes sense to support keywords as values in your language at all is up to you to discuss with the users of your language!
+
+
+Some hints beyond this guide:
+
+- In [multi-grammar projects](/guides/multiple-languages.md), only keywords of the included grammars are affected by this general problem, but not keywords of other languages or Langium grammar files.
+- Read about the concept of semantic tokens in the [Language Server Protocol](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens) (LSP) including predefined semantic types for tokens.
+- Read, how [VS Code](https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide) realizes semantic highlighting using semantic tokens.
+- Dive into [tokenizing of Chevrotain](https://chevrotain.io/docs/features/token_alternative_matches.html) with regex.
