@@ -4,9 +4,9 @@ weight: 300
 ---
 
 When your language uses keywords, which is the usual case, e.g. `var`, `const` or `function` keywords in programming languages, all occurrances of these strings are treated by Langium as keyword tokens by default, even at places which are not intended by the rules in the Langium grammar.
-Additionally, these strings are marked like keywords (in blue in this guide, while other text is white) whenever they are used.
+Additionally, these strings are always highlighted as _keyword_ (in blue in this guide, while other text is white) whenever they are used.
 Summarizing, these keywords cannot be used as values for names, identifiers or other properties by default and need to be explicitly enabled.
-This guide explains, how to do that.
+This guide explains how to do that.
 
 To keep this guide short, let's look at the "hello-world" example, in the [playground](https://langium.org/playground?grammar=OYJwhgthYgBAEgUwDbIPYHU0mQEwFD6IB2ALiAJ6wCyauKAXPrC7ABQAOiIAzmsTwDUAXgAK3PsVgAfWKESJSAS2LAhwgOIgFy1QEoAVAG5C43vyatYAci7ni12MUiJhASQAiJ-Fp0rglqzWSKhojnaSwgDaZpIMngC6NgCE1t4AFkq49FKk3BAqYMiwGADKDLAA9AA6QpUmeSAFzsWeFZVRAPpgALQAXgCCPQBaCVHVAO6dCQb1hJnZJLCNzUU0ADKdAMIA8tTUAKIAcgAq7dU1BuM81aUzAPzVBhdzCznL%2BYXFpZu7%2B8dnKoXC5RAB61WI1RAMzmQA&content=A4UwTgzg9gdgBAKQIYxAKABIgDbaolEAQjTVElji1yjSA) or as a new local project created with `yo langium` (for details, how to set up your first Langium project, read [getting started](/docs/getting-started/)):
 
@@ -17,10 +17,11 @@ The same counts for the keyword "person", but in this guide, we focus on enablin
 
 To enable keywords as identifiers, you need to apply the following three steps:
 
-1. Tweak the grammar to explicitly parse keywords as property values.
-2. Change the semantic type of the resulting token.
-3. Ensure, that your editor supports styles for the chosen semantic type.
 
+{{< toc format=html >}}
+
+
+## Step 1: Tweak the grammar to explicitly parse keywords as property values
 
 The __first step__ is to tweak the grammar to explicitly parse keywords as property values:
 At the moment, the parser rule for introducing persons looks like this:
@@ -66,8 +67,10 @@ PersonID returns string: ID | 'Hello';
 
 
 As you can see, Langium accepts "Hello" as value for person's names now.
-Nevertheless, the name "Hello" still is marked in blue and looks like a keyword "Hello". This leads us to the second step.
+Nevertheless, the name "Hello" still is highlighted in blue and looks like a keyword "Hello". This leads us to the second step.
 
+
+## Step 2: Change the semantic type of the resulting token
 
 The __second step__ is to change the semantic type of the resulting token in order to adjust the highlighting in the editor:
 While parsing text with Langium is done in a language server, the highlighting is done in editors (the language clients).
@@ -125,6 +128,9 @@ Now rebuild and restart your application and test the improvements of the second
 
 The `HelloWorldSemanticTokenProvider` works, and you might see a different highlighting XOR you might not see any difference, e.g. "Hello" is still blue here. This leads us to the third step.
 
+
+## Step 3: Ensure that your editor styles the chosen semantic token type
+
 The __third step__ is to ensure, that your editor supports the assigned semantic tokens:
 Depending on your editor and the currently selected color theme, the semantic token type selected in `HelloWorldSemanticTokenProvider` might not be supported or didn't got a different color in the color theme.
 The easiest way to detect such problems is to change the current color theme and to try some others.
@@ -135,7 +141,7 @@ You can switch the current color theme in VS Code with `cmd + K` `cmd + T` (or v
 
 ![screenshot with supporting color theme](fixed-3-style-2.png)
 
-Now "Hello" is marked in purple, when it is used as keyword, and in green, when it is used as value for the name of a person.
+Now "Hello" is highlighted in purple, when it is used as keyword, and in green, when it is used as value for the name of a person.
 Another solution is to select a different semantic type for your token in step two.
 A more elaborate solution is to create your own color theme and to ship it with your VS Code extension of your language.
 
@@ -152,6 +158,7 @@ Whether it makes sense to support keywords as values in your language at all is 
 Some hints beyond this guide:
 
 - In [multi-grammar projects](/guides/multiple-languages), only keywords of the included grammars are affected by this general problem, but not keywords of other languages or Langium grammar files.
+- To get an overview about the keywords of your language, look into the generated TextMate grammar `*.tmLanguage.json` and search for the pattern named `keyword.control.*`. which contains a regex with the keywords.
 - Read about the concept of semantic tokens in the [Language Server Protocol](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens) (LSP) including predefined semantic types for tokens.
 - Read, how [VS Code](https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide) realizes semantic highlighting using semantic tokens.
 - Dive into [tokenizing of Chevrotain](https://chevrotain.io/docs/features/token_alternative_matches.html) with regex.
