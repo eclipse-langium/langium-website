@@ -38,11 +38,11 @@ but since the parser rule for greeting persons uses "Hello" as keyword, the keyw
 Greeting: 'Hello' person=[Person:ID] '!';
 ```
 
-Roughly summarized, the background for this behaviour is, that Langium's internally used LL(k) parser implementation named [Chevrotain](https://chevrotain.io) first does _lexing_/tokenizing, i.e. splitting text into single tokens, e.g. words separated by white space.
+Roughly summarized, the background for this behaviour is that Langium's internally used LL(k) parser implementation named [Chevrotain](https://chevrotain.io) first does _lexing_/tokenizing, i.e. splitting text into single tokens, e.g. words separated by white space.
 The actual _parsing_, i.e. the application of the parser rules, is performed afterwards on these tokens.
 Chevrotain uses regular expressions (regex) for splitting text into tokens.
-Since keywords are implemented as regex as well and take precedence, _all_ occurrences of "Hello" are treated as keywords for the parser rule for greetings,
-even "Hello" which are intented to be names, which finally causes the two errors in the "Problems" tab above.
+Since keywords are implemented as regex as well and take precedence, _all_ occurrences of "Hello" are treated as keywords for the parser rule named `Greeting`,
+even a "Hello" intented to be a name, which finally causes the two syntax errors.
 
 In order to explicitly enable parsing "Hello" as name as well, modify the parser rule for persons in this way:
 
@@ -51,7 +51,7 @@ Person: 'person' name=(ID | 'Hello');
 terminal ID: /[_a-zA-Z][\w_]*/; // the terminal rule for ID is unchanged!
 ```
 
-Now Langium knows, that keyword "Hello" may also occur as value for the `name` property of the parser rule for persons.
+Now Langium knows that keyword "Hello" may also occur as value for the `name` property of the parser rule for persons.
 That's it! (Don't forget to run `npm run langium:generate` after updating the grammar.)
 
 ![screenshot with fixed grammar](fixed-1-grammar.png)
@@ -66,7 +66,7 @@ Greeting: 'Hello' person=[Person:PersonID] '!';
 PersonID returns string: ID | 'Hello';
 ```
 
-Now, your editor accepts "Hello" as value for person's names.
+Now, your editor accepts "Hello" as value for persons' names.
 Nevertheless, the name "Hello" still is highlighted in blue and looks like a keyword "Hello". This leads us to the second step.
 
 
@@ -131,10 +131,10 @@ The `HelloWorldSemanticTokenProvider` works, and you might see a different highl
 
 ## Step 3: Ensure that your editor styles the chosen semantic token type
 
-The __third step__ is to ensure, that your editor supports the assigned semantic tokens:
-Depending on your editor and the currently selected color theme, the semantic token type selected in `HelloWorldSemanticTokenProvider` might not be supported or didn't got a different color in the color theme.
+The __third step__ is to ensure that your editor supports the assigned semantic tokens:
+Depending on your editor and the currently selected color theme, the semantic token type selected in `HelloWorldSemanticTokenProvider` might not be supported or didn't get a different color in the color theme.
 The easiest way to detect such problems is to change the current color theme and to try some others.
-Note, that VS Code allows to switch off semantic highlighting for all themes with the setting `editor.semanticHighlighting.enabled`.
+Note that VS Code allows to switch off semantic highlighting for all themes with the setting `editor.semanticHighlighting.enabled`.
 
 After switching from "Dark (Visual Studio)" to "Dark Modern" in VS Code, the example looks as expected.
 You can switch the current color theme in VS Code with `cmd + K` `cmd + T` (or via the menu: Code -> Settings... -> Theme -> Color Theme).
@@ -149,7 +149,7 @@ __step two__ improves the user experience of your language.
 While step one and step two can be handled in the LSP server once for your language, __step three__ highly depends on your editor and its color themes (in the LSP clients), which makes step three quite complicated to handle.
 
 
-Now you have learned, how to technically enable keywords as regular values for properties.
+Now you have learned how to technically enable keywords as regular values for properties.
 Feel free to enable the keyword "person" as name for persons in the example on your own.
 
 Word to the wise: Enabling certain strings to be used interchangeably as keywords and identifiers/values is possible, but has some costs. It always needs to be evaluated per case, whether accepting the costs is required and worth it.
