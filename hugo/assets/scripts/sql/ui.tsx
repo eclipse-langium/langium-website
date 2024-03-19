@@ -4,8 +4,8 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import {
   defaultText,
-  syntaxHighlighting,
 } from "./constants";
+import textMateGrammar from './sql.tmLanguage.json';
 import { DocumentChangeResponse } from "langium-ast-helper";
 
 addMonacoStyles('monaco-styles-helper');
@@ -112,7 +112,7 @@ userConfig = createUserConfig({
   languageId: 'sql',
   code: defaultText,
   worker: '../../showcase/libs/worker/sqlServerWorker.js',
-  monarchGrammar: syntaxHighlighting
+  textmateGrammar: textMateGrammar
 });
 
 const element = document.getElementById("root") as HTMLElement;
