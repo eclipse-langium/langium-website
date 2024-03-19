@@ -291,7 +291,6 @@ class StateMachineComponent extends React.Component<{
 const langiumGlobalConfig: UserConfig = createUserConfig({
   languageId: 'statemachine',
   code: defaultText,
-  htmlElement: document.getElementById('root')!,
   textmateGrammar: statemachineGrammar,
   worker: '../../showcase/libs/worker/statemachineServerWorker.js'
 });

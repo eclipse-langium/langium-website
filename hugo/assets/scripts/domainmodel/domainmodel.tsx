@@ -144,7 +144,6 @@ class App extends React.Component<{}, AppState> {
 userConfig = createUserConfig({
     languageId: 'domainmodel',
     code: example,
-    htmlElement: document.getElementById('root')!,
     worker: '../../showcase/libs/worker/domainmodelServerWorker.js',
     monarchGrammar: syntaxHighlighting
 });

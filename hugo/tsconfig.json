@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "target": "ES2022",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "rootDir": ".",
+        "outDir": "dist",
+        "declaration": true,
+        "declarationDir": "dist"
+    },
+    "include": [
+        "**/*.ts",
+    ]
+}

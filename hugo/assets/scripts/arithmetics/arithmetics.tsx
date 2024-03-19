@@ -192,7 +192,6 @@ class App extends React.Component<{}, AppState> {
 userConfig = createUserConfig({
     languageId: 'arithmetics',
     code: examples[0],
-    htmlElement: document.getElementById('root')!,
     worker: '../../showcase/libs/worker/arithmeticsServerWorker.js',
     monarchGrammar: syntaxHighlighting
 });
