@@ -9,7 +9,6 @@ import {
   LangiumTextMateContent,
   DSLInitialContent,
 } from "./data.js";
-import { generateMonarch } from "./monarch-generator.js";
 import { decompressFromEncodedURIComponent } from 'lz-string';
 import { Disposable } from "vscode-languageserver";
 import { render } from './Tree.js';
@@ -18,7 +17,7 @@ import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } 
 import { DocumentChangeResponse } from "langium-ast-helper";
 import { DefaultAstNodeLocator } from "langium";
 import { createServicesForGrammar } from "langium/grammar";
-
+import { generateTextMate } from "./textmate-generator.js";
 export { share, overlay } from './utils.js';
 export { addMonacoStyles, MonacoEditorLanguageClientWrapper };
 
@@ -221,7 +220,7 @@ async function getFreshDSLWrapper(
     languageId,
     code,
     worker,
-    monarchGrammar: generateMonarch(Grammar, languageId)
+    textmateGrammar: generateTextMate(Grammar, {id: languageId, grammar: 'UserGrammar'})
   }), htmlElement).then(() => {
     return wrapper;
   }).catch(async (e: any) => {
@@ -252,7 +251,7 @@ async function getFreshLangiumWrapper(htmlElement: HTMLElement): Promise<MonacoE
     languageId: "langium",
     code: currentGrammarContent,
     worker: "./libs/worker/langiumServerWorker.js",
-    LangiumTextMateContent: LangiumTextMateContent
+    textmateGrammar: LangiumTextMateContent
   }), htmlElement);
   return langiumWrapper;
 }
