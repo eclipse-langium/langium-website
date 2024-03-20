@@ -48,7 +48,7 @@
     "langium-statemachine-dsl": "^3.0.0",
     "langium-website-core": "~1.0.0",
     "lz-string": "^1.4.4",
-    "monaco-editor-workers": "~0.45.0",
+    "monaco-editor-workers": "~0.44.0",
     "react": "~18.2.0",
     "react-dom": "~18.2.0",
     "vscode-languageserver": "~9.0.1"

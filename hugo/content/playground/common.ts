@@ -6,7 +6,7 @@
 
 import {
   HelloWorldGrammar,
-  LangiumMonarchContent,
+  LangiumTextMateContent,
   DSLInitialContent,
 } from "./data.js";
 import { generateMonarch } from "./monarch-generator.js";
@@ -158,7 +158,7 @@ export async function setupPlayground(
           await setupDSLWrapper();
           overlay(false, false);
   
-        }).catch(async (e) => {
+        }).catch(async (e: any) => {
           // failed to dispose, report & discard this error
           // can happen when a previous editor was not started correctly
           console.error('DSL editor disposal error: ' + e);
@@ -224,7 +224,7 @@ async function getFreshDSLWrapper(
     monarchGrammar: generateMonarch(Grammar, languageId)
   }), htmlElement).then(() => {
     return wrapper;
-  }).catch(async (e) => {
+  }).catch(async (e: any) => {
     console.error('Failed to start DSL wrapper: ' + e);
     // don't leak the worker on failure to start
     // normally we wouldn't need to manually terminate, but if the LC is stuck in the 'starting' state, the following dispose will fail prematurely
@@ -235,7 +235,7 @@ async function getFreshDSLWrapper(
     try {
       await wrapper.dispose();
     } catch (e) {}
-    return undefined;
+    return undefined as MonacoEditorLanguageClientWrapper|undefined;
   });
 }
 
@@ -252,7 +252,7 @@ async function getFreshLangiumWrapper(htmlElement: HTMLElement): Promise<MonacoE
     languageId: "langium",
     code: currentGrammarContent,
     worker: "./libs/worker/langiumServerWorker.js",
-    monarchGrammar: LangiumMonarchContent
+    LangiumTextMateContent: LangiumTextMateContent
   }), htmlElement);
   return langiumWrapper;
 }
