@@ -8,7 +8,7 @@ import {
   HelloWorldGrammar,
   LangiumTextMateContent,
   DSLInitialContent,
-} from "./data.js";
+} from "./constants.js";
 import { decompressFromEncodedURIComponent } from 'lz-string';
 import { Disposable } from "vscode-languageserver";
 import { render } from './Tree.js';
