@@ -5,7 +5,7 @@
   "description": "Bundling complex sources for hugo",
   "author": "TypeFox",
   "license": "MIT",
-  "private": true,  
+  "private": true,
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "exports": {
@@ -46,7 +46,7 @@
     "@types/react-dom": "~18.2.13",
     "@types/vscode": "~1.83.0",
     "typescript": "~5.2.2",
-    "vite": "~4.4.11"
+    "vite": "^4.5.2"
   },
   "dependencies": {
     "@codingame/monaco-vscode-keybindings-service-override": "~1.83.2",

@@ -2,7 +2,7 @@ import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } 
 import { buildWorkerDefinition } from "monaco-editor-workers";
 import React, { createRef } from "react";
 import { createRoot } from "react-dom/client";
-import { Diagnostic, DocumentChangeResponse, LangiumAST } from "../langium-utils/langium-ast";
+import { Diagnostic, DocumentChangeResponse } from "langium-ast-helper";
 import { ColorArgs, Command, MoveArgs, examples, syntaxHighlighting } from "./minilogo-tools";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 
@@ -351,7 +351,6 @@ let code = url.searchParams.get("code");
 userConfig = createUserConfig({
   languageId: 'minilogo',
   code: code ? decompressFromEncodedURIComponent(code) : examples[0].code,
-  htmlElement: document.getElementById('root')!,
   worker: '../../showcase/libs/worker/minilogoServerWorker.js',
   monarchGrammar: syntaxHighlighting
 });
