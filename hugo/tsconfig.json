@@ -7,7 +7,8 @@
         "rootDir": ".",
         "outDir": "dist",
         "declaration": true,
-        "declarationDir": "dist"
+        "declarationDir": "dist",
+        "jsx": "react-jsx"
     },
     "include": [
         "**/*.ts",

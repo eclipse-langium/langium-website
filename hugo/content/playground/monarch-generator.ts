@@ -4,8 +4,8 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { isCommentTerminal, terminalRegex, stream, escapeRegExp, getTerminalParts } from "langium";
-import ast from "langium";
+import { GrammarUtils, stream, RegExpUtils } from "langium";
+import { GrammarAST } from "langium";
 import { languages } from "monaco-editor";
 
 /**
@@ -119,7 +119,7 @@ interface MonarchGrammar {
  * @param config Langium Config to also use during generation
  * @returns Generated Monarch syntax highlighting file content
  */
-export function generateMonarch(grammar: ast.Grammar, id: string): languages.IMonarchLanguage {
+export function generateMonarch(grammar: GrammarAST.Grammar, id: string): languages.IMonarchLanguage {
   const symbols = getSymbols(grammar);
   const regex = /[{}[\]()]/;
   const operators = symbols.filter((s) => !regex.test(s));
@@ -147,7 +147,7 @@ export function generateMonarch(grammar: ast.Grammar, id: string): languages.IMo
  * @param grammar Langium grammar to source tokenizer states from
  * @returns Array of tokenizer states
  */
-function getTokenizerStates(grammar: ast.Grammar): State[] {
+function getTokenizerStates(grammar: GrammarAST.Grammar): State[] {
   // initial state, name is arbitrary, just needs to come first
   const initialState: State = {
     name: "initial",
@@ -224,7 +224,7 @@ function prettyPrintLangDef(
 ) {
   const keywords = genLanguageDefEntry("keywords", languageDef.keywords);
   const operators = genLanguageDefEntry("operators", languageDef.operators);
-  const symbols = { symbols: new RegExp(languageDef.symbols.map(escapeRegExp).join("|"))}
+  const symbols = { symbols: new RegExp(languageDef.symbols.map(RegExpUtils.escapeRegExp).join("|"))}
   return {
     ...keywords,
     ...operators,
@@ -298,7 +298,7 @@ function prettyPrintAction(action: Action | Case[]): Action {
  * @param rule Rule to convert to a Monarch token name
  * @returns Returns the equivalent monarch token name, or the original rule name
  */
-function getMonarchTokenName(rule: ast.TerminalRule): string {
+function getMonarchTokenName(rule: GrammarAST.TerminalRule): string {
   if (rule.name.toLowerCase() === "string") {
     // string is clarified as a terminal by name, but not necessarily by type
     return "string";
@@ -316,24 +316,24 @@ function getMonarchTokenName(rule: ast.TerminalRule): string {
  * @param grammar Langium grammar to extract whitespace rules from
  * @returns Array of Monarch whitespace rules
  */
-function getWhitespaceRules(grammar: ast.Grammar): Rule[] {
+function getWhitespaceRules(grammar: GrammarAST.Grammar): Rule[] {
   const rules: Rule[] = [];
   for (const rule of grammar.rules) {
-    if (ast.isTerminalRule(rule) && ast.isRegexToken(rule.definition)) {
-      const regex = new RegExp(terminalRegex(rule));
+    if (GrammarAST.isTerminalRule(rule) && GrammarAST.isRegexToken(rule.definition)) {
+      const regex = new RegExp(GrammarUtils.terminalRegex(rule));
 
-      if (!isCommentTerminal(rule) && !regex.test(" ")) {
+      if (!GrammarUtils.isCommentTerminal(rule) && !regex.test(" ")) {
         // skip rules that are not comments or whitespace
         continue;
       }
 
       // token name is either comment or whitespace
-      const tokenName = isCommentTerminal(rule) ? "comment" : "white";
+      const tokenName = GrammarUtils.isCommentTerminal(rule) ? "comment" : "white";
 
-      const part = getTerminalParts(terminalRegex(rule))[0];
+      const part = RegExpUtils.getTerminalParts(GrammarUtils.terminalRegex(rule))[0];
 
       // check if this is a comment terminal w/ a start & end sequence (multi-line)
-      if (part.start !== "" && part.end !== "" && isCommentTerminal(rule)) {
+      if (part.start !== "" && part.end !== "" && GrammarUtils.isCommentTerminal(rule)) {
         // state-based comment rule, only add push to jump into it
         rules.push({
           regex: part.start.replace("/", "\\/"),
@@ -357,16 +357,16 @@ function getWhitespaceRules(grammar: ast.Grammar): Rule[] {
  * @param grammar Langium grammar to extract comment rules from
  * @returns Array of Monarch comment rules
  */
-function getCommentRules(grammar: ast.Grammar): Rule[] {
+function getCommentRules(grammar: GrammarAST.Grammar): Rule[] {
   const rules: Rule[] = [];
   for (const rule of grammar.rules) {
     if (
-      ast.isTerminalRule(rule) &&
-      isCommentTerminal(rule) &&
-      ast.isRegexToken(rule.definition)
+      GrammarAST.isTerminalRule(rule) &&
+      GrammarUtils.isCommentTerminal(rule) &&
+      GrammarAST.isRegexToken(rule.definition)
     ) {
       const tokenName = "comment";
-      const part = getTerminalParts(terminalRegex(rule))[0];
+      const part = RegExpUtils.getTerminalParts(GrammarUtils.terminalRegex(rule))[0];
       if (part.start !== "" && part.end !== "") {
         // rules to manage comment start/end
         // rule order matters
@@ -402,15 +402,15 @@ function getCommentRules(grammar: ast.Grammar): Rule[] {
  * @param grammar Grammar to get non-comment terminals from
  * @returns Array of Rules to add to a Monarch tokenizer state
  */
-function getTerminalRules(grammar: ast.Grammar): Rule[] {
+function getTerminalRules(grammar: GrammarAST.Grammar): Rule[] {
   const rules: Rule[] = [];
   for (const rule of grammar.rules) {
     if (
-      ast.isTerminalRule(rule) &&
-      !isCommentTerminal(rule) &&
-      ast.isRegexToken(rule.definition)
+      GrammarAST.isTerminalRule(rule) &&
+      !GrammarUtils.isCommentTerminal(rule) &&
+      GrammarAST.isRegexToken(rule.definition)
     ) {
-      const regex = new RegExp(terminalRegex(rule));
+      const regex = new RegExp(GrammarUtils.terminalRegex(rule));
 
       if (regex.test(" ")) {
         // disallow terminal rules that match whitespace
@@ -455,7 +455,7 @@ const KeywordRegex = /[A-Za-z]/;
  * @param grammar Grammar to get keywords from
  * @returns Array of keywords
  */
-function getKeywords(grammar: ast.Grammar): string[] {
+function getKeywords(grammar: GrammarAST.Grammar): string[] {
   return collectKeywords(grammar).filter((kw) => KeywordRegex.test(kw));
 }
 
@@ -464,14 +464,14 @@ function getKeywords(grammar: ast.Grammar): string[] {
  * @param grammar Grammar to get symbols from
  * @returns Array of symbols, effective inverse of getKeywords
  */
-function getSymbols(grammar: ast.Grammar): string[] {
+function getSymbols(grammar: GrammarAST.Grammar): string[] {
   return collectKeywords(grammar).filter((kw) => !KeywordRegex.test(kw));
 }
 
-export function collectKeywords(grammar: ast.Grammar): string[] {
+export function collectKeywords(grammar: GrammarAST.Grammar): string[] {
   const keywords = new Set<string>();
 
-  for (const rule of stream(grammar.rules).filter(ast.isParserRule)) {
+  for (const rule of stream(grammar.rules).filter(GrammarAST.isParserRule)) {
     collectElementKeywords(rule.definition, keywords);
   }
 
@@ -479,20 +479,20 @@ export function collectKeywords(grammar: ast.Grammar): string[] {
 }
 
 function collectElementKeywords(
-  element: ast.AbstractElement,
+  element: GrammarAST.AbstractElement,
   keywords: Set<string>
 ) {
   if (
-    ast.isAlternatives(element) ||
-    ast.isGroup(element) ||
-    ast.isUnorderedGroup(element)
+    GrammarAST.isAlternatives(element) ||
+    GrammarAST.isGroup(element) ||
+    GrammarAST.isUnorderedGroup(element)
   ) {
     for (const item of element.elements) {
       collectElementKeywords(item, keywords);
     }
-  } else if (ast.isAssignment(element)) {
+  } else if (GrammarAST.isAssignment(element)) {
     collectElementKeywords(element.terminal, keywords);
-  } else if (ast.isKeyword(element)) {
+  } else if (GrammarAST.isKeyword(element)) {
     keywords.add(element.value);
   }
 }

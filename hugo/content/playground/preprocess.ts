@@ -4,8 +4,7 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { AstNode } from "langium/lib/syntax-tree";
-import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
+import { AstNode, AstNodeLocator } from "langium";
 
 /**
  * Represents a serialized version of a reference to an AstNode
@@ -104,7 +103,7 @@ export function preprocessAstNodeObject(
   const properties: PropertyNode[] = Object.keys(node)
     .filter((n) => !n.startsWith("$"))
     .map((n) => {
-      const valueOrValues = node[n] as
+      const valueOrValues = ((node as any)[n]) as
         | AstNode
         | AstNode[]
         | "string"

@@ -8,17 +8,18 @@ import {
   HelloWorldGrammar,
   LangiumMonarchContent,
   DSLInitialContent,
-} from "./data";
-import { generateMonarch } from "./monarch-generator";
+} from "./data.js";
+import { generateMonarch } from "./monarch-generator.js";
 import { decompressFromEncodedURIComponent } from 'lz-string';
 import { Disposable } from "vscode-languageserver";
-import { render } from './Tree';
-import { overlay, throttle } from "./utils";
+import { render } from './Tree.js';
+import { overlay, throttle } from "./utils.js";
 import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
 import { DocumentChangeResponse } from "langium-ast-helper";
-import { createServicesForGrammar, DefaultAstNodeLocator } from "langium";
+import { DefaultAstNodeLocator } from "langium";
+import { createServicesForGrammar } from "langium/grammar";
 
-export { share, overlay } from './utils';
+export { share, overlay } from './utils.js';
 export { addMonacoStyles, MonacoEditorLanguageClientWrapper };
 
 export interface PlaygroundParameters {

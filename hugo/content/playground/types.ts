@@ -4,7 +4,7 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { AstNode } from "langium/lib/syntax-tree";
+import { AstNode } from "langium";
 import { Diagnostic } from "vscode-languageserver";
 
 export declare type DedicatedWorkerGlobalScope = any;
@@ -71,7 +71,7 @@ export interface PlaygroundParameters {
 }
 
 export function isNotification(msg: Message): msg is Notification {
-  return !msg["id"] && msg["method"];
+  return !("id" in msg) && ("method" in msg);
 }
 
 export type Message = Request | ResponseError | ResponseOK | Notification;
