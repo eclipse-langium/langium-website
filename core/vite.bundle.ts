@@ -10,9 +10,9 @@ const config = defineConfig({
             formats: ['es']
         },
         outDir: resolve(__dirname, 'bundle/monaco-editor-wrapper-bundle'),
-        assetsDir: resolve(__dirname, 'bundle/monaco-editor-wrapper-bundle/assets'),
         emptyOutDir: true,
         cssCodeSplit: false,
+        sourcemap: true,
         commonjsOptions: {
             strictRequires: true
         },
@@ -20,15 +20,9 @@ const config = defineConfig({
             output: {
                 name: 'monaco-editor-wrapper-bundle',
                 exports: 'named',
-                sourcemap: false,
-                assetFileNames: (assetInfo) => {
-                    return `assets/${assetInfo.name}`;
-                }
+                sourcemap: false
             }
         }
-    },
-    resolve: {
-        dedupe: ['monaco-editor', 'vscode']
     }
 });
 

@@ -4,15 +4,14 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { startLanguageServer, EmptyFileSystem } from "langium";
+import { EmptyFileSystem } from "langium";
+import { startLanguageServer } from "langium/lsp";
 import {
   createConnection,
   BrowserMessageReader,
   BrowserMessageWriter,
-} from "vscode-languageserver/browser";
-import { createSqlServices } from "langium-sql";
-import { MySqlDialectTypes } from "langium-sql/lib/dialects/mysql/data-types";
-import { DialectTypes } from "langium-sql/lib/sql-data-types";
+} from "vscode-languageserver/browser.js";
+import { DialectTypes, MySqlDialectTypes, createSqlServices } from "langium-sql";
 
 /* browser specific setup code */
 const messageReader = new BrowserMessageReader(self);

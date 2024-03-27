@@ -1,4 +1,4 @@
-import { Diagnostic, BrowserMessageReader, BrowserMessageWriter, createConnection, Connection } from 'vscode-languageserver/browser';
+import { Diagnostic, BrowserMessageReader, BrowserMessageWriter, createConnection, Connection } from 'vscode-languageserver/browser.js';
 
 /**
  * Describes a notification that can be sent from the LS,
