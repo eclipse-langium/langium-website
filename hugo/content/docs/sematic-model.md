@@ -252,9 +252,8 @@ left_right --> left_right_{2}
 While this is a fairly trivial example, adding more layers of expression types in your grammar massively degrades the quality of your syntax tree as each layer will add another empty `right` property to the tree. Assigned actions alleviate this issue completely.
 
 ## Declared Types
-It's important to keep in mind that while declared types can improve your grammars, they are a *bleeding edge feature and are still being developed*.
 
-Because type inference takes into account every entity of a parser rule, even the smallest changes can update your inferred types. This can lead to unwanted changes in your semantic model and incorrect behavior of services that depend on it. To minimize the risk of introducing breaking changes when modifying the grammar, we have introduced *declared types* as a new feature.
+Because type inference takes into account every entity of a parser rule, even the smallest changes can update your inferred types. This can lead to unwanted changes in your semantic model and incorrect behavior of services that depend on it. *Declared types* are a means to minimize the risk of introducing breaking changes when modifying the grammar.
 
 In most cases, especially for early language designs, letting the type inference take care of generating your types will be your best choice. As your language starts to mature, it may then be of interest to fix parts of your semantic model using declared types.
 
