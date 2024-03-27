@@ -1,5 +1,4 @@
-import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } from "langium-website-core/bundle";
-import { buildWorkerDefinition } from "monaco-editor-workers";
+import { createUserConfig, mew, mer, useWorkerFactory } from "langium-website-core/bundle";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -8,18 +7,17 @@ import {
 import textMateGrammar from './sql.tmLanguage.json';
 import { DocumentChangeResponse } from "langium-ast-helper";
 
-addMonacoStyles('monaco-styles-helper');
+useWorkerFactory({
+  ignoreMapping: true,
+  workerLoaders: {
+      editorWorkerService: () => new Worker(new URL('../../libs/workers/editorWorker-es.js', window.location.href).href, { type: 'module' })
+  }
+});
 
-buildWorkerDefinition(
-  "../../libs/monaco-editor-workers/workers",
-  new URL("", window.location.href).href,
-  false
-);
-
-let userConfig: UserConfig;
+let userConfig: mew.UserConfig;
 
 class App extends React.Component<{}> {
-  private monacoEditorLeft: React.RefObject<MonacoEditorReactComp>;
+  private monacoEditorLeft: React.RefObject<mer.MonacoEditorReactComp>;
   constructor(props) {
     super(props);
 
@@ -35,7 +33,7 @@ class App extends React.Component<{}> {
    *
    * @throws Error on inability to ref the Monaco component or to get the language client
    */
-  onMonacoLoad(editor: React.RefObject<MonacoEditorReactComp>) {
+  onMonacoLoad(editor: React.RefObject<mer.MonacoEditorReactComp>) {
     // verify we can get a ref to the editor
     if (!editor.current) {
       throw new Error("Unable to get a reference to the Monaco Editor");
@@ -72,7 +70,7 @@ class App extends React.Component<{}> {
     };
     return (
       <div className="w-full justify-center flex flex-col items-center">
-        <MonacoEditorReactComp
+        <mer.MonacoEditorReactComp
           userConfig={userConfig}
           className="w-1/2 border border-emeraldLangium h-[50vh] min-h-[300px]"
           ref={this.monacoEditorLeft}
