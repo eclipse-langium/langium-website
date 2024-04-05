@@ -1,6 +1,6 @@
 ---
 title: "Resolve cross-references"
 weight: 600
-url: /docs/learn/worflow/resolve_cross_references
+url: /docs/learn/workflow/resolve_cross_references
 ---
 TODO
