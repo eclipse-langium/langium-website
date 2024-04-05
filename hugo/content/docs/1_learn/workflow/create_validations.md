@@ -1,6 +1,6 @@
 ---
 title: "Create validations"
 weight: 700
-url: /docs/learn/create_validations
+url: /docs/learn/worflow/create_validations
 ---
 TODO

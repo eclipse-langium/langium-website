@@ -1,7 +1,7 @@
 ---
 title: "Install Yeoman"
 weight: 200
-url: /docs/learn/install
+url: /docs/learn/worflow/install
 ---
 
 Before diving into Langium itself, let's get your environment ready for development:

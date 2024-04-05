@@ -1,7 +1,7 @@
 ---
-title: "Overview"
-weight: 100
-url: /docs/learn
+title: "Our workflow"
+weight: 0
+url: /docs/learn/worflow
 ---
 
 {{<mermaid>}}
@@ -26,3 +26,4 @@ flowchart TD
   click G "/docs/learn/generate_everything"
   click H "/docs/recipes"
 {{</mermaid>}}
+

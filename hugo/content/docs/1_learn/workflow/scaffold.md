@@ -1,7 +1,7 @@
 ---
 title: "Scaffold a Langium project"
 weight: 300
-url: /docs/learn/scaffold
+url: /docs/learn/worflow/scaffold
 ---
 
 To create your first working DSL, execute the Yeoman generator:

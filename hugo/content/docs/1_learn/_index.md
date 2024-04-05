@@ -1,4 +1,6 @@
 ---
 title: "Learn Langium"
-weight: 200
+weight: 0
+url: /docs/learn
 ---
+TODO
