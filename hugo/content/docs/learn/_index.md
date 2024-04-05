@@ -3,4 +3,4 @@ title: "Learn Langium"
 weight: 0
 url: /docs/learn
 ---
-TODO
+<meta http-equiv="refresh" content="0; url=/docs/learn/worflow/"/>
