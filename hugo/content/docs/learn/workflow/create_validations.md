@@ -14,7 +14,7 @@ person Jane
 
 Hello John!
 Hello Jane!
-Hello John! //should throw: You can great each person at most once! This is the 2nd greeting of John.
+Hello John! //should throw: You can great each person at most once! This is the 2nd greeting to John.
 ```
 
 To accomplish this, you need to implement a validator. The validator is a visitor that traverses a certain part of the syntax tree and checks for semantic errors. The following code snippet shows how you can implement a validator for the Hello-World example. Mind that the Hello-World already has a validator, you just need to add the following one.
@@ -50,7 +50,7 @@ export class HelloWorldValidator {
                 counts.set(person, newValue);
                 //if the counter is greater than 1, create a helpful error
                 if(newValue > 1) {
-                    accept('error', `You can great each person at most once! This is the ${newValue}${newValue==2?'nd':'th'} greeting of ${person.name}.`, {
+                    accept('error', `You can great each person at most once! This is the ${newValue}${newValue==2?'nd':'th'} greeting to ${person.name}.`, {
                         node: g
                     });
                 }

@@ -1,6 +1,6 @@
 ---
 title: "Recipes"
-weight: 300
+weight: 400
 url: "/docs/recipes"
 ---
 TODO
