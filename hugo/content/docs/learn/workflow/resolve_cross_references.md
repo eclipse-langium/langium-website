@@ -45,7 +45,7 @@ graph TB
   greetings-->G2[Greeting]
   G2 --> KW2('hello')
   G2 --> PRef2[Ref]
-  PRef2 -- $refText --> RT2('John')
+  PRef2 -- $refText --> RT2('Jane')
   G2 --> EM2('!')
   PRef2 --> QM2{?}
 {{</mermaid>}}
@@ -77,7 +77,7 @@ graph TB
   greetings-->G2[Greeting]
   G2 --> KW2('hello')
   G2 --> PRef2[Ref]
-  PRef2 -- $refText --> RT2('John')
+  PRef2 -- $refText --> RT2('Jane')
   G2 --> EM2('!')
   PRef2 -..-> P2
 {{</mermaid>}}
