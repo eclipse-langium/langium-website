@@ -1,4 +1,4 @@
 ---
-title: "New documentation"
+title: "Documentation"
 weight: 0
 ---
