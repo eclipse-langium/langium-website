@@ -64,7 +64,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
                 const fullyQualifiedName = this.getQualifiedName(childNode, childNode.name);
                 // `descriptions` is our `AstNodeDescriptionProvider` defined in `DefaultScopeComputation`
                 // It allows us to easily create descriptions that point to elements using a name.
-                exportedDescriptions.push(this.descriptions.createDescription(modelNode, fullyQualifiedName, document));
+                exportedDescriptions.push(this.descriptions.createDescription(childNode, fullyQualifiedName, document));
             }
         }
         return exportedDescriptions;
@@ -126,7 +126,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
                 const description = this.descriptions.createDescription(element, element.name, document);
                 localDescriptions.push(description);
             } else if (isNamespace(element)) {
-                const nestedDescriptions = this.processContainer(element, scopes, document, cancelToken);
+                const nestedDescriptions = this.processContainer(element, scopes, document);
                 for (const description of nestedDescriptions) {
                     // Add qualified names to the container
                     // This could also be a partial qualified name
@@ -171,7 +171,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
                 const fullyQualifiedName = this.getQualifiedName(childNode, childNode.name);
                 // `descriptions` is our `AstNodeDescriptionProvider` defined in `DefaultScopeComputation`
                 // It allows us to easily create descriptions that point to elements using a name.
-                exportedDescriptions.push(this.descriptions.createDescription(modelNode, fullyQualifiedName, document));
+                exportedDescriptions.push(this.descriptions.createDescription(childNode, fullyQualifiedName, document));
             }
         }
         return exportedDescriptions;
@@ -197,7 +197,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
                 const description = this.descriptions.createDescription(element, element.name, document);
                 localDescriptions.push(description);
             } else if (isNamespace(element)) {
-                const nestedDescriptions = this.processContainer(element, scopes, document, cancelToken);
+                const nestedDescriptions = this.processContainer(element, scopes, document);
                 for (const description of nestedDescriptions) {
                     // Add qualified names to the container
                     // This could also be a partially qualified name
