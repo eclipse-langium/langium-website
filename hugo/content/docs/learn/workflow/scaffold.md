@@ -1,5 +1,5 @@
 ---
-title: "Scaffold a Langium project"
+title: "2. Scaffold a Langium project"
 weight: 300
 url: /docs/learn/workflow/scaffold
 ---

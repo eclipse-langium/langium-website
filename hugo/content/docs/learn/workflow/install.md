@@ -1,5 +1,5 @@
 ---
-title: "Install Yeoman"
+title: "1. Install Yeoman"
 weight: 200
 url: /docs/learn/workflow/install
 ---

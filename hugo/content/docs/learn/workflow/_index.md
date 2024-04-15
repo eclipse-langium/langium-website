@@ -1,23 +1,25 @@
 ---
-title: "Our workflow"
+title: "Langium's workflow"
 weight: 0
 url: /docs/learn/worflow
 ---
+
+<!-- markdownlint-disable MD029 -->
 
 ## Workflow diagram
 
 {{<mermaid>}}
 flowchart TD
-  A(["1. Install Yeoman generator"]);
+  A(["1. Install Yeoman"]);
   B(["2. Scaffold a Langium project"]);
   C(["3. Write the grammar"]);
-  D(["4. Generate AST files"]);
+  D(["4. Generate the AST"]);
   E(["5. Resolve cross-references"]);
   F(["6. Create validations"]);
-  G(["7. Generate what you want"]);
-  H(["8. Find advanced topics"]);
-  A --> B --> C --> D --> E --> F --> G --> H;
-  G -- reiterate --> C;
+  G(["7. Generate your artifacts"]);
+  H(["Find advanced topics"]);
+  A --> B --> C --> D --> E --> F --> G ~~~ H;
+  G -- for each feature --> C;
 
   click A "/docs/learn/workflow/install"
   click B "/docs/learn/workflow/scaffold"
@@ -42,10 +44,38 @@ This simple introduction can be seen as three main parts:
 While the first part is straight-forward. The last part is about advanced topics that differ from project to project.
 The middle part will be explained briefly in the following section.
 
+## Initial setup
+
+### [1. Install Yeoman](/docs/learn/workflow/install)
+
+This step ensures that you start a Langium project with the Yeoman generator. Yeoman is a scaffolding tool that helps you to start a new project with a predefined structure.
+
+### [2. Scaffold a Langium project](/docs/learn/workflow/scaffold)
+
+After installing Yeoman, you can scaffold a new Langium project.
+
 ## Core workflow
 
-3. [_changing the grammar_](/docs/learn/workflow/write_grammar): The first step in the core workflow starts from the grammar. You will have some language feature in mind that you want to implement. The grammar is used to nail down the syntax of your features. You can use our Langium VS Code extension to get syntax highlighting and code completion for `.langium` files. If your grammar is free of errors, you can generate the files for the _abstract syntax tree (AST)_.
-4. [_generating the AST_](/docs/learn/workflow/generate_ast): The AST is the backbone of your language. It is used to represent the structure of your language elements. The AST is generated from the grammar. One important part of the AST are the _cross-references_. They are used to resolve references between language elements. If you have cross-references in your language, you need to _resolve_ them, after this step. The actual generation is done by a call of the Langium CLI.
-5. [_resolving cross-references_](/docs/learn/workflow/resolve_cross_references): The cross-references are used to resolve references between language elements (between different sub trees of one file or even elements of other files(!)). This step is quite important, because it is the basis for the next steps. You can also see it like this: Step 4 will generate an AST with gaps, this fifth step will fill these gaps.
-6. [_create validations_](/docs/learn/workflow/create_validations): From here we have a fully utilized AST. Now every input file that matches the syntax will be accepted. But we want to have more control over the input. We want to check if the input is semantically correct. This is done by creating _validations_. They are used to check the input against a set of rules. If the input does not match the rules, an error will be thrown.
-7. [_generate what you want_](/docs/learn/workflow/generate_everything): Now you have a fully working language. You can generate whatever you want from the input. This can be code, documentation, or anything else. You can use the AST to traverse the input and generate the output.
+### [3. Write the grammar](/docs/learn/workflow/write_grammar)
+
+The first step in the core workflow starts from the grammar. You will have some language feature in mind that you want to implement. The grammar is used to nail down the syntax of your features. You can use our Langium VS Code extension to get syntax highlighting and code completion for `.langium` files. If your grammar is free of errors, you can generate the files for the _abstract syntax tree (AST)_.
+
+### [4. Generate the AST](/docs/learn/workflow/generate_ast)
+
+The AST is the backbone of your language. It is used to represent the structure of your language elements. The AST is generated from the grammar. One important part of the AST are the _cross-references_. They are used to resolve references between language elements. If you have cross-references in your language, you need to _resolve_ them, after this step. The actual generation is done by a call of the Langium CLI.
+
+### [5. Resolve cross-references](/docs/learn/workflow/resolve_cross_references)
+
+The cross-references are used to resolve references between language elements (between different sub trees of one file or even elements of other files(!)). This step is quite important, because it is the basis for the next steps. You can also see it like this: Step 4 will generate an AST with gaps, this fifth step will fill these gaps.
+
+### [6. Create validations](/docs/learn/workflow/create_validations)
+
+From here we have a fully utilized AST. Now every input file that matches the syntax will be accepted. But we want to have more control over the input. We want to check if the input is semantically correct. This is done by creating _validations_. They are used to check the input against a set of rules. If the input does not match the rules, an error will be thrown.
+
+### [7. Generate your artifacts](/docs/learn/workflow/generate_everything)
+
+Now you have a fully working language. You can generate whatever you want from the input. This can be code, documentation, or anything else. You can use the AST to traverse the input and generate the output.
+
+## [Find advanced topics](/docs/recipes)
+
+Everything that is out of the scope of the common workflow is covered in the recipes. Here you can find answers to specific questions or problems that you might encounter during the development of your language.

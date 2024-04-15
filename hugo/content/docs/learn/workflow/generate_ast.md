@@ -1,5 +1,5 @@
 ---
-title: "Generate the AST"
+title: "4. Generate the AST"
 weight: 500
 url: /docs/learn/workflow/generate_ast
 ---

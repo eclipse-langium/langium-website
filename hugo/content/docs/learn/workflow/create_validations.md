@@ -1,5 +1,5 @@
 ---
-title: "Create validations"
+title: "6. Create validations"
 weight: 700
 url: /docs/learn/workflow/create_validations
 ---

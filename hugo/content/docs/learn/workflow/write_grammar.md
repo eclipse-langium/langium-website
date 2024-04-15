@@ -1,5 +1,5 @@
 ---
-title: "Write the grammar"
+title: "3. Write the grammar"
 weight: 400
 url: /docs/learn/workflow/write_grammar
 ---

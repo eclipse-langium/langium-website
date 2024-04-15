@@ -1,6 +1,7 @@
 ---
 title: "Features"
 weight: 200
+url: /docs/features
 ---
 Designing programming languages from the ground up is hard, independent of whether your language is a "simple" domain specific language or a full-fledged general-purpose programming language.
 Not only do you have to keep up with the requirements of your domain experts, but you have to deal with all the technical complexity that comes with building a language, including questions such as:

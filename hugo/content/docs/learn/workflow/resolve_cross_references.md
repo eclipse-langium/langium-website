@@ -1,5 +1,5 @@
 ---
-title: "Resolve cross-references"
+title: "5. Resolve cross-references"
 weight: 600
 url: /docs/learn/workflow/resolve_cross_references
 ---
