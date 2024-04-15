@@ -4,9 +4,8 @@ weight: 0
 url: /docs/learn/worflow
 ---
 
-<!-- markdownlint-disable MD029 -->
-
-## Workflow diagram
+Langium's workflow can be expressed as a flow chart diagram, which boils down to the following steps in the diagram.
+Be aware of the fact that the possibilities go beyond this simple workflow. For more advanced topics, you can find answers in the [recipes](/docs/recipes).
 
 {{<mermaid>}}
 flowchart TD
