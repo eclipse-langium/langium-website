@@ -1,6 +1,6 @@
 ---
 title: "Configuration via Services"
-weight: 300
+weight: 200
 ---
 
 Langium supports the configuration of most aspects of your language and language server via a set of *services*. Those services are configured by *modules*, which are essentially mappings from a service name to its implementation.
