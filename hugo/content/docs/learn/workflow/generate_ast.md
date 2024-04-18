@@ -65,3 +65,39 @@ graph TB
 {{</mermaid>}}
 
 Mind the gaps (question marks) for the cross-references inside the greetings. This job has to be done by the developer. Fortunately Langium provides a default implementation for cross-reference resolution. You can also implement your own resolution strategy.
+
+## How to test the parser?
+
+You can test the parser by comparing the generated AST with the expected AST. Here is an example:
+
+```typescript
+import { createHelloWorldServices } from "./your-project//hello-world-module.js";
+import { EmptyFileSystem } from "langium";
+import { parseHelper } from "langium/test";
+import { Model } from "../../src/language/generated/ast.js";
+
+//arrange
+const services = createHelloWorldServices(EmptyFileSystem);
+const parse = parseHelper<Model>(services.HelloWorld);
+
+//act
+const document = await parse(`
+    person John
+    person Jane
+    
+    Hello John!
+    Hello Jane!
+`);
+
+//assert
+const model = document.parseResult.value;
+expect(model.persons).toHaveLength(2);
+expect(model.persons[0].name).toBe("John");
+expect(model.persons[1].name).toBe("Jane");
+expect(model.greetings).toHaveLength(2);
+//be aware of the fact that the following checks will fail, because the cross-references are not resolved yet
+expect(model.greetings[0].person.ref?.name).toBe("John");
+expect(model.greetings[1].person.ref?.name).toBe("Jane");
+```
+
+The `expect` function can be any assertion library you like. The `Hello world` example uses Vitest.

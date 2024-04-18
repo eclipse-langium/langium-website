@@ -194,3 +194,36 @@ export const HelloWorldModule: Module<HelloWorldServices, PartialLangiumServices
 };
 //...
 ```
+
+## How to test the linking?
+
+You can test the linking by comparing the resolved references with the expected references. Here is the example from the last step.
+
+```ts
+import { createHelloWorldServices } from "./your-project//hello-world-module.js";
+import { EmptyFileSystem } from "langium";
+import { parseHelper } from "langium/test";
+import { Model } from "../../src/language/generated/ast.js";
+
+//arrange
+const services = createHelloWorldServices(EmptyFileSystem);
+const parse = parseHelper<Model>(services.HelloWorld);
+
+//act
+const document = await parse(`
+    person John
+    person Jane
+    
+    Hello John!
+    Hello Jane!
+`);
+
+//assert
+const model = document.parseResult.value;
+expect(model.persons).toHaveLength(2);
+expect(model.greetings).toHaveLength(2);
+expect(model.greetings[0].person.ref).toBe(model.persons[0]);
+expect(model.greetings[1].person.ref).toBe(model.persons[1]);
+```
+
+The `expect` function can be any assertion library you like. The `Hello world` example uses Vitest.

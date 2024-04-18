@@ -34,18 +34,21 @@ import { createHelloWorldServices } from "./your-project/hello-world-module.js";
 import { Model } from "./your-project/generated/ast.js";
 import { generateJavaScript } from "./your-project/generator.js";
 
+//arrange
 const services = createHelloWorldServices(EmptyFileSystem);
 const parse = parseHelper<Model>(services.HelloWorld);
 const document = await parse(`
     person Langium
     Hello Langium!
 `, {validation: true});
-
 expect(document.parseResult.lexerErrors).toHaveLength(0);
 expect(document.parseResult.parserErrors).toHaveLength(0);
 expect(document.diagnostics ?? []).toHaveLength(0);
 
+//act
 const javaScript = generateJavaScript(document.parseResult.value);
+
+//assert
 expect(javaScript).toBe(`"use strict";
 console.log('Hello, Langium!');`);
 ```

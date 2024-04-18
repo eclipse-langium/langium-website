@@ -6,7 +6,9 @@ url: /docs/learn/workflow/create_validations
 
 After resolving the cross-references, you can assume that the syntax tree is complete. Now you can start with the validation of the input files. The validation process is a crucial part of the language engineering workflow. The parser ensures the syntactic correctness of the input files. The validation process ensures the semantic correctness of the input files.
 
-As an example, let's consider the Hello-World example from the Yeoman generator. One semantic of this language could be that each declared person must be greeted at most once. To be clear, the following input file is invalid, we are greeting John twice:
+## Example
+
+Let's consider the Hello-World example from the Yeoman generator. One semantic of this language could be that each declared person must be greeted at most once. To be clear, the following input file is invalid, we are greeting John twice:
 
 ```text
 person John
@@ -16,6 +18,8 @@ Hello John!
 Hello Jane!
 Hello John! //should throw: You can great each person at most once! This is the 2nd greeting to John.
 ```
+
+## Implementation
 
 To accomplish this, you need to implement a validator. The validator is a visitor that traverses a certain part of the syntax tree and checks for semantic errors. The following code snippet shows how you can implement a validator for the Hello-World example. Mind that the Hello-World already has a validator, you just need to add the following one.
 
@@ -59,3 +63,34 @@ export class HelloWorldValidator {
     }
 }
 ```
+
+## How to test the validator?
+
+To test the validator, we can simply use the `parseHelper` again. The following code snippet shows how you can test the validator:
+
+```ts
+import { createHelloWorldServices } from "./your-project//hello-world-module.js";
+import { EmptyFileSystem } from "langium";
+import { parseHelper } from "langium/test";
+import { Model } from "../../src/language/generated/ast.js";
+
+//arrange
+const services = createHelloWorldServices(EmptyFileSystem);
+const parse = parseHelper<Model>(services.HelloWorld);
+
+//act
+const document = await parse(`
+    person John
+    person Jane
+    
+    Hello John!
+    Hello Jane!
+    Hello John!
+`, { validation: true }); //enable validation, otherwise the validator will not be called!
+
+//assert
+expect(document.diagnostics).toHaveLength(1);
+expect(document.diagnostics![0].message).toBe('You can great each person at most once! This is the 2nd greeting to John.');
+```
+
+The `expect` function can be any assertion library you like. The `Hello world` example uses Vitest.
