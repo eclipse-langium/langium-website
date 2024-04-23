@@ -1,6 +1,6 @@
-import { languages } from "monaco-editor";
+import { languages } from 'monaco-editor';
 import getKeybindingsServiceOverride from '@codingame/monaco-vscode-keybindings-service-override';
-import { EditorAppConfigClassic, EditorAppConfigExtended, LanguageClientConfig, UserConfig } from "monaco-editor-wrapper";
+import { EditorAppConfigClassic, EditorAppConfigExtended, LanguageClientConfig, UserConfig } from 'monaco-editor-wrapper';
 
 export type WorkerUrl = string;
 

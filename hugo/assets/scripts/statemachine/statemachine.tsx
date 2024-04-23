@@ -1,18 +1,16 @@
-import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } from "langium-website-core/bundle";
-import { buildWorkerDefinition } from "monaco-editor-workers";
+import { createUserConfig, mew, mer, useWorkerFactory } from "langium-website-core/bundle";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools } from "./statemachine-tools";
 import statemachineGrammar from 'langium-statemachine-dsl/syntaxes/statemachine.tmLanguage.json';
 import { deserializeAST, Diagnostic, DocumentChangeResponse } from "langium-ast-helper";
 
-addMonacoStyles('monaco-styles-helper');
-
-buildWorkerDefinition(
-  "../../libs/monaco-editor-workers/workers",
-  new URL("", window.location.href).href,
-  false
-);
+useWorkerFactory({
+  ignoreMapping: true,
+  workerLoaders: {
+      editorWorkerService: () => new Worker(new URL('../../libs/workers/editorWorker-es.js', window.location.href).href, { type: 'module' })
+  }
+});
 
 interface StateProps {
   name: string;
@@ -203,9 +201,9 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 }
 
 class StateMachineComponent extends React.Component<{
-  langiumConfig: UserConfig
+  langiumConfig: mew.UserConfig
 }> {
-  monacoEditor: React.RefObject<MonacoEditorReactComp>;
+  monacoEditor: React.RefObject<mer.MonacoEditorReactComp>;
   preview: React.RefObject<Preview>;
 
   constructor(props) {
@@ -266,7 +264,7 @@ class StateMachineComponent extends React.Component<{
             Editor
           </div>
           <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
-            <MonacoEditorReactComp
+            <mer.MonacoEditorReactComp
               userConfig={this.props.langiumConfig}
               ref={this.monacoEditor}
               onLoad={this.onMonacoLoad}
@@ -288,7 +286,7 @@ class StateMachineComponent extends React.Component<{
 }
 
 // setup config & render
-const langiumGlobalConfig: UserConfig = createUserConfig({
+const langiumGlobalConfig: mew.UserConfig = createUserConfig({
   languageId: 'statemachine',
   code: defaultText,
   textmateGrammar: statemachineGrammar,

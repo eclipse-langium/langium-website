@@ -14,16 +14,14 @@ playground: true
 <link rel="preload" as="script" href="./libs/worker/langiumServerWorker.js"/>
 <link rel="preload" as="script" href="./libs/worker/userServerWorker.js"/>
 <script type="module">
-    import { addMonacoStyles, setupPlayground, share, overlay, getPlaygroundState, MonacoEditorLanguageClientWrapper } from "./libs/worker/common.js";
-  import { buildWorkerDefinition } from "../libs/monaco-editor-workers/index.js";
+  import { setupPlayground, share, overlay, getPlaygroundState, mew, useWorkerFactory } from "./libs/worker/common.js";
 
-  addMonacoStyles('monaco-styles-helper');
-
-  buildWorkerDefinition(
-    "../libs/monaco-editor-workers/workers",
-    new URL("", window.location.href).href,
-    false
-  );
+  useWorkerFactory({
+    ignoreMapping: true,
+    workerLoaders: {
+        editorWorkerService: () => new Worker(new URL('../libs/workers/editorWorker-es.js', window.location.href).href, { type: 'module' })
+    }
+  });
 
   // on doc load
   addEventListener('load', function() {

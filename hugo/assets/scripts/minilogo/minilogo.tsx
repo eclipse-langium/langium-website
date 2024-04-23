@@ -1,18 +1,16 @@
-import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } from "langium-website-core/bundle";
-import { buildWorkerDefinition } from "monaco-editor-workers";
+import { createUserConfig, mew, mer, useWorkerFactory } from "langium-website-core/bundle";
 import React, { createRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Diagnostic, DocumentChangeResponse } from "langium-ast-helper";
 import { ColorArgs, Command, MoveArgs, examples, syntaxHighlighting } from "./minilogo-tools";
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string";
 
-addMonacoStyles('monaco-styles-helper');
-
-buildWorkerDefinition(
-  "../../libs/monaco-editor-workers/workers",
-  new URL("", window.location.href).href,
-  false
-);
+useWorkerFactory({
+  ignoreMapping: true,
+  workerLoaders: {
+      editorWorkerService: () => new Worker(new URL('../../libs/workers/editorWorker-es.js', window.location.href).href, { type: 'module' })
+  }
+});
 
 let shouldAnimate = true;
 
@@ -25,7 +23,7 @@ interface DrawCanvasProps {
   commands: Command[];
 }
 
-let userConfig: UserConfig;
+let userConfig: mew.UserConfig;
 
 class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -212,7 +210,7 @@ interface AppState {
   currentExample: number;
 }
 class App extends React.Component<{}, AppState> {
-  monacoEditor: React.RefObject<MonacoEditorReactComp>;
+  monacoEditor: React.RefObject<mer.MonacoEditorReactComp>;
   preview: React.RefObject<Preview>;
   copyHint: React.RefObject<HTMLDivElement>;
   shareButton: React.RefObject<HTMLImageElement>;
@@ -318,7 +316,7 @@ class App extends React.Component<{}, AppState> {
             </div>
           </div>
           <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
-            <MonacoEditorReactComp
+            <mer.MonacoEditorReactComp
               ref={this.monacoEditor}
               onLoad={this.onMonacoLoad}
               userConfig={userConfig}

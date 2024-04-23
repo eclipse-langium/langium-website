@@ -1,17 +1,15 @@
-import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } from "langium-website-core/bundle";
-import { buildWorkerDefinition } from "monaco-editor-workers";
+import { createUserConfig, mew, mer, useWorkerFactory } from "langium-website-core/bundle";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Evaluation, examples, syntaxHighlighting } from "./arithmetics-tools";
 import { Diagnostic, DocumentChangeResponse } from "langium-ast-helper";
 
-addMonacoStyles('monaco-styles-helper');
-
-buildWorkerDefinition(
-    "../../libs/monaco-editor-workers/workers",
-    new URL("", window.location.href).href,
-    false
-);
+useWorkerFactory({
+    ignoreMapping: true,
+    workerLoaders: {
+        editorWorkerService: () => new Worker(new URL('../../libs/workers/editorWorker-es.js', window.location.href).href, { type: 'module' })
+    }
+});
 
 interface PreviewProps {
     evaluations?: Evaluation[];
@@ -19,7 +17,7 @@ interface PreviewProps {
     focusLine: (line: number) => void;
 }
 
-let userConfig: UserConfig;
+let userConfig: mew.UserConfig;
 
 
 class Preview extends React.Component<PreviewProps, PreviewProps> {
@@ -89,7 +87,7 @@ interface AppState {
     exampleIndex: number;
 }
 class App extends React.Component<{}, AppState> {
-    monacoEditor: React.RefObject<MonacoEditorReactComp>;
+    monacoEditor: React.RefObject<mer.MonacoEditorReactComp>;
     preview: React.RefObject<Preview>;
     constructor(props) {
         super(props);
@@ -163,7 +161,7 @@ class App extends React.Component<{}, AppState> {
                         </select>
                     </div>
                     <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-full w-full">
-                        <MonacoEditorReactComp
+                        <mer.MonacoEditorReactComp
                             ref={this.monacoEditor}
                             onLoad={this.onMonacoLoad}
                             userConfig={userConfig}

@@ -5,7 +5,7 @@ weight: 6
 
 {{< toc format=html >}}
 
-*Updated on Oct. 4th, 2023 for usage with monaco-editor-wrapper 3.1.0 & above, as well as Langium 2.0.2*
+*Updated on March. 26th, 2024 for usage with monaco-editor-wrapper 4.0.1 & above, as well as Langium 3.0.0 and above*
 
 In this tutorial we'll be talking about running Langium in the web with the Monaco editor. If you're not familiar with Monaco, it's the editor that powers VS Code. We're quite fond of it at TypeFox, so we've taken the time to write up this tutorial to explain how to integrate Langium in the web with Monaco, no backend required.
 
@@ -15,9 +15,9 @@ Without further ado, let's jump into getting your web-based Langium experience s
 
 ## Technologies You'll Need
 
-- [Langium](https://www.npmjs.com/package/langium) 2.0.2 or greater
-- [Monaco Editor Wrapper](https://www.npmjs.com/package/monaco-editor-wrapper) 3.1.0 or greater
-- [ESBuild](https://www.npmjs.com/package/esbuild) 0.18.20 or greater
+- [Langium](https://www.npmjs.com/package/langium) 3.0.0 or greater
+- [Monaco Editor Wrapper](https://www.npmjs.com/package/monaco-editor-wrapper) 4.0.1 or greater
+- [ESBuild](https://www.npmjs.com/package/esbuild) 0.20.2 or greater
 
 ## Getting your Language Setup for the Web
 
@@ -30,7 +30,8 @@ Per usual, we'll be using MiniLogo as the motivating example here.
 In order to build for the browser, we need to create a bundle that is free of any browser-incompatible modules. To do this, let's create a new entry point for our language server in **src/language-server/main-browser.ts**. This will mirror the regular entry point that we use to build already, but will target a browser-based context instead. We'll start with the following content:
 
 ```ts
-import { startLanguageServer, EmptyFileSystem } from 'langium';
+import { EmptyFileSystem } from 'langium';
+import { startLanguageServer } from 'langium/lsp';
 import { BrowserMessageReader, BrowserMessageWriter, createConnection } from 'vscode-languageserver/browser.js';
 // your services & module name may differ based on your language's name
 import { createMiniLogoServices } from './minilogo-module.js';
@@ -70,7 +71,7 @@ Now that we have a new entry point for the browser, we need to add a script to o
 ```json
 {
     ...
-    "build:worker": "esbuild --minify ./out/language-server/main-browser.js --bundle --format=iife --outfile=./public/minilogo-server-worker.js",
+    "build:worker": "esbuild --minify ./out/language-server/main-browser.js --bundle --format=esm --outfile=./public/minilogo-server-worker.js",
 }
 ```
 
@@ -80,16 +81,15 @@ Running `npm run build:worker` we should see the bundle is successfully generate
 
 Note that although our generator is still connected to using the file system, it's not relevant for the worker bundle to function.
 
-## Setting up Monaco
+## Setting up Monaco Editor
 
 Now we're going to setup Monaco, but not with Langium yet, as we want to be sure it's working first before connecting the two.
 
-For convenience, we're going to use the Monaco Editor Wrapper (MER) to wrap around some of Monaco's core functionality, along with the Monaco Editor Workers package to assist. These packages are both maintained by TypeFox, and are designed to make it easier to use Monaco in a web-based context. We'll be using the following versions of these packages:
+For convenience, we're going to use the Monaco Editor Wrapper to wrap around some of Monaco's core functionality. This package is maintained by TypeFox, and is designed to make it easier to use Monaco in a web-based context. We'll be using the following version:
 
-- [Monaco Editor Wrapper](https://www.npmjs.com/package/monaco-editor-wrapper) version **3.1.0**
-- [monaco-editor-workers](https://www.npmjs.com/package/monaco-editor-workers) version **0.39.0**
+- [Monaco Editor Wrapper](https://www.npmjs.com/package/monaco-editor-wrapper) version **4.0.1**
 
-Both these packages should be installed as dependencies for your language. In particular, this guide will assume that you're using version **3.1.0** or later of the monaco-editor-wrapper package, and version **0.39.0** of the monaco-editor-workers package.
+This package should be installed as dependencies for your language. In particular, this guide will assume that you're using version **4.0.1** or later of the monaco-editor-wrapper package.
 
 Additionally, we'll want a way to serve this bundled language server. The choice of how you want to go about this is ultimately up to you. Previously we've recommended `express` as a development dependency (don't forget to also add `@types/express` too), as a powerful & lightweight NodeJS server framework. However, we'll be going with the built-in NodeJS support for standing up a web-server; however again the choice is yours here.
 
@@ -132,21 +132,11 @@ await esbuild.build({
 import shell from 'shelljs'
 
 // copy workers to public
-shell.mkdir('-p', './public/monaco-editor-workers/workers');
+shell.mkdir('-p', './public/workers');
 shell.cp(
     '-fr',
-    './node_modules/monaco-editor-workers/dist/index.js',
-    './public/monaco-editor-workers/index.js'
-);
-shell.cp(
-    '-fr',
-    './node_modules/monaco-editor-workers/dist/workers/editorWorker-es.js',
-    './public/monaco-editor-workers/workers/editorWorker-es.js'
-);
-shell.cp(
-    '-fr',
-    './node_modules/monaco-editor-workers/dist/workers/editorWorker-iife.js',
-    './public/monaco-editor-workers/workers/editorWorker-iife.js'
+    './node_modules/monaco-editor-wrapper/dist/workers/editorWorker-es.js',
+    './public/workers/editorWorker-es.js'
 );
 ```
 
@@ -300,29 +290,28 @@ footer {
 
 Finally, there's the actual Javascript setting up our Monaco instance (stored in **src/static/minilogo.ts**), and for setting up Langium as well. This is the most complex part of setting up Langium + Monaco in the web, so we'll walk through the file in parts.
 
-(*Update on Oct. 4th, 2023: Previously we wrote this as **src/static/setup.js**. This new file can be considered the same, but reworked into TypeScript & updated for the new versions of Langium & the MER.*)
+(*Update on Oct. 4th, 2023: Previously we wrote this as **src/static/setup.js**. This new file can be considered the same, but reworked into TypeScript & updated for the new versions of Langium & the Monaco Editor Wrapper)
 
 First, we need to import and setup the worker, as well as some language client wrapper configuration.
 
 ```ts
-import { MonacoEditorLanguageClientWrapper, UserConfig } from "monaco-editor-wrapper/bundle";
-import { buildWorkerDefinition } from "monaco-editor-workers";
-import { addMonacoStyles } from 'monaco-editor-wrapper/styles';
+import { MonacoEditorLanguageClientWrapper, UserConfig } from 'monaco-editor-wrapper/bundle';
+import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
 
 /**
- * Setup Monaco's own workers and also incorporate the necessary styles for the monaco-editor
+ * Setup Monaco's own workers, we only need to configure the editor worker
  */
 function setup() {
-    buildWorkerDefinition(
-        './monaco-editor-workers/workers',
-        new URL('', window.location.href).href,
-        false
-    );
-    addMonacoStyles('monaco-editor-styles');
+    useWorkerFactory({
+        ignoreMapping: true,
+        workerLoaders: {
+            editorWorkerService: () => new Worker(new URL('public/workers/editorWorker-es.js', window.location.href).href, { type: 'module' })
+        }
+    });
 }
 ```
 
-Then, we'll want to instantiate our language client wrapper. In previous versions of the `monaco-editor-wrapper` package (before 2.0.0), configuration was performed by manually setting properties on the `MonacoEditorLanguageClientWrapper` instance. However, as of 3.1.0 (at the time of writing this), the constructor for `MonacoEditorLanguageClientWrapper` now takes a configuration object as its first argument. This configuration object allows us to set the same properties as before, but with more fine-grained control over all the properties that are set.
+The constructor of `MonacoEditorLanguageClientWrapper` takes a configuration object as its first argument. This configuration object allows a fine-grained control over how to set all required properties.
 
 We're going to walk through the parts that will be used to build up this configuration first, and then joining the actual configuration object together afterwards.
 
@@ -474,12 +463,8 @@ function createUserConfig(config: ClassicConfig): UserConfig {
                 languageDef: config.monarchGrammar
             },
             serviceConfig: {
-                enableModelService: true,
-                configureConfigurationService: {
-                    defaultWorkspaceUri: '/tmp/'
-                },
-                enableKeybindingsService: true,
-                enableLanguagesService: true,
+                // all required service are already loaded by the wrapper,
+                // you can enable debug logging if required
                 debugLogging: false
             }
         },
@@ -496,17 +481,16 @@ function createUserConfig(config: ClassicConfig): UserConfig {
 
 This particular UserConfig will be for configuring a classic editor, rather than a VSCode extension-based editor. This is because we're using a Monarch grammar, which is not supported by the extension configuration. However, if we wanted to use a TextMate grammar, we could use the extension based configuration instead.
 
-```json
+```yaml
 editorAppConfig: {
-    $type: 'vscodeApi',
+    $type: 'extended',
     languageId: id,
     useDiffEditor: false,
-    code: config.code,
-    ...
+    code: config.code
 }
 ```
 
-You would just need to fill in the rest of the details for associating a TextMate grammar & such. [Here's an example from the monaco-components repo](https://github.com/TypeFox/monaco-components/blob/4f301445eca943b9775166704304637cf5e8bd00/packages/examples/src/langium/config/wrapperLangiumVscode.ts#L37).
+You would just need to fill in the rest of the details for associating a TextMate grammar & such. [Here's an example](https://github.com/TypeFox/monaco-languageclient/blob/main/packages/examples/src/langium/langium-dsl/config/extendedConfig.ts#L24-L77) from the monaco-languageclient repo hosting the code of the wrapper.
 
 Regardless of how the user config is setup, we can now invoke that helper function with a handful of configuration details, and have a working UserConfig to pass to the wrapper.
 
@@ -515,13 +499,12 @@ Regardless of how the user config is setup, we can now invoke that helper functi
 const wrapper = new MonacoEditorLanguageClientWrapper();
 
 // start up with a user config
-await wrapper.start(createUserConfig({
-    htmlElement: document.getElementById("monaco-editor-root")!,
+await wrapper.initAndStart(createUserConfig({
     languageId: 'minilogo',
     code: getMainCode(),
     worker: getWorker(),
     monarchGrammar: getMonarchGrammar()
-}));
+}), htmlElement: document.getElementById('monaco-editor-root')!);
 ```
 
 That's it! Now if everything was configured correctly, we should have a valid wrapper that will display the code we want in our browser.
@@ -535,34 +518,34 @@ Now that we have our files all setup, and our build process prepared, we can put
  * Simple server app for serving generated examples locally
  * Based on: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Node_server_without_framework
  */
-import * as fs from "node:fs";
-import * as http from "node:http";
-import * as path from "node:path";
+import * as fs from 'node:fs';
+import * as http from 'node:http';
+import * as path from 'node:path';
 
 const port = 3000;
 
 const MIME_TYPES: Record<string,string> = {
-  default: "application/octet-stream",
-  html: "text/html; charset=UTF-8",
-  js: "application/javascript",
-  css: "text/css",
+  default: 'application/octet-stream',
+  html: 'text/html; charset=UTF-8',
+  js: 'application/javascript',
+  css: 'text/css',
 };
 
-const STATIC_PATH = path.join(process.cwd(), "./public");
+const STATIC_PATH = path.join(process.cwd(), './public');
 
 const toBool = [() => true, () => false];
 
 const prepareFile = async (url: string) => {
   const paths = [STATIC_PATH, url];
-  if (url.endsWith("/")) {
-    paths.push("index.html");
+  if (url.endsWith('/')) {
+    paths.push('index.html');
   }
   const filePath = path.join(...paths);
   const pathTraversal = !filePath.startsWith(STATIC_PATH);
   const exists = await fs.promises.access(filePath).then(...toBool);
   const found = !pathTraversal && exists;
   // there's no 404, just redirect to index.html in all other cases
-  const streamPath = found ? filePath : STATIC_PATH + "/index.html";
+  const streamPath = found ? filePath : STATIC_PATH + '/index.html';
   const ext = path.extname(streamPath).substring(1).toLowerCase();
   const stream = fs.createReadStream(streamPath);
   return { found, ext, stream };
@@ -573,7 +556,7 @@ http
     const file = await prepareFile(req.url!);
     const statusCode = file.found ? 200 : 404;
     const mimeType: string = MIME_TYPES[file.ext] || MIME_TYPES.default;
-    res.writeHead(statusCode, { "Content-Type": mimeType });
+    res.writeHead(statusCode, { 'Content-Type': mimeType });
     file.stream.pipe(res);
     console.log(`${req.method} ${req.url} ${statusCode}`);
   })

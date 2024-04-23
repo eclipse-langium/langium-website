@@ -8,10 +8,11 @@
     "watch": "npm run build --workspace core && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch --workspace hugo\" \"npm run watch --workspace tailwind\"",
     "watch:gitpod": "npm run build --workspace core && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
     "build": "npm run clean && npm run build --workspace core --workspace=tailwind --workspace=hugo",
-    "clean": "shx rm -rf public && npm run clean --workspace core --workspace=tailwind"
+    "clean": "shx rm -rf public && npm run clean --workspace core --workspace=tailwind",
+    "reset:repo": "git clean -f -X -d"
   },
   "devDependencies": {
-    "concurrently": "~8.2.1",
+    "concurrently": "~8.2.2",
     "cross-env": "~7.0.3",
     "shx": "~0.3.4"
   },
@@ -21,7 +22,7 @@
     "tailwind"
   ],
   "volta": {
-    "node": "18.18.1",
-    "npm": "9.9.0"
+    "node": "18.19.1",
+    "npm": "10.2.4"
   }
 }

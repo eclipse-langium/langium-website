@@ -1,5 +1,4 @@
-import { addMonacoStyles, createUserConfig, MonacoEditorReactComp, UserConfig } from "langium-website-core/bundle";
-import { buildWorkerDefinition } from "monaco-editor-workers";
+import { createUserConfig, mew, mer, useWorkerFactory } from "langium-website-core/bundle";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { DomainModelAstNode, example, getMainTreeNode, syntaxHighlighting } from "./domainmodel-tools";
@@ -7,15 +6,14 @@ import { deserializeAST, Diagnostic, DocumentChangeResponse } from 'langium-ast-
 
 import D3Tree from "./d3tree";
 
-addMonacoStyles('monaco-styles-helper');
+useWorkerFactory({
+    ignoreMapping: true,
+    workerLoaders: {
+        editorWorkerService: () => new Worker(new URL('../../libs/workers/editorWorker-es.js', window.location.href).href, { type: 'module' })
+    }
+});
 
-buildWorkerDefinition(
-    "../../libs/monaco-editor-workers/workers",
-    new URL("", window.location.href).href,
-    false
-);
-
-let userConfig: UserConfig;
+let userConfig: mew.UserConfig;
 
 interface AppState {
     ast?: DomainModelAstNode;
@@ -23,7 +21,7 @@ interface AppState {
 }
 
 class App extends React.Component<{}, AppState> {
-    monacoEditor: React.RefObject<MonacoEditorReactComp>;
+    monacoEditor: React.RefObject<mer.MonacoEditorReactComp>;
     constructor(props) {
         super(props);
 
@@ -119,7 +117,7 @@ class App extends React.Component<{}, AppState> {
                         Editor
                     </div>
                     <div className="wrapper relative bg-white dark:bg-gray-900 border border-emeraldLangium h-[50vh] min-h-[300px]">
-                        <MonacoEditorReactComp
+                        <mer.MonacoEditorReactComp
                             ref={this.monacoEditor}
                             onLoad={this.onMonacoLoad}
                             userConfig={userConfig}
