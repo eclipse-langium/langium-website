@@ -42,7 +42,7 @@
     "langium": "^3.0.0",
     "langium-arithmetics-dsl": "^3.0.0",
     "langium-ast-helper": "0.1.2",
-    "langium-cli": "^3.0.2",
+    "langium-cli": "^3.0.3",
     "langium-domainmodel-dsl": "^3.0.0",
     "langium-minilogo": "^3.0.0",
     "langium-sql": "^0.3.2",
