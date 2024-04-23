@@ -3,7 +3,6 @@
  * This program and the accompanying materials are made available under the
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
-
 import {
   HelloWorldGrammar,
   LangiumTextMateContent,
@@ -17,7 +16,7 @@ import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } 
 import { DocumentChangeResponse } from "langium-ast-helper";
 import { DefaultAstNodeLocator } from "langium";
 import { createServicesForGrammar } from "langium/grammar";
-import { generateTextMate } from "./textmate-generator.js";
+import { generateTextMate } from "langium-cli/textmate";
 export { share, overlay } from './utils.js';
 export { addMonacoStyles, MonacoEditorLanguageClientWrapper };
 
@@ -210,17 +209,16 @@ async function getFreshDSLWrapper(
   code: string,
   grammarText: string
 ): Promise<MonacoEditorLanguageClientWrapper | undefined> {
-
   // construct and set a new monarch syntax onto the editor
   const { Grammar } = await createServicesForGrammar({ grammar: grammarText });
-
   const worker = await getLSWorkerForGrammar(grammarText);
   const wrapper = new MonacoEditorLanguageClientWrapper();
+  const textmateGrammar = JSON.parse(generateTextMate(Grammar, { id: languageId, grammar: 'UserGrammar' }));
   return wrapper.start(createUserConfig({
     languageId,
     code,
     worker,
-    textmateGrammar: generateTextMate(Grammar, {id: languageId, grammar: 'UserGrammar'})
+    textmateGrammar
   }), htmlElement).then(() => {
     return wrapper;
   }).catch(async (e: any) => {
