@@ -4,8 +4,7 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { AstNode } from "langium";
-import { AstNodeLocator } from "langium/lib/workspace/ast-node-locator";
+import { AstNode, AstNodeLocator } from "langium";
 
 /**
  * Represents a serialized version of a reference to an AstNode
@@ -60,15 +59,11 @@ export interface PropertyNode {
   name: string;
   type: ValueNode;
 }
+
+export type AstValue = AstNode | AstNode[] | string | number | boolean | Reference | undefined;
+
 export function preprocessAstNodeValue(
-  valueOrValues:
-    | AstNode
-    | AstNode[]
-    | string
-    | number
-    | boolean
-    | Reference
-    | undefined,
+  valueOrValues: AstValue,
   locator: AstNodeLocator
 ): ValueNode {
   if (Array.isArray(valueOrValues)) {
@@ -104,13 +99,7 @@ export function preprocessAstNodeObject(
   const properties: PropertyNode[] = Object.keys(node)
     .filter((n) => !n.startsWith("$"))
     .map((n) => {
-      const valueOrValues = node[n] as
-        | AstNode
-        | AstNode[]
-        | "string"
-        | "number"
-        | "boolean"
-        | Reference;
+      const valueOrValues = ((node as any)[n]) as AstValue;
       return {
         name: n,
         type: preprocessAstNodeValue(valueOrValues, locator),

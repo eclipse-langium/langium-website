@@ -4,9 +4,11 @@
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
 
-import { DocumentState, createServicesForGrammar, startLanguageServer } from 'langium';
 import { NotificationType } from 'vscode-languageserver/browser.js';
-import { DocumentChange, createServerConnection } from './worker-utils';
+import { DocumentChange, createServerConnection } from './worker-utils.js';
+import { startLanguageServer } from 'langium/lsp';
+import { DocumentState } from 'langium';
+import { createServicesForGrammar } from 'langium/grammar';
 
 // listen for messages to trigger starting the LS with a given grammar
 addEventListener('message', async (event) => {

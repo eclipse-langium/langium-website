@@ -3,22 +3,21 @@
  * This program and the accompanying materials are made available under the
  * terms of the MIT License, which is available in the project root.
  ******************************************************************************/
-
 import {
   HelloWorldGrammar,
-  LangiumMonarchContent,
+  LangiumTextMateContent,
   DSLInitialContent,
-} from "./data";
-import { generateMonarch } from "./monarch-generator";
+} from "./constants.js";
 import { decompressFromEncodedURIComponent } from 'lz-string';
 import { Disposable } from "vscode-languageserver";
-import { DefaultAstNodeLocator, createServicesForGrammar } from "langium";
-import { render } from './Tree';
-import { overlay, throttle } from "./utils";
+import { render } from './Tree.js';
+import { overlay, throttle } from "./utils.js";
 import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
-import { DocumentChangeResponse } from "../../assets/scripts/langium-utils/langium-ast";
-
-export { share, overlay } from './utils';
+import { DocumentChangeResponse } from "langium-ast-helper";
+import { DefaultAstNodeLocator } from "langium";
+import { createServicesForGrammar } from "langium/grammar";
+import { generateTextMate } from "langium-cli/textmate";
+export { share, overlay } from './utils.js';
 export { addMonacoStyles, MonacoEditorLanguageClientWrapper };
 
 export interface PlaygroundParameters {
@@ -157,7 +156,7 @@ export async function setupPlayground(
           await setupDSLWrapper();
           overlay(false, false);
   
-        }).catch(async (e) => {
+        }).catch(async (e: any) => {
           // failed to dispose, report & discard this error
           // can happen when a previous editor was not started correctly
           console.error('DSL editor disposal error: ' + e);
@@ -210,20 +209,19 @@ async function getFreshDSLWrapper(
   code: string,
   grammarText: string
 ): Promise<MonacoEditorLanguageClientWrapper | undefined> {
-
   // construct and set a new monarch syntax onto the editor
   const { Grammar } = await createServicesForGrammar({ grammar: grammarText });
-
   const worker = await getLSWorkerForGrammar(grammarText);
   const wrapper = new MonacoEditorLanguageClientWrapper();
+  const textmateGrammar = JSON.parse(generateTextMate(Grammar, { id: languageId, grammar: 'UserGrammar' }));
   return wrapper.start(createUserConfig({
     languageId,
     code,
     worker,
-    monarchGrammar: generateMonarch(Grammar, languageId)
+    textmateGrammar
   }), htmlElement).then(() => {
     return wrapper;
-  }).catch(async (e) => {
+  }).catch(async (e: any) => {
     console.error('Failed to start DSL wrapper: ' + e);
     // don't leak the worker on failure to start
     // normally we wouldn't need to manually terminate, but if the LC is stuck in the 'starting' state, the following dispose will fail prematurely
@@ -234,7 +232,7 @@ async function getFreshDSLWrapper(
     try {
       await wrapper.dispose();
     } catch (e) {}
-    return undefined;
+    return undefined as MonacoEditorLanguageClientWrapper|undefined;
   });
 }
 
@@ -251,7 +249,7 @@ async function getFreshLangiumWrapper(htmlElement: HTMLElement): Promise<MonacoE
     languageId: "langium",
     code: currentGrammarContent,
     worker: "./libs/worker/langiumServerWorker.js",
-    monarchGrammar: LangiumMonarchContent
+    textmateGrammar: LangiumTextMateContent
   }), htmlElement);
   return langiumWrapper;
 }
