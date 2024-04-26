@@ -1,17 +1,15 @@
-import * as monaco from "monaco-editor";
-import getKeybindingsServiceOverride from '@codingame/monaco-vscode-keybindings-service-override';
-import type { MonacoEditorProps } from "@typefox/monaco-editor-react";
-import { MonacoEditorReactComp } from "@typefox/monaco-editor-react";
-import { addMonacoStyles } from 'monaco-editor-wrapper/styles';
-
-export * from "monaco-editor-wrapper";
-export type * from "monaco-editor-wrapper";
-export * from "./monaco-editor-wrapper-utils.js";
+import * as monaco from 'monaco-editor';
+import * as mew from 'monaco-editor-wrapper';
+import type * as mewTypes from 'monaco-editor-wrapper';
+import * as mer from '@typefox/monaco-editor-react';
+import type * as merTypes from '@typefox/monaco-editor-react';
+export * from './monaco-editor-wrapper-utils.js';
+export { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
 
 export {
     monaco,
-    MonacoEditorProps,
-    MonacoEditorReactComp,
-    addMonacoStyles,
-    getKeybindingsServiceOverride
+    mew,
+    mewTypes,
+    mer,
+    merTypes
 }

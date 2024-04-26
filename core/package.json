@@ -1,6 +1,6 @@
 {
   "name": "langium-website-core",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "description": "Bundling complex sources for hugo",
   "author": "TypeFox",
@@ -42,26 +42,25 @@
     "build": "npm run clean && npm run compile && npm run build:bundle"
   },
   "devDependencies": {
-    "@types/react": "~18.2.28",
-    "@types/react-dom": "~18.2.13",
-    "@types/vscode": "~1.83.0",
-    "typescript": "~5.2.2",
-    "vite": "^4.5.2"
+    "@types/react": "~18.2.79",
+    "@types/react-dom": "~18.2.25",
+    "@types/vscode": "~1.88.0",
+    "typescript": "~5.4.5",
+    "vite": "~5.2.10"
   },
   "dependencies": {
-    "@codingame/monaco-vscode-keybindings-service-override": "~1.83.2",
-    "@typefox/monaco-editor-react": "2.3.0",
-    "monaco-editor": "~0.44.0",
-    "monaco-editor-workers": "~0.44.0",
-    "monaco-editor-wrapper": "~3.3.0",
-    "monaco-languageclient": "~6.6.0",
+    "@codingame/monaco-vscode-keybindings-service-override": "~4.3.2",
+    "@typefox/monaco-editor-react": "~3.2.1",
+    "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@~4.3.2",
+    "monaco-editor-wrapper": "~4.2.1",
+    "monaco-languageclient": "~8.3.1",
     "react": "~18.2.0",
     "react-dom": "~18.2.0",
-    "vscode": "npm:@codingame/monaco-vscode-api@>=1.83.2 <1.84.0",
-    "vscode-languageserver": "~8.0.2"
+    "vscode": "npm:@codingame/monaco-vscode-api@~4.3.2",
+    "vscode-languageserver": "~9.0.1"
   },
   "volta": {
-    "node": "18.18.1",
-    "npm": "9.9.0"
+    "node": "18.19.1",
+    "npm": "10.2.4"
   }
 }

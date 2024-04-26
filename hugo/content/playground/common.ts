@@ -12,13 +12,13 @@ import { decompressFromEncodedURIComponent } from 'lz-string';
 import { Disposable } from "vscode-languageserver";
 import { render } from './Tree.js';
 import { overlay, throttle } from "./utils.js";
-import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
+import { createUserConfig, mew, useWorkerFactory } from "langium-website-core/bundle";
 import { DocumentChangeResponse } from "langium-ast-helper";
 import { DefaultAstNodeLocator } from "langium";
 import { createServicesForGrammar } from "langium/grammar";
 import { generateTextMate } from "langium-cli/textmate";
 export { share, overlay } from './utils.js';
-export { addMonacoStyles, MonacoEditorLanguageClientWrapper };
+export { mew, useWorkerFactory };
 
 export interface PlaygroundParameters {
   grammar: string;
@@ -39,7 +39,7 @@ let currentDSLContent = '';
 /**
  * DSL wrapper, allowing us to quickly access the current in-model code
  */
-let dslWrapper: MonacoEditorLanguageClientWrapper | undefined = undefined;
+let dslWrapper: mew.MonacoEditorLanguageClientWrapper | undefined = undefined;
 
 /**
  * Update delay for new grammars & DSL programs to be processed
@@ -208,20 +208,21 @@ async function getFreshDSLWrapper(
   languageId: string,
   code: string,
   grammarText: string
-): Promise<MonacoEditorLanguageClientWrapper | undefined> {
+): Promise<mew.MonacoEditorLanguageClientWrapper | undefined> {
+
   // construct and set a new monarch syntax onto the editor
   const { Grammar } = await createServicesForGrammar({ grammar: grammarText });
   const worker = await getLSWorkerForGrammar(grammarText);
-  const wrapper = new MonacoEditorLanguageClientWrapper();
+  const wrapper = new mew.MonacoEditorLanguageClientWrapper();
   const textmateGrammar = JSON.parse(generateTextMate(Grammar, { id: languageId, grammar: 'UserGrammar' }));
-  return wrapper.start(createUserConfig({
-    languageId,
-    code,
-    worker,
-    textmateGrammar
-  }), htmlElement).then(() => {
-    return wrapper;
-  }).catch(async (e: any) => {
+  try {
+    await wrapper.initAndStart(createUserConfig({
+      languageId,
+      code,
+      worker,
+      textmateGrammar
+    }), htmlElement);
+  } catch (e) {
     console.error('Failed to start DSL wrapper: ' + e);
     // don't leak the worker on failure to start
     // normally we wouldn't need to manually terminate, but if the LC is stuck in the 'starting' state, the following dispose will fail prematurely
@@ -232,10 +233,11 @@ async function getFreshDSLWrapper(
     try {
       await wrapper.dispose();
     } catch (e) {}
-    return undefined as MonacoEditorLanguageClientWrapper|undefined;
-  });
-}
+    return undefined;
+  };
 
+  return wrapper;
+}
 
 /**
  * Gets a fresh langium wrapper
@@ -243,9 +245,9 @@ async function getFreshDSLWrapper(
  * @param htmlElement Element to attach the wrapper to
  * @returns A promise resolving to a configured & started Langium wrapper
  */
-async function getFreshLangiumWrapper(htmlElement: HTMLElement): Promise<MonacoEditorLanguageClientWrapper> {
-  const langiumWrapper = new MonacoEditorLanguageClientWrapper();
-  await langiumWrapper.start(createUserConfig({
+async function getFreshLangiumWrapper(htmlElement: HTMLElement): Promise<mew.MonacoEditorLanguageClientWrapper> {
+  const langiumWrapper = new mew.MonacoEditorLanguageClientWrapper();
+  await langiumWrapper.initAndStart(createUserConfig({
     languageId: "langium",
     code: currentGrammarContent,
     worker: "./libs/worker/langiumServerWorker.js",
