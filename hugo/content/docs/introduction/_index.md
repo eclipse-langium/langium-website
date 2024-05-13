@@ -12,11 +12,11 @@ If you need a more detailed list of Langium features, you can find them in the [
 
 ### Try it out
 
-If you want to see Langium in action, you can follow the [showcases](/showcase) or event the [playground](/playground).
+If you want to see Langium in action, you can follow the [showcases](/showcase) or even the [playground](/playground).
 
 ### Learn Langium
 
-If you are convinced with Langium and want to learn more about it, you can start with the [learn section](/docs/learn).
+If you are convinced by Langium and want to learn more about it, you can start with the [learn section](/docs/learn).
 
 ### More details
 

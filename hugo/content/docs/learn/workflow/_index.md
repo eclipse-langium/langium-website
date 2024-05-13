@@ -38,9 +38,9 @@ This simple introduction can be seen as three main parts:
 
 * setting up your project environment (1.+2.): this is only done once
 * specifying the language features (3.-7.): this cycle you need to reiterate for each new language feature
-* everything advanced (8.): here the limit of the common workflow is reached, for specific questions you can find answers in the [recipes](/docs/recipes).
+* everything advanced (8.): The limit of the common workflow is reached here. For specific questions you can find answers in the [recipes](/docs/recipes).
 
-While the first part is straight-forward. The last part is about advanced topics that differ from project to project.
+While the first part is straight-forward, the last part is about advanced topics that differ from project to project.
 The middle part will be explained briefly in the following section.
 
 ## Initial setup
@@ -57,7 +57,7 @@ After installing Yeoman, you can scaffold a new Langium project.
 
 ### [3. Write the grammar](/docs/learn/workflow/write_grammar)
 
-The first step in the core workflow starts from the grammar. You will have some language feature in mind that you want to implement. The grammar is used to nail down the syntax of your features. You can use our Langium VS Code extension to get syntax highlighting and code completion for `.langium` files. If your grammar is free of errors, you can generate the files for the _abstract syntax tree (AST)_.
+The first step in the core workflow starts with the grammar. You will have some language feature in mind that you want to implement. The grammar is used to nail down the syntax of your features. You can use our Langium VS Code extension to get syntax highlighting and code completion for `.langium` files. If your grammar is free of errors, you can generate the files for the _abstract syntax tree (AST)_.
 
 ### [4. Generate the AST](/docs/learn/workflow/generate_ast)
 

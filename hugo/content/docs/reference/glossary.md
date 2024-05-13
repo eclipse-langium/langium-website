@@ -15,6 +15,6 @@ _parser_: A program that takes a _document_ as its input and computes an _abstra
 
 _parser rule_: A parser rule describes how a certain _AST_ element is supposed to be parsed. This is done by invoking other _parser rules_ or _terminals_.
 
-_terminal_: A terminal is the smallest parseable part of a document. It usually represents small pieces of text like names, numbers, keywords or comments.
+_terminal_: A terminal is the smallest parsable part of a document. It usually represents small pieces of text like names, numbers, keywords or comments.
 
 _token_: A token is a substring of the _document_ that matches a certain _terminal_. It contains information about which kind of _terminal_ it represents as well as its location in the document.
