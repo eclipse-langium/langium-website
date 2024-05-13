@@ -260,7 +260,7 @@ After this step, Langium is set up correctly. But if you try to build now, the c
 Let's clean up the error lines. Here are some general hints:
 
 * keep in mind, that you are dealing with three file types now, namely `*.me`, `*.who` and `*.hello`
-  * you can distinguish them very easily by selecting the right sub service from the result object of `createMultipleLanguagesServices`, which is either `Configuration`, `Definition` or `Implementation`, but not `shared`
+  * you can distinguish them very easily by selecting the right sub service from the result object of `createMultipleLanguagesServices`, which is either `Configuration`, `Definition`, or `Implementation`, but not `shared`
   * all these services have a sub service with file extensions: `[Configuration,Definition,...].LanguageMetaData.fileExtensions: string[]`
   * so, when you are obtaining any documents from the `DocumentBuilder` you can be sure that they are parsed by the matching language service
   * to distinguish them on your own, use the AST functions for determining the root type, for example for the Configuration language use `isConfigurationUnit(document.parseResult.value)`
