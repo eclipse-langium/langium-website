@@ -1,5 +1,5 @@
 ---
-title: "7. Generate your artifacts"
+title: "7. Generate artifacts"
 weight: 800
 url: /docs/learn/workflow/generate_everything
 ---

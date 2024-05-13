@@ -15,7 +15,7 @@ flowchart TD
   D(["4. Generate the AST"]);
   E(["5. Resolve cross-references"]);
   F(["6. Create validations"]);
-  G(["7. Generate your artifacts"]);
+  G(["7. Generate artifacts"]);
   H(["Find advanced topics"]);
   A --> B --> C --> D --> E --> F --> G ~~~ H;
   G -- for each feature --> C;
@@ -37,7 +37,7 @@ This is the workflow we recommend for developing a language with Langium. It is 
 This simple introduction can be seen as three main parts:
 
 * setting up your project environment (1.+2.): this is only done once
-* specifying the language features (3.-7.): this cycle you need to reiterate for each new language feature
+* specifying the language features (3.-7.): this cycle you need to reiterate for each new language feature or grammar change iteration
 * everything advanced (8.): The limit of the common workflow is reached here. For specific questions you can find answers in the [recipes](/docs/recipes).
 
 While the first part is straight-forward, the last part is about advanced topics that differ from project to project.
@@ -71,7 +71,7 @@ The cross-references are used to resolve references between language elements (b
 
 From here we have a fully utilized AST. Now every input file that matches the syntax will be accepted. But we want to have more control over the input. We want to check if the input is semantically correct. This is done by creating _validations_. They are used to check the input against a set of rules. If the input does not match the rules, an error will be thrown.
 
-### [7. Generate your artifacts](/docs/learn/workflow/generate_everything)
+### [7. Generate artifacts](/docs/learn/workflow/generate_everything)
 
 Now you have a fully working language. You can generate whatever you want from the input. This can be code, documentation, or anything else. You can use the AST to traverse the input and generate the output.
 

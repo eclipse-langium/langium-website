@@ -22,7 +22,7 @@ It will create the following files (depending on your given Langium configuratio
 
 An AST of your language is now ready to be get parsed. One important concept in Langium are _cross-references_. With them you can reference other elements in your language. For example, you can reference a variable in a function call. The AST will contain a reference to the variable. This is useful for code analysis and transformation. Technologies like ANTLR or other parser-only generators do not support this feature. For them you are forced to resolve these references in-place everytime the developer is confronted with them.
 
-After this generation steps, cross-references are not resolved yet. This is done in the next step.
+After these generation steps, cross-references are not resolved yet. This is done in the next step.
 
 ## Example
 
@@ -95,7 +95,7 @@ expect(model.persons).toHaveLength(2);
 expect(model.persons[0].name).toBe("John");
 expect(model.persons[1].name).toBe("Jane");
 expect(model.greetings).toHaveLength(2);
-//be aware of the fact that the following checks will fail, because the cross-references are not resolved yet
+//be aware of the fact that the following checks will fail at this point, because the cross-references are not resolved yet
 expect(model.greetings[0].person.ref?.name).toBe("John");
 expect(model.greetings[1].person.ref?.name).toBe("Jane");
 ```

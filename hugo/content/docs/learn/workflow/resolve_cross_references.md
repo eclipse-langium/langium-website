@@ -84,7 +84,7 @@ graph TB
 
 ## Resolution of cross-references
 
-As already hinted, you can implement a scope provider and a scope computation. Fortunately, Langium comes with default implementations for both. But eventually as your language grows, you might want to implement your own strategy because the default is not sufficient. In the follwoing sections I will sketch how to interpret their interfaces.
+As already hinted, you can implement a scope provider and a scope computation. Fortunately, Langium comes with default implementations for both. But eventually as your language grows, you might want to implement your own strategy because the default is not sufficient. In the following sections the interpretation of the involved interfaces will be sketched.
 
 ### Scope provider
 
@@ -96,7 +96,7 @@ A _scope_ is a collection of AST nodes that are represented by the `AstNodeDescr
 
 The _description_ is like a (string) path through the AST of a document. It can be also seen as a tuple of document URI, JSON path, name and type of the AST node.
 
-A _reference info_ contains the concrete AST reference (which points to nothing yet). The info also has a the parent AST node (a so-called container) of the reference and the property name under which you can find the reference under its container. In the form of this tuple (`container`, `property`, `reference`) Langium visits all cross-references using the scope providers `getScope` method.
+A _reference info_ contains the concrete AST reference (which points to nothing yet). The info also has a the parent AST node (a so-called container) of the reference and the property name under which you can find the reference under its container. In the form of this tuple (`container`, `property`, `reference`) Langium visits all cross-references using the scope provider's `getScope` method.
 
 ```ts
 export interface ScopeProvider {
