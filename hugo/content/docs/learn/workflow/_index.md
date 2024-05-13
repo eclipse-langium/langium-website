@@ -18,7 +18,7 @@ flowchart TD
   G(["7. Generate artifacts"]);
   H(["Find advanced topics"]);
   A --> B --> C --> D --> E --> F --> G ~~~ H;
-  G -- for each feature --> C;
+  G -- for each grammar change --> C;
 
   click A "/docs/learn/workflow/install"
   click B "/docs/learn/workflow/scaffold"
@@ -37,7 +37,7 @@ This is the workflow we recommend for developing a language with Langium. It is 
 This simple introduction can be seen as three main parts:
 
 * setting up your project environment (1.+2.): this is only done once
-* specifying the language features (3.-7.): this cycle you need to reiterate for each new language feature or grammar change iteration
+* specifying the language features (3.-7.): this cycle you need to go through for each grammar change
 * everything advanced (8.): The limit of the common workflow is reached here. For specific questions you can find answers in the [recipes](/docs/recipes).
 
 While the first part is straight-forward, the last part is about advanced topics that differ from project to project.
