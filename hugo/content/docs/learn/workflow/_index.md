@@ -18,7 +18,7 @@ flowchart TD
   G(["7. Generate artifacts"]);
   H(["Find advanced topics"]);
   A --> B --> C --> D --> E --> F --> G ~~~ H;
-  G -- for each grammar change --> C;
+  G -- for each additional\ngrammar change --> C;
 
   click A "/docs/learn/workflow/install"
   click B "/docs/learn/workflow/scaffold"
