@@ -1,8 +1,8 @@
 ---
-title: "Langium Overview"
-weight: 0
+title: "Features"
+weight: 200
+url: /docs/features
 ---
-
 Designing programming languages from the ground up is hard, independent of whether your language is a "simple" domain specific language or a full-fledged general-purpose programming language.
 Not only do you have to keep up with the requirements of your domain experts, but you have to deal with all the technical complexity that comes with building a language, including questions such as:
 
@@ -14,11 +14,12 @@ This is the point where Langium comes into play. Langium aims to lower the barri
 
 In this chapter, you'll get a closer look at the requirements developers usually have to implement by themselves when building a programming language:
 
-- [Language parsing](#language-parsing)
-- [Semantic models](#semantic-models)
-- [Cross references and linking](#cross-references-and-linking)
-- [Workspace management](#workspace-management)
-- [Editing support](#editing-support)
+- [Language Parsing](#language-parsing)
+- [Semantic Models](#semantic-models)
+- [Cross References and Linking](#cross-references-and-linking)
+- [Workspace Management](#workspace-management)
+- [Editing Support](#editing-support)
+- [Try it out!](#try-it-out)
 
 Langium provides out-of-the-box solutions for these problems, with the ability to fine-tune every part of it to fit your domain requirements.
 

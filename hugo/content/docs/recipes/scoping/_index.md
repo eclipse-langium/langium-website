@@ -1,6 +1,6 @@
 ---
 title: "Scoping"
-weight: 100
+weight: 0
 ---
 
 You likely know scopes from programming, where some variables are only available from certain areas (such as blocks) in your program. For example, take the short Typescript snippet below. Based on the block (scope) where a variable is declared, it may or may not be available at another location in the same program.

@@ -1,5 +1,5 @@
 ---
-title: "Tutorials"
+title: "Minilogo tutorial"
 weight: 200
 ---
 

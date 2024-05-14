@@ -23,7 +23,6 @@ The entire change touches several files. Let's summarize what needs to be done:
     1. the `package.json` needs to be adapted
     2. the extension entry point file (`src/extension/main.ts`) needs to be changed slightly
 
-
 ## Our scenario
 
 To keep this guide easy, I will use the [`hello-world` project](/docs/getting-started/).
@@ -43,7 +42,7 @@ flowchart
     Implementation -->|requires| Configuration
 {{</mermaid>}}
 
-## Let's start!
+## Let's start
 
 ### Grammar
 
@@ -73,6 +72,7 @@ hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
 Now, split it into three new files (let's call the entry rules units and the files we can name like `multiple-languages-(configuration|definition|implementation).langium`):
 
 Our definition grammar:
+
 ```langium
 grammar MultiDefinition
 
@@ -90,6 +90,7 @@ hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
 ```
 
 Our configuration grammar (note the import):
+
 ```langium
 grammar MultiConfiguration
 
@@ -99,6 +100,7 @@ entry ConfigurationUnit: 'I' 'am' who=[Person:ID] '.';
 ```
 
 Our implementation grammar (note the import again):
+
 ```langium
 grammar MultiImplementation
 
@@ -192,13 +194,16 @@ After adding two more languages, some important classes get generated - which ne
 2. You will notice a wrong import (which is ok, we renamed it in the previous steps and derived new classes by code generation).
 3. Import the new generated modules instead.
    Replace this line:
+
    ```ts
    import { 
      MultipleLanguagesGeneratedModule, 
      MultipleLanguagesGeneratedSharedModule
    } from './generated/module.js';
    ```
+
    with the following:
+
    ```ts
    import {
      MultiConfigurationGeneratedModule,
@@ -207,7 +212,9 @@ After adding two more languages, some important classes get generated - which ne
      MultipleLanguagesGeneratedSharedModule
    } from './generated/module.js';
    ```
+
 4. In the function `createMultipleLanguagesServices` you will notice an error line now, because we deleted the old class name in the previous step. The code there needs to basically be tripled. But before we do this, we need to define the new output type of `createMultipleLanguagesServices`. In the end this should lead to this definition:
+
     ```ts
     export function createMultipleLanguagesServices(context: DefaultSharedModuleContext): {
         shared: LangiumSharedServices,
@@ -253,10 +260,10 @@ After this step, Langium is set up correctly. But if you try to build now, the c
 Let's clean up the error lines. Here are some general hints:
 
 * keep in mind, that you are dealing with three file types now, namely `*.me`, `*.who` and `*.hello`
-    * you can distinguish them very easily by selecting the right sub service from the result object of `createMultipleLanguagesServices`, which is either `Configuration`, `Definition` or `Implementation`, but not `shared`
-    * all these services have a sub service with file extensions: `[Configuration,Definition,...].LanguageMetaData.fileExtensions: string[]`
-    * so, when you are obtaining any documents from the `DocumentBuilder` you can be sure that they are parsed by the matching language service
-    * to distinguish them on your own, use the AST functions for determining the root type, for example for the Configuration language use `isConfigurationUnit(document.parseResult.value)`
+  * you can distinguish them very easily by selecting the right sub service from the result object of `createMultipleLanguagesServices`, which is either `Configuration`, `Definition`, or `Implementation`, but not `shared`
+  * all these services have a sub service with file extensions: `[Configuration,Definition,...].LanguageMetaData.fileExtensions: string[]`
+  * so, when you are obtaining any documents from the `DocumentBuilder` you can be sure that they are parsed by the matching language service
+  * to distinguish them on your own, use the AST functions for determining the root type, for example for the Configuration language use `isConfigurationUnit(document.parseResult.value)`
 
 ### VSCode extension
 
@@ -371,7 +378,7 @@ const clientOptions: LanguageClientOptions = {
 };
 ```
 
-## Test the extension!
+## Test the extension
 
 Now everything should be executable. **Do not forget to build**!
 
@@ -379,7 +386,7 @@ Let's run the extension and create some files in our workspace:
 
 ### Definition `people.who`
 
-```
+```text
 person Markus
 person Michael
 person Frank
@@ -387,13 +394,13 @@ person Frank
 
 ### Configuration `thats.me`
 
-```
+```text
 I am Markus.
 ```
 
 ### Implementation `greetings.hello`
 
-```
+```text
 Hello Markus!
 Hello Michael!
 ```
@@ -401,11 +408,12 @@ Hello Michael!
 ## Checklist
 
 You should be able now...:
+
 * to see proper syntax highlighting
 * to trigger auto completion for keywords
 * to jump to the definition by Cmd/Ctrl-clicking on a person's name
 
-# Add a validator (task)
+## Add a validator (task)
 
 As promised, let's add a simple validation rule, that you cannot greet yourself. Therefore we enter our name in the `thats.me` file like we did in the previous step.
 
@@ -428,7 +436,7 @@ checkNotGreetingYourself(greeting: Greeting, accept: ValidationAcceptor): void {
 
 After doing so, your name should display a warning, stating that you cannot greet yourself.
 
-# Troubleshooting
+## Troubleshooting
 
 In this section we will list common mistakes.
 
@@ -437,4 +445,3 @@ In this section we will list common mistakes.
 * Since we are basically just copy-pasting given configuration, be aware of what you are pasting. Make sure that the code still makes sense after copying. You probably forgot to adapt the pasted code.
 
 If you encounter any problems, we are happy to help in our [discussions](https://github.com/eclipse-langium/langium/discussions) page or our [issue tracker](https://github.com/eclipse-langium/langium/issues).
-
