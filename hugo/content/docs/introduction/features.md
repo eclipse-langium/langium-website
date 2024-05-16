@@ -58,7 +58,7 @@ To express any kind of relationship between elements in your language, you will 
 The process of resolving these references, i.e. identifying what element of your language hides behind a certain name, is called _linking_.
 Performing the linking process in a deterministic manner with a lot of objects in your project requires sound linking design.
 
-Langium accomplishes this feat by using the concept of 'scoping'. You likely know scopes from programming, where some variables are only available from certain scopes:
+Langium accomplishes this feature by using the concept of 'scoping'. You likely know scopes from programming, where some variables are only available from certain scopes:
 
 ```ts
 let x = 42;
