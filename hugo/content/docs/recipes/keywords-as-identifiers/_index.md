@@ -56,7 +56,7 @@ That's it! (Don't forget to run `npm run langium:generate` after updating the gr
 
 ![screenshot with fixed grammar](fixed-1-grammar.png)
 
-Since the `name` property is used for cross-references by the parser rule for greetings, "Hello" needs to be supported here as well. For that we recommend to introduce a [data type rule](/docs/grammar-language/#data-type-rules) like "PersonID" in the example, since it makes it easier to support more keywords in the future:
+Since the `name` property is used for cross-references by the parser rule for greetings, "Hello" needs to be supported here as well. For that we recommend to introduce a [data type rule](/docs/reference/grammar-language/#data-type-rules) like "PersonID" in the example, since it makes it easier to support more keywords in the future:
 
 ```langium
 Person: 'person' name=PersonID;
