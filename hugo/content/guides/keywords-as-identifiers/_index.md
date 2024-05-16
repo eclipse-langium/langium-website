@@ -3,10 +3,10 @@ title: "Keywords as Identifiers"
 weight: 300
 ---
 
-Langium treats keywords like `var`, `const` or `function` as keyword tokens, even at unintended locations according to your grammar.
-Additionally, these strings are always highlighted as _keyword_ (in blue in this guide, while other text is white) whenever they are used.
-Summarizing, these keywords cannot be used as values for names, identifiers or other properties by default and need to be explicitly enabled.
-This guide explains how to do that.
+As you write your grammar, you will add keywords such as `var`, `get` or `function` to improve the readability of your language and to add structure.
+These _keywords_ get a special keyword highlighting whenever they are used, by default even at unintended locations according to your grammar, and are handled separately from other terminals such as names, identifiers, numbers and so on.
+You will quickly notice that a function such as `function get()` will lead to parser errors by default, as `get` is identified as keyword and not as identifier.
+This guide is all about how to explicitly enable these keywords (highlighted in blue) to be supported as identifiers (highlighted in white) as well.
 
 Let's look at the "hello-world" example in the [playground](https://langium.org/playground?grammar=OYJwhgthYgBAEgUwDbIPYHU0mQEwFD6IB2ALiAJ6wCyauKAXPrC7ABQAOiIAzmsTwDUAXgAK3PsVgAfWKESJSAS2LAhwgOIgFy1QEoAVAG5C43vyatYAci7ni12MUiJhASQAiJ-Fp0rglqzWSKhojnaSwgDaZpIMngC6NgCE1t4AFkq49FKk3BAqYMiwGADKDLAA9AA6QpUmeSAFzsWeFZVRAPpgALQAXgCCPQBaCVHVAO6dCQb1hJnZJLCNzUU0ADKdAMIA8tTUAKIAcgAq7dU1BuM81aUzAPzVBhdzCznL%2BYXFpZu7%2B8dnKoXC5RAB61WI1RAMzmQA&content=A4UwTgzg9gdgBAKQIYxAKABIgDbaolEAQjTVElji1yjSA) or as a new local project created with `yo langium` (for details, how to set up your first Langium project, read [getting started](/docs/getting-started/)):
 
@@ -23,7 +23,7 @@ To enable keywords as identifiers, you need to apply the following three steps:
 
 ## Step 1: Modify the grammar to explicitly parse keywords as property values
 
-The __first step__ is to modify the grammar to explicitly parse keywords as property values:
+The __first step__ is to modify the grammar to explicitly parse keywords as property values.
 At the moment, the parser rule for introducing persons looks like this:
 
 ```langium
@@ -31,14 +31,14 @@ Person: 'person' name=ID;
 terminal ID: /[_a-zA-Z][\w_]*/;
 ```
 
-Note that the terminal rule for `ID` already covers the string "Hello",
-but since the parser rule for greeting persons uses "Hello" as keyword, the keyword takes precedence:
+Note that the terminal rule for `ID` already covers the string "Hello".
+However, since the parser rule for greeting persons uses "Hello" as keyword, the keyword takes precedence:
 
 ```langium
 Greeting: 'Hello' person=[Person:ID] '!';
 ```
 
-Roughly summarized, the background for this behaviour is that Langium's internally used LL(k) parser implementation named [Chevrotain](https://chevrotain.io) first does _lexing_/tokenizing, i.e. splitting text into single tokens, e.g. words separated by white space.
+Roughly summarized, the background for this behaviour is that Langium's internally used LL(k) parser implementation named [Chevrotain](https://chevrotain.io) first does _lexing_/tokenizing, i.e. splitting text into single tokens, such as keywords, identifiers and delimiters.
 The actual _parsing_, i.e. the application of the parser rules, is performed afterwards on these tokens.
 Chevrotain uses regular expressions (regex) for splitting text into tokens.
 Since keywords are implemented as regex as well and take precedence, _all_ occurrences of "Hello" are treated as keywords for the parser rule named `Greeting`,
@@ -87,12 +87,12 @@ In Langium, the `SemanticTokenProvider` service is responsible for assigning lan
 Therefore, we customize the default semantic token provider like this:
 
 ```ts
-import { AbstractSemanticTokenProvider, AstNode, SemanticTokenAcceptor } from "langium";
-import { isPerson } from "./generated/ast.js";
+import { AbstractSemanticTokenProvider, AstNode, SemanticTokenAcceptor } from 'langium';
+import { isPerson } from './generated/ast.js';
 import { SemanticTokenTypes } from 'vscode-languageserver';
 
 export class HelloWorldSemanticTokenProvider extends AbstractSemanticTokenProvider {
-    protected override highlightElement(node: AstNode, acceptor: SemanticTokenAcceptor): void | "prune" | undefined {
+    protected override highlightElement(node: AstNode, acceptor: SemanticTokenAcceptor): void {
         if (isPerson(node)) {
             acceptor({
                 node,
@@ -113,11 +113,9 @@ After creating the semantic token provider, you need to register the `HelloWorld
 
 ```ts
 export const HelloWorldModule: Module<HelloWorldServices, PartialLangiumServices & HelloWorldAddedServices> = {
+    // ...
     lsp: {
         SemanticTokenProvider: (services) => new HelloWorldSemanticTokenProvider(services)
-    },
-    validation: {
-        HelloWorldValidator: () => new HelloWorldValidator()
     }
 };
 ```
@@ -149,7 +147,7 @@ __step two__ improves the user experience of your language.
 While step one and step two can be handled in the LSP server once for your language, __step three__ highly depends on your editor and its color themes (in the LSP clients), which makes step three quite complicated to handle.
 
 
-Now you have learned how to technically enable keywords as regular values for properties.
+Now you have learned how to enable keywords as regular values for properties.
 Feel free to enable the keyword "person" as name for persons in the example on your own.
 
 Word to the wise: Enabling certain strings to be used interchangeably as keywords and identifiers/values is possible, but has some costs. It always needs to be evaluated per case, whether accepting the costs is required and worth it.
