@@ -8,7 +8,7 @@ These _keywords_ get a special keyword highlighting whenever they are used, by d
 You will quickly notice that a function such as `function get()` will lead to parser errors by default, as `get` is identified as keyword and not as identifier.
 This guide is all about how to explicitly enable these keywords (highlighted in blue) to be supported as identifiers (highlighted in white) as well.
 
-Let's look at the "hello-world" example in the [playground](https://langium.org/playground?grammar=OYJwhgthYgBAEgUwDbIPYHU0mQEwFD6IB2ALiAJ6wCyauKAXPrC7ABQAOiIAzmsTwDUAXgAK3PsVgAfWKESJSAS2LAhwgOIgFy1QEoAVAG5C43vyatYAci7ni12MUiJhASQAiJ-Fp0rglqzWSKhojnaSwgDaZpIMngC6NgCE1t4AFkq49FKk3BAqYMiwGADKDLAA9AA6QpUmeSAFzsWeFZVRAPpgALQAXgCCPQBaCVHVAO6dCQb1hJnZJLCNzUU0ADKdAMIA8tTUAKIAcgAq7dU1BuM81aUzAPzVBhdzCznL%2BYXFpZu7%2B8dnKoXC5RAB61WI1RAMzmQA&content=A4UwTgzg9gdgBAKQIYxAKABIgDbaolEAQjTVElji1yjSA) or as a new local project created with `yo langium` (for details, how to set up your first Langium project, read [getting started](/docs/getting-started/)):
+Let's look at the "hello-world" example in the [playground](https://langium.org/playground?grammar=OYJwhgthYgBAEgUwDbIPYHU0mQEwFD6IB2ALiAJ6wCyauKAXPrC7ABQAOiIAzmsTwDUAXgAK3PsVgAfWKESJSAS2LAhwgOIgFy1QEoAVAG5C43vyatYAci7ni12MUiJhASQAiJ-Fp0rglqzWSKhojnaSwgDaZpIMngC6NgCE1t4AFkq49FKk3BAqYMiwGADKDLAA9AA6QpUmeSAFzsWeFZVRAPpgALQAXgCCPQBaCVHVAO6dCQb1hJnZJLCNzUU0ADKdAMIA8tTUAKIAcgAq7dU1BuM81aUzAPzVBhdzCznL%2BYXFpZu7%2B8dnKoXC5RAB61WI1RAMzmQA&content=A4UwTgzg9gdgBAKQIYxAKABIgDbaolEAQjTVElji1yjSA) or as a new local project created with `yo langium` (for details, how to set up your first Langium project, read [getting started](/docs/learn/worflow/)):
 
 ![screenshot with the editor, an example and an error message](problem.png)
 
@@ -155,7 +155,7 @@ Additionally, using keywords as identifiers impacts the user experience, therefo
 
 Some hints beyond this guide:
 
-- In [multi-grammar projects](/guides/multiple-languages), only keywords of the included grammars are affected by this general problem, but not keywords of other languages or Langium grammar files.
+- In [multi-grammar projects](/docs/recipes/multiple-languages), only keywords of the included grammars are affected by this general problem, but not keywords of other languages or Langium grammar files.
 - In order to get an overview about the keywords of your language, have a look into the generated TextMate grammar `*.tmLanguage.json` and search for the pattern named `keyword.control.*`, which contains a regex with the keywords.
 - Read about the concept of semantic tokens in the [Language Server Protocol](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_semanticTokens) (LSP) including predefined semantic types for tokens.
 - Read about how [VS Code](https://code.visualstudio.com/api/language-extensions/semantic-highlight-guide) realizes semantic highlighting using semantic tokens.
