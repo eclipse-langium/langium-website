@@ -1,4 +1,4 @@
 ---
-title: Lexis"
+title: Lexis
 weight: 100
 ---
