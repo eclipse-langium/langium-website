@@ -5,7 +5,7 @@ weight: 1
 
 {{< toc format=html >}}
 
-In this tutorial, we will be talking about implementing validation for your Langium-based language. We recommend first reading the previous tutorial about [writing a grammar](/tutorials/writing_a_grammar/), as we will assume you're familiar with the topics covered there. We'll also assume that you have a working language to add validation to, so double check that `npm run langium:generate` succeeds without errors before you proceed.
+In this tutorial, we will be talking about implementing validation for your Langium-based language. We recommend first reading the previous tutorial about [writing a grammar](/docs/learn/minilogo/writing_a_grammar/), as we will assume you're familiar with the topics covered there. We'll also assume that you have a working language to add validation to, so double check that `npm run langium:generate` succeeds without errors before you proceed.
 
 For this tutorial, we'll be implementing validation for the [MiniLogo language](https://github.com/langium/langium-minilogo), but you can use your own language to follow along as well.
 
@@ -150,4 +150,4 @@ checkUniqueParams(def: Def, accept: ValidationAcceptor): void {
 
 Although we've only implemented a pair of validations, hopefully this demonstrates the flexibility of the validator API. The validator can help enforce constraints or features of your language, and ensure that your programs are correct. You could also explore more customized validations for specific cases, perhaps where a parameter and a definition share the same name -- which is not handled here. So long as you can identify the AST node type that you need to validate, you can implement the logic here.
 
-That's all for validation. Next we'll be talking about how we can [customize our CLI](/tutorials/customizing_cli).
+That's all for validation. Next we'll be talking about how we can [customize our CLI](/docs/learn/minilogo/customizing_cli).

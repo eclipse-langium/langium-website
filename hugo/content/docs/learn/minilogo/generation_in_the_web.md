@@ -81,7 +81,7 @@ shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents
 
 And that's it for setting up the onBuildPhase listener itself. We still need to address the usage of `generateMiniLogoCmds`, which is tied to the LS implementation.
 
-Based on the work done in previous tutorials, we already have set up a working generator with MinLogo. If you haven't already set this up you can go back to the [tutorial on generation](/tutorials/generation) and give it a look over. Ideally, we'll already have setup our `generateStatements` function for MiniLogo, meaning so long as the imported module doesn't have any modules that are browser incompatible, we should be able to use it as is. Based on the previous setup however, we should have a **generator.js** file that is free of such conflicts, as much of them should be separated into the cli directly.
+Based on the work done in previous tutorials, we already have set up a working generator with MinLogo. If you haven't already set this up you can go back to the [tutorial on generation](/docs/learn/minilogo/generation) and give it a look over. Ideally, we'll already have setup our `generateStatements` function for MiniLogo, meaning so long as the imported module doesn't have any modules that are browser incompatible, we should be able to use it as is. Based on the previous setup however, we should have a **generator.js** file that is free of such conflicts, as much of them should be separated into the cli directly.
 
 This saves us quite a bit of time, since we don't need to handle setting up & dispatching a document for validation, we simply tap into the existing workflow and collect the result when it's ready. This is a great example of how Langium's architecture allows us to easily extend existing functionality, and add new features without having to rewrite existing code.
 
@@ -89,7 +89,7 @@ As a concluding note for this section, don't forget to rebuild your language ser
 
 ## Listening for Notifications in the Client
 
-The next step we need to make is to actually listen for these notifications from the client's end. This takes us back to the [Langium + Monaco](/tutorials/langium_and_monaco) setup in the previous tutorial.
+The next step we need to make is to actually listen for these notifications from the client's end. This takes us back to the [Langium + Monaco](/docs/learn/minilogo/langium_and_monaco) setup in the previous tutorial.
 
 After starting the wrapper successfully, we want to retrieve the MonacoLanguageClient instance (a wrapper around the language client itself) and listen for `browser/DocumentChange` notifications.
 

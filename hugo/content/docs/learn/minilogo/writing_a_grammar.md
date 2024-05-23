@@ -36,7 +36,7 @@ Now that we have an idea of our semantics and our concrete syntax, we can then s
 
 As an aside, our version of MiniLogo will be an *approximation* of Dr. Walkingshaw's version. We won't adhere to it completely, and we won't be incorporating some elements, such as variable declarations.
 
-To get started sketching the grammar we'll be using the **Hello World** example from the yeoman generator. You can read about how to get this setup in the [Getting Started](/docs/getting-started/) section of our docs. We'll be working with a fresh from the generator using only the defaults, and building up from that. We'll begin by modifying the default grammar file, and updating it to work for MiniLogo. You can find this file under **src/language/hello-world.langium** in your new project. If you used a name other than the default, the file will still be there, but using your custom name instead.
+To get started sketching the grammar we'll be using the **Hello World** example from the yeoman generator. You can read about how to get this setup in the [learning](/docs/learn/workflow/) section of our docs. We'll be working with a fresh from the generator using only the defaults, and building up from that. We'll begin by modifying the default grammar file, and updating it to work for MiniLogo. You can find this file under **src/language/hello-world.langium** in your new project. If you used a name other than the default, the file will still be there, but using your custom name instead.
 
 We'll be overriding the existing langium grammar file completely, so delete the old contents before we begin.
 
@@ -309,4 +309,4 @@ The generation should finish successfully, indicating that our grammar doesn't h
 - a semantic model (that ASTs can be mapped onto)
 - a parser that recognizes our language
 
-With that, we have the beginnings of our very own language! Hopefully this gives a good idea of how to express a grammar in Langium, particularly with consideration to your concrete syntax & semantic domain. You can also consider the ways we can express cases that are left-recursive, like expressions, in an alternative fashion. Overall, our grammar should now be ready for the next step of [validation in the following tutorial](/tutorials/validation).
+With that, we have the beginnings of our very own language! Hopefully this gives a good idea of how to express a grammar in Langium, particularly with consideration to your concrete syntax & semantic domain. You can also consider the ways we can express cases that are left-recursive, like expressions, in an alternative fashion. Overall, our grammar should now be ready for the next step of [validation in the following tutorial](/docs/learn/minilogo/validation).
