@@ -21,7 +21,7 @@ export class PlaygroundValidator extends DefaultDocumentValidator {
                         refText: linkingError.reference.$refText
                     } satisfies LinkingErrorData
                 };
-                diagnostics.push(this.toDiagnostic('warning', `Linking failed. Please inject a custom scope provider. This is a limitation of the playground. To overcome this issue, please study the learning section in the Langium documentation (original error: ${linkingError.message})`, info));
+                diagnostics.push(this.toDiagnostic('warning', `${linkingError.message}\nIn case you want to adjust the linking rules, please consult the learning section in the Langium documentation.`, info));
             }
         }
     }
