@@ -36,7 +36,7 @@ To make Langium case-insensitive, you have to set the `caseInsensitive` option t
 
 If you want to include case-insensitivity only where you need it, you can use the `i` flag inside of your grammar's regular expressions
 
-```ts
+```langium
 // append `i` to any regex to make it case insensitive
 terminal ID: /[A-Z]/i;
 ```
