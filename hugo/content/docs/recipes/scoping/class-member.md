@@ -124,24 +124,24 @@ sequenceDiagram
     participant T as Type System
     participant S as Scope Provider
     participant L as Lexical Scope
-    R->>T: Ask for type of expression<br>`element.sub.name`
-    T->>S: Ask for `name` node
-    S->>T: Ask for `sub` type
-    T->>S: Ask for `sub` node
-    S->>T: Ask for `element` type
-    T->>S: Ask for `element` node
-    S->>L: Ask for `element` node
-    L->>S: Give `element` node
-    S->>T: Give `element` node
-    T->>S: Ask for `Container` node
-    S->>L: Ask for `Container` node
-    L->>S: Give `Container` node
-    S->>T: Give `Container` node
-    T->>S: Give `Container` type result
-    S->>T: Give `sub` node
-    T->>S: Give `SubContainer` type result
-    S->>T: Give `name` node
-    T->>R: Give `string` type result
+    R->>T: (1) Query type of expression<br>`element.sub.name`
+    T->>S: (2) Query `name` node
+    S->>T: (3) Query `sub` type
+    T->>S: (4) Query `sub` node
+    S->>T: (5) Query `element` type
+    T->>S: (6) Query `element` node
+    S->>L: (7) Query `element` node
+    L->>S: (7) Return `element` node
+    S->>T: (6) Return `element` node
+    T->>S: (8) Query `Container` node
+    S->>L: (9) Query `Container` node
+    L->>S: (9) Return `Container` node
+    S->>T: (8) Return `Container` node
+    T->>S: (5) Return `Container` type result
+    S->>T: (4) Return `sub` node
+    T->>S: (3) Return `SubContainer` type result
+    S->>T: (2) Return `name` node
+    T->>R: (1) Return `string` type result
 {{</mermaid>}}
 
 When trying to infer the type of the expression `element.sub.name`,
