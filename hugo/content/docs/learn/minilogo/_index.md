@@ -19,4 +19,4 @@ By working through each of these tutorials, you'll be learning about:
 
 By the end of this series, you should be equipped to start working on your own language, and also have a pretty good idea for how you can integrate Langium into other projects as well.
 
-With that being said, hop on in to the first guide on [Writing a Grammar in Langium](writing_a_grammar)!
+With that being said, hop on in to the first guide on [Writing a Grammar in Langium](/docs/learn/minilogo/writing_a_grammar)!
