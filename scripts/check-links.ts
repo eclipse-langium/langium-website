@@ -23,8 +23,10 @@ async function main() {
     const markdownFiles: MarkdownFile[] = await readMarkdownFiles();
     //collect what is there
     const setOfUrls = new Set<string>([
-        urlToString('http://langium.org/')
-    ]);
+        'http://langium.org/',
+        "/showcase",
+        "/playground"
+    ].map(urlToString));
     for (const file of markdownFiles) {
         for (const url of file.aliases) {
             setOfUrls.add(urlToString(url));
@@ -32,13 +34,17 @@ async function main() {
     }
     //check what is missing
     for (const file of markdownFiles) {
-        console.log(`${relative(contentDir, file.localPath)}:`);
+        let out = false;
         for (const link of file.links) {
-            if(link.startsWith("http")) {
+            if(link.startsWith("http") || link.endsWith(".png") || link.endsWith(".jpg")) {
                 continue;
             }
             const url = urlToString(link);
             if(!setOfUrls.has(url)) {
+                if(!out) {
+                    console.log(`${relative(contentDir, file.localPath)}:`);
+                    out = true;
+                }
                 console.log(`- MISSING LINK: ${url.toString()}`);
                 success = false;
             }
@@ -86,9 +92,9 @@ async function readMarkdownFiles() {
 }
 
 function getAllLinks(content: string) {
-    const regexMdLinks = /\[([^\[]+)\](\(.*\))/gm
+    const regexMdLinks = /\[([^\[]+)\](\(.*?\))/gm
     const matches = content.match(regexMdLinks)
-    const singleMatch = /\[([^\[]+)\]\((.*)\)/;
+    const singleMatch = /\[([^\[]+)\]\((.*?)\)/;
     const result: string[] = [];
     for (var i = 0; i < matches?.length ?? 0; i++) {
         var text = singleMatch.exec(matches[i])
@@ -100,6 +106,9 @@ function getAllLinks(content: string) {
 function urlToString(link: string): string {
     const url = new URL(link, 'http://langium.org');
     url.hash = "";
+    if(url.pathname.endsWith("/")) {
+        url.pathname = url.pathname.substring(0, url.pathname.length-1)
+    }
     return url.toString();
 }
 

@@ -1,6 +1,8 @@
 ---
 title: "Code Bundling"
 weight: 900
+aliases:
+  - /guides/code-bundling
 ---
 
 When you first create a Langium project using the [Yeoman generator](/docs/learn/workflow/install), it will only contain a plain TypeScript configuration, without any additional build processes.

@@ -1,6 +1,8 @@
 ---
 title: "Generation"
 weight: 3
+aliases:
+  - /tutorials/generation
 ---
 
 {{< toc format=html >}}

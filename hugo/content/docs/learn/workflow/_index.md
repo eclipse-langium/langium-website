@@ -2,6 +2,8 @@
 title: "Langium's workflow"
 weight: 0
 url: /docs/learn/workflow/
+aliases:
+  - /docs/getting-started
 ---
 
 Langium's workflow can be expressed as a flow chart diagram, which boils down to the following steps in the diagram.

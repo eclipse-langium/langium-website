@@ -1,6 +1,8 @@
 ---
 title: 'Document Lifecycle'
 weight: 300
+aliases:
+  - /docs/document-lifecycle
 ---
 
 `LangiumDocument` is the central data structure in Langium that represents a text file of your DSL. Its main purpose is to hold the parsed Abstract Syntax Tree (AST) plus additional information derived from it. After its creation, a `LangiumDocument` must be "built" before it can be used in any way. The service responsible for building documents is called `DocumentBuilder`.

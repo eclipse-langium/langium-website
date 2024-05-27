@@ -1,6 +1,8 @@
 ---
 title: "Building an Extension"
 weight: 5
+aliases:
+  - /tutorials/building_an_extension
 ---
 
 {{< toc format=html >}}

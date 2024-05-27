@@ -1,6 +1,8 @@
 ---
 title: "Qualified Name Scoping"
 weight: 100
+aliases:
+  - /qualified-name
 ---
 
 Qualified name scoping refers to a style of referencing elements using a fully qualified name.

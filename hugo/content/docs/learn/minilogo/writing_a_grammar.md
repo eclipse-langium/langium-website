@@ -1,6 +1,9 @@
 ---
 title: "Writing a Grammar"
 weight: 0
+aliases:
+  - /tutorials/writing_a_grammar
+  - /writing_a_grammar
 ---
 
 {{< toc format=html >}}

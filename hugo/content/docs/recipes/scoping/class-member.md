@@ -1,6 +1,8 @@
 ---
 title: "Class Member Scoping"
 weight: 200
+aliases:
+  - /class-member
 ---
 
 In this guide we will take a look at member based scoping. It's a mechanism you are likely familiar with from object oriented languages such as Java, C# and JavaScript:

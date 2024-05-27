@@ -1,6 +1,8 @@
 ---
 title: "Customizing the CLI"
 weight: 2
+aliases:
+    - /tutorials/customizing_cli
 ---
 
 {{< toc format=html >}}

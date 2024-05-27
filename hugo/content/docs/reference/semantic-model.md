@@ -1,6 +1,9 @@
 ---
 title: "Semantic Model Inference"
 weight: 400
+aliases:
+  - /sematic-model
+  - /semantic-model
 ---
 
 When AST nodes are created during the parsing of a document, they are given a type. The language grammar dictates the shape of those types and how they might be related to each other. All types form the *semantic model* of your language. There are two ways by which Langium derives semantic model types from the grammar, by **[inference](#inferred-types)** and by **[declaration](#declared-types)**.

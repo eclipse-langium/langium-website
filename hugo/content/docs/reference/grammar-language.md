@@ -1,6 +1,9 @@
 ---
 title: "Grammar Language"
 weight: 100
+aliases:
+  - /grammar-language
+  - /docs/grammar-language
 ---
 
 {{< toc format=html >}}
