@@ -8,12 +8,16 @@
     "watch": "npm run build --workspace core && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch --workspace hugo\" \"npm run watch --workspace tailwind\"",
     "watch:gitpod": "npm run build --workspace core && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
     "build": "npm run clean && npm run build --workspace core --workspace=tailwind --workspace=hugo",
-    "clean": "shx rm -rf public && npm run clean --workspace core --workspace=tailwind"
+    "clean": "shx rm -rf public && npm run clean --workspace core --workspace=tailwind",
+    "check:links": "ts-node scripts/check-links.ts"
   },
   "devDependencies": {
     "concurrently": "~8.2.1",
     "cross-env": "~7.0.3",
-    "shx": "~0.3.4"
+    "front-matter": "^4.0.2",
+    "glob": "^10.4.1",
+    "shx": "~0.3.4",
+    "ts-node": "^10.9.2"
   },
   "workspaces": [
     "core",
