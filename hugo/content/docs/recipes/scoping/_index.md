@@ -18,9 +18,10 @@ y = 3; // Cannot link, `y` isn't in any of the available scopes
 This kind of behavior is called lexical scoping. Although this default scoping implementation is suitable for prototyping -- and for some simple languages once finished -- this behavior can be easily modified to fit the needs of your language's domain.
 
 In general, the way we resolve references is split into three phases of the document lifecycle:
-- [Symbol indexing](/docs/document-lifecycle#symbol-indexing) is responsible for making objects globally available for referencing.
-- [Scope computation](/docs/document-lifecycle#computing-scopes) determines which elements are reachable from a given position in your document.
-- Finally, the [linking phase](/docs/document-lifecycle#linking) eagerly links each reference within a document to its target using your language's scoping rules.
+
+- [Symbol indexing](/docs/reference/document-lifecycle#symbol-indexing) is responsible for making objects globally available for referencing.
+- [Scope computation](/docs/reference/document-lifecycle#computing-scopes) determines which elements are reachable from a given position in your document.
+- Finally, the [linking phase](/docs/reference/document-lifecycle#linking) eagerly links each reference within a document to its target using your language's scoping rules.
 
 In this guide, we'll look at different scoping kinds and styles and see how we can achieve them using Langium:
 

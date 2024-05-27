@@ -223,23 +223,29 @@ interface TypeTwo extends TypeOne {}
 RuleTwo returns TypeTwo:
     'keywordTwo' name=ID;
 ```
+
 A rule call is one of the ways to specify the return type. With more complex rules, the readability will be highly impacted. *Actions* allow to improve the readability of the grammar by explicitly defining the return type. Actions are declared inside of curly braces `{}`:
+
 ```langium
 RuleOne returns TypeOne:
     'keywordOne' name=ID | {TypeTwo} 'keywordTwo' name=ID;
 ```
 
-The example above requires that the return types `TypeOne` and `TypeTwo` are declared separately (see [the next chapter](../semantic-model)). If the type returned by the action is created on-the-fly, the keyword `infer` needs to be added:
+The example above requires that the return types `TypeOne` and `TypeTwo` are declared separately (see [the next chapter](/docs/reference/semantic-model)). If the type returned by the action is created on-the-fly, the keyword `infer` needs to be added:
+
 ```langium
 RuleOne infers TypeOne:
     'keywordOne' name=ID | {infer TypeTwo} 'keywordTwo' name=ID;
 ```
+
 Now both `TypeOne` and `TypeTwo` are inferred from the rule definition. Note that we use the keyword `infers` (declarative) for the grammar rule, but `infer` (imperative) for the action.
 
 #### Tree-Rewriting Actions
+
 The parser is built using [Chevrotain](https://github.com/chevrotain/chevrotain) which implements a LL(k) parsing algorithm (left-to-right). Conceptually, a LL(k) grammar cannot have rules containing left recursion.
 
-Consider the following: 
+Consider the following:
+
 ```langium
 Addition:
     Addition '+' Addition | '(' Addition ')' | value=INT;
