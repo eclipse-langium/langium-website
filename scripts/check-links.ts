@@ -1,6 +1,7 @@
 import { glob } from "glob";
-import { mkdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { basename, dirname, resolve, relative } from 'node:path';
+import chalk from 'chalk';
 import fm from "front-matter";
 
 type Attributes = {
@@ -11,41 +12,56 @@ type Attributes = {
 
 type MarkdownFile = {
     localPath: string;
+    documentLink: string;
     aliases: string[];
     links: string[];
 }
+
+type LinkType = 'alias'|'document';
 
 const projectDir = dirname(__dirname);
 const contentDir = resolve(projectDir, "hugo", "content");
 
 async function main() {
-    let success = true;
-    const markdownFiles: MarkdownFile[] = await readMarkdownFiles();
-    //collect what is there
-    const setOfUrls = new Set<string>([
+    const markdownFiles = await readMarkdownFiles();
+    const setOfUrls = classifyAsDocumentLinksOrAliases(markdownFiles);
+    //await writeFile("existingLinks.txt", JSON.stringify([...setOfUrls.entries()], null, 2));
+    return printMissingLinks(markdownFiles, setOfUrls);
+}
+
+function classifyAsDocumentLinksOrAliases(markdownFiles: MarkdownFile[]) {
+    const documentLinks = [
+        ...markdownFiles.map(m => m.documentLink),
         'http://langium.org/',
         "/showcase",
         "/playground"
-    ].map(urlToString));
-    for (const file of markdownFiles) {
-        for (const url of file.aliases) {
-            setOfUrls.add(urlToString(url));
-        }
-    }
-    //check what is missing
+    ].map(urlToString).map(s => [s, 'document'] as const);
+    const aliases = markdownFiles.flatMap(m => m.aliases).map(urlToString).map(s => [s, 'alias'] as const);
+    return new Map<string, LinkType>([...documentLinks, ...aliases]);
+}
+
+function printMissingLinks(markdownFiles: MarkdownFile[], setOfUrls: Map<string, LinkType>) {
+    let success: boolean = true;
     for (const file of markdownFiles) {
         let out = false;
         for (const link of file.links) {
-            if(link.startsWith("http") || link.endsWith(".png") || link.endsWith(".jpg")) {
+            if (link.startsWith("http") || link.endsWith(".png") || link.endsWith(".jpg")) {
                 continue;
             }
             const url = urlToString(link);
-            if(!setOfUrls.has(url)) {
-                if(!out) {
+            if (!setOfUrls.has(url)) {
+                if (!out) {
                     console.log(`${relative(contentDir, file.localPath)}:`);
                     out = true;
                 }
-                console.log(`- MISSING LINK: ${url.toString()}`);
+                console.log(`- ${chalk.red("MISSING LINK")}: ${url.toString()}`);
+                success = false;
+            } else if(setOfUrls.get(url) === 'alias') {
+                if (!out) {
+                    console.log(`${relative(contentDir, file.localPath)}:`);
+                    out = true;
+                }
+                console.log(`- ${chalk.yellow("LINK TO ALIAS")}: ${url.toString()}`);
                 success = false;
             }
         }
@@ -65,16 +81,17 @@ async function readMarkdownFiles() {
         if (aliases) {
             urls = [...urls, ...aliases];
         }
+        let documentLink: string = '';
         if (url) {
-            urls.push(url);
+            documentLink = url;
         } else if (slug) {
-            urls.push(relative(contentDir, resolve(mdFile, '..', slug)));
+            documentLink = relative(contentDir, resolve(mdFile, '..', slug));
         } else {
             const base = basename(mdFile, '.md');
             if (["index.md", "_index.md", '_index'].includes(base)) {
-                urls.push(relative(contentDir, resolve(mdFile, '..')));
+                documentLink = relative(contentDir, resolve(mdFile, '..'));
             } else {
-                urls.push(relative(contentDir, resolve(mdFile, '..', base)));
+                documentLink = relative(contentDir, resolve(mdFile, '..', base));
             }
         }
 
@@ -84,6 +101,7 @@ async function readMarkdownFiles() {
         //new file
         markdownFiles.push({
             localPath: mdFile,
+            documentLink,
             aliases: urls,
             links
         });

@@ -11,7 +11,9 @@ aliases:
 The grammar language describes the syntax and structure of your language. The [Langium grammar language](https://github.com/eclipse-langium/langium/blob/main/packages/langium/src/grammar/langium-grammar.langium) is implemented using Langium itself and therefore follows the same syntactic rules as any language created with Langium. The grammar language will define the structure of the *abstract syntax tree* (AST) which in Langium is a collection of *TypeScript types* describing the content of a parsed document and organized hierarchically. The individual nodes of the tree are then represented with JavaScript objects at runtime.
 
 In the following, we describe the Langium syntax and document structure.
+
 ## Language Declaration
+
 An *entry* Langium grammar file (i.e. a grammar which contains an [entry rule](#the-entry-rule)) always starts with a header which declares the name of the language. For example, a language named `MyLanguage` would be declared with:
 
 ```langium
@@ -80,7 +82,7 @@ Person:
 ```
 In this example, the parser will create an object of type `Person`. This object will have a property `name` which value and type must match the terminal rule `ID` (i.e. the property `name` is of type `string` and cannot start with a digit or special character).
 
-By default, the parser will create an object with an inferred type corresponding to the parser rule name. It is possible to override this behavior by explicitly defining the type of the object to be created. This is done by adding the keyword `returns` followed by a separately declared type, or the keyword `infers` followed by the name of the type to be inferred for this rule (more about this [in the next chapter](../sematic-model)):
+By default, the parser will create an object with an inferred type corresponding to the parser rule name. It is possible to override this behavior by explicitly defining the type of the object to be created. This is done by adding the keyword `returns` followed by a separately declared type, or the keyword `infers` followed by the name of the type to be inferred for this rule (more about this [in the next chapter](/docs/reference/semantic-model)):
 ```langium
 Person infers OtherType:
     'person' name=ID;

@@ -12,6 +12,8 @@
     "check:links": "ts-node scripts/check-links.ts"
   },
   "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "chalk": "^4.0.0",
     "concurrently": "~8.2.1",
     "cross-env": "~7.0.3",
     "front-matter": "^4.0.2",

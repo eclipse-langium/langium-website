@@ -1,7 +1,7 @@
 ---
 title: "Langium's workflow"
 weight: 0
-url: /docs/learn/workflow/
+url: /docs/learn/workflow
 aliases:
   - /docs/getting-started
 ---
