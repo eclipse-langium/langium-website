@@ -26,7 +26,14 @@ async function main() {
     const markdownFiles = await readMarkdownFiles();
     const setOfUrls = classifyAsDocumentLinksOrAliases(markdownFiles);
     //await writeFile("existingLinks.txt", JSON.stringify([...setOfUrls.entries()], null, 2));
-    return printMissingLinks(markdownFiles, setOfUrls);
+    const success = printMissingLinks(markdownFiles, setOfUrls);
+    if(success) {
+        console.log(chalk.greenBright('Success!'));
+        process.exit(0);
+    } else {
+        console.log(chalk.redBright('Failed!'));
+        process.exit(1);
+    }
 }
 
 function classifyAsDocumentLinksOrAliases(markdownFiles: MarkdownFile[]) {
@@ -130,4 +137,4 @@ function urlToString(link: string): string {
     return url.toString();
 }
 
-main().then(success => process.exit(success ? 0 : 1));
+main();
