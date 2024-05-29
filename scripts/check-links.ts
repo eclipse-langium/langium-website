@@ -95,7 +95,7 @@ async function readMarkdownFiles() {
             documentLink = relative(contentDir, resolve(mdFile, '..', slug));
         } else {
             const base = basename(mdFile, '.md');
-            if (["index.md", "_index.md", '_index'].includes(base)) {
+            if (['index', '_index'].includes(base)) {
                 documentLink = relative(contentDir, resolve(mdFile, '..'));
             } else {
                 documentLink = relative(contentDir, resolve(mdFile, '..', base));
