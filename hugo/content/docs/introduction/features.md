@@ -101,4 +101,4 @@ The LSP includes commonly used language features, such as code completion, custo
 
 You can try out most of these features using our [showcase](/showcase/) and [playground](/playground/). The languages shown there are written using Langium and integrated in the monaco-editor.
 
-If you're interested in Langium, you can check out our [learning](/docs/learn/workflow123) page next. There you'll learn how to get started writing your first language, and to learn more about how Langium can help you achieve your language designing goals.
+If you're interested in Langium, you can check out our [learning](/docs/learn/workflow) page next. There you'll learn how to get started writing your first language, and to learn more about how Langium can help you achieve your language designing goals.
