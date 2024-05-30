@@ -1,19 +1,19 @@
-<script src="{{ index .Site.Data.assets "js/darkmode.min.js" | relURL }}"></script>
+<script src="/js/darkmode.min.js"></script>
 
 <link rel="preload" as="font" href="{{ "fonts/Metropolis.woff2" | relURL }}" type="font/woff2" crossorigin="anonymous">
 <link rel="preload" as="font" href="{{ "fonts/LiberationSans.woff2" | relURL }}" type="font/woff2" crossorigin="anonymous">
 
-<link rel="preload" href="{{ index .Site.Data.assets "/main.min.css" | relURL }}" as="style">
-<link rel="stylesheet" href="{{ index .Site.Data.assets "/main.min.css" | relURL }}" media="all">
+<link rel="preload" href="/main.min.css" as="style">
+<link rel="stylesheet" href="/main.min.css" media="all">
 
-<link rel="preload" href="{{ index .Site.Data.assets "/mobile.min.css" | relURL }}" as="style">
-<link rel="stylesheet" href="{{ index .Site.Data.assets "/mobile.min.css" | relURL }}" media="screen and (max-width: 45rem)">
+<link rel="preload" href="/mobile.min.css" as="style">
+<link rel="stylesheet" href="/mobile.min.css" media="screen and (max-width: 45rem)">
 
-<link rel="preload" href="{{ index .Site.Data.assets "/print.min.css" | relURL }}" as="style">
-<link rel="stylesheet" href="{{ index .Site.Data.assets "/print.min.css" | relURL }}" media="print">
+<link rel="preload" href="/print.min.css" as="style">
+<link rel="stylesheet" href="/print.min.css" media="print">
 
-<link rel="preload" href="{{ index .Site.Data.assets "/custom.css" | relURL }}" as="style">
-<link rel="stylesheet" href="{{ index .Site.Data.assets "/custom.css" | relURL }}" media="all">
+<link rel="preload" href="/custom.css" as="style">
+<link rel="stylesheet" href="/custom.css" media="all">
 
 {{ if (default false $.Site.Params.GeekdocOverwriteHTMLBase) }}
 <base href="{{ .Site.BaseURL }}">
