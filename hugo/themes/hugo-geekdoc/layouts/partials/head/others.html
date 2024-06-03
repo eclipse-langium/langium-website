@@ -12,8 +12,8 @@
 <link rel="preload" href="{{ index .Site.Data.assets "print.min.css" | relURL }}" as="style">
 <link rel="stylesheet" href="{{ index .Site.Data.assets "print.min.css" | relURL }}" media="print">
 
-<link rel="preload" href="{{ index .Site.Data.assets "custom.css" | relURL }}" as="style">
-<link rel="stylesheet" href="{{ index .Site.Data.assets "custom.css" | relURL }}" media="all">
+<link rel="preload" href="{{ "custom.css" | relURL }}" as="style">
+<link rel="stylesheet" href="{{ "custom.css" | relURL }}" media="all">
 
 {{ if (default false $.Site.Params.GeekdocOverwriteHTMLBase) }}
 <base href="{{ .Site.BaseURL }}">
