@@ -1,6 +1,8 @@
 ---
 title: "Validation"
 weight: 1
+aliases:
+  - /tutorials/validation
 ---
 
 {{< toc format=html >}}

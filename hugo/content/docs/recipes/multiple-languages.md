@@ -25,7 +25,7 @@ The entire change touches several files. Let's summarize what needs to be done:
 
 ## Our scenario
 
-To keep this guide easy, I will use the `hello-world` project from the [learning section](/docs/learn/workflow).
+To keep this guide easy, I will use the [`hello-world` project](/docs/learn/workflow) of the learning section.
 
 Let’s imagine that we have three languages:
 

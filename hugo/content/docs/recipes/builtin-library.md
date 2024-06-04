@@ -8,7 +8,7 @@ For example, TypeScript provides users with typings for globally accessible vari
 They are part of the JavaScript runtime, and not defined by any user or a package they might import.
 Instead, these features are contributed through what we call builtin libraries.
 
-Loading a builtin library in Langium is very simple. We first start off with defining the source code of the library using the *hello world* language from the [getting started guide](/docs/getting-started):
+Loading a builtin library in Langium is very simple. We first start off with defining the source code of the library using the *hello world* language from the [getting started guide](/docs/learn/workflow):
 
 ```ts
 export const builtinHelloWorld = `

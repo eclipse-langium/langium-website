@@ -1,6 +1,8 @@
 ---
 title: "Generation in the Web"
 weight: 7
+aliases:
+  - /tutorials/generation_in_the_web
 ---
 
 {{< toc format=html >}}

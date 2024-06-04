@@ -1,6 +1,8 @@
 ---
 title: "Langium + Monaco Editor"
 weight: 6
+aliases:
+    - /tutorials/langium_and_monaco
 ---
 
 {{< toc format=html >}}

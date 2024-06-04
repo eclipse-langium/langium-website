@@ -19,7 +19,7 @@ In this chapter, you'll get a closer look at the requirements developers usually
 - [Cross References and Linking](#cross-references-and-linking)
 - [Workspace Management](#workspace-management)
 - [Editing Support](#editing-support)
-- [Try it out!](#try-it-out)
+- [Try it out](#try-it-out)
 
 Langium provides out-of-the-box solutions for these problems, with the ability to fine-tune every part of it to fit your domain requirements.
 
@@ -27,7 +27,7 @@ Langium provides out-of-the-box solutions for these problems, with the ability t
 
 ## Language Parsing
 
-Programming languages and domain specific languages (DSLs) cannot be parsed using simple regular expressions (RegExp). Instead they require a more sophisticated parsing strategy. To define a custom language in Langium, you interact with a high level representation of your context-free grammar using the [Langium grammar language](/docs/grammar-language), in a similar fashion to EBNF.
+Programming languages and domain specific languages (DSLs) cannot be parsed using simple regular expressions (RegExp). Instead they require a more sophisticated parsing strategy. To define a custom language in Langium, you interact with a high level representation of your context-free grammar using the [Langium grammar language](/docs/reference/grammar-language), in a similar fashion to EBNF.
 
 Based on the grammar, Langium is then able to construct a parser which transforms an input string into a semantic model representation. Just as the name suggests, this model captures the essential structure to describe your language.
 
@@ -97,7 +97,7 @@ The Langium framework is deeply integrated with the [language server protocol](h
 
 The LSP includes commonly used language features, such as code completion, custom validations/diagnostics, finding references, formatting and many more. This allows for deep IDE integration without binding your language to a single IDE. Langium offers out-of-the-box support for most of these language features, with additional extension points for your domain specific requirements.
 
-## Try it out!
+## Try it out
 
 You can try out most of these features using our [showcase](/showcase/) and [playground](/playground/). The languages shown there are written using Langium and integrated in the monaco-editor.
 

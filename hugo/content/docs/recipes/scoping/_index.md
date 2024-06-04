@@ -25,8 +25,8 @@ In general, the way we resolve references is split into three phases of the docu
 
 In this guide, we'll look at different scoping kinds and styles and see how we can achieve them using Langium:
 
-1. [Qualified Name Scoping](./qualified-name)
-2. [Class Member Scoping](./class-member)
+1. [Qualified Name Scoping](/docs/recipes/scoping/qualified-name)
+2. [Class Member Scoping](/docs/recipes/scoping/class-member)
 
 Note that these are just example implementations for commonly used scoping methods.
 The scoping API of Langium is designed to be flexible and extensible for any kind of use case.
