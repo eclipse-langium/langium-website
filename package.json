@@ -8,6 +8,7 @@
     "watch": "npm run build --workspace core && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch --workspace hugo\" \"npm run watch --workspace tailwind\"",
     "watch:gitpod": "npm run build --workspace core && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
     "build": "npm run clean && npm run build --workspace core --workspace=tailwind --workspace=hugo",
+    "preview": "npm run clean && npm run build --workspace core --workspace=tailwind && npm run preview --workspace hugo",
     "clean": "shx rm -rf public && npm run clean --workspace core --workspace=tailwind"
   },
   "devDependencies": {
