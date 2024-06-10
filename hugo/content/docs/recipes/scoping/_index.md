@@ -30,3 +30,9 @@ In this guide, we'll look at different scoping kinds and styles and see how we c
 
 Note that these are just example implementations for commonly used scoping methods.
 The scoping API of Langium is designed to be flexible and extensible for any kind of use case.
+
+## Other kinds of scoping
+
+Also mind the following scoping kinds:
+
+- [File-based scoping](/docs/recipes/scoping/file-based)

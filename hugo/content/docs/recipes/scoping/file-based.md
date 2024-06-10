@@ -1,0 +1,188 @@
+---
+title: "File-based scoping"
+weight: 300
+---
+
+## Goal
+
+Our goal here is to mimic the TypeScript import/export mechanism. By that I mean:
+
+* you can export certain symbols using an `export` keyword from your current file to make it available to the other files
+* you can import certain symbols using the `import` keyword from a different file
+
+To make things easier I will modify the "Hello World" example from the [learning section](/docs/learn/workflow).
+
+## Step 1: Change the grammar
+
+First thing, we are changing the grammar to support the `export` and the `import` keywords. Here is the modified grammar:
+
+```langium
+grammar HelloWorld
+
+entry Model:
+    (
+        fileImports+=FileImport  //NEW: imports per file
+        | persons+=Person
+        | greetings+=Greeting
+    )*;
+
+FileImport:
+    'import' '{' personImports+=PersonImport (',' personImports+=PersonImport)* '}' 'from' file=STRING
+    ; //NEW: imports of the same file are gathered in a list
+
+PersonImport:
+    person=[Person:ID] ('as' name=ID)?
+    ;
+
+Person:
+    published?='export'? 'person' name=ID; //NEW: export keyword
+
+type Greetable = PersonImport | Person
+
+Greeting:
+    'Hello' person=[Greetable:ID] '!';
+
+hidden terminal WS: /\s+/;
+terminal ID: /[_a-zA-Z][\w_]*/;
+terminal STRING: /"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/;
+
+hidden terminal ML_COMMENT: /\/\*[\s\S]*?\*\//;
+hidden terminal SL_COMMENT: /\/\/[^\n\r]*/;
+```
+
+After changing the grammar you need to regenerate the abstract syntax tree (AST) and the language infrastructure. You can do that by running the following command:
+
+```bash
+npm run langium:generate
+```
+
+## Step 2: Exporting persons to the global scope
+
+The index manager shall get all persons that are marked with the export keyword. In Langium this is done by overriding the `ScopeComputation.getExports(…)` function. Here is the implementation:
+
+```typescript
+export class HelloWorldScopeComputation extends DefaultScopeComputation {
+    override async computeExports(document: LangiumDocument<AstNode>, _cancelToken?: CancellationToken | undefined): Promise<AstNodeDescription[]> {
+        const model = document.parseResult.value as Model;
+        return model.persons
+            .filter(p => p.published)
+            .map(p => this.descriptions.createDescription(p, p.name))
+        ;
+    }
+}
+```
+
+After that, you need to register the `HelloWorldScopeComputation` in the `HelloWorldModule`:
+
+```typescript
+export const HelloWorldModule: Module<HelloWorldServices, PartialLangiumServices & HelloWorldAddedServices> = {
+    //...
+    references: {
+        ScopeComputation: (services) => new HelloWorldScopeComputation(services)
+    }
+};
+```
+
+Having done this, will make all persons that are marked with the `export` keyword available to the other files through the index manager.
+
+## Step 3: Bending the cross-reference resolution
+
+The final step is to adjust the cross-reference resolution through overriding the `DefaultScopeProvider.getScope(…)` function. Here is the implementation:
+
+```typescript
+export class HelloWorldScopeProvider extends DefaultScopeProvider {
+    override getScope(context: ReferenceInfo): Scope {
+        switch(context.container.$type as keyof HelloWorldAstType) {
+            case 'PersonImport':
+                if(context.property === 'person') {
+                    return this.getExportedPersonsFromGlobalScope(context);
+                }
+                break;
+            case 'Greeting':
+                if(context.property === 'person') {
+                    return this.getImportedPersonsFromCurrentFile(context);
+                }
+                break;
+        }
+        return EMPTY_SCOPE;
+    }
+    //...
+}
+```
+
+You noticed the two missing functions? Here is what they have to do.
+
+The first function (`getExportedPersonsFromGlobalScope(context)`) will take a look at the global scope and return all exported persons respecting the files that were touched. Not that we are outputting all persons that are marked with the `export` keyword. The actual name resolution is done later by the linker.
+
+```typescript
+protected getExportedPersonsFromGlobalScope(context: ReferenceInfo): Scope {
+    //get document for current reference
+    const document = AstUtils.getDocument(context.container);
+    //get model of document
+    const model = document.parseResult.value as Model;
+    //determine current directory
+    const currentDir = dirname(document.uri.fsPath);
+    //look at all imports of the current document
+    const astNodeDescriptions = model.fileImports.flatMap((fileImport) => {
+        const fileName = resolve(currentDir, fileImport.file);
+        const uri = URI.file(fileName);
+        return this.indexManager.allElements(Person, new Set<string>([uri.toString()])).toArray();
+    });
+    return this.createScope(astNodeDescriptions);
+}
+```
+
+The second function (`getImportedPersonsFromCurrentFile(context)`) will take a look at the current file and return all persons that are imported from other files.
+
+```typescript
+private getImportedPersonsFromCurrentFile(context: ReferenceInfo) {
+    //get current document of reference
+    const document = AstUtils.getDocument(context.container);
+    //get current model
+    const model = document.parseResult.value as Model;
+    //go through all imports
+    const descriptions = model.fileImports.flatMap(fi => fi.personImports.map(pi => {
+        //if the import is name, return the import
+        if (pi.name) {
+            return this.descriptions.createDescription(pi, pi.name);
+        }
+        //if import references to a person, return that person
+        if (pi.person.ref) {
+            return this.descriptions.createDescription(pi.person.ref, pi.person.ref.name);
+        }
+        //otherwise return nothing
+        return undefined;
+    }).filter(d => d != undefined)).map(d => d!);
+    return this.createScope(descriptions);
+}
+```
+
+## Result
+
+Now, let's test the editor by `npm run build` and starting the extension.
+Try using these two files. The first file contains the Simpsons family.
+
+```
+export person Homer
+export person Marge
+person Bart
+person Lisa
+export person Maggy
+```
+
+The second file tries to import and greet them.
+
+```
+import { 
+    Marge,
+    Homer,
+    Lisa, //reference error
+    Maggy as Baby
+} from "persons.hello"
+
+Hello Lisa! //reference error
+Hello Maggy! //reference error
+Hello Homer!
+Hello Marge!
+Hello Baby!
+```
