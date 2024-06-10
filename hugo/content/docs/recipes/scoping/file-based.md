@@ -110,9 +110,21 @@ export class HelloWorldScopeProvider extends DefaultScopeProvider {
 }
 ```
 
+Do not forget to add the new service to the `HelloWorldModule`:
+
+```typescript
+export const HelloWorldModule: Module<HelloWorldServices, PartialLangiumServices & HelloWorldAddedServices> = {
+    //...
+    references: {
+        ScopeComputation: (services) => new HelloWorldScopeComputation(services),
+        ScopeProvider: (services) => new HelloWorldScopeProvider(services) //NEW!
+    }
+};
+```
+
 You noticed the two missing functions? Here is what they have to do.
 
-The first function (`getExportedPersonsFromGlobalScope(context)`) will take a look at the global scope and return all exported persons respecting the files that were touched. Not that we are outputting all persons that are marked with the `export` keyword. The actual name resolution is done later by the linker.
+The first function (`getExportedPersonsFromGlobalScope(context)`) will take a look at the global scope and return all exported persons respecting the files that were touched by the file imports. Note that we are outputting all persons that are marked with the `export` keyword. The actual name resolution is done internally later by the linker.
 
 ```typescript
 protected getExportedPersonsFromGlobalScope(context: ReferenceInfo): Scope {
@@ -162,7 +174,7 @@ private getImportedPersonsFromCurrentFile(context: ReferenceInfo) {
 Now, let's test the editor by `npm run build` and starting the extension.
 Try using these two files. The first file contains the Simpsons family.
 
-```
+```plain
 export person Homer
 export person Marge
 person Bart
@@ -172,16 +184,16 @@ export person Maggy
 
 The second file tries to import and greet them.
 
-```
+```plain
 import { 
     Marge,
     Homer,
-    Lisa, //reference error
+    Lisa, //reference error, because not exported
     Maggy as Baby
 } from "persons.hello"
 
-Hello Lisa! //reference error
-Hello Maggy! //reference error
+Hello Lisa! //reference error, because no valid import
+Hello Maggy! //reference error, because name was overwritten with 'Baby'
 Hello Homer!
 Hello Marge!
 Hello Baby!
