@@ -132,14 +132,23 @@ protected getExportedPersonsFromGlobalScope(context: ReferenceInfo): Scope {
     const document = AstUtils.getDocument(context.container);
     //get model of document
     const model = document.parseResult.value as Model;
-    //determine current directory
-    const currentDir = dirname(document.uri.fsPath);
-    //look at all imports of the current document
-    const astNodeDescriptions = model.fileImports.flatMap((fileImport) => {
-        const fileName = resolve(currentDir, fileImport.file);
-        const uri = URI.file(fileName);
-        return this.indexManager.allElements(Person, new Set<string>([uri.toString()])).toArray();
-    });
+    //get URI of current document
+    const currentUri = document.uri;
+    //get folder of current document
+    const currentDir = dirname(currentUri.path);
+    const uris = new Set<string>();
+    //for all file imports of the current file
+    for (const fileImport of model.fileImports) {
+        //resolve the file name relatively to the current file
+        const filePath = join(currentDir, fileImport.file);
+        //create back an URI
+        const uri = currentUri.with({ path: filePath });
+        //add the URI to URI list
+        uris.add(uri.toString());
+    }
+    //get all possible persons from these files
+    const astNodeDescriptions = this.indexManager.allElements(Person, uris).toArray();
+    //convert them to descriptions inside of a scope
     return this.createScope(astNodeDescriptions);
 }
 ```
@@ -198,3 +207,89 @@ Hello Homer!
 Hello Marge!
 Hello Baby!
 ```
+
+<details>
+<summary>Full Implementation</summary>
+
+```ts
+import { AstNode, AstNodeDescription, AstUtils, DefaultScopeComputation, DefaultScopeProvider, EMPTY_SCOPE, LangiumDocument, ReferenceInfo, Scope } from "langium";
+import { CancellationToken } from "vscode-languageclient";
+import { HelloWorldAstType, Model, Person } from "./generated/ast.js";
+import { dirname, join } from "node:path";
+
+export class HelloWorldScopeComputation extends DefaultScopeComputation {
+    override async computeExports(document: LangiumDocument<AstNode>, _cancelToken?: CancellationToken | undefined): Promise<AstNodeDescription[]> {
+        const model = document.parseResult.value as Model;
+        return model.persons
+            .filter(p => p.published)
+            .map(p => this.descriptions.createDescription(p, p.name))
+        ;
+    }
+}
+
+export class HelloWorldScopeProvider extends DefaultScopeProvider {
+    override getScope(context: ReferenceInfo): Scope {
+        switch(context.container.$type as keyof HelloWorldAstType) {
+            case 'PersonImport':
+                if(context.property === 'person') {
+                    return this.getExportedPersonsFromGlobalScope(context);
+                }
+                break;
+            case 'Greeting':
+                if(context.property === 'person') {
+                    return this.getImportedPersonsFromCurrentFile(context);
+                }
+                break;
+        }
+        return EMPTY_SCOPE;
+    }
+
+    protected getExportedPersonsFromGlobalScope(context: ReferenceInfo): Scope {
+        //get document for current reference
+        const document = AstUtils.getDocument(context.container);
+        //get model of document
+        const model = document.parseResult.value as Model;
+        //get URI of current document
+        const currentUri = document.uri;
+        //get folder of current document
+        const currentDir = dirname(currentUri.path);
+        const uris = new Set<string>();
+        //for all file imports of the current file
+        for (const fileImport of model.fileImports) {
+            //resolve the file name relatively to the current file
+            const filePath = join(currentDir, fileImport.file);
+            //create back an URI
+            const uri = currentUri.with({ path: filePath });
+            //add the URI to URI list
+            uris.add(uri.toString());
+        }
+        //get all possible persons from these files
+        const astNodeDescriptions = this.indexManager.allElements(Person, uris).toArray();
+        //convert them to descriptions inside of a scope
+        return this.createScope(astNodeDescriptions);
+    }
+
+    private getImportedPersonsFromCurrentFile(context: ReferenceInfo) {
+        //get current document of reference
+        const document = AstUtils.getDocument(context.container);
+        //get current model
+        const model = document.parseResult.value as Model;
+        //go through all imports
+        const descriptions = model.fileImports.flatMap(fi => fi.personImports.map(pi => {
+            //if the import is name, return the import
+            if (pi.name) {
+                return this.descriptions.createDescription(pi, pi.name);
+            }
+            //if import references to a person, return that person
+            if (pi.person.ref) {
+                return this.descriptions.createDescription(pi.person.ref, pi.person.ref.name);
+            }
+            //otherwise return nothing
+            return undefined;
+        }).filter(d => d != undefined)).map(d => d!);
+        return this.createScope(descriptions);
+    }
+}
+```
+
+</details>
