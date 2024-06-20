@@ -76,12 +76,9 @@ export class CachedInferPublisherService extends UncachedInferPublisherService {
     }
     override inferPublisher(person: Person): KnownPublisher|undefined {
         const documentUri = AstUtils.getDocument(person).uri;
-        if(this.cache.has(documentUri, person)) {
-           return this.cache.get(documentUri, person)!;
-        }
-        const publisher = super.inferPublisher(person);
-        this.cache.set(documentUri, person, publisher);
-        return publisher;
+        //get cache entry for the documentUri and the person
+        //if it does not exist, calculate the value and store it
+        return this.cache.get(documentUri, person, () => super.inferPublisher(person));
     }
 }
 ```
@@ -210,12 +207,7 @@ export class CachedInferPublisherService extends UncachedInferPublisherService {
     }
     override inferPublisher(person: Person): KnownPublisher|undefined {
         const documentUri = AstUtils.getDocument(person).uri;
-        if(this.cache.has(documentUri, person)) {
-           return this.cache.get(documentUri, person)!;
-        }
-        const publisher = super.inferPublisher(person);
-        this.cache.set(documentUri, person, publisher);
-        return publisher;
+        return this.cache.get(documentUri, person, () => super.inferPublisher(person));
     }
 }
 ```
