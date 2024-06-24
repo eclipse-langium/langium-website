@@ -5,17 +5,19 @@ weight: 100
 
 ## What is the problem?
 
-If you are building composite data structures or have some computation flow, you might be interested whether the product, that you are generating, does contain any loops back to the already used product.
+If you are building some composite data structures or have some computation flow, you might be interested whether the product, that you are generating, does contain any loops back to the already used product. We want to implement a validation that does this detection in the background and notifies us by highlighting the lines causing this problem.
 
-For data structures you could think of a structure in C that references itself (without using the pointer notation). This would lead to an infinitely expanding data type, which is practically not doable.
+Examples for such depndency loops are:
 
-Or for control flows these loops can be interpreted as recursion detection, a function that calls itself.
+* For data structures you could think of a structure in C that references itself (without using the pointer notation). This would lead to an infinitely expanding data type, which is practically not doable.
+* Or for control flows these loops can be interpreted as recursion detection, a function that calls itself (with any number of function calls to other functions in-between).
 
-Regardless of what usecase you have, you might have an interest to detect those loops.
+Regardless of what usecase you have, you might have an interest to detect those loops and get early feedback in the shape of a validation. Another thing you might want to get is a resolution for loop-free dependencies. Think of a net of package imports in
+a programming language. You want to know the order in which you can import the packages without getting into trouble.
 
 ## How to solve it?
 
-There are two approaches for a loop detection depending on the nature of your situation.
+There are two approaches for a loop detection and the loop-free resolution depending on the nature of your situation.
 
 ### Simple nature
 
@@ -34,9 +36,10 @@ You do a simple depth-first-search, starting with the parent visiting the childr
 
 If you have a `n:m` relationship like it is given for function calls (a function can be called by `m` function and can call `n` functions), you can solve the question for loops by creating a directed graph.
 
-In the example of function calls you have to store edges for each call from function A to every function B. The nodes are the set of all functions. The key algorithm is the search for the so-called strongly-connected components in the resulting graph.
+In this example the nodes are the set of all functions and function calls are stored as edges (for each call from function A to every function B).
+The key algorithm is the search for the so-called strongly-connected components in the resulting graph.
 
-It is recommended not to implement your own version of that algorithm. Please use an existing solution! The algorithm is able to output every loop with all its members of that loop. Perfect for adding a custom validation!
+It is recommended not to implement your own version of that algorithm. Please use an existing solution! The algorithm is able to output every loop with all its members of that loop. You can also use your own implementation. But keep in mind the effort and the quality of the existing solutions that you could get here.
 
 #### Complex resolution
 
@@ -48,9 +51,13 @@ The topological sort (as well as the strongly-connected component search) is a s
 
 ## How to make it work in Langium?
 
+In the following example we will resolve the dependencies for a complex nature of data.
+
+Therefore we will take the `HelloWorld` example from the learning section and extend it with a validation that checks for greeting loops. Greeting loops are forbidden in this example. When `A` greets `B` and `B` greets `C`, then `C` must not greet `A`.
+
 ### Adapt the grammar
 
-We will change the `HelloWorld` grammar from the learning section, so that persons can greet each other. However, we will introduce a validation that "greeting loops" are forbidden.
+We will change the `HelloWorld` grammar, so that persons can greet each other. After that, we will introduce a validation in order to forbid "greeting loops".
 
 ```langium
 grammar HelloWorld
@@ -72,7 +79,7 @@ After the change build your grammar with `npm run langium:generate`.
 
 ### Loop detection
 
-Now we will add the validation. Here we will use the graph library ‚graphology‘. Please install these two packages (`graphology` contains the data structure, `graphology-components` contains the strongly-connected component search, `graphology-dag` contains the topological sort):
+Now we will add the validation. Here we will use the graph library ‚graphology‘. Please install these three packages (`graphology` contains the data structure, `graphology-components` contains the strongly-connected component search, `graphology-dag` contains the topological sort):
 
 ```bash
 npm install graphology graphology-components graphology-dag
