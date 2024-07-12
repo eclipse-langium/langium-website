@@ -96,7 +96,7 @@ A _scope_ is a collection of AST nodes that are represented by the `AstNodeDescr
 
 The _description_ is like a (string) path through the AST of a document. It can be also seen as a tuple of document URI, JSON path, name and type of the AST node.
 
-A _reference info_ contains the concrete AST reference (which points to nothing yet). The info also has a the parent AST node (a so-called container) of the reference and the property name under which you can find the reference under its container. In the form of this tuple (`container`, `property`, `reference`) Langium visits all cross-references using the scope provider's `getScope` method.
+A _reference info_ contains the concrete AST reference (which points to nothing yet). The info also has the parent AST node (a so-called container) of the reference and the property name under which you can find the reference under its container. In the form of this tuple (`container`, `property`, `reference`) Langium visits all cross-references using the scope provider's `getScope` method.
 
 ```ts
 export interface ScopeProvider {
@@ -120,7 +120,7 @@ export interface Scope {
 
 So, what is the purpose of the scope provider? As mentioned above: it visits each cross-reference and tries to find the corresponding AST nodes over the entire workspace that can be a candidate for the cross-reference's place. It is important to understand that we do not decide here which of these nodes is the perfect match! That decision is part of the so-called linker of the Langium architecture.
 
-If your cross-reference's `$refText` contains the name `Jane` does not matter here. We need to provide all nodes that are possible at this position. So in the result, you would return `Jane` and `John` AST nodes - for both cross-references!
+Whether your cross-reference's `$refText` contains the name `Jane` does not matter here. We need to provide all nodes that are possible at this position. So in the result, you would return `Jane` and `John` AST nodes - for both cross-references!
 
 The background for this behavior is that this mechanism can be used for two things: the cross-reference resolution and the code completion. The code completion needs to know all possible candidates for a given cross-reference. The resolution of the cross-reference is done by the linker: Given a scope for a certain cross-reference, the linker decides which of the candidates is the right one - for example the first candidate with the same name.
 

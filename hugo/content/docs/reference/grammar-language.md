@@ -513,7 +513,7 @@ For reference, this would correspond to the following regular expression:
 terminal NONO: /(?!no)[a-zA-Z]+/;
 ```
 
-Note, if you're coming from Xtext, negated tokens works differently here. In Xtext, negated tokens allow recognizing the *complement* of a set of characters (or anything 'but' what is listed in the negation), very much akin to a negated character class in regular expressions. This is *very* important to keep in mind if you're porting a grammar from Xtext, as Langium's interpretation of negated tokens deviates from that of Xtext.
+Note, if you're coming from Xtext, negated tokens work differently here. In Xtext, negated tokens allow recognizing the *complement* of a set of characters (or anything 'but' what is listed in the negation), very much akin to a negated character class in regular expressions. This is *very* important to keep in mind if you're porting a grammar from Xtext, as Langium's interpretation of negated tokens deviates from that of Xtext.
 
 #### Terminal Rule Calls
 A terminal rule can include other terminal rules in its definition.
