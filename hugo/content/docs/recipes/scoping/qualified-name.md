@@ -155,7 +155,7 @@ export function isAstNodeDescriptionAlias(obj: unknown): obj is AstNodeDescripti
     return isAstNodeDescription(obj) && isAstNodeDescription(typeof (obj as AstNodeDescriptionAlias).alias);
 }
 
-export class AstNodeDescriptionAlias implements AstNodeDescriptionAlias {
+export class AstNodeDescriptionAlias implements AstNodeDescription {
     public readonly alias: AstNodeDescription;
     private readonly alias_name: string;
 
@@ -261,7 +261,7 @@ export function isAstNodeDescriptionAlias(obj: unknown): obj is AstNodeDescripti
     return isAstNodeDescription(obj) && isAstNodeDescription(typeof (obj as AstNodeDescriptionAlias).alias);
 }
 
-export class AstNodeDescriptionAlias implements AstNodeDescriptionAlias {
+export class AstNodeDescriptionAlias implements AstNodeDescription {
     public readonly alias: AstNodeDescription;
     private readonly alias_name: string;
 
