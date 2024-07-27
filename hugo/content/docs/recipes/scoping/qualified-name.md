@@ -132,7 +132,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
                 for (const description of nestedDescriptions) {
                     // Add qualified names to the container
                     // This could also be a partial qualified name
-                    const qualified = this.createQualifiedDescription(element, description, document);
+                    const qualified = this.createQualifiedDescription(element, description);
                     localDescriptions.push(qualified);
                 }
             }
@@ -143,14 +143,35 @@ export class CppScopeComputation extends DefaultScopeComputation {
 
     private createQualifiedDescription(
         container: Namespace, 
-        description: AstNodeDescription, 
-        document: LangiumDocument
+        description: AstNodeDescription
     ): AstNodeDescription {
         // `getQualifiedName` has been implemented in the previous section
         const name = this.getQualifiedName(container.name, description.name);
-        return this.descriptions.createDescription(description.node!, name, document);
+        return new AstNodeDescriptionAlias(description, name);
     }
 }
+// provide an alias for AstNodeDescription to speed-up computation and reduce memory
+export function isAstNodeDescriptionAlias(obj: unknown): obj is AstNodeDescriptionAlias {
+    return isAstNodeDescription(obj) && isAstNodeDescription(typeof (obj as AstNodeDescriptionAlias).alias);
+}
+
+export class AstNodeDescriptionAlias implements AstNodeDescriptionAlias {
+    public readonly alias: AstNodeDescription;
+    private readonly alias_name: string;
+
+    constructor(description: AstNodeDescription, name: string) {
+        this.alias = isAstNodeDescriptionAlias(description) ? description.alias : description;
+        this.alias_name = name
+    }
+    get node(): AstNode | undefined { return this.alias.node; }
+    get nameSegment(): DocumentSegment | undefined { return this.alias.nameSegment; }
+    get selectionSegment(): DocumentSegment | undefined { return this.alias.selectionSegment; }
+    get type(): string { return this.alias.type; }
+    get name(): string { return this.alias_name; }
+    get documentUri(): URI { return this.alias.documentUri; }
+    get path(): string { return this.alias.path; }
+}
+
 ```
 
 This new change now allows us to use local names of functions in the local scope, while they are still exported using their fully qualified name to the global scope.
@@ -203,7 +224,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
                 for (const description of nestedDescriptions) {
                     // Add qualified names to the container
                     // This could also be a partially qualified name
-                    const qualified = this.createQualifiedDescription(element, description, document);
+                    const qualified = this.createQualifiedDescription(element, description);
                     localDescriptions.push(qualified);
                 }
             }
@@ -218,7 +239,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
         document: LangiumDocument
     ): AstNodeDescription {
         const name = this.getQualifiedName(container.name, description.name);
-        return this.descriptions.createDescription(description.node!, name, document);
+        return new AstNodeDescriptionAlias(description, name);
     }
 
     /**
@@ -234,6 +255,27 @@ export class CppScopeComputation extends DefaultScopeComputation {
         }
         return name;
     }
+}
+// provide an alias for AstNodeDescription to speed-up computation and reduce memory
+export function isAstNodeDescriptionAlias(obj: unknown): obj is AstNodeDescriptionAlias {
+    return isAstNodeDescription(obj) && isAstNodeDescription(typeof (obj as AstNodeDescriptionAlias).alias);
+}
+
+export class AstNodeDescriptionAlias implements AstNodeDescriptionAlias {
+    public readonly alias: AstNodeDescription;
+    private readonly alias_name: string;
+
+    constructor(description: AstNodeDescription, name: string) {
+        this.alias = isAstNodeDescriptionAlias(description) ? description.alias : description;
+        this.alias_name = name
+    }
+    get node(): AstNode | undefined { return this.alias.node; }
+    get nameSegment(): DocumentSegment | undefined { return this.alias.nameSegment; }
+    get selectionSegment(): DocumentSegment | undefined { return this.alias.selectionSegment; }
+    get type(): string { return this.alias.type; }
+    get name(): string { return this.alias_name; }
+    get documentUri(): URI { return this.alias.documentUri; }
+    get path(): string { return this.alias.path; }
 }
 ```
 
