@@ -26,7 +26,10 @@ Examples for such dependency loops are:
         bar();
     }
     void bar() {
-        foo(); //error, foo calls bar, bar calls foo
+        answer42();
+    }
+    void answer42() {
+        bar(); //error, foo calls bar, bar calls answer42, answer42 calls foo
     }
     ```
 
@@ -213,6 +216,10 @@ Marge greets Brain! //error
 Brain greets Homer! //error
 Pinky greets Marge!
 ```
+
+Here is the screenshot of VS Code with the error:
+
+![Greeting loop errors](/assets/dependency-loops.png)
 
 ### Dependency resolution
 
