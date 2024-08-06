@@ -85,7 +85,7 @@ export const HelloWorldModule: Module<HelloWorldServices, PartialLangiumServices
 
 Having done this, will make all persons that are marked with the `export` keyword available to the other files through the index manager.
 
-## Step 3: Bending the cross-reference resolution
+## Step 3: Importing from specific files
 
 The final step is to adjust the cross-reference resolution through overriding the `DefaultScopeProvider.getScope(…)` function. Here is the implementation:
 
