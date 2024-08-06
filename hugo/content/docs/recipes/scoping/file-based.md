@@ -5,10 +5,10 @@ weight: 300
 
 ## Goal
 
-Our goal here is to mimic the TypeScript import/export mechanism. By that I mean:
+By default, Langium will always expose all top-level AST elements to the global scope. That means they are visible to all other documents in your workspace. However, a lot of languages are better served with a JavaScript-like `import`/`export` mechanism:
 
-* you can export certain symbols using an `export` keyword from your current file to make it available to the other files
-* you can import certain symbols using the `import` keyword from a different file
+* Using `export` makes a symbol from the current file available for referencing from another file.
+* Using `import` allows to reference symbols for a different file.
 
 To make things easier I will modify the "Hello World" example from the [learning section](/docs/learn/workflow).
 
