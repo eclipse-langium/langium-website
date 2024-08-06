@@ -6,14 +6,62 @@ weight: 100
 ## What is the problem?
 
 If you are building some composite data structures or have some computation flow, you might be interested whether the product, that you are generating, does contain any loops back to the already used product. We want to implement a validation that does this detection in the background and notifies us by highlighting the lines causing this problem.
+The second part of the problem is the resolution of the dependencies. If there are no loops, we want to get a resolution of the dependencies in a loop-free order.
 
-Examples for such depndency loops are:
+Examples for such dependency loops are:
 
 * For data structures you could think of a structure in C that references itself (without using the pointer notation). This would lead to an infinitely expanding data type, which is practically not doable.
+
+    ```c
+    typedef struct {
+        int value;
+        LinkedList next; //error, should be "MyStruct* next;", a pointer to next
+    } LinkedList;
+    ```
+
 * Or for control flows these loops can be interpreted as recursion detection, a function that calls itself (with any number of function calls to other functions in-between).
 
-Regardless of what usecase you have, you might have an interest to detect those loops and get early feedback in the shape of a validation. Another thing you might want to get is a resolution for loop-free dependencies. Think of a net of package imports in
+    ```c
+    void foo() {
+        bar();
+    }
+    void bar() {
+        foo(); //error, foo calls bar, bar calls foo
+    }
+    ```
+
+Regardless of what usecase you have, you might have an interest to detect those loops and get early feedback in the shape of a validation error.
+
+The other point is the **resolution for loop-free dependencies**. Think of a net of package imports in
 a programming language. You want to know the order in which you can import the packages without getting into trouble.
+
+```plaintext
+A -> B -> C
+A -> C
+C -> D
+
+//resolution: A, B, C, D
+```
+
+Or think of a function call graph. You want to know the order in which you can build the functions such that every dependency was built before the dependent function.
+
+```c
+void answer42() {
+    printf("42\n");
+}
+void bar1() {
+    answer42();
+}
+void foo() {
+    bar1();
+    bar2();
+}
+void bar2() {
+    answer42();
+}
+```
+
+Here the resolution would be: `answer42`, `bar1`, `bar2`, `foo`.
 
 ## How to solve it?
 
@@ -25,10 +73,26 @@ There are two approaches for a loop detection and the loop-free resolution depen
 
 If you have a `1:n` relationship like the `super class`-to-`sub class` relation for classes, you can do it by simply walking along the parent route (or in this specific example the `super class`-route). Just keep in mind all visited places and if one parent is already in that list, you have detected a loop!
 
+```java
+public class A extends B {}
+public class B extends C {}
+public class C extends A {} //error
+```
+
 #### Simple resolution
 
 Assuming that you have no loops back, you can resolve a list of dependencies.
 You do a simple depth-first-search, starting with the parent visiting the children afterwards (recursively).
+
+```java
+public class A {}            //add A
+public class B extends A {}  //add A -> B
+public class C extends A {}  //add A -> C
+public class D extends C {}  //add C -> D
+public class E extends C {}  //add C -> E
+
+//resolution: A, (B or (C, (D or E)))
+```
 
 ### Complex nature
 
@@ -39,7 +103,7 @@ If you have a `n:m` relationship like it is given for function calls (a function
 In this example the nodes are the set of all functions and function calls are stored as edges (for each call from function A to every function B).
 The key algorithm is the search for the so-called strongly-connected components in the resulting graph.
 
-It is recommended not to implement your own version of that algorithm. Please use an existing solution! The algorithm is able to output every loop with all its members of that loop. You can also use your own implementation. But keep in mind the effort and the quality of the existing solutions that you could get here.
+Please use an existing solution for the algorithm (keep in mind the effort you can avoid and a quality you can gain)! The algorithm is able to output every loop with all its members of that loop. But you are free to make your own implementation.
 
 #### Complex resolution
 
@@ -85,7 +149,7 @@ Now we will add the validation. Here we will use the graph library ‚graphology
 npm install graphology graphology-components graphology-dag
 ```
 
-Open the `hello-world-validator.ts` and add another validator for `Model`. It is important to say that we do not create a check on the `Greeting` level, because we need the overview over all greetings. The complete overview is given for the `Model` AST node.
+Open the `hello-world-validator.ts` and add another validator for `Model`. It is important to say that we do not create a check on the `Greeting` level, because we need the overview over all greetings. The complete overview is given for the `Model` AST node. It would be possible to just calculate cycles for a single greeting or person, but that is more complex and less performant!
 
 ```typescript
 const checks: ValidationChecks<HelloWorldAstType> = {
@@ -106,7 +170,7 @@ checkGreetingCycles(model: Model, accept: ValidationAcceptor): void {
     model.greetings.forEach(greeting => {
         if(greeting.greeter.ref && greeting.greeted.ref && !graph.hasDirectedEdge(greeting.greeter.ref.name, greeting.greeted.ref.name)) {
             graph.addEdge(greeting.greeter.ref.name, greeting.greeted.ref.name, {
-                greeting
+                greeting //we store the greeting for later reference in the validation message
             });
         }
     });
