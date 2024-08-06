@@ -14,7 +14,7 @@ To make things easier I will modify the "Hello World" example from the [learning
 
 ## Step 1: Change the grammar
 
-First thing, we are changing the grammar to support the `export` and the `import` keywords. Here is the modified grammar:
+First off, we are changing the grammar to support the `export` and the `import` statements. Let's take a look at the modified grammar:
 
 ```langium
 grammar HelloWorld
