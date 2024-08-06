@@ -32,8 +32,7 @@ FileImport: //NEW: imports of the same file are gathered in a list
     '}' 'from' file=STRING; 
 
 PersonImport:
-    person=[Person:ID] ('as' name=ID)?
-    ;
+    person=[Person:ID] ('as' name=ID)?;
 
 Person:
     published?='export'? 'person' name=ID; //NEW: export keyword
