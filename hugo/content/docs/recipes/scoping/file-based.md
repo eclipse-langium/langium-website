@@ -86,7 +86,7 @@ Having done this, will make all persons that are marked with the `export` keywor
 
 ## Step 3: Importing from specific files
 
-The final step is to adjust the cross-reference resolution through overriding the `DefaultScopeProvider.getScope(…)` function. Here is the implementation:
+The final step is to adjust the cross-reference resolution by overriding the `DefaultScopeProvider.getScope(…)` function:
 
 ```typescript
 export class HelloWorldScopeProvider extends DefaultScopeProvider {
