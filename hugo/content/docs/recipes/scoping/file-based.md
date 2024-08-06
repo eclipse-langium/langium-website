@@ -26,9 +26,10 @@ entry Model:
         | greetings+=Greeting
     )*;
 
-FileImport:
-    'import' '{' personImports+=PersonImport (',' personImports+=PersonImport)* '}' 'from' file=STRING
-    ; //NEW: imports of the same file are gathered in a list
+FileImport: //NEW: imports of the same file are gathered in a list
+    'import' '{' 
+        personImports+=PersonImport (',' personImports+=PersonImport)* 
+    '}' 'from' file=STRING; 
 
 PersonImport:
     person=[Person:ID] ('as' name=ID)?
