@@ -126,7 +126,7 @@ You noticed the two missing functions? Here is what they have to do.
 The first function (`getExportedPersonsFromGlobalScope(context)`) will take a look at the global scope and return all exported persons respecting the files that were touched by the file imports. Note that we are outputting all persons that are marked with the `export` keyword. The actual name resolution is done internally later by the linker.
 
 ```typescript
-protected getExportedPersonsFromGlobalScope(context: ReferenceInfo): Scope {
+private getExportedPersonsFromGlobalScope(context: ReferenceInfo): Scope {
     //get document for current reference
     const document = AstUtils.getDocument(context.container);
     //get model of document
