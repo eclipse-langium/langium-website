@@ -23,16 +23,11 @@ In general, the way we resolve references is split into three phases of the docu
 - [Scope computation](/docs/reference/document-lifecycle#computing-scopes) determines which elements are reachable from a given position in your document.
 - Finally, the [linking phase](/docs/reference/document-lifecycle#linking) eagerly links each reference within a document to its target using your language's scoping rules.
 
-In this guide, we'll look at different scoping kinds and styles and see how we can achieve them using Langium:
+In this recipe, we'll look at different scoping kinds and styles and see how we can achieve them using Langium:
 
 1. [Qualified Name Scoping](/docs/recipes/scoping/qualified-name)
 2. [Class Member Scoping](/docs/recipes/scoping/class-member)
+3. [File-based scoping](/docs/recipes/scoping/file-based)
 
 Note that these are just example implementations for commonly used scoping methods.
 The scoping API of Langium is designed to be flexible and extensible for any kind of use case.
-
-## Other kinds of scoping
-
-Also mind the following scoping kinds:
-
-- [File-based scoping](/docs/recipes/scoping/file-based)

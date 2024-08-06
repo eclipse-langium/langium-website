@@ -217,7 +217,7 @@ import { HelloWorldAstType, Model, Person } from "./generated/ast.js";
 import { dirname, join } from "node:path";
 
 export class HelloWorldScopeComputation extends DefaultScopeComputation {
-    override async computeExports(document: LangiumDocument<AstNode>, _cancelToken?: CancellationToken | undefined): Promise<AstNodeDescription[]> {
+    override async computeExports(document: LangiumDocument<AstNode>): Promise<AstNodeDescription[]> {
         const model = document.parseResult.value as Model;
         return model.persons
             .filter(p => p.published)
