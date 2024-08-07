@@ -9,7 +9,7 @@ You have parsed a document and you would like to execute some computation on the
 
 ## How to solve it?
 
-For data that depends on the lifetime of a document or even the entire workspace, Langium has several kinds of caches.
+For data that depends on the lifetime of a document or even the entire workspace, Langium has several kinds of caches:
 
 * the document cache saves key-value-pairs of given types `K` and `V` for each document. If the document gets changed or deleted the cache gets cleared automatically for the single files
 * the workspace cache also saves key-value-pairs of given types `K` and `V`, but gets cleared entirely when something in the workspace gets changed
