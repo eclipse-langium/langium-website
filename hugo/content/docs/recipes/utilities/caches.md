@@ -14,7 +14,7 @@ For data that depends on the lifetime of a document or even the entire workspace
 * the document cache saves key-value-pairs of given types `K` and `V` for each document. If the document gets changed or deleted the cache gets cleared automatically for the single files
 * the workspace cache also saves key-value-pairs of given types `K` and `V`, but gets cleared entirely when something in the workspace gets changed
 
-Besides those specific caches, Langium also provides
+Besides those specific caches, Langium also provides:
 
 * a simple cache that can be used for any kind of key-value-data
 * a context cache that stores a simple cache for each context object. The document cache and workspace cache are implemented using the context cache.
