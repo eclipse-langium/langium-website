@@ -21,7 +21,7 @@ Besides those specific caches, Langium also provides:
 
 ## How to use it?
 
-Here we will use the `HelloWorld` example from the learning section. Let's keep it simple and just list persons in the document, that come from a comic book.
+Here we will use the `HelloWorld` example from the learning section. Let's keep it simple and just list people in a document, which will come from a comic book.
 
 We will have a computation for each person that determines from which publisher it comes from.
 
