@@ -165,7 +165,7 @@ person Obelix
 ## Last words
 
 Caching can improve the performance of your language server. It is especially useful for computations that are expensive to calculate. The `DocumentCache` and `WorkspaceCache` are the most common caches to use. The `ContextCache` is useful if you need to store data for a specific context object. If you only need a key-value store, you can use the `SimpleCache`.
-All of them are disposable compared to a simple `Map<K, V>`. If you dispose them by calling `dispose()` the entries will be removed and the memory will be freed.
+All of these caches are disposable compared to a simple `Map<K, V>`. If you dispose them by calling `dispose()` the entries will be removed and the memory will be freed.
 
 ## Appendix
 
