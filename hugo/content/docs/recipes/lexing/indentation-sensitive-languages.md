@@ -69,6 +69,7 @@ hidden terminal NL: /[\r\n]+/;
 The important terminals here are `INDENT`, `DEDENT`, and `WS`.
 `INDENT` and `DEDENT` are used to delimit a nested block, similar to `{` and `}` (respectively) in C-like languages.
 Note that `INDENT` indicates an **increase** in indentation, not just the existence of leading whitespace, which is why in the example above we used it only at the beginning of the block, not before every `Statement`.
+Additionally, the separation of `WS` from simply `\s+` to `[\t ]+` and `[\r\n]+` is necessary because a simple `\s+` will match the new line character, as well as any possible indentation after it. To ensure correct behavior, the token builder modifies the pattern of the `whitespaceTokenName` token to be `[\t ]+`, so a separate hidden token for new lines needs to be explicitly defined.
 
 The content you choose for these 3 terminals doesn't matter since it will overridden by `IndentationAwareTokenBuilder` anyway. However, you might still want to choose tokens that don't overlap with other terminals for easier use in the playground.
 
