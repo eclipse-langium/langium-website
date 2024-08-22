@@ -73,6 +73,17 @@ Additionally, the separation of `WS` from simply `\s+` to `[\t ]+` and `[\r\n]+`
 
 The content you choose for these 3 terminals doesn't matter since it will overridden by `IndentationAwareTokenBuilder` anyway. However, you might still want to choose tokens that don't overlap with other terminals for easier use in the playground.
 
+With the default configuration and the grammar above, for the following code sample:
+```
+if true:
+    return false
+else:
+    if true:
+        return true
+```
+
+the lexer will output the following sequence of tokens: `if`, `BOOLEAN`, `INDENT`, `return`, `BOOLEAN`, `DEDENT`, `else`, `INDENT`, `if`, `BOOLEAN`, `INDENT`, `return`, `BOOLEAN`, `DEDENT`, `DEDENT`.
+
 ## Drawbacks
 
 Using this token builder, all leading whitespace becomes significant, no matter the context.
