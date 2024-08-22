@@ -72,35 +72,6 @@ Note that `INDENT` indicates an **increase** in indentation, not just the existe
 
 The content you choose for these 3 terminals doesn't matter since it will overridden by `IndentationAwareTokenBuilder` anyway. However, you might still want to choose tokens that don't overlap with other terminals for easier use in the playground.
 
-### Playground compatibility
-
-Since the Langium playground doesn't support overriding the default services, you cannot use indentation-aware grammar there. 
-However, you can get around this by defining the indentation terminals in a way that doesn't overlap with other terminals, and then actually using them to simulate indentation.
-
-For example, for the grammar above, you can write:
-```
-if false:
-synthetic:indent    return true
-synthetic:dedent
-else:
-synthetic:indent    if false:
-synthetic:indent        return false
-synthetic:dedent synthetic:dedent
-```
-
-instead of:
-```
-if false:
-    return true
-else:
-    if false:
-        return false
-```
-
-since all whitespace will be ignored anyway.
-
-While this approach doesn't easily scale, it can be useful for testing when defining your grammar.
-
 ## Drawbacks
 
 Using this token builder, all leading whitespace becomes significant, no matter the context.
