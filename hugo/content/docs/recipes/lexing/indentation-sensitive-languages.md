@@ -11,7 +11,9 @@ Starting with Langium v3.2, such token builder (and an accompanying lexer) are p
 
 ## Configuring the token builder and lexer
 
-To be able to use the indendation tokens in your grammar, you first have to import and register the `IndentationAwareTokenBuilder` and `IndentationAwareLexer` services in your module as such:
+To be able to use the indendation tokens in your grammar, you first have to import and register the [`IndentationAwareTokenBuilder`](https://github.com/eclipse-langium/langium/blob/bfca81f9e2411dd25a73f6b2711470e2c33788ed/packages/langium/src/parser/indentation-aware.ts#L78)
+and [`IndentationAwareLexer`](https://github.com/eclipse-langium/langium/blob/bfca81f9e2411dd25a73f6b2711470e2c33788ed/packages/langium/src/parser/indentation-aware.ts#L358)
+services in your module as such:
 
 ```ts
 import { IndentationAwareTokenBuilder, IndentationAwareLexer } from 'langium';
