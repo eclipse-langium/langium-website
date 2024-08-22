@@ -8,6 +8,7 @@ This can be difficult to express in the EBNF notation used for defining a langua
 To achieve that, you can make use of synthetic tokens in the grammar which you would then redefine using Chevrotain in a custom token builder.
 
 Starting with Langium v3.2, such token builder (and an accompanying lexer) are provided for easy plugging into your language.
+They work by modifying the underlying Chevrotain token generated for your indentation terminal tokens to use a custom matcher function instead that has access to more context than simple Regular Expressions, allowing it to store state and detect _changes_ in indentation levels. This is why you should provide it with the names of the tokens you used to denote indentation: so it can override the correct tokens for your grammar.
 
 ## Configuring the token builder and lexer
 
