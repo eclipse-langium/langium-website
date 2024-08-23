@@ -24,8 +24,9 @@ import {
     AstNode,
     DefaultWorkspaceManager,
     LangiumDocument,
-    LangiumSharedServices
+    LangiumDocumentFactory
 } from "langium";
+import { LangiumSharedServices } from "langium/lsp";
 import { WorkspaceFolder } from 'vscode-languageserver';
 import { URI } from "vscode-uri";
 import { builtinHelloWorld } from './builtins';
