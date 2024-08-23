@@ -1,7 +1,6 @@
 ---
 title: "6. Create validations"
 weight: 700
-url: /docs/learn/workflow/create_validations
 ---
 
 After resolving the cross-references, you can assume that the syntax tree is complete. Now you can start with the validation of the input files. The validation process is a crucial part of the language engineering workflow. The parser ensures the syntactic correctness of the input files. The validation process ensures the semantic correctness of the input files.

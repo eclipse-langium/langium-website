@@ -65,7 +65,7 @@ enableRobotsTXT = true
   # (Optional, default false) Set HTMl <base> to .Site.BaseURL if enabled. It might be required
   # if a subdirectory is used within Hugos BaseURL.
   # See https://developer.mozilla.org/de/docs/Web/HTML/Element/base.
-  geekdocOverwriteHTMLBase = true
+  # geekdocOverwriteHTMLBase = true
 
   # (Optional, default false) Auto-decrease brightness of images and add a slightly grayscale to avoid
   # bright spots while using the dark mode.

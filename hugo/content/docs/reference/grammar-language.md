@@ -82,7 +82,7 @@ Person:
 ```
 In this example, the parser will create an object of type `Person`. This object will have a property `name` which value and type must match the terminal rule `ID` (i.e. the property `name` is of type `string` and cannot start with a digit or special character).
 
-By default, the parser will create an object with an inferred type corresponding to the parser rule name. It is possible to override this behavior by explicitly defining the type of the object to be created. This is done by adding the keyword `returns` followed by a separately declared type, or the keyword `infers` followed by the name of the type to be inferred for this rule (more about this [in the next chapter](/docs/reference/semantic-model)):
+By default, the parser will create an object with an inferred type corresponding to the parser rule name. It is possible to override this behavior by explicitly defining the type of the object to be created. This is done by adding the keyword `returns` followed by a separately declared type, or the keyword `infers` followed by the name of the type to be inferred for this rule (more about this [in the next chapter](./semantic-model)):
 ```langium
 Person infers OtherType:
     'person' name=ID;
@@ -236,7 +236,7 @@ RuleOne returns TypeOne:
     'keywordOne' name=ID | {TypeTwo} 'keywordTwo' name=ID;
 ```
 
-The example above requires that the return types `TypeOne` and `TypeTwo` are declared separately (see [the next chapter](/docs/reference/semantic-model)). If the type returned by the action is created on-the-fly, the keyword `infer` needs to be added:
+The example above requires that the return types `TypeOne` and `TypeTwo` are declared separately (see [the next chapter](./semantic-model)). If the type returned by the action is created on-the-fly, the keyword `infer` needs to be added:
 
 ```langium
 RuleOne infers TypeOne:

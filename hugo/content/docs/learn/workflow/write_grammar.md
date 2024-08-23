@@ -1,7 +1,6 @@
 ---
 title: "3. Write the grammar"
 weight: 400
-url: /docs/learn/workflow/write_grammar
 ---
 Your Langium project is now setup and ready to be used. The next step is to define the grammar of your language. The grammar is the most important part of your language definition. It defines the syntax of your language and how the language elements are structured.
 
@@ -55,4 +54,4 @@ Greeting: 'Hello' person=[Person] '!';
 
 Like the previous rule, the `Greeting` starts with a keyword. With the `person` assignment we introduce the _cross reference_, indicated by the brackets `[]`. A cross reference will allow your grammar to reference other elements that are contained in your file or workspace. By default, Langium will try to resolve this cross reference by parsing the terminal that is associated with its `name` property. In this case, we are looking for a `Person` whose `name` property matches the parsed `ID`.
 
-That finishes the short introduction to Langium! Feel free to play around with the grammar and use `npm run langium:generate` to regenerate the generated TypeScript files. To go further, we suggest that you continue with our [tutorials](/docs/learn/minilogo/).
+That finishes the short introduction to Langium! Feel free to play around with the grammar and use `npm run langium:generate` to regenerate the generated TypeScript files. To go further, we suggest that you continue with our [tutorials](../minilogo/).
