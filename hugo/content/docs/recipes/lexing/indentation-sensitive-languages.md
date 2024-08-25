@@ -30,13 +30,63 @@ export const HelloWorldModule: Module<HelloWorldServices, PartialLangiumServices
 // ...
 ```
 
-The `IndentationAwareTokenBuilder` constructor optionally accepts an object defining the names of the tokens you used to denote indentation and whitespace in your `.langium` grammar file. It defaults to:
+The `IndentationAwareTokenBuilder` constructor optionally accepts an object defining the names of the tokens you used to denote indentation and whitespace in your `.langium` grammar file, as well as a list of delimiter tokens inside of which indentation should be ignored. It defaults to:
 ```ts
 {
     indentTokenName: 'INDENT',
     dedentTokenName: 'DEDENT',
     whitespaceTokenName: 'WS',
+    ignoreIndentationDelimiters: [],
 }
+```
+
+### Ignoring indentation between specific tokens
+
+Sometimes, it is necessary to ignore any indentation token inside some expressions, such as with tuples and lists in Python. For example, in the following statement:
+```python
+x = [
+    1,
+    2
+]
+```
+any indentation between `[` and `]` should be ignored.
+
+To achieve similar behavior with the `IndentationAwareTokenBuilder`, the `ignoreIndentationDelimiters` option can be used.
+It accepts is a list of pairs of token names (terminal or keyword) and turns off indentation token detection between each pair.
+
+For example, if you construct the `IndentationAwareTokenBuilder` with the following options:
+```ts
+new IndentationAwareTokenBuilder({
+    ignoreIndentationDelimiters: [
+        ['[', ']'],
+        ['(', ')'],
+    ],
+})
+```
+then no indentation tokens will be emitted between either of those pairs of tokens.
+
+### Configuration options type safety
+
+The `IndentationAwareTokenBuilder` supports generic type parameters to improve type-safety and IntelliSense of its options.
+This helps detect when a token name has been mistyped or changed in the grammar.
+The first generic parameter corresponds to the names of terminal tokens, while the second one corresonds to the names of keyword tokens.
+Both parameters are optional and can be imported from `./generated/ast.js` and used as such:
+
+```ts
+import { MyLanguageTerminalNames, MyLanguageKeywordNames } from './generated/ast.js';
+import { IndentationAwareTokenBuilder, IndentationAwareLexer } from 'langium';
+
+// ...
+export const HelloWorldModule: Module<HelloWorldServices, PartialLangiumServices & HelloWorldAddedServices> = {
+    parser: {
+        TokenBuilder: () => new IndentationAwareTokenBuilder<MyLanguageTerminalNames, MyLanguageKeywordNames>({
+            ignoreIndentationDelimiters: [
+                ['L_BRAC', 'R_BARC'], // <-- This typo will now cause a TypeScript error
+            ]
+        }),
+        Lexer: (services) => new IndentationAwareLexer(services),
+    },
+};
 ```
 
 ## Writing the grammar
@@ -83,20 +133,3 @@ else:
 ```
 
 the lexer will output the following sequence of tokens: `if`, `BOOLEAN`, `INDENT`, `return`, `BOOLEAN`, `DEDENT`, `else`, `INDENT`, `if`, `BOOLEAN`, `INDENT`, `return`, `BOOLEAN`, `DEDENT`, `DEDENT`.
-
-## Drawbacks
-
-Using this token builder, all leading whitespace becomes significant, no matter the context.
-This means that it will no longer be possible for an expression to span multiple lines if one of these lines starts with whitespace and an `INDENT` token is not explicitly allowed in that position.
-
-For example, the following Python code wouldn't parse:
-```python
-x = [
-    1, # ERROR: Unexpected INDENT token
-]
-```
-without explicitly specifying that `INDENT` is allowed after `[`.
-
-This can be worked around by using [multi-mode lexing](https://github.com/eclipse-langium/langium-website/pull/132).
-
-<!-- TODO: change link from PR to webpage after it's published. -->
