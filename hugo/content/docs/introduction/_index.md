@@ -22,4 +22,6 @@ If you are convinced by Langium and want to learn more about it, you can start w
 
 If you are looking for more details about Langium, you can find them in the [reference section](../reference).
 
-If you are searching for a certain guide or recipe, you can find them in the [recipes section](../recipes).
+If you are searching for a certain guide or recipe, you can find them in the [recipes section](../../docs/recipes).
+
+If you are searching for a certain guide or recipe, you can find them in the [recipes section](docs/recipes).
