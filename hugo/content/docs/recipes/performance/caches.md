@@ -30,7 +30,7 @@ We will have a computation for each person that determines from which publisher 
 Let's build a "publisher inferer service". First let's create a small database of known publishers and known persons:
 
 ```typescript
-type KnownPublisher = 'DC'|'Marvel'|'Egmont';
+type KnownPublisher = 'DC' | 'Marvel' | 'Egmont';
 const KnownPersonNames: Record<KnownPublisher, string[]> = {
     DC: ['Superman', 'Batman', 'Aquaman', 'Wonderwoman', 'Flash'],
     Marvel: ['Spiderman', 'Wolverine', 'Deadpool'],
@@ -44,7 +44,7 @@ For our service we define an interface:
 
 ```typescript
 export interface InferPublisherService {
-    inferPublisher(person: Person): KnownPublisher|undefined;
+    inferPublisher(person: Person): KnownPublisher | undefined;
 }
 ```
 
@@ -52,9 +52,9 @@ Now we implement the service:
 
 ```typescript
 class UncachedInferPublisherService implements InferPublisherService {
-    inferPublisher(person: Person): KnownPublisher|undefined {
+    inferPublisher(person: Person): KnownPublisher | undefined {
         for (const [publisher, persons] of Object.entries(KnownPersonNames)) {
-            if(persons.includes(person.name)) {
+            if (persons.includes(person.name)) {
                 return publisher as KnownPublisher;
             }
         }
@@ -69,12 +69,12 @@ Now we want to cache the results of the `inferPublisher` method. We can use the 
 
 ```typescript
 export class CachedInferPublisherService extends UncachedInferPublisherService {
-    private readonly cache: DocumentCache<Person, KnownPublisher|undefined>;
+    private readonly cache: DocumentCache<Person, KnownPublisher | undefined>;
     constructor(services: HelloWorldServices) {
         super();
         this.cache = new DocumentCache(services.shared);
     }
-    override inferPublisher(person: Person): KnownPublisher|undefined {
+    override inferPublisher(person: Person): KnownPublisher | undefined {
         const documentUri = AstUtils.getDocument(person).uri;
         //get cache entry for the documentUri and the person
         //if it does not exist, calculate the value and store it
@@ -116,7 +116,7 @@ export class HelloWorldValidator {
     }
 
     checkPersonIsFromKnownPublisher(person: Person, accept: ValidationAcceptor): void {
-        if(this.inferPublisherService.inferPublisher(person) === undefined) {
+        if (!this.inferPublisherService.inferPublisher(person)) {
             accept('warning', `"${person.name}" is not from a known publisher.`, {
                 node: person
             });
@@ -165,19 +165,19 @@ person Obelix
 ## Last words
 
 Caching can improve the performance of your language server. It is especially useful for computations that are expensive to calculate. The `DocumentCache` and `WorkspaceCache` are the most common caches to use. The `ContextCache` is useful if you need to store data for a specific context object. If you only need a key-value store, you can use the `SimpleCache`.
-All of these caches are disposable compared to a simple `Map<K, V>`. If you dispose them by calling `dispose()` the entries will be removed and the memory will be freed.
+All of these caches are disposable compared to a simple `Map<K, V>`. If you dispose them by calling `dispose()` the entries will be removed and the memory will be freed. Plus, from the moment you have called `dispose()`, the cache will not react to changes in the workspace anymore.
 
 ## Appendix
 
 <details>
-<summary>Ful implementation</summary>
+<summary>Full implementation</summary>
 
 ```typescript
 import { AstUtils, DocumentCache } from "langium";
 import { Person } from "./generated/ast.js";
 import { HelloWorldServices } from "./hello-world-module.js";
 
-type KnownPublisher = 'DC'|'Marvel'|'Egmont';
+type KnownPublisher = 'DC' | 'Marvel' | 'Egmont';
 const KnownPersonNames: Record<KnownPublisher, string[]> = {
     DC: ['Superman', 'Batman', 'Aquaman', 'Wonderwoman', 'Flash'],
     Marvel: ['Spiderman', 'Wolverine', 'Deadpool'],
@@ -185,13 +185,13 @@ const KnownPersonNames: Record<KnownPublisher, string[]> = {
 };
 
 export interface InferPublisherService {
-    inferPublisher(person: Person): KnownPublisher|undefined;
+    inferPublisher(person: Person): KnownPublisher | undefined;
 }
 
 class UncachedInferPublisherService implements InferPublisherService {
-    inferPublisher(person: Person): KnownPublisher|undefined {
+    inferPublisher(person: Person): KnownPublisher | undefined {
         for (const [publisher, persons] of Object.entries(KnownPersonNames)) {
-            if(persons.includes(person.name)) {
+            if (persons.includes(person.name)) {
                 return publisher as KnownPublisher;
             }
         }
@@ -200,12 +200,12 @@ class UncachedInferPublisherService implements InferPublisherService {
 }
 
 export class CachedInferPublisherService extends UncachedInferPublisherService {
-    private readonly cache: DocumentCache<Person, KnownPublisher|undefined>;
+    private readonly cache: DocumentCache<Person, KnownPublisher | undefined>;
     constructor(services: HelloWorldServices) {
         super();
         this.cache = new DocumentCache(services.shared);
     }
-    override inferPublisher(person: Person): KnownPublisher|undefined {
+    override inferPublisher(person: Person): KnownPublisher | undefined {
         const documentUri = AstUtils.getDocument(person).uri;
         return this.cache.get(documentUri, person, () => super.inferPublisher(person));
     }
