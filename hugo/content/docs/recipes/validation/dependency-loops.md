@@ -1,5 +1,5 @@
 ---
-title: "Dependency loops"
+title: "Dependency Loops"
 weight: 100
 ---
 
@@ -226,7 +226,7 @@ Here is the screenshot of VS Code with the error:
 The topological sort can be done like this:
 
 ```typescript
-import { topologicalSort } from 'graphology-dag‘;
+import { topologicalSort } from 'graphology-dag';
 
 //resolvedOrder is an array of person names!
 const resolvedOrder = topologicalSort(graph);
