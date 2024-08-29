@@ -52,7 +52,7 @@ x = [
 any indentation between `[` and `]` should be ignored.
 
 To achieve similar behavior with the `IndentationAwareTokenBuilder`, the `ignoreIndentationDelimiters` option can be used.
-It accepts is a list of pairs of token names (terminal or keyword) and turns off indentation token detection between each pair.
+It accepts a list of pairs of token names (terminal or keyword) and turns off indentation token detection between each pair.
 
 For example, if you construct the `IndentationAwareTokenBuilder` with the following options:
 ```ts
