@@ -5,7 +5,7 @@
  ******************************************************************************/
 
 export const LangiumTextMateContent = {
-  "name": "Langium",
+  "name": "langium",
   "scopeName": "source.langium",
   "fileTypes": [
       "langium"

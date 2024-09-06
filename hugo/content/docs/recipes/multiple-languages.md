@@ -440,7 +440,7 @@ After doing so, your name should display a warning, stating that you cannot gree
 
 In this section we will list common mistakes.
 
-* One prominent mistake is forgetting to build Langium and Typescript files, before running the extension.
+* One prominent mistake is forgetting to build Langium and TypeScript files, before running the extension.
 
 * Since we are basically just copy-pasting given configuration, be aware of what you are pasting. Make sure that the code still makes sense after copying. You probably forgot to adapt the pasted code.
 

@@ -29,7 +29,7 @@ We will have a computation for each person that determines from which publisher 
 
 Let's build a "publisher inferer service". First let's create a small database of known publishers and known persons:
 
-```typescript
+```ts
 type KnownPublisher = 'DC' | 'Marvel' | 'Egmont';
 const KnownPersonNames: Record<KnownPublisher, string[]> = {
     DC: ['Superman', 'Batman', 'Aquaman', 'Wonderwoman', 'Flash'],
@@ -42,7 +42,7 @@ const KnownPersonNames: Record<KnownPublisher, string[]> = {
 
 For our service we define an interface:
 
-```typescript
+```ts
 export interface InferPublisherService {
     inferPublisher(person: Person): KnownPublisher | undefined;
 }
@@ -50,7 +50,7 @@ export interface InferPublisherService {
 
 Now we implement the service:
 
-```typescript
+```ts
 class UncachedInferPublisherService implements InferPublisherService {
     inferPublisher(person: Person): KnownPublisher | undefined {
         for (const [publisher, persons] of Object.entries(KnownPersonNames)) {
@@ -67,7 +67,7 @@ class UncachedInferPublisherService implements InferPublisherService {
 
 Now we want to cache the results of the `inferPublisher` method. We can use the `DocumentCache` for this. We will reuse the uncached service as base class and override the `inferPublisher` method:
 
-```typescript
+```ts
 export class CachedInferPublisherService extends UncachedInferPublisherService {
     private readonly cache: DocumentCache<Person, KnownPublisher | undefined>;
     constructor(services: HelloWorldServices) {
@@ -87,7 +87,7 @@ export class CachedInferPublisherService extends UncachedInferPublisherService {
 
 To use this service, let's create a validator that checks if the publisher of a person is known. Go to the `hello-world-validator.ts` file and add the following code:
 
-```typescript
+```ts
 import type { ValidationAcceptor, ValidationChecks } from 'langium';
 import type { HelloWorldAstType, Person } from './generated/ast.js';
 import type { HelloWorldServices } from './hello-world-module.js';
@@ -130,7 +130,7 @@ export class HelloWorldValidator {
 
 Finally, we need to register the service in the module. Go to the `hello-world-module.ts` file and add the following code:
 
-```typescript
+```ts
 export type HelloWorldAddedServices = {
     utilities: {
         inferPublisherService: InferPublisherService
@@ -172,7 +172,7 @@ All of these caches are disposable compared to a simple `Map<K, V>`. If you disp
 <details>
 <summary>Full implementation</summary>
 
-```typescript
+```ts
 import { AstUtils, DocumentCache } from "langium";
 import { Person } from "./generated/ast.js";
 import { HelloWorldServices } from "./hello-world-module.js";
