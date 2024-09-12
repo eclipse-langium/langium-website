@@ -1,7 +1,6 @@
 ---
 title: "5. Resolve cross-references"
 weight: 600
-url: /docs/learn/workflow/resolve_cross_references
 ---
 
 This step takes place after generating the AST. The AST definition was created and you are able to parse input files. But the AST is not complete yet. It contains _cross-references_ that are not resolved. Cross-references are used to reference other elements in your language.

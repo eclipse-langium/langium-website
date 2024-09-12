@@ -19,15 +19,15 @@ This kind of behavior is called lexical scoping. Although this default scoping i
 
 In general, the way we resolve references is split into three phases of the document lifecycle:
 
-- [Symbol indexing](/docs/reference/document-lifecycle#symbol-indexing) is responsible for making objects globally available for referencing.
-- [Scope computation](/docs/reference/document-lifecycle#computing-scopes) determines which elements are reachable from a given position in your document.
-- Finally, the [linking phase](/docs/reference/document-lifecycle#linking) eagerly links each reference within a document to its target using your language's scoping rules.
+- [Symbol indexing](../../reference/document-lifecycle#symbol-indexing) is responsible for making objects globally available for referencing.
+- [Scope computation](../../reference/document-lifecycle#computing-scopes) determines which elements are reachable from a given position in your document.
+- Finally, the [linking phase](../../reference/document-lifecycle#linking) eagerly links each reference within a document to its target using your language's scoping rules.
 
 In this recipe, we'll look at different scoping kinds and styles and see how we can achieve them using Langium:
 
-1. [Qualified Name Scoping](/docs/recipes/scoping/qualified-name)
-2. [Class Member Scoping](/docs/recipes/scoping/class-member)
-3. [File-based scoping](/docs/recipes/scoping/file-based)
+1. [Qualified Name Scoping](../../recipes/scoping/qualified-name)
+2. [Class Member Scoping](../../recipes/scoping/class-member)
+3. [File-based scoping](../../recipes/scoping/file-based)
 
 Note that these are just example implementations for commonly used scoping methods.
 The scoping API of Langium is designed to be flexible and extensible for any kind of use case.

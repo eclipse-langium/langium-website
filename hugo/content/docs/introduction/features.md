@@ -1,7 +1,8 @@
 ---
 title: "Features"
 weight: 200
-url: /docs/features
+aliases:
+    - /docs/features
 ---
 Designing programming languages from the ground up is hard, independent of whether your language is a "simple" domain specific language or a full-fledged general-purpose programming language.
 Not only do you have to keep up with the requirements of your domain experts, but you have to deal with all the technical complexity that comes with building a language, including questions such as:
@@ -14,12 +15,12 @@ This is the point where Langium comes into play. Langium aims to lower the barri
 
 In this chapter, you'll get a closer look at the requirements developers usually have to implement by themselves when building a programming language:
 
-- [Language Parsing](#language-parsing)
-- [Semantic Models](#semantic-models)
-- [Cross References and Linking](#cross-references-and-linking)
-- [Workspace Management](#workspace-management)
-- [Editing Support](#editing-support)
-- [Try it out](#try-it-out)
+- [Language Parsing](/docs/introduction/features#language-parsing)
+- [Semantic Models](/docs/introduction/features#semantic-models)
+- [Cross References and Linking](/docs/introduction/features#cross-references-and-linking)
+- [Workspace Management](/docs/introduction/features#workspace-management)
+- [Editing Support](/docs/introduction/features#editing-support)
+- [Try it out](/docs/introduction/features#try-it-out)
 
 Langium provides out-of-the-box solutions for these problems, with the ability to fine-tune every part of it to fit your domain requirements.
 
@@ -27,7 +28,7 @@ Langium provides out-of-the-box solutions for these problems, with the ability t
 
 ## Language Parsing
 
-Programming languages and domain specific languages (DSLs) cannot be parsed using simple regular expressions (RegExp). Instead they require a more sophisticated parsing strategy. To define a custom language in Langium, you interact with a high level representation of your context-free grammar using the [Langium grammar language](/docs/reference/grammar-language), in a similar fashion to EBNF.
+Programming languages and domain specific languages (DSLs) cannot be parsed using simple regular expressions (RegExp). Instead they require a more sophisticated parsing strategy. To define a custom language in Langium, you interact with a high level representation of your context-free grammar using the [Langium grammar language](../reference/grammar-language), in a similar fashion to EBNF.
 
 Based on the grammar, Langium is then able to construct a parser which transforms an input string into a semantic model representation. Just as the name suggests, this model captures the essential structure to describe your language.
 
@@ -101,4 +102,4 @@ The LSP includes commonly used language features, such as code completion, custo
 
 You can try out most of these features using our [showcase](/showcase/) and [playground](/playground/). The languages shown there are written using Langium and integrated in the monaco-editor.
 
-If you're interested in Langium, you can check out our [learning](/docs/learn/workflow) page next. There you'll learn how to get started writing your first language, and to learn more about how Langium can help you achieve your language designing goals.
+If you're interested in Langium, you can check out our [learning](../learn/workflow) page next. There you'll learn how to get started writing your first language, and to learn more about how Langium can help you achieve your language designing goals.

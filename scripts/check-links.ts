@@ -1,6 +1,6 @@
 import { glob } from "glob";
 import { readFile } from "node:fs/promises";
-import { basename, dirname, resolve, relative } from 'node:path';
+import { basename, dirname, resolve, relative, join } from 'node:path';
 import chalk from 'chalk';
 import fm from "front-matter";
 
@@ -83,27 +83,32 @@ async function readMarkdownFiles() {
         const content = await readFile(mdFile, 'utf-8');
 
         //urls
-        const { attributes: { url, aliases, slug }, body } = fm<Attributes>(content);
+        const { attributes: { url, aliases, slug } } = fm<Attributes>(content);
         let urls: string[] = [];
         if (aliases) {
             urls = [...urls, ...aliases];
         }
         let documentLink: string = '';
+        let folder = '';
         if (url) {
             documentLink = url;
+            folder = dirname(documentLink);
         } else if (slug) {
-            documentLink = relative(contentDir, resolve(mdFile, '..', slug));
+            documentLink = relative(contentDir, join(mdFile, '..', slug));
+            folder = dirname(documentLink);
         } else {
             const base = basename(mdFile, '.md');
             if (['index', '_index'].includes(base)) {
-                documentLink = relative(contentDir, resolve(mdFile, '..'));
+                documentLink = relative(contentDir, join(mdFile, '..'));
+                folder = documentLink;
             } else {
-                documentLink = relative(contentDir, resolve(mdFile, '..', base));
+                documentLink = relative(contentDir, join(mdFile, '..', base));
+                folder = dirname(documentLink);
             }
         }
 
         //links
-        const links = getAllLinks(content);
+        const links = getAllLinks(folder, content);
 
         //new file
         markdownFiles.push({
@@ -116,14 +121,20 @@ async function readMarkdownFiles() {
     return markdownFiles;
 }
 
-function getAllLinks(content: string) {
+function getAllLinks(folder: string, content: string) {
     const regexMdLinks = /\[([^\[]+)\](\(.*?\))/gm
     const matches = content.match(regexMdLinks)
     const singleMatch = /\[([^\[]+)\]\((.*?)\)/;
     const result: string[] = [];
     for (var i = 0; i < matches?.length ?? 0; i++) {
         var text = singleMatch.exec(matches[i])
-        result.push(text[2]);
+        const link = text[2];
+        if(link.startsWith("http") || link.startsWith("/")) {
+            result.push(link);
+        } else if(link.startsWith("#")) {
+        } else {
+            result.push(join(folder, link));
+        }
     }
     return result;
 }

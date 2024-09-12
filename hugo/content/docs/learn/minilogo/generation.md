@@ -7,7 +7,7 @@ aliases:
 
 {{< toc format=html >}}
 
-In this tutorial we'll be showing how to implement basic generation for your language. When we're talking about generation, we're talking about transforming an AST from your Langium-based language into some output target. This could be another language of similar functionality (transpilation), a lower level language (compilation), or generating some artifacts/data that will be consumed by another application. If you haven't already, make sure to go back over and check out the [tutorial on customizing your CLI](/docs/learn/minilogo/customizing_cli), as it touches on details about how to implement endpoints for your application (like generation).
+In this tutorial we'll be showing how to implement basic generation for your language. When we're talking about generation, we're talking about transforming an AST from your Langium-based language into some output target. This could be another language of similar functionality (transpilation), a lower level language (compilation), or generating some artifacts/data that will be consumed by another application. If you haven't already, make sure to go back over and check out the [tutorial on customizing your CLI](./customizing_cli), as it touches on details about how to implement endpoints for your application (like generation).
 
 Per usual, we'll be using the MiniLogo language as a motivating example here.
 
@@ -377,4 +377,4 @@ If you're looking at the implementation of [MiniLogo that we've already written 
 
 We could continue to extend on this with new features, and generate new sorts of output using a given input language. In this tutorial, we're able to take a MiniLogo program and convert it into some simple JSON drawing instructions that can be consumed by another program. This opens the door for us to write such a program in another language, such as Python or Javascript, and draw with these results. In later tutorials, we'll be talking about how to run Langium in the web with generation, so that we can immediately verify our results by drawing on an HTML5 canvas.
 
-We recommend that you next read [the guide on bundling your language with Langium to reduce its size](/docs/recipes/code-bundling), before moving onto the tutorial about [bundling an extension](/docs/learn/minilogo/building_an_extension). This is an important step before deployment as an extension for VSCode, and also if you're planning to later deploy your language in the web.
+We recommend that you next read [the guide on bundling your language with Langium to reduce its size](../../recipes/code-bundling), before moving onto the tutorial about [bundling an extension](./building_an_extension). This is an important step before deployment as an extension for VSCode, and also if you're planning to later deploy your language in the web.

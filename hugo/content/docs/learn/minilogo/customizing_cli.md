@@ -7,7 +7,7 @@ aliases:
 
 {{< toc format=html >}}
 
-In this tutorial, we'll be talking about customizing the command line interface for your language. We recommend reading through previous tutorials about [writing a grammar](/docs/learn/minilogo/writing_a_grammar) and [validation](/docs/learn/minilogo/validation). Once you have a good grasp on those concepts, then you should be all set for setting up a CLI. We will also continue to use the [MiniLogo](https://github.com/langium/langium-minilogo) language as a motivating example.
+In this tutorial, we'll be talking about customizing the command line interface for your language. We recommend reading through previous tutorials about [writing a grammar](./writing_a_grammar) and [validation](./validation). Once you have a good grasp on those concepts, then you should be all set for setting up a CLI. We will also continue to use the [MiniLogo](https://github.com/langium/langium-minilogo) language as a motivating example.
 
 ## Overview
 
@@ -17,7 +17,7 @@ Once you have a grammar and some validation in place, you may want to start conf
 
 If you've been using a language built with the yeoman generator for Langium, you should be able to find your CLI defined in **src/cli/index.ts**. This file describes the general layout of your languages's command line interface, and lets you register specific commands. By default, you're provided with a single command for your CLI, the **generate** command.
 
-Much like the command implies, it allows you to take a program written in your DSL, parse it, and traverse the AST to produce some sort of generated output. We won't talk about the generator itself in this tutorial (that will come in the [next tutorial on generation](/docs/learn/minilogo/generation)). Instead we'll focus on a simple example for parsing and validating a program, which allows learning more about the CLI itself.
+Much like the command implies, it allows you to take a program written in your DSL, parse it, and traverse the AST to produce some sort of generated output. We won't talk about the generator itself in this tutorial (that will come in the [next tutorial on generation](./generation)). Instead we'll focus on a simple example for parsing and validating a program, which allows learning more about the CLI itself.
 
 ## Adding a Parse and Validate Action
 
@@ -150,4 +150,4 @@ Running the CLI again should show that this program has an error, and better yet
 
 This is perfect, as we didn't have to implement too much more logic to get validation in our CLI. Since we already hooked up our validation service before, the CLI just handles the interaction with an external program. This separation of concerns makes for a very flexible implementation that is easy to adapt over time.
 
-That sums up how to add basic CLI functionality. [In the next tutorial, we will be talking about generation in more detail](/docs/learn/minilogo/generation), specifically about techniques that you can use to traverse your AST and produce a generated output.
+That sums up how to add basic CLI functionality. [In the next tutorial, we will be talking about generation in more detail](./generation), specifically about techniques that you can use to traverse your AST and produce a generated output.

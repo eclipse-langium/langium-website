@@ -31,6 +31,10 @@ enableRobotsTXT = true
   [build.options]
     sourceMap = true
 
+[security]
+	[security.exec]
+		allow = ['^go$', '^npx$', '^postcss$', '^babel$', '^git$']
+
 [params]
   # (Optional, default 6) Set how many table of contents levels to be showed on page.
   # Use false to hide ToC, note that 0 will default to 6 (https://gohugo.io/functions/default/)
@@ -65,7 +69,7 @@ enableRobotsTXT = true
   # (Optional, default false) Set HTMl <base> to .Site.BaseURL if enabled. It might be required
   # if a subdirectory is used within Hugos BaseURL.
   # See https://developer.mozilla.org/de/docs/Web/HTML/Element/base.
-  #geekdocOverwriteHTMLBase = false
+  geekdocOverwriteHTMLBase = true
 
   # (Optional, default false) Auto-decrease brightness of images and add a slightly grayscale to avoid
   # bright spots while using the dark mode.
