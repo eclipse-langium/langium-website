@@ -172,4 +172,4 @@ clientOptions: LanguageClientOptions = {
     documentSelector: [{ scheme: 'file', language: 'mydsl' }, { scheme: 'builtin', language: 'mydsl' }],
 }
 ```
- **Warning:** It is discouraged to set `scheme` to `'*'`, as we do not want to build a Git revision when performing a Git diff.
+ **Warning:** It is discouraged to set `scheme` to `'*'`, as, for example, we do not want to build a Git revision when performing a Git diff.
