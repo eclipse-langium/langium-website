@@ -164,13 +164,12 @@ export function activate(context: vscode.ExtensionContext) {
 This registers an in-memory file system for vscode to use for the `builtin` file schema.
 Every time vscode is supposed to open a file with this schema, it will invoke the `stat` and `readFile` methods of the registered file system provider.
 
-To ensure that LSP services (such as hover, outline, go to definition, etc.) work properly inside a built-in file, make sure that LanguageClientOptions is correctly configured. The document selector used for your language should handle the `builtin` scheme. It is recommended to support all schemes, either by removing the scheme option or by setting the scheme option to `'*'`.
+To ensure that LSP services (such as hover, outline, go to definition, etc.) work properly inside a built-in file, make sure that LanguageClientOptions is correctly configured (`src/extension/main.ts`). The document selector used for your language should handle the `builtin` scheme.
 
 ```ts
 // Options to control the language client
 clientOptions: LanguageClientOptions = {
-    documentSelector: [{ language: 'mydsl' }],
-    // Alternatively:
-    documentSelector: [{ scheme: '*', language: 'mydsl' }],
+    documentSelector: [{ scheme: 'file', language: 'mydsl' }, { scheme: 'builtin', language: 'mydsl' }],
 }
 ```
+ **Warning:** It is discouraged to set `scheme` to `'*'`, as we do not want to build a Git revision when performing a Git diff.
