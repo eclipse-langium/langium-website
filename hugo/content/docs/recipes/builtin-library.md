@@ -169,7 +169,10 @@ To ensure that LSP services (such as hover, outline, go to definition, etc.) wor
 ```ts
 // Options to control the language client
 clientOptions: LanguageClientOptions = {
-    documentSelector: [{ scheme: 'file', language: 'mydsl' }, { scheme: 'builtin', language: 'mydsl' }],
+    documentSelector: [
+        { scheme: 'file', language: 'mydsl' },
+        { scheme: 'builtin', language: 'mydsl' }
+    ],
 }
 ```
  **Warning:** It is discouraged to set `scheme` to `'*'`, as, for example, we do not want to build a Git revision when performing a Git diff.
