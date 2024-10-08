@@ -5,10 +5,10 @@ weight: 300
 
 Some programming languages (such as Python, Haskell, and YAML) use indentation to denote nesting, as opposed to special non-whitespace tokens (such as `{` and `}` in C++/JavaScript).
 This can be difficult to express in the EBNF notation used for defining a language grammar in Langium, which is context-free.
-To achieve that, you can make use of synthetic tokens in the grammar which you would then redefine using Chevrotain in a custom token builder.
+To achieve that, you can make use of synthetic tokens in the grammar which you would then redefine in a custom token builder.
 
-Starting with Langium v3.2, such token builder (and an accompanying lexer) are provided for easy plugging into your language.
-They work by modifying the underlying Chevrotain token generated for your indentation terminal tokens to use a custom matcher function instead that has access to more context than simple Regular Expressions, allowing it to store state and detect _changes_ in indentation levels. This is why you should provide it with the names of the tokens you used to denote indentation: so it can override the correct tokens for your grammar.
+Starting with Langium 3.2.0, such token builder (and an accompanying lexer) are provided for easy plugging into your language.
+They work by modifying the underlying token type generated for your indentation terminal tokens to use a custom matcher function instead that has access to more context than simple Regular Expressions, allowing it to store state and detect _changes_ in indentation levels.
 
 ## Configuring the token builder and lexer
 
@@ -19,15 +19,14 @@ services in your module as such:
 ```ts
 import { IndentationAwareTokenBuilder, IndentationAwareLexer } from 'langium';
 
-// ...
 export const HelloWorldModule: Module<HelloWorldServices, PartialLangiumServices & HelloWorldAddedServices> = {
     // ...
     parser: {
         TokenBuilder: () => new IndentationAwareTokenBuilder(),
         Lexer: (services) => new IndentationAwareLexer(services),
+        // ...
     },
 };
-// ...
 ```
 
 The `IndentationAwareTokenBuilder` constructor optionally accepts an object defining the names of the tokens you used to denote indentation and whitespace in your `.langium` grammar file, as well as a list of delimiter tokens inside of which indentation should be ignored. It defaults to:
@@ -43,18 +42,21 @@ The `IndentationAwareTokenBuilder` constructor optionally accepts an object defi
 ### Ignoring indentation between specific tokens
 
 Sometimes, it is necessary to ignore any indentation token inside some expressions, such as with tuples and lists in Python. For example, in the following statement:
-```python
+
+```py
 x = [
     1,
     2
 ]
 ```
+
 any indentation between `[` and `]` should be ignored.
 
 To achieve similar behavior with the `IndentationAwareTokenBuilder`, the `ignoreIndentationDelimiters` option can be used.
 It accepts a list of pairs of token names (terminal or keyword) and turns off indentation token detection between each pair.
 
 For example, if you construct the `IndentationAwareTokenBuilder` with the following options:
+
 ```ts
 new IndentationAwareTokenBuilder({
     ignoreIndentationDelimiters: [
@@ -63,6 +65,7 @@ new IndentationAwareTokenBuilder({
     ],
 })
 ```
+
 then no indentation tokens will be emitted between either of those pairs of tokens.
 
 ### Configuration options type safety
@@ -124,7 +127,8 @@ Additionally, the separation of `WS` from simply `\s+` to `[\t ]+` and `[\r\n]+`
 The content you choose for these 3 terminals doesn't matter since it will overridden by `IndentationAwareTokenBuilder` anyway. However, you might still want to choose tokens that don't overlap with other terminals for easier use in the playground.
 
 With the default configuration and the grammar above, for the following code sample:
-```
+
+```py
 if true:
     return false
 else:
