@@ -12,8 +12,8 @@ They work by modifying the underlying token type generated for your indentation 
 
 ## Configuring the token builder and lexer
 
-To be able to use the indendation tokens in your grammar, you first have to import and register the [`IndentationAwareTokenBuilder`](https://github.com/eclipse-langium/langium/blob/bfca81f9e2411dd25a73f6b2711470e2c33788ed/packages/langium/src/parser/indentation-aware.ts#L78)
-and [`IndentationAwareLexer`](https://github.com/eclipse-langium/langium/blob/bfca81f9e2411dd25a73f6b2711470e2c33788ed/packages/langium/src/parser/indentation-aware.ts#L358)
+To be able to use the indendation tokens in your grammar, you first have to import and register the [`IndentationAwareTokenBuilder`](https://eclipse-langium.github.io/langium/classes/langium.IndentationAwareTokenBuilder.html)
+and [`IndentationAwareLexer`](https://eclipse-langium.github.io/langium/classes/langium.IndentationAwareLexer.html)
 services in your module as such:
 
 ```ts
