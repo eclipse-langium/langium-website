@@ -60,7 +60,7 @@ npm run langium:generate
 
 The index manager shall get all persons that are marked with the export keyword. In Langium this is done by overriding the `ScopeComputation.getExports(…)` function. Here is the implementation:
 
-```typescript
+```ts
 export class HelloWorldScopeComputation extends DefaultScopeComputation {
     override async computeExports(document: LangiumDocument<AstNode>): Promise<AstNodeDescription[]> {
         const model = document.parseResult.value as Model;
@@ -73,7 +73,7 @@ export class HelloWorldScopeComputation extends DefaultScopeComputation {
 
 After that, you need to register the `HelloWorldScopeComputation` in the `HelloWorldModule`:
 
-```typescript
+```ts
 export const HelloWorldModule: Module<HelloWorldServices, PartialLangiumServices & HelloWorldAddedServices> = {
     //...
     references: {
@@ -88,7 +88,7 @@ Having done this, will make all persons that are marked with the `export` keywor
 
 The final step is to adjust the cross-reference resolution by overriding the `DefaultScopeProvider.getScope(…)` function:
 
-```typescript
+```ts
 export class HelloWorldScopeProvider extends DefaultScopeProvider {
     override getScope(context: ReferenceInfo): Scope {
         switch(context.container.$type as keyof HelloWorldAstType) {
@@ -111,7 +111,7 @@ export class HelloWorldScopeProvider extends DefaultScopeProvider {
 
 Do not forget to add the new service to the `HelloWorldModule`:
 
-```typescript
+```ts
 export const HelloWorldModule: Module<HelloWorldServices, PartialLangiumServices & HelloWorldAddedServices> = {
     //...
     references: {
@@ -125,7 +125,7 @@ You noticed the two missing functions? Here is what they have to do.
 
 The first function (`getExportedPersonsFromGlobalScope(context)`) will take a look at the global scope and return all exported persons respecting the files that were touched by the file imports. Note that we are outputting all persons that are marked with the `export` keyword. The actual name resolution is done internally later by the linker.
 
-```typescript
+```ts
 private getExportedPersonsFromGlobalScope(context: ReferenceInfo): Scope {
     //get document for current reference
     const document = AstUtils.getDocument(context.container);
@@ -154,7 +154,7 @@ private getExportedPersonsFromGlobalScope(context: ReferenceInfo): Scope {
 
 The second function (`getImportedPersonsFromCurrentFile(context)`) will take a look at the current file and return all persons that are imported from other files.
 
-```typescript
+```ts
 private getImportedPersonsFromCurrentFile(context: ReferenceInfo) {
     //get current document of reference
     const document = AstUtils.getDocument(context.container);
