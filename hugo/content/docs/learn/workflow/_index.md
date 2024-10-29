@@ -11,16 +11,16 @@ Be aware of the fact that the possibilities go beyond this simple workflow. For 
 
 {{<mermaid>}}
 flowchart TD
-  A(["1. Install Yeoman"]);
-  B(["2. Scaffold a Langium project"]);
-  C(["3. Write the grammar"]);
-  D(["4. Generate the AST"]);
-  E(["5. Resolve cross-references"]);
-  F(["6. Create validations"]);
-  G(["7. Generate artifacts"]);
+  A(["1.&nbsp;Install Yeoman"]);
+  B(["2.&nbsp;Scaffold a Langium project"]);
+  C(["3.&nbsp;Write the grammar"]);
+  D(["4.&nbsp;Generate the AST"]);
+  E(["5.&nbsp;Resolve cross-references"]);
+  F(["6.&nbsp;Create validations"]);
+  G(["7.&nbsp;Generate artifacts"]);
   H(["Find advanced topics"]);
   A --> B --> C --> D --> E --> F --> G ~~~ H;
-  G -- for each additional\ngrammar change --> C;
+  G -- for each additional<br/>grammar change --> C;
 
   click A "/docs/learn/workflow/install"
   click B "/docs/learn/workflow/scaffold"
