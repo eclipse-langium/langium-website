@@ -13,7 +13,7 @@ In this tutorial we'll be talking about how to perform generation in the web by 
 
 *(This tutorial previously utilized custom LSP commands to achieve the same goal of generation. This is still a valid approach, but we've found setting up listening for notifications this way is much more straightforward. We've implemented this in our own example languages as well, and would recommend it going forward.)*
 
-We'll assume that you've already looked over most of the other tutorials at this point. It is particularly important that you have a language with working generation, and have a working instance of Langium + Monaco for your language (or another editor of your choice). In the case that you don't have a language to work with, you can follow along with [MiniLogo](https://github.com/langium/langium-minilogo), which is the example language used throughout many of these tutorials.
+We'll assume that you've already looked over most of the other tutorials at this point. It is particularly important that you have a language with working generation, and have a working instance of Langium + Monaco for your language (or another editor of your choice). In the case that you don't have a language to work with, you can follow along with [MiniLogo](https://github.com/TypeFox/langium-minilogo), which is the example language used throughout many of these tutorials.
 
 Since we're working with MiniLogo here, we already know that our generated output is in the form of drawing instructions that transform some drawing context. The generated output that we've implemented so far consists of a JSON array of commands, making it very easy to interpret. Now that we're working in a web-based context, this approach lends itself naturally towards manipulating an HTML5 canvas.
 
