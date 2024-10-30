@@ -23,7 +23,7 @@ Without further ado, let's jump into getting your web-based Langium experience s
 
 ## Getting your Language Setup for the Web
 
-To begin, you're going to need a Langium-based language to work with. We have already written [MiniLogo](https://github.com/langium/langium-minilogo) in Langium as an example for deploying a language in the web. However, if you've been following along with these tutorials so far, you should be ready to move your own language into a web-based context.
+To begin, you're going to need a Langium-based language to work with. We have already written [MiniLogo](https://github.com/TypeFox/langium-minilogo) in Langium as an example for deploying a language in the web. However, if you've been following along with these tutorials so far, you should be ready to move your own language into a web-based context.
 
 Per usual, we'll be using MiniLogo as the motivating example here.
 

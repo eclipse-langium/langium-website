@@ -10,7 +10,7 @@ aliases:
 
 In this tutorial we will be talking about writing a grammar for your language in Langium. As a motivating example, we'll be describing how to write a grammar for the MiniLogo language. If you're not familiar with MiniLogo, it's a smaller implementation of the Logo programming language. Logo itself is a lot like Turtle from Python. Ultimately, we'll be using MiniLogo to express drawing instructions that can be used to draw on a canvas.
 
-We've already written an implementation of [MiniLogo on Github using Langium](https://github.com/langium/langium-minilogo). This tutorial will be following along with this project, by walking through the grammar implementation step by step. Later tutorials will also follow along with MiniLogo to create an easy to follow series.
+We've already written an implementation of [MiniLogo on Github using Langium](https://github.com/TypeFox/langium-minilogo). This tutorial will be following along with this project, by walking through the grammar implementation step by step. Later tutorials will also follow along with MiniLogo to create an easy to follow series.
 
 ## Planning
 

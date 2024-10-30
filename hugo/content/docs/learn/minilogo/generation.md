@@ -373,7 +373,7 @@ our JSON output should be:
 ]
 ```
 
-If you're looking at the implementation of [MiniLogo that we've already written in the Langium organization on Github](https://github.com/langium/langium-minilogo), you may notice that the program and output there are *slightly* different. This interpretation of MiniLogo has gone through some iterations, and so there are some slight differences here and there. What's most important is that your version produces the generated output that you expect.
+If you're looking at the implementation of [MiniLogo that we've already written in the Langium organization on Github](https://github.com/TypeFox/langium-minilogo), you may notice that the program and output there are *slightly* different. This interpretation of MiniLogo has gone through some iterations, and so there are some slight differences here and there. What's most important is that your version produces the generated output that you expect.
 
 We could continue to extend on this with new features, and generate new sorts of output using a given input language. In this tutorial, we're able to take a MiniLogo program and convert it into some simple JSON drawing instructions that can be consumed by another program. This opens the door for us to write such a program in another language, such as Python or Javascript, and draw with these results. In later tutorials, we'll be talking about how to run Langium in the web with generation, so that we can immediately verify our results by drawing on an HTML5 canvas.
 
