@@ -203,7 +203,7 @@ Definition:
 Expression:
     Addition;
 Addition infers Expression:
-    left=Value ('+' right=Expression)?;
+    left=Primary ('+' right=Expression)?;
     
 Primary infers Expression:
     '(' Expression ')' | {Literal} value=NUMBER;
