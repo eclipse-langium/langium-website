@@ -154,7 +154,7 @@ npm install graphology graphology-components graphology-dag
 
 Open the `hello-world-validator.ts` and add another validator for `Model`. It is important to say that we do not create a check on the `Greeting` level, because we need the overview over all greetings. The complete overview is given for the `Model` AST node. It would be possible to just calculate cycles for a single greeting or person, but that is more complex and less performant!
 
-```typescript
+```ts
 const checks: ValidationChecks<HelloWorldAstType> = {
     Model: validator.checkGreetingCycles, // new!!!
     Person: validator.checkPersonStartsWithCapital
@@ -163,7 +163,7 @@ const checks: ValidationChecks<HelloWorldAstType> = {
 
 And here is the implementation:
 
-```typescript
+```ts
 checkGreetingCycles(model: Model, accept: ValidationAcceptor): void {
     //arrange the graph
     const graph = new DirectedGraph<{}, {greeting: Greeting}>();
@@ -225,7 +225,7 @@ Here is the screenshot of VS Code with the error:
 
 The topological sort can be done like this:
 
-```typescript
+```ts
 import { topologicalSort } from 'graphology-dag';
 
 //resolvedOrder is an array of person names!

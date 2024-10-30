@@ -70,7 +70,7 @@ Mind the gaps (question marks) for the cross-references inside the greetings. Th
 
 You can test the parser by comparing the generated AST with the expected AST. Here is an example:
 
-```typescript
+```ts
 import { createHelloWorldServices } from "./your-project//hello-world-module.js";
 import { EmptyFileSystem } from "langium";
 import { parseHelper } from "langium/test";
