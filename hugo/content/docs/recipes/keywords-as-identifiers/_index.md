@@ -87,7 +87,8 @@ In Langium, the `SemanticTokenProvider` service is responsible for assigning lan
 Therefore, we customize the default semantic token provider like this:
 
 ```ts
-import { AbstractSemanticTokenProvider, AstNode, SemanticTokenAcceptor } from 'langium';
+import { AstNode } from 'langium';
+import { AbstractSemanticTokenProvider, SemanticTokenAcceptor } from 'langium/lsp';
 import { isPerson } from './generated/ast.js';
 import { SemanticTokenTypes } from 'vscode-languageserver';
 
