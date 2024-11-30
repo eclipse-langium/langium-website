@@ -140,7 +140,7 @@ export interface ScopeComputation {
 }
 ```
 
-So, while the scope computation is defining what symbols are globally exported (like using the `export` keyword in Typescript), the scope provider is the place to implement the `import` of these symbols using the index manager and the semantics of your import logic.
+So, while the scope computation is defining what symbols are globally exported (like using the `export` keyword in TypeScript), the scope provider is the place to implement the `import` of these symbols using the index manager and the semantics of your import logic.
 
 ## Cross-reference resolution from a high-level perspective
 
