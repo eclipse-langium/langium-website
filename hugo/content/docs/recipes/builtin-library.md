@@ -175,4 +175,14 @@ clientOptions: LanguageClientOptions = {
     ],
 }
 ```
- **Warning:** It is discouraged to set `scheme` to `'*'`, as, for example, we do not want to build a Git revision when performing a Git diff.
+
+> **Warning:** It is discouraged to set `scheme` to `'*'`, as, for example, we do not want to build a Git revision when performing a Git diff.
+
+Finally, to ensure that this file system provider is registered even before any DSL file is opened, the extension should be activated when any of the library files are opened.
+To do that, use the following `activationEvents` in the `package.json` of your VS Code extension:
+
+```json
+"activationEvents": [
+    "onFileSystem:builtin"
+]
+```
