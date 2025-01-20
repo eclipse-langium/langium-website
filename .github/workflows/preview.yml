@@ -55,7 +55,7 @@ jobs:
         with:
           name: "site"
           path: ./public
-      - uses: rossjrw/pr-preview-action@4668d7cb417ce7067b0b59bc152b1ae1513010de # v1.4.6
+      - uses: rossjrw/pr-preview-action@df22037db54ab6ee34d3c1e2b8810ac040a530c6 # v1.6.0
         id: deployment
         with:
           source-dir: ./public
@@ -76,7 +76,7 @@ jobs:
       # while the content will not be used
       - name: Checkout
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-      - uses: rossjrw/pr-preview-action@4668d7cb417ce7067b0b59bc152b1ae1513010de # v1.4.6
+      - uses: rossjrw/pr-preview-action@df22037db54ab6ee34d3c1e2b8810ac040a530c6 # v1.6.0
         id: deployment
         with:
           preview-branch: previews
