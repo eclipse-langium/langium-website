@@ -15,7 +15,7 @@ Once you have a grammar and some validation in place, you may want to start conf
 
 ## About the Command Line Interface
 
-If you've been using a language built with the yeoman generator for Langium, you should be able to find your CLI defined in **src/cli/index.ts**. This file describes the general layout of your languages's command line interface, and lets you register specific commands. By default, you're provided with a single command for your CLI, the **generate** command.
+If you've been using a language built with the yeoman generator for Langium, you should be able to find your CLI defined in **src/cli/main.ts**. This file describes the general layout of your languages's command line interface, and lets you register specific commands. By default, you're provided with a single command for your CLI, the **generate** command.
 
 Much like the command implies, it allows you to take a program written in your DSL, parse it, and traverse the AST to produce some sort of generated output. We won't talk about the generator itself in this tutorial (that will come in the [next tutorial on generation](/docs/learn/minilogo/generation)). Instead we'll focus on a simple example for parsing and validating a program, which allows learning more about the CLI itself.
 
@@ -25,7 +25,7 @@ To start, let's write up a custom action to allow us to **parse** and **validate
 
 Feel free to keep (or remove) the existing **generate** action, as we won't be setting that up until the next tutorial. We'll be sure to present example code for that as well, so don't worry about deleting functions that you'll need later.
 
-In order to add our new command, we need to register it in the default export for the **index.ts** file. In this function, there's a **command** object, which is a collection of commands for our CLI. Let's call our command `parseAndValidate`, and give it some extra details, like:
+In order to add our new command, we need to register it in the default export for the **src/cli/main.ts** file. In this function, there's a **command** object, which is a collection of commands for our CLI. Let's call our command `parseAndValidate`, and give it some extra details, like:
 
 - **arguments**: Indicating that it takes a single file
 - a **description** detailing what this action does
