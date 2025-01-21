@@ -312,7 +312,7 @@ export function generateCommands(model: Model, filePath: string, destination: st
 }
 ```
 
-And to connect it to the CLI, which is setup in **src/cli/index.ts**, we can register it by slightly modifying the existing `generateAction` endpoint that was there by default.
+And to connect it to the CLI, which is setup in **src/cli/main.ts**, we can register it by slightly modifying the existing `generateAction` endpoint that was there by default.
 
 ```ts
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
