@@ -7,7 +7,13 @@ aliases:
 
 {{< toc format=html >}}
 
-*Updated on Oct. 4th, 2023 for usage with monaco-editor-wrapper 3.1.0 & above, as well as Langium 2.0.2*
+{{< notification >}}
+This tutorial is not up to date with the latest versions of Langium & the monaco-editor-wrapper. As a result you'll find these exact instructions, and code samples, will likely not work on current versions. We'll be moving these tutorials over to the monaco-languageclient repo shortly, where they can be better maintained & kept up to date (we'll include a link here once that's done).
+<br/><br/>
+This tutorial was written for Langium 2.0.2 and monaco-editor-wrapper 3.1.0, and won't work for later versions.
+{{< /notification >}}
+
+*Updated on Oct. 4th, 2023 for usage with monaco-editor-wrapper 3.1.0, as well as Langium 2.0.2.*
 
 In this tutorial we'll be talking about running Langium in the web with the Monaco editor. If you're not familiar with Monaco, it's the editor that powers VS Code. We're quite fond of it at TypeFox, so we've taken the time to write up this tutorial to explain how to integrate Langium in the web with Monaco, no backend required.
 
@@ -17,8 +23,8 @@ Without further ado, let's jump into getting your web-based Langium experience s
 
 ## Technologies You'll Need
 
-- [Langium](https://www.npmjs.com/package/langium) 2.0.2 or greater
-- [Monaco Editor Wrapper](https://www.npmjs.com/package/monaco-editor-wrapper) 3.1.0 or greater
+- [Langium](https://www.npmjs.com/package/langium) 2.0.2
+- [Monaco Editor Wrapper](https://www.npmjs.com/package/monaco-editor-wrapper) 3.1.0
 - [ESBuild](https://www.npmjs.com/package/esbuild) 0.18.20 or greater
 
 ## Getting your Language Setup for the Web

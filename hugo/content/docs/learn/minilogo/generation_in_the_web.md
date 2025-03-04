@@ -7,7 +7,13 @@ aliases:
 
 {{< toc format=html >}}
 
-*Updated on Oct. 4th, 2023 for usage with monaco-editor-wrapper 3.1.0 & above.*
+{{< notification >}}
+This tutorial is not up to date with the latest versions of Langium & the monaco-editor-wrapper. As a result you'll find these exact instructions, and code samples, will likely not work on current versions. We'll be moving these tutorials over to the monaco-languageclient repo shortly, where they can be better maintained & kept up to date (we'll include a link here once that's done).
+<br/><br/>
+This tutorial was written for Langium 2.0.2 and monaco-editor-wrapper 3.1.0, and won't work for later versions.
+{{< /notification >}}
+
+*Updated on Oct. 4th, 2023 for usage with monaco-editor-wrapper 3.1.0.*
 
 In this tutorial we'll be talking about how to perform generation in the web by listening for document builder notifications. There are multiple ways to hook into Langium to utilize the generator, such as by directly exporting the generator API. However, by listening to notifications from the document builder, we can do this with less code. This lets us quickly integrate new functionality into our existing Langium + Monaco integration, and focus more on what we would want to do with the generated output.
 
