@@ -38,6 +38,11 @@
     --footer-link-color-visited: #ffcc5c;
 }
 
+:root[color-mode="light"] .shiki,
+:root[color-mode="light"] .shiki span {
+    color: var(--shiki-light) !important;
+}
+
 @media (prefers-color-scheme: light) {
     :root {
         --header-background: #4ec58a;
@@ -86,6 +91,11 @@
         fill: var(--header-font-color) !important;
         stroke: #000000 !important;
     }
+
+    .shiki,
+    .shiki span {
+        color: var(--shiki-light) !important;
+    }
 }
 
 /* Dark mode theming */
@@ -119,6 +129,11 @@
     --footer-font-color: #ffffff;
     --footer-link-color: rgb(213, 104, 231);
     --footer-link-color-visited: rgb(213, 104, 231);
+}
+
+:root[color-mode="dark"] .shiki,
+:root[color-mode="dark"] .shiki span {
+    color: var(--shiki-dark) !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -168,6 +183,11 @@
     .node polygon {
         fill: var(--header-font-color) !important;
         stroke: var((--body-font-color)) !important;
+    }
+
+    .shiki,
+    .shiki span {
+        color: var(--shiki-dark) !important;
     }
 }
 

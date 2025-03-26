@@ -34,7 +34,7 @@ The [arithmetics example](https://github.com/eclipse-langium/langium/tree/main/e
 
 First, we need to register the new implementation of `ScopeProvider` inside of the `ArithmeticsModule`:
 
-```Typescript
+```ts
 export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServices & ArithmeticsAddedServices> = {
     references: {
         ScopeProvider: (services) => new ArithmeticsScopeProvider(services)
@@ -62,7 +62,7 @@ export class ArithmeticsScopeProvider extends DefaultScopeProvider {
 The functions `createScope` and `getGlobalScope` are already defined in `DefaultScopeProvider` but needed to be overridden to add the option `{caseInsensitive: true}`. This is achieved through inheritance: By using the keyword `extends`, `ArithmeticsScopeProvider` inherits from `DefaultScopeProvider`, which means that it can access properties and methods as well as override methods declared in the superclass.
 
 In the `DefaultScopeProvider`, those two methods are declared as:
-```Typescript
+```ts
 protected createScope(elements: Stream<AstNodeDescription>, outerScope: Scope): Scope {
     return new StreamScope(elements, outerScope);
 }
@@ -79,7 +79,7 @@ Of course it is also possible to replace the default implementation with a compl
 ### Adding New Services
 To add services that are not available by default in Langium, e.g. application specific ones, we first need to edit the type `ArithmeticsAddedService`.
 By default, the Yeoman-based generator adds a validator service where you can implement validation rules specific to your language. New services are added as properties to the type declaration:
-```Typescript
+```ts
 export type ArithmeticsAddedServices = {
     ArithmeticsValidator: ArithmeticsValidator
 }
@@ -87,7 +87,7 @@ export type ArithmeticsAddedServices = {
 The `ArithmeticsAddedService` type now has a property `ArithmeticsValidator` of type `ArithmeticsValidator`.
 
 For the sake of organization and clarity, the services can be nested inside of other properties acting as "groups":
-```Typescript
+```ts
 export type ArithmeticsAddedServices = {
     validation: {
         ArithmeticsValidator: ArithmeticsValidator
@@ -104,7 +104,7 @@ export type ArithmeticsAddedServices = {
 ```
 
 Now that we have declared our new services inside of the `ArithmeticsAddedServices` type definition, we need to specify to the module how we want them to be implemented. To do so, we need to update the `ArithmeticsModule`:
-```Typescript
+```ts
 export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServices & ArithmeticsAddedServices> = {
     validation: {
         ArithmeticsValidator: () => new ArithmeticsValidator()
@@ -114,13 +114,13 @@ export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServic
 Similarly to [overridden services](#overriding-and-extending-services), the first access to the `ArithmeticsValidator` property will create a new instance of the class `ArithmeticsValidator`.
 
 The `ArithmeticsValidator` service does not depend on other services, and no argument is passed during the instantiation of the class. If you implement a service that depends on other services, the constructor of your service should expect `<yourDslName>Services` as argument. The initializer function can expect that object as argument and pass it to your services constructor, such as:
-```Typescript
+```ts
 export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServices & ArithmeticsAddedServices> = {
     ServiceWithDependencies = (services) => new ServiceClass(services);
 }
 ```
 The services which `ServiceClass` depends on need to be registered in the constructor:
-```Typescript
+```ts
 export class ServiceClass {
     private readonly serviceOne: ServiceOne;
     private readonly serviceTwo: ServiceTwo;
@@ -138,7 +138,7 @@ export class ServiceClass {
 #### Resolving cyclic dependencies
 
 In case one of the services the `ServiceClass` above depends on, also has a dependency back to the `ServiceClass`, your module will throw an error similar to this: `Cycle detected. Please make "ServiceClass" lazy.` Ideally, such cyclic dependencies between services should be avoided. Sometimes, cycles are unavoidable though. In order to make them lazy, assign a lambda function that returns the service in the constructor. You can then invoke this function in your service logic to get access to the depending service:
-```Typescript
+```ts
 export class ServiceClass {
     private readonly serviceOne: () => ServiceOne;
 
@@ -156,7 +156,7 @@ export class ServiceClass {
 The `ArithmeticsValidator` needs to be registered inside of the `ValidationRegistry`. This done by [overriding](#overriding-and-extending-services) `ValidationRegistry` with `ArithmeticsValidationRegistry`.
 
 Briefly, `ArithmeticsValidator` implements two checks, `checkDivByZero` and `checkNormalisable`:
-```Typescript
+```ts
 export class ArithmeticsValidator {
     checkDivByZero(binExpr: BinaryExpression, accept: ValidationAcceptor): void {
         ...
@@ -168,7 +168,7 @@ export class ArithmeticsValidator {
 }
 ``` 
 These two new checks need to be registered inside of the `ValidationRegistry`. We extend `ValidationRegistry` with `ArithmeticsValidationRegistry` to implement our new functionalities:
-```Typescript
+```ts
 export class ArithmeticsValidationRegistry extends ValidationRegistry {
     constructor(services: ArithmeticsServices) {
         super(services);
@@ -184,7 +184,7 @@ export class ArithmeticsValidationRegistry extends ValidationRegistry {
 Inside of the `ArithmeticsValidationRegistry`, we obtain our `ArithmeticsValidator` with `const validator = services.validation.ArithmeticsValidator`, which will create a new instance of `ArithmeticsValidator`. Then we declare the `checks` to be registered and register them inside of the registry via the function `register` which is declared in the superclass. The `ArithmeticsValidationRegistry` only adds validation checks to the `ValidationRegistry`, but does not override any functionality from it.
 
 The implementation of `ArithmeticsValidationRegistry` needs to be registered in `ArithmeticsModule`. The complete `ArithmeticsModule` is:
-```Typescript
+```ts
 export const ArithmeticsModule: Module<ArithmeticsServices, PartialLangiumServices & ArithmeticsAddedServices> = {
     references: {
         ScopeProvider: (services) => new ArithmeticsScopeProvider(services)
