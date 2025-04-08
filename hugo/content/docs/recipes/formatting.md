@@ -88,8 +88,9 @@ It will still correctly indent the node in case the indentation is not as expect
 <summary>Full Code Sample</summary>
 
 ```ts
-import { AbstractFormatter, AstNode, Formatting } from 'langium';
-import * as ast from './generated/ast';
+import { AstNode } from 'langium';
+import { AbstractFormatter, Formatting } from 'langium/lsp';
+import * as ast from './generated/ast.js';
 
 export class DomainModelFormatter extends AbstractFormatter {
 
