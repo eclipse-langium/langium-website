@@ -7,7 +7,8 @@ Langium's formatting API allows to easily create formatters for your language.
 We start building a custom formatter for our language by creating a new class that inherits from `AbstractFormatter`.
 
 ```ts
-import { AbstractFormatter, AstNode, Formatting } from 'langium';
+import { AstNode } from 'langium';
+import { AbstractFormatter, Formatting } from 'langium/lsp';
 
 export class CustomFormatter extends AbstractFormatter {
     protected format(node: AstNode): void {
@@ -87,8 +88,9 @@ It will still correctly indent the node in case the indentation is not as expect
 <summary>Full Code Sample</summary>
 
 ```ts
-import { AbstractFormatter, AstNode, Formatting } from 'langium';
-import * as ast from './generated/ast';
+import { AstNode } from 'langium';
+import { AbstractFormatter, Formatting } from 'langium/lsp';
+import * as ast from './generated/ast.js';
 
 export class DomainModelFormatter extends AbstractFormatter {
 
