@@ -36,3 +36,9 @@ Use [xtext2langium](https://github.com/TypeFox/xtext2langium) to generate Langiu
 You want to visualize programs conforming to your Langium DSL in a diagram?
 The open source TypeScript framework [Eclipse Sprotty](https://sprotty.org/) renders powerful diagrams and graphical visualizations for web applications
 and provides an [integration with Langium](https://github.com/eclipse-langium/langium/tree/main/packages/langium-sprotty).
+
+
+### Langium-AST-Helper
+
+You want to work with the AST provided by Langium in a non-Langium context?
+The [Langium-AST-Helper](https://www.npmjs.com/package/langium-ast-helper) is a utility for transforming Langium ASTs into various data structures/formats for consumption as data.
