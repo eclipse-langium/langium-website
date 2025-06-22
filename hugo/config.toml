@@ -16,7 +16,7 @@ enableRobotsTXT = true
     # Needed for mermaid shortcode
     unsafe = true
   [markup.highlight]
-    codeFences = false  # Disable Hugo's code highlighter as it conflicts with prism's highligher.
+    codeFences = false  # Disable Hugo's code highlighter as it conflicts with our custom shiki highlighter.
   [markup.tableOfContents]
     startLevel = 1
     endLevel = 9
