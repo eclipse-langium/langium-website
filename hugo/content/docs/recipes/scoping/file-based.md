@@ -58,11 +58,11 @@ npm run langium:generate
 
 ## Step 2: Exporting persons to the global scope
 
-The index manager shall get all persons that are marked with the export keyword. In Langium this is done by overriding the `ScopeComputation.getExports(…)` function. Here is the implementation:
+The index manager shall get all persons that are marked with the export keyword. In Langium this is done by overriding the `ScopeComputation.collectExportedSymbols(…)` function. Here is the implementation:
 
 ```typescript
 export class HelloWorldScopeComputation extends DefaultScopeComputation {
-    override async computeExports(document: LangiumDocument<AstNode>): Promise<AstNodeDescription[]> {
+    override async collectExportedSymbols(document: LangiumDocument<AstNode>): Promise<AstNodeDescription[]> {
         const model = document.parseResult.value as Model;
         return model.persons
             .filter(p => p.published)
@@ -217,7 +217,7 @@ import { HelloWorldAstType, Model, Person } from "./generated/ast.js";
 import { dirname, join } from "node:path";
 
 export class HelloWorldScopeComputation extends DefaultScopeComputation {
-    override async computeExports(document: LangiumDocument<AstNode>): Promise<AstNodeDescription[]> {
+    override async collectExportedSymbols(document: LangiumDocument<AstNode>): Promise<AstNodeDescription[]> {
         const model = document.parseResult.value as Model;
         return model.persons
             .filter(p => p.published)

@@ -135,8 +135,8 @@ The _index manager_ is keeping in mind the global symbols of your language. It c
 
 ```ts
 export interface ScopeComputation {
-  computeExports(document: LangiumDocument, cancelToken?: CancellationToken): Promise<AstNodeDescription[]>;
-  computeLocalScopes(document: LangiumDocument, cancelToken?: CancellationToken): Promise<PrecomputedScopes>;
+  collectExportedSymbols(document: LangiumDocument, cancelToken?: CancellationToken): Promise<AstNodeDescription[]>;
+  collectLocalSymbols(document: LangiumDocument, cancelToken?: CancellationToken): Promise<LocalSymbols>;
 }
 ```
 
