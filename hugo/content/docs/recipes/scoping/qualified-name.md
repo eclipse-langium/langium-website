@@ -49,7 +49,7 @@ export const CppModule: Module<CppServices, PartialLangiumServices & CppAddedSer
 }
 ```
 
-Next, we can start implementing our custom scoping by overriding the `computeExports` function. This function is particularly important, as it allows us to change export nodes of our model using qualified names: We'll also want to annotate this function with `override`, since there's already a default definition provided.
+Next, we can start implementing our custom scoping by overriding the `collectExportedSymbols` function. This function is particularly important, as it allows us to change export nodes of our model using qualified names: We'll also want to annotate this function with `override`, since there's already a default definition provided.
 
 ```ts
 export class CppScopeComputation extends DefaultScopeComputation {
@@ -59,7 +59,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
     /**
      * Export all functions using their fully qualified name
      */
-    override async computeExports(document: LangiumDocument): Promise<AstNodeDescription[]> {
+    override async collectExportedSymbols(document: LangiumDocument): Promise<AstNodeDescription[]> {
         const exportedDescriptions: AstNodeDescription[] = [];
         for (const childNode of streamAllContents(document.parseResult.value)) {
             if (isFunctionDeclaration(childNode)) {
@@ -108,7 +108,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
 
     // Emitting previous implementation for brevity
 
-    override async computeLocalScopes(document: LangiumDocument): Promise<PrecomputedScopes> {
+    override async collectLocalSymbols(document: LangiumDocument): Promise<LocalSymbols> {
         const model = document.parseResult.value as CppProgram;
         // This map stores a list of descriptions for each node in our document
         const scopes = new MultiMap<AstNode, AstNodeDescription>();
@@ -166,7 +166,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
     /**
      * Export all functions using their fully qualified name
      */
-    override async computeExports(document: LangiumDocument): Promise<AstNodeDescription[]> {
+    override async collectExportedSymbols(document: LangiumDocument): Promise<AstNodeDescription[]> {
         const exportedDescriptions: AstNodeDescription[] = [];
         for (const childNode of streamAllContents(document.parseResult.value)) {
             if (isFunctionDeclaration(childNode)) {
@@ -179,7 +179,7 @@ export class CppScopeComputation extends DefaultScopeComputation {
         return exportedDescriptions;
     }
 
-    override async computeLocalScopes(document: LangiumDocument): Promise<PrecomputedScopes> {
+    override async collectLocalSymbols(document: LangiumDocument): Promise<LocalSymbols> {
         const model = document.parseResult.value as CppProgram;
         // This multi-map stores a list of descriptions for each node in our document
         const scopes = new MultiMap<AstNode, AstNodeDescription>();
