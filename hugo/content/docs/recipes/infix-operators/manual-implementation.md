@@ -48,21 +48,21 @@ Precedence is handled by creating a hierarchy of non-terminal rules. Each rule c
 
 Associativity is handled by three patterns. They make sure that operators are grouped correctly based on their associativity.
 
-Pattern 1 (Left Associative):
+#### Pattern 1 (Left Associative):
 
 ```langium
 Current infers Expression:
     Next ({infer BinaryExpression.left=current} operator=('op1' | 'op2' | ...) right=Next)*;
 ```
 
-Pattern 2 (Right Associative):
+#### Pattern 2 (Right Associative):
 
 ```langium
 Current infers Expression:
     Next ({infer BinaryExpression.left=current} operator=('op1'| 'op2' | ...) right=Current)?;
 ```
 
-Pattern 3 (Non-Associative):
+#### Pattern 3 (Non-Associative):
 
 ```langium
 Current infers Expression:
