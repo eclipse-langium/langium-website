@@ -29,6 +29,8 @@ infix BinaryExpr on PrimaryExpression:
 PrimaryExpression: '(' expr=Expression ')' | value=Number;
 ```
 
+In addition to better readability, the new notation also makes use of **performance optimizations** to speed up expression parsing by roughly 50% compared to the typical way of writing expressions.
+
 ### Primary expression
 
 The `PrimaryExpression` rule defines the basic building blocks of our expressions, which can be (for example) a parenthesized expression, an unary expression, or a number literal.

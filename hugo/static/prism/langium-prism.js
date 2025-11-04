@@ -18,7 +18,7 @@ Prism.languages.langium = {
         greedy: true
     },
     keyword: {
-        pattern: /\b(interface|fragment|terminal|boolean|current|extends|grammar|returns|bigint|hidden|import|infers|number|string|entry|false|infer|Date|true|type|with|on|infix)\b/
+        pattern: /\b(interface|fragment|terminal|boolean|current|extends|grammar|returns|bigint|hidden|import|infers|number|string|entry|false|infer|Date|true|type|with|on|infix|left|right|assoc)\b/
     },
     property: {
         pattern: /\b[a-z][\w]*(?==|\?=|\+=|\??:|>)\b/
