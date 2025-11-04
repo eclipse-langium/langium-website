@@ -7,7 +7,7 @@ Profiling is the process of measuring the performance of your application to ide
 
 ## Example file
 
-I will assume that you will be using the `Hello World` example grammar for this tutorial. Furthermore, let's say you have a file `example.hello-world` with the following content:
+Let's assume that we will be using the `Hello World` example grammar for this recipe. Furthermore, let's say you have a file `example.hello-world` with the following content:
 
 ```plain
 person Langium
@@ -106,6 +106,11 @@ export function createHelloWorldServices(context: DefaultSharedModuleContext): {
 Once profiling is enabled, the `LangiumProfiler` service is triggerd during the parsing, linking, and validation processes. After processing a file, the profiler will output the profiling results to the console as shown above.
 
 ```ts
+import { EmptyFileSystem } from "langium";
+import { parseHelper } from "langium/test";
+import type { Model } from "hello-world-language";
+import { createHelloWorldServices } from "hello-world-language";
+
 const services = createHelloWorldServices(EmptyFileSystem);
 const profiler = services.shared.profilers.LangiumProfiler!;
 const parse = parseHelper<Model>(services.HelloWorld);
@@ -124,7 +129,7 @@ Hello Langium5!
 Hello Langium!
 Hello Langium!
 Hello Langium!
-`);
+`, { validation: true }); //do not forget to enable validation!
 
 //<-- look at your console!
 
