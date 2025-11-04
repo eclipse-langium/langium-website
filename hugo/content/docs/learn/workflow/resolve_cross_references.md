@@ -227,3 +227,45 @@ expect(model.greetings[1].person.ref).toBe(model.persons[1]);
 ```
 
 The `expect` function can be any assertion library you like. The `Hello world` example uses Vitest.
+
+## Handling multi-target references
+
+With [Langium 4.0.0](https://github.com/eclipse-langium/langium/blob/main/packages/langium/CHANGELOG.md#multi-target-references) the handling of multi-target references is supported.
+
+Multi-target references are cross-references that can point to multiple targets instead of just one. The AST representation changes from a single `Reference` to an `MultiReference` objects. The mechanism to resolve multi-target references is similar to single-target references. The scope provider still provides a scope for each cross-reference, but the linker now can link multiple targets from the scope to the multi-reference.
+
+All you need to do to change a single-target reference to a multi-target reference is to write:
+
+```langium
+... person=[+Person:ID] ...
+```
+
+...instead of `person=[Person:ID]` in your grammar.
+
+The resolution mechanism stays the same. But be aware of the AST structure change: every `...ast.person.ref` becomes an array of references: `...ast.person.items` where each `item` is a `Reference`-like object (it has a `ref` field again).
+
+### When to use multi-target references?
+
+A typical use case for multi-target references are namespaces or partial classes. The core idea is that you want to declare multiple symbols under the same scope. Typically, these declarations are split into different files. Think of C++ `std` namespace:
+
+```cpp
+//vector.hpp
+namespace std {
+    class vector { ... };
+}
+
+//map.hpp
+namespace std {
+    class map { ... };
+}
+
+//main.cpp
+#include <vector>
+#include <map>
+std::vector<int> v;
+std::map<int, int> m;
+...
+```
+
+As you can see, the `std` namespace is used to group related classes together, allowing for better organization and avoiding naming conflicts. In this case, both `vector` and `map` are part of the `std` namespace, and they can be used in `main.cpp` without any issues.
+The multi-target reference would be used inside of the variable declarations of `v` and `m` to point to the same `std` namespace declarations.
