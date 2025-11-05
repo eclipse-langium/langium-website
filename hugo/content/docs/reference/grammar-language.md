@@ -174,7 +174,35 @@ Hello Sara !
 ```
 will result in an error message since the cross reference resolution will fail because a `Person` object with the name 'Sara' has not been defined, even though 'Sara' is a valid `ID`.
 
+##### Multi-Target Cross-References
+
+Some language concepts are able to be defined multiple times, for example namespaces or partial classes - symbols that are the same, but are normally distributed over multiple files or locations in the same file. In such cases, it is useful to be able to reference all definitions of such a symbol instead of just one.
+
+Langium supports multi-target cross-references by using the `[+Type:ID]` syntax:
+
+```langium
+entry Model:
+    (persons+=Person | greetings+=Greeting)*;
+Person:
+    'person' name=ID;
+Greeting:
+    'Hello' person=[+Person:ID] '!';
+```
+
+Given the following file content you will get two `Person` objects created, both named "Bob", and a `Greeting` object that references both of them:
+
+```plain
+person Bob
+person Bob
+Hello Bob !
+```
+
+Programmatically, the `person` property of the `Greeting` object will be an array of references to both `Person` objects `greeting.person.items[0].ref` and `greeting.person.items[1].ref`.
+
+Resolution-wise, single-target and multi-target cross-references behave the same: if no matching target is found, a diagnostic error is reported. The resolution itself uses the `ScopeProvider` and the `ScopeComputation` services, which can be customized as needed.
+
 #### Unassigned Rule Calls
+
 Parser rules do not necessarily need to create an object, they can also refer to other parser rules which in turn will be responsible for returning the object.
 For example, in the [Arithmetics example](https://github.com/eclipse-langium/langium/blob/main/examples/arithmetics/src/language-server/arithmetics.langium):
 ```langium
