@@ -45,5 +45,5 @@ In order to embed precedence and associativity rules into the parsing process, w
 
 Independent of the used parser generator or language framework, this technique can be often implemented using grammar rules. In Langium, you have two options to implement precedence climbing:
 
-* using [non-terminal rules](/docs/recipes/infix-operators/manual-implementation)
-* using the [infix syntax](/docs/recipes/infix-operators/syntactical-implementation)
+* using [non-terminal rules](/docs/reference/grammar-language/infix-operators/manual-implementation)
+* using the [infix syntax](/docs/reference/grammar-language/infix-operators/syntactical-implementation)
