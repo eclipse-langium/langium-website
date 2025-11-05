@@ -398,6 +398,21 @@ Element<isRoot>:
 
 The parser will always exclude alternatives whose guard conditions evaluate to `false`. All other alternatives remain possible options for the parser to choose from.
 
+### Infix operators
+
+[Infix operators](/docs/reference/grammar-language/infix-operators) can be defined using the `infix` keyword. This new syntax allows to define operators with different precedence levels and associativity in a more readable way. For more information on infix operators, please refer to the [dedicated documentation page](/docs/reference/grammar-language/infix-operators/syntactical-implementation). Be aware that the `infix` notation is syntactic sugar. You can do it also the [manual way using parser rules](/docs/reference/grammar-language/infix-operators/manual-implementation).
+
+```langium
+Expression: BinaryExpr;
+
+infix BinaryExpr on PrimaryExpression:
+    right assoc '^'
+    > '*' | '/'
+    > '+' | '-'
+    ;
+
+PrimaryExpression: '(' expr=Expression ')' | value=Number;
+```
 
 ### More Examples
 
