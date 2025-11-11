@@ -11,7 +11,7 @@ Depending on your domain and on your requirements there are different ways to ge
 
 The simplest way is to generate text into a string. Let's print out every greeting from the `hello-world` example.
 
-```typescript
+```ts
 import type { Model } from '../language/generated/ast.js';
 
 export function generateJavaScript(model: Model): string {
@@ -27,7 +27,7 @@ ${model.greetings
 
 You can test the generator by comparing the generated text with the expected text. Here is an example.
 
-```typescript
+```ts
 import { EmptyFileSystem } from "langium";
 import { parseHelper } from "langium/test";
 import { createHelloWorldServices } from "./your-project/hello-world-module.js";

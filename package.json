@@ -4,12 +4,14 @@
   "author": "TypeFox",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "scripts": {
     "watch": "npm run build --workspace core && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch --workspace hugo\" \"npm run watch --workspace tailwind\"",
     "watch:gitpod": "npm run build --workspace core && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
-    "build": "npm run clean && npm run build --workspace core --workspace=tailwind --workspace=hugo",
+    "build": "npm run clean && npm run build --workspace core --workspace=tailwind --workspace=hugo && npm run shikify",
     "clean": "shx rm -rf public && npm run clean --workspace core --workspace=tailwind",
-    "check:links": "ts-node scripts/check-links.ts"
+    "check:links": "tsx scripts/check-links.ts",
+    "shikify": "tsx scripts/shikify.ts"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
@@ -18,8 +20,10 @@
     "cross-env": "~7.0.3",
     "front-matter": "^4.0.2",
     "glob": "^10.4.1",
+    "node-html-parser": "^6.1.13",
+    "shiki": "^1.14.1",
     "shx": "~0.3.4",
-    "ts-node": "^10.9.2"
+    "tsx": "^4.17.0"
   },
   "workspaces": [
     "core",

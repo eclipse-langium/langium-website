@@ -85,7 +85,7 @@ If you've been following along from the hello world example produced by the yeom
 
 If you have errors with regards to any imports of `HelloWorld...`, this is likely related to your `grammar NAME` in your langium file being something different than the original `HelloWorld`. The name of these imports will change based on your grammar file's name after `npm run langium:generate`, so in each case you should be able to change each import to `MyLanguage...` to resolve the issue.
 
-You may also have build errors related to the generator logic, especially if it was written for the hello-world semantic model. For now, we can comment out the generator function's contents in **src/cli/generator.ts**, return an empty string, and comment/remove the imports to make Typescript happy. In the next tutorial, we'll come back to it and implement an initial version of a generator for our language.
+You may also have build errors related to the generator logic, especially if it was written for the hello-world semantic model. For now, we can comment out the generator function's contents in **src/cli/generator.ts**, return an empty string, and comment/remove the imports to make TypeScript happy. In the next tutorial, we'll come back to it and implement an initial version of a generator for our language.
 
 If you have any other errors while building, double check that the exported & imported names match up. More often than note there's a small discrepancy here, especially when you use a different language name than the default.
 
