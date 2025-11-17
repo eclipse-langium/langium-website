@@ -29,7 +29,7 @@ Hello Langium!
 
 With Langium's built-in profilers, you can measure:
 
-* the **parsing** process broken down by each grammar rule. Here, will see how much time was spent in each rule and how many times each rule was invoked
+* the **parsing** process broken down by each grammar rule. Here, will see how much time was spent in each rule and how many times each rule was invoked.
 
   ```plain
   Task parsing.hello-world executed in 1.69ms and ended at 2025-11-04T16:38:53.225Z
@@ -55,7 +55,7 @@ With Langium's built-in profilers, you can measure:
   └─────────┴───────────────────────────────┴───────┴────────┴───────────┘
   ```
 
-* the **validation** process broken down by each grammar rule. TODO what exactly is measured here?
+* the **validation** process broken down by each grammar rule. Similar to parsing, we will see how much time was spent validating each rule and how many times each rule was validated.
 
   ```plain
   Task validating.hello-world executed in 0.19ms and ended at 2025-11-04T16:38:53.229Z
