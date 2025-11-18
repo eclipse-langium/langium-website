@@ -300,6 +300,7 @@ SimpleExpression:
     '(' Addition ')' | value=INT;
 ```
 Essentially this means that when a `+` keyword is found, a new object of type `Addition` is created and the current object is assigned to the `left` property of the new object. The `Addition` then becomes the new current object. In imperative pseudo code it may look like this:
+
 ```js
 function Addition() {
     let current = SimpleExpression()
@@ -311,7 +312,10 @@ function Addition() {
     }
 }
 ```
-Please refer to [this blog post](https://www.typefox.io/blog/parsing-expressions-with-xtext) for further details.
+
+If you want to learn more about parsing binary operators in Langium, please refer to this [dedicated documentation page](/docs/reference/grammar-language/infix-operators).
+
+You can also refer to [this blog post](https://www.typefox.io/blog/parsing-expressions-with-xtext) for further details how this was done in Xtext.
 
 ### Data Type Rules
 Data type rules are similar to terminal rules as they match a sequence of characters. However, they are parser rules and are therefore context-dependent. This allows for more flexible parsing, as they can be interspersed with hidden terminals, such as whitespaces or comments. Contrary to terminal rules, they cannot use *regular expressions* to match a stream of characters, so they have to be composed of keywords, terminal rules or other data type rules.
