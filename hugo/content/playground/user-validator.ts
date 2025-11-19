@@ -1,4 +1,4 @@
-import { AstNode, AstNodeDescription, AstUtils, DefaultDocumentValidator, DefaultLinker, DiagnosticInfo, DocumentState, DocumentValidator, LangiumDocument, LinkingError, LinkingErrorData, ReferenceInfo, ValidationOptions } from "langium";
+import { AstNode, DefaultDocumentValidator, DiagnosticInfo, DocumentValidator, LangiumDocument, LinkingErrorData, ValidationOptions } from "langium";
 import { LangiumServices } from "langium/lsp";
 import { Diagnostic } from "vscode-languageserver";
 

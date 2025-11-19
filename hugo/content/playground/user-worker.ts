@@ -6,9 +6,9 @@
 
 import { NotificationType } from 'vscode-languageserver/browser.js';
 import { DocumentChange, createServerConnection } from './worker-utils.js';
-import { createDefaultModule, LangiumServices, startLanguageServer } from 'langium/lsp';
-import { DefaultServiceRegistry, DocumentState, inject } from 'langium';
-import { createServicesForGrammar, LangiumGrammarGeneratedModule } from 'langium/grammar';
+import { LangiumServices, startLanguageServer } from 'langium/lsp';
+import { DocumentState } from 'langium';
+import { createServicesForGrammar } from 'langium/grammar';
 import { PlaygroundValidator } from './user-validator.js';
 
 // listen for messages to trigger starting the LS with a given grammar
