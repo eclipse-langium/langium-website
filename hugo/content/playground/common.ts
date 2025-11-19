@@ -14,7 +14,7 @@ import { render } from './Tree.js';
 import { overlay, throttle } from "./utils.js";
 import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
 import { DocumentChangeResponse } from "langium-ast-helper";
-import { DefaultAstNodeLocator } from "langium";
+import { DefaultAstNodeLocator, LanguageMetaData } from "langium";
 import { createServicesForGrammar } from "langium/grammar";
 import { generateTextMate } from "langium-cli/textmate";
 export { share, overlay } from './utils.js';
@@ -209,8 +209,16 @@ async function getFreshDSLWrapper(
   code: string,
   grammarText: string
 ): Promise<MonacoEditorLanguageClientWrapper | undefined> {
+
+  const languageMetaData: LanguageMetaData =  {
+    caseInsensitive: false,
+    fileExtensions: [`.${languageId}`],
+    languageId: languageId,
+    mode: 'development'
+  };
+  
   // construct and set a new monarch syntax onto the editor
-  const { Grammar } = await createServicesForGrammar({ grammar: grammarText });
+  const { Grammar } = await createServicesForGrammar({ grammar: grammarText, languageMetaData });
   const worker = await getLSWorkerForGrammar(grammarText);
   const wrapper = new MonacoEditorLanguageClientWrapper();
   const textmateGrammar = JSON.parse(generateTextMate(Grammar, { id: languageId, grammar: 'UserGrammar' }));

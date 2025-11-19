@@ -11,14 +11,15 @@ export class PlaygroundValidator extends DefaultDocumentValidator {
             const linkingError = reference.error;
             if (linkingError) {
                 const info: DiagnosticInfo<AstNode, string> = {
-                    node: linkingError.container,
-                    property: linkingError.property,
-                    index: linkingError.index,
+                    node: linkingError.info.container,
+                    range: reference.$refNode?.range,
+                    property: linkingError.info.property,
+                    index: linkingError.info.index,
                     data: {
                         code: DocumentValidator.LinkingError,
-                        containerType: linkingError.container.$type,
-                        property: linkingError.property,
-                        refText: linkingError.reference.$refText
+                        containerType: linkingError.info.container.$type,
+                        property: linkingError.info.property,
+                        refText: linkingError.info.reference.$refText
                     } satisfies LinkingErrorData
                 };
                 diagnostics.push(this.toDiagnostic('warning', `${linkingError.message}\nIn case you want to adjust the linking rules, please consult the learning section in the Langium documentation.`, info));

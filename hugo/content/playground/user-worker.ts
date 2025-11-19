@@ -6,9 +6,9 @@
 
 import { NotificationType } from 'vscode-languageserver/browser.js';
 import { DocumentChange, createServerConnection } from './worker-utils.js';
-import { LangiumServices, startLanguageServer } from 'langium/lsp';
-import { DocumentState } from 'langium';
-import { createServicesForGrammar } from 'langium/grammar';
+import { createDefaultModule, LangiumServices, startLanguageServer } from 'langium/lsp';
+import { DefaultServiceRegistry, DocumentState, inject } from 'langium';
+import { createServicesForGrammar, LangiumGrammarGeneratedModule } from 'langium/grammar';
 import { PlaygroundValidator } from './user-validator.js';
 
 // listen for messages to trigger starting the LS with a given grammar
@@ -34,8 +34,7 @@ async function startWithGrammar(grammarText: string): Promise<void> {
     // create a fresh connection for the LS
     const connection = createServerConnection();
 
-    // create shared services & serializer for the given grammar grammar
-    const { shared, serializer } = await createServicesForGrammar({
+    const module = {
         grammar: grammarText,
         module: {
             validation: {
@@ -43,12 +42,14 @@ async function startWithGrammar(grammarText: string): Promise<void> {
             }
         },
         sharedModule: {
-    
             lsp: {
                 Connection: () => connection,
             }
         },
-    });
+    };
+
+    // create shared services & serializer for the given grammar grammar
+    const { shared, serializer } = await createServicesForGrammar(module);
 
     // listen for validated documents, and send the AST back to the language client
     shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents => {
@@ -61,7 +62,7 @@ async function startWithGrammar(grammarText: string): Promise<void> {
             });
         }
     });
-
+    
     // start the LS
     startLanguageServer(shared);
 
