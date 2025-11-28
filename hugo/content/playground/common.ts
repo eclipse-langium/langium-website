@@ -14,7 +14,7 @@ import { render } from './Tree.js';
 import { overlay, throttle } from "./utils.js";
 import { addMonacoStyles, createUserConfig, MonacoEditorLanguageClientWrapper } from "langium-website-core/bundle";
 import { DocumentChangeResponse } from "langium-ast-helper";
-import { DefaultAstNodeLocator, LanguageMetaData } from "langium";
+import { DefaultAstNodeLocator, LanguageMetaData, URI } from "langium";
 import { createServicesForGrammar } from "langium/grammar";
 import { generateTextMate } from "langium-cli/textmate";
 export { share, overlay } from './utils.js';
@@ -155,13 +155,13 @@ export async function setupPlayground(
           // disposed successfully, setup & clear overlay
           await setupDSLWrapper();
           overlay(false, false);
-  
+
         }).catch(async (e: any) => {
           // failed to dispose, report & discard this error
           // can happen when a previous editor was not started correctly
           console.error('DSL editor disposal error: ' + e);
           overlay(true, true);
-  
+
         });
       }
     });
@@ -172,7 +172,7 @@ export async function setupPlayground(
    */
   async function setupDSLWrapper(): Promise<void> {
     // get a fresh DSL wrapper
-    dslWrapper = await getFreshDSLWrapper(rightEditor, nextId(), currentDSLContent, currentGrammarContent);
+    dslWrapper = await getFreshDSLWrapper(rightEditor, "txt", currentDSLContent, currentGrammarContent);
 
     // get a fresh client
     dslClient = dslWrapper?.getLanguageClient();
@@ -209,16 +209,10 @@ async function getFreshDSLWrapper(
   code: string,
   grammarText: string
 ): Promise<MonacoEditorLanguageClientWrapper | undefined> {
+  const languageMetaData = getLanguageMetaData(languageId);
 
-  const languageMetaData: LanguageMetaData =  {
-    caseInsensitive: false,
-    fileExtensions: [`.${languageId}`],
-    languageId: languageId,
-    mode: 'development'
-  };
-  
   // construct and set a new monarch syntax onto the editor
-  const { Grammar } = await createServicesForGrammar({ grammar: grammarText, languageMetaData });
+  const { Grammar, shared } = await createServicesForGrammar({ grammar: grammarText, languageMetaData });
   const worker = await getLSWorkerForGrammar(grammarText);
   const wrapper = new MonacoEditorLanguageClientWrapper();
   const textmateGrammar = JSON.parse(generateTextMate(Grammar, { id: languageId, grammar: 'UserGrammar' }));
@@ -239,8 +233,8 @@ async function getFreshDSLWrapper(
     // particularly due to a stuck LC, which can cause this to fail part-ways through
     try {
       await wrapper.dispose();
-    } catch (e) {}
-    return undefined as MonacoEditorLanguageClientWrapper|undefined;
+    } catch (e) { }
+    return undefined as MonacoEditorLanguageClientWrapper | undefined;
   });
 }
 
@@ -282,7 +276,7 @@ function registerForDocumentChanges(dslClient: any | undefined) {
 
     // retrieve existing code from the model
     currentDSLContent = dslWrapper?.getModel()?.getValue() as string;
-    
+
     // delay changes by 200ms, to avoid getting too many intermediate states
     throttle(2, languageUpdateDelay, () => {
       // render the AST in the far-right window
@@ -322,4 +316,13 @@ async function getLSWorkerForGrammar(grammar: string): Promise<Worker> {
     };
 
   });
+}
+
+export function getLanguageMetaData(languageId: string): LanguageMetaData {
+  return {
+    caseInsensitive: false,
+    fileExtensions: [`.${languageId}`],
+    languageId: languageId,
+    mode: 'development'
+  };
 }
