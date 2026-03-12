@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { flattenNav, docsNav } from '@/lib/docs-nav';
 import { loadDocPage } from '@/lib/docs';
 import { DocsContent } from './DocsContent';
@@ -10,13 +10,16 @@ interface Props {
 
 export async function generateStaticParams() {
   const hrefs = flattenNav(docsNav);
-  return hrefs.map((href) => {
+  return [
+    { slug: undefined },
+    ...hrefs.map((href) => {
     // Strip /docs/ prefix and trailing slash, split into segments
     const stripped = href.replace(/^\/docs\/?/, '').replace(/\/$/, '');
     return {
       slug: stripped ? stripped.split('/') : undefined,
     };
-  });
+    }),
+  ];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -34,6 +37,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DocPage({ params }: Props) {
   const { slug } = await params;
+
+  if (!slug || slug.length === 0) {
+    redirect('/docs/introduction/');
+  }
+
   const urlPath = `/docs/${slug?.join('/') ?? ''}`;
   const page = loadDocPage(urlPath);
 

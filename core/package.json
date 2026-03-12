@@ -12,7 +12,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
+    }
   },
   "typesVersions": {
     "*": {
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "monaco-editor": "~0.55.1",
-    "monaco-editor-workers": "~0.55.1",
+    "monaco-editor-workers": "~0.44.0",
     "monaco-languageclient": "~10.7.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

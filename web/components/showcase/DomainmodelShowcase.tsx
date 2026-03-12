@@ -4,12 +4,13 @@ import React, { useEffect } from 'react';
 import { createUserConfig } from 'langium-website-core';
 import { DomainModelAstNode, example, getMainTreeNode, syntaxHighlighting } from './domainmodel-tools';
 import { deserializeAST, type Diagnostic, type DocumentChangeResponse } from 'langium-ast-helper';
-import type { UserConfig } from 'monaco-languageclient';
 import D3Tree from './d3tree';
 
+type UserConfig = Record<string, unknown>;
+
 const MonacoEditorReactComp = React.lazy(async () => {
-  const { MonacoEditorReactComp } = await import('monaco-languageclient/react');
-  return { default: MonacoEditorReactComp };
+  const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
+  return { default: MonacoEditorReactComp as any };
 });
 
 interface AppState {
@@ -18,7 +19,7 @@ interface AppState {
 }
 
 class DomainmodelApp extends React.Component<{ langiumConfig: UserConfig }, AppState> {
-  monacoEditor = React.createRef<InstanceType<typeof MonacoEditorReactComp>>();
+  monacoEditor = React.createRef<any>();
 
   constructor(props: { langiumConfig: UserConfig }) {
     super(props);

@@ -4,11 +4,12 @@ import React, { useEffect } from 'react';
 import { createUserConfig } from 'langium-website-core';
 import { Evaluation, examples, syntaxHighlighting } from './arithmetics-tools';
 import { type Diagnostic, type DocumentChangeResponse } from 'langium-ast-helper';
-import type { UserConfig } from 'monaco-languageclient';
+
+type UserConfig = Record<string, unknown>;
 
 const MonacoEditorReactComp = React.lazy(async () => {
-  const { MonacoEditorReactComp } = await import('monaco-languageclient/react');
-  return { default: MonacoEditorReactComp };
+  const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
+  return { default: MonacoEditorReactComp as any };
 });
 
 interface PreviewProps {
@@ -63,7 +64,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 interface AppState { exampleIndex: number; }
 
 class ArithmeticsApp extends React.Component<{ langiumConfig: UserConfig }, AppState> {
-  monacoEditor = React.createRef<InstanceType<typeof MonacoEditorReactComp>>();
+  monacoEditor = React.createRef<any>();
   preview = React.createRef<Preview>();
 
   constructor(props: { langiumConfig: UserConfig }) {

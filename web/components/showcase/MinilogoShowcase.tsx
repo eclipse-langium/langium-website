@@ -5,12 +5,13 @@ import { createUserConfig } from 'langium-website-core';
 import { ColorArgs, Command, MoveArgs, examples, syntaxHighlighting } from './minilogo-tools';
 import { type Diagnostic, type DocumentChangeResponse } from 'langium-ast-helper';
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
-import type { UserConfig } from 'monaco-languageclient';
 import Image from 'next/image';
 
+type UserConfig = Record<string, unknown>;
+
 const MonacoEditorReactComp = React.lazy(async () => {
-  const { MonacoEditorReactComp } = await import('monaco-languageclient/react');
-  return { default: MonacoEditorReactComp };
+  const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
+  return { default: MonacoEditorReactComp as any };
 });
 
 let shouldAnimate = true;
@@ -18,7 +19,7 @@ let shouldAnimate = true;
 interface DrawCanvasProps { commands: Command[]; }
 
 class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
-  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  canvasRef: React.RefObject<HTMLCanvasElement>;
   posX = 0;
   posY = 0;
   scale = 1.8;
@@ -28,7 +29,7 @@ class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
   constructor(props: DrawCanvasProps) {
     super(props);
     this.state = { commands: props.commands };
-    this.canvasRef = createRef();
+    this.canvasRef = createRef<HTMLCanvasElement>();
   }
 
   componentDidMount() { this.draw(!shouldAnimate); }
@@ -145,7 +146,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 interface AppState { currentExample: number; }
 
 class MinilogoApp extends React.Component<{ langiumConfig: UserConfig }, AppState> {
-  monacoEditor = React.createRef<InstanceType<typeof MonacoEditorReactComp>>();
+  monacoEditor = React.createRef<any>();
   preview = React.createRef<Preview>();
   copyHint = React.createRef<HTMLDivElement>();
   shareButton = React.createRef<HTMLImageElement>();

@@ -3,19 +3,20 @@
 import React, { useEffect } from 'react';
 import { createUserConfig } from 'langium-website-core';
 import { defaultText } from './sql-constants';
-import type { UserConfig } from 'monaco-languageclient';
 import type { DocumentChangeResponse } from 'langium-ast-helper';
+
+type UserConfig = Record<string, unknown>;
+
+const MonacoEditorReactComp = React.lazy(async () => {
+  const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
+  return { default: MonacoEditorReactComp as any };
+});
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const sqlGrammar = require('./sql.tmLanguage.json');
 
-const MonacoEditorReactComp = React.lazy(async () => {
-  const { MonacoEditorReactComp } = await import('monaco-languageclient/react');
-  return { default: MonacoEditorReactComp };
-});
-
 class SqlApp extends React.Component<{ langiumConfig: UserConfig }> {
-  monacoEditor = React.createRef<InstanceType<typeof MonacoEditorReactComp>>();
+  monacoEditor = React.createRef<any>();
 
   constructor(props: { langiumConfig: UserConfig }) {
     super(props);

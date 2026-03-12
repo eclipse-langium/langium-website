@@ -32,12 +32,12 @@ export default function HomePage() {
       import('gsap'),
       import('gsap/ScrollTrigger'),
       import('gsap/ScrollToPlugin'),
-      import('gsap/Draggable'),
-    ]).then(([gsapMod, stMod, stoMod, dragMod]) => {
+      import('gsap/all'),
+    ]).then(([gsapMod, stMod, stoMod, allMod]) => {
       const gsap = gsapMod.gsap;
       const { ScrollTrigger } = stMod;
       const { ScrollToPlugin } = stoMod;
-      const { Draggable } = dragMod;
+      const { Draggable } = allMod;
       gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, Draggable);
 
       if (isDesktop) {

@@ -10,12 +10,17 @@
     "clean": "npm run clean --workspace core && shx rm -rf web/.next web/out"
   },
   "devDependencies": {
+    "monaco-languageclient": "~10.7.0",
     "shx": "~0.3.4"
   },
   "workspaces": [
     "core",
     "web"
   ],
+  "overrides": {
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3"
+  },
   "volta": {
     "node": "20.18.1",
     "npm": "10.9.0"

@@ -4,12 +4,12 @@ import React, { useEffect } from 'react';
 import { createUserConfig } from 'langium-website-core';
 import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools } from './statemachine-tools';
 import { deserializeAST, type Diagnostic, type DocumentChangeResponse } from 'langium-ast-helper';
-import type { UserConfig } from 'monaco-languageclient';
 
-// Dynamically import Monaco to avoid SSR issues
+type UserConfig = Record<string, unknown>;
+
 const MonacoEditorReactComp = React.lazy(async () => {
-  const { MonacoEditorReactComp } = await import('monaco-languageclient/react');
-  return { default: MonacoEditorReactComp };
+  const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
+  return { default: MonacoEditorReactComp as any };
 });
 
 // Import statemachine textmate grammar
@@ -75,7 +75,7 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 }
 
 class StateMachineComponent extends React.Component<{ langiumConfig: UserConfig }> {
-  monacoEditor = React.createRef<InstanceType<typeof MonacoEditorReactComp>>();
+  monacoEditor = React.createRef<any>();
   preview = React.createRef<Preview>();
 
   constructor(props: { langiumConfig: UserConfig }) {

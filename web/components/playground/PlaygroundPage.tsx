@@ -14,8 +14,8 @@ import type { AstNode } from 'langium';
 import Image from 'next/image';
 
 const MonacoEditorReactComp = React.lazy(async () => {
-  const { MonacoEditorReactComp } = await import('monaco-languageclient/react');
-  return { default: MonacoEditorReactComp };
+  const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
+  return { default: MonacoEditorReactComp as any };
 });
 
 const languageUpdateDelay = 150;
