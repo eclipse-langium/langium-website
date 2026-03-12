@@ -1,0 +1,286 @@
+@import "tailwindcss";
+
+/* ===== Custom Theme ===== */
+@theme {
+  --color-emerald-langium: #26888C;
+  --color-emerald-langium-a-bit-darker: #207578;
+  --color-emerald-langium-darker: #0A4340;
+  --color-emerald-langium-darkest: #042424;
+  --color-accent-blue: #1FCDEB;
+  --color-accent-red: #8c2626;
+  --color-accent-green: #B6F059;
+  --color-accent-violet: #D568E7;
+  --color-accent-light-blue: #BCDBEF;
+
+  --font-mono: 'Menlo', ui-monospace, SFMono-Regular, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-body: 'Roboto Condensed', sans-serif;
+
+  --spacing-192: 48rem;
+  --spacing-120: 30rem;
+  --spacing-teaser: calc(100vh - 96px);
+  --spacing-underline: 0.1px;
+  --spacing-3\/2: 150%;
+}
+
+/* ===== Tailwind Component Classes ===== */
+@layer components {
+  .external-link {
+    @apply border-b border-dashed hover:border-solid pb-[0.1px];
+  }
+
+  .nav-link-desktop {
+    @apply text-base font-medium dark:hover:text-white hover:text-gray-900;
+  }
+
+  .nav-link-mobile {
+    @apply h-10 text-base font-medium dark:hover:text-white hover:text-gray-700;
+  }
+
+  .about-item-container {
+    @apply relative sm:h-120 sm:overflow-hidden flex justify-center items-center;
+  }
+
+  .about-item {
+    @apply sm:absolute sm:left-0 flow-root px-6 sm:pb-8;
+  }
+
+  .about-item-icon-container {
+    @apply sm:h-60 sm:my-0 h-40 flex items-center justify-center;
+  }
+
+  .about-item-title {
+    @apply sm:h-20 text-lg text-center font-medium text-gray-900 tracking-tight dark:text-gray-100;
+  }
+
+  .item-text {
+    @apply bg-gray-700 sm:bg-transparent absolute sm:relative top-0 left-0 w-full min-h-full text-base text-gray-100 dark:text-gray-100 font-body tracking-wide flex justify-center items-center sm:block p-6 sm:py-0 sm:px-0;
+  }
+
+  .footer-item {
+    @apply h-full w-16 mx-2 relative overflow-hidden;
+  }
+
+  .feature-item-container {
+    @apply h-full min-w-[420px] border-transparent border-4 relative overflow-hidden flex justify-center items-center;
+  }
+
+  .feature-item-content {
+    @apply h-full w-full box-border rounded-xl border-2 border-emerald-langium dark:border-emerald-langium sm:px-6 px-2 pb-6 mx-2 sm:mx-0 bg-emerald-langium dark:bg-gray-900 shadow-lg;
+  }
+}
+
+/* ===== Theme CSS Variables (Light/Dark) ===== */
+:root {
+  --code-max-height: 60rem;
+
+  --header-background: #4ec58a;
+  --header-font-color: #ffffff;
+  --body-background: #ffffff;
+  --body-font-color: #343a40;
+  --button-background: #62cb97;
+  --button-border-color: #4ec58a;
+  --link-color: #518169;
+  --link-color-visited: #c54e8a;
+  --code-background: #f5f6f8;
+  --code-accent-color: #e3e7eb;
+  --code-accent-color-lite: #eff1f3;
+  --code-copy-font-color: #6b7784;
+  --code-copy-border-color: #adb4bc;
+  --code-copy-success-color: #00c853;
+  --accent-color: #e9ecef;
+  --accent-color-lite: #f8f9fa;
+  --control-icons: #b2bac1;
+  --footer-background: #2f333e;
+  --footer-font-color: #ffffff;
+  --footer-link-color: #ffcc5c;
+  --footer-link-color-visited: #ffcc5c;
+}
+
+.dark {
+  --header-background: rgb(23, 23, 23);
+  --header-font-color: rgba(38, 136, 140);
+  --body-background: rgb(23, 23, 23);
+  --body-font-color: rgb(245, 245, 245);
+  --button-background: #62cb97;
+  --button-border-color: #4ec58a;
+  --link-color: rgb(182, 240, 89);
+  --link-color-visited: rgb(31, 205, 235);
+  --code-background: #2f353a;
+  --code-accent-color: #262b2f;
+  --code-accent-color-lite: #2b3035;
+  --code-copy-font-color: #adb4bc;
+  --code-copy-border-color: #808c98;
+  --code-copy-success-color: #00c853;
+  --accent-color: #2b3035;
+  --accent-color-lite: #2f353a;
+  --control-icons: #b2bac1;
+  --footer-background: #2f333e;
+  --footer-font-color: #ffffff;
+  --footer-link-color: rgb(213, 104, 231);
+  --footer-link-color-visited: rgb(213, 104, 231);
+}
+
+/* ===== Documentation Article Typography ===== */
+.docs-content h1,
+.docs-content h2,
+.docs-content h3,
+.docs-content h4,
+.docs-content h5,
+.docs-content h6 {
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.docs-content h2 {
+  margin-top: 2em;
+  font-size: 1.5rem;
+}
+
+.docs-content h3 {
+  margin-top: 1.5em;
+  font-size: 1.25rem;
+}
+
+.docs-content h4 {
+  margin-top: 1.5em;
+  font-size: 1.125rem;
+}
+
+.docs-content p {
+  margin-block-start: 0;
+  margin-bottom: 1em;
+  line-height: 1.7;
+}
+
+.docs-content pre code {
+  overflow-x: auto;
+}
+
+.docs-content pre {
+  margin-bottom: 1em;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  background: var(--code-background);
+  max-height: var(--code-max-height);
+  overflow: auto;
+}
+
+.docs-content code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+.docs-content a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.docs-content a:visited {
+  color: var(--link-color-visited);
+}
+
+.docs-content ul,
+.docs-content ol {
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+.docs-content ul {
+  list-style-type: disc;
+}
+
+.docs-content ol {
+  list-style-type: decimal;
+}
+
+.docs-content li {
+  margin-bottom: 0.25em;
+  line-height: 1.7;
+}
+
+.docs-content table {
+  width: 100%;
+  margin-bottom: 1em;
+  border-collapse: collapse;
+}
+
+.docs-content th,
+.docs-content td {
+  border: 1px solid var(--accent-color);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.docs-content th {
+  background: var(--accent-color-lite);
+  font-weight: 600;
+}
+
+.docs-content blockquote {
+  border-left: 4px solid var(--accent-color);
+  padding-left: 1em;
+  margin-bottom: 1em;
+  color: var(--body-font-color);
+  opacity: 0.85;
+}
+
+.docs-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ===== Mermaid diagram styles ===== */
+.dark .edgePaths path,
+.dark .edgePath path {
+  stroke: var(--body-font-color) !important;
+}
+
+.dark .marker {
+  fill: var(--body-font-color) !important;
+}
+
+.dark rect.actor,
+.dark .node rect,
+.dark .node polygon {
+  fill: var(--header-font-color) !important;
+  stroke: var(--body-font-color) !important;
+}
+
+/* ===== Tooltip ===== */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: var(--footer-background);
+  color: var(--body-font-color);
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 130%;
+  left: 50%;
+  margin-left: -70px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--footer-background) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}

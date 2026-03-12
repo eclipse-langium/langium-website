@@ -5,10 +5,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "watch": "npm run build --workspace core && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch --workspace hugo\" \"npm run watch --workspace tailwind\"",
-    "watch:gitpod": "npm run build --workspace core && concurrently -c gray,blue -k -n hugo,tailwind \"npm run watch:gitpod --workspace hugo\" \"npm run watch --workspace tailwind\"",
-    "build": "npm run clean && npm run build --workspace core --workspace=tailwind --workspace=hugo",
-    "clean": "shx rm -rf public && npm run clean --workspace core --workspace=tailwind",
+    "dev": "npm run build --workspace core && npm run dev --workspace web",
+    "build": "npm run clean && npm run build --workspace core && npm run build --workspace web",
+    "clean": "shx rm -rf public && npm run clean --workspace core && shx rm -rf web/.next web/out",
     "check:links": "ts-node scripts/check-links.ts"
   },
   "devDependencies": {
@@ -23,11 +22,10 @@
   },
   "workspaces": [
     "core",
-    "hugo",
-    "tailwind"
+    "web"
   ],
   "volta": {
-    "node": "18.18.1",
-    "npm": "9.9.0"
+    "node": "20.18.1",
+    "npm": "10.9.0"
   }
 }
