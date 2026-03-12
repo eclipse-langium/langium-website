@@ -7,18 +7,10 @@
   "scripts": {
     "dev": "npm run build --workspace core && npm run dev --workspace web",
     "build": "npm run clean && npm run build --workspace core && npm run build --workspace web",
-    "clean": "shx rm -rf public && npm run clean --workspace core && shx rm -rf web/.next web/out",
-    "check:links": "ts-node scripts/check-links.ts"
+    "clean": "npm run clean --workspace core && shx rm -rf web/.next web/out"
   },
   "devDependencies": {
-    "@types/chalk": "^2.2.0",
-    "chalk": "^4.0.0",
-    "concurrently": "~8.2.1",
-    "cross-env": "~7.0.3",
-    "front-matter": "^4.0.2",
-    "glob": "^10.4.1",
-    "shx": "~0.3.4",
-    "ts-node": "^10.9.2"
+    "shx": "~0.3.4"
   },
   "workspaces": [
     "core",
