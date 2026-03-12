@@ -78,6 +78,20 @@ export default function HomePage() {
         document.querySelector('#scroll-down')?.addEventListener('click', () => {
           gsap.to(window, { duration: 1.5, ease: 'power3', scrollTo: { y: '#about', autoKill: true } });
         });
+
+        // Feature carousel navigation
+        const carousel = document.querySelector<HTMLElement>('#feature-carussel');
+        const carouselItems = carousel?.querySelectorAll<HTMLElement>('.feature-item-container');
+        const totalItems = carouselItems?.length ?? 0;
+        let carouselIndex = 0;
+        const updateCarousel = (newIndex: number) => {
+          if (!carousel || !carouselItems || totalItems === 0) return;
+          carouselIndex = Math.max(0, Math.min(newIndex, totalItems - 1));
+          const itemWidth = carouselItems[0].offsetWidth;
+          gsap.to(carousel, { x: -carouselIndex * itemWidth, duration: 0.5, ease: 'power2.inOut' });
+        };
+        document.querySelector('#features-left')?.addEventListener('click', () => updateCarousel(carouselIndex - 1));
+        document.querySelector('#features-right')?.addEventListener('click', () => updateCarousel(carouselIndex + 1));
       } else {
         document.querySelectorAll<HTMLElement>('.about-item, .compare-item').forEach((el) => {
           const text = el.querySelector<HTMLElement>('.item-text');

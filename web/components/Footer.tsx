@@ -21,7 +21,7 @@ export function Footer() {
       </div>
       <div className="basis-full h-0" />
       <div className="px-4 block text-left md:text-center">
-        © 2024 by{' '}
+        © {new Date().getFullYear()} by{' '}
         <a href="https://www.eclipse.org/org/" target="_blank" rel="noreferrer" className="hover:underline">
           Eclipse Foundation
         </a>

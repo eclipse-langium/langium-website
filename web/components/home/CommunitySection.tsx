@@ -12,7 +12,7 @@ export function CommunitySection() {
             rel="noreferrer"
             className="footer-item flex flex-col items-center"
           >
-            <img src="/assets/npm-logo.png" alt="npm" className="h-12 w-auto" />
+            <img src="/assets/npm-square-red-1.svg" alt="npm" className="h-12 w-auto" />
           </a>
           <a
             href="https://github.com/eclipse-langium/langium"

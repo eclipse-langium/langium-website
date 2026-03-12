@@ -1,8 +1,35 @@
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { resolve, join } from 'path';
 import matter from 'gray-matter';
 
 const CONTENT_DIR = resolve(process.cwd(), 'content/docs');
+
+// Cache of Hugo `url` frontmatter overrides → absolute file path
+let urlFrontmatterCache: Map<string, string> | null = null;
+
+function getUrlFrontmatterCache(): Map<string, string> {
+  if (urlFrontmatterCache) return urlFrontmatterCache;
+  urlFrontmatterCache = new Map();
+
+  function scanDir(dir: string) {
+    for (const entry of readdirSync(dir)) {
+      const full = join(dir, entry);
+      if (statSync(full).isDirectory()) {
+        scanDir(full);
+      } else if (entry.endsWith('.mdx') || entry.endsWith('.md')) {
+        const raw = readFileSync(full, 'utf-8');
+        const { data } = matter(raw);
+        if (data.url) {
+          const key = (data.url as string).replace(/\/$/, '');
+          urlFrontmatterCache!.set(key, full);
+        }
+      }
+    }
+  }
+
+  scanDir(CONTENT_DIR);
+  return urlFrontmatterCache;
+}
 
 /**
  * Maps a URL path like /docs/features/ to the MDX file path.
@@ -27,7 +54,10 @@ export function urlToFilePath(urlPath: string): string | null {
     }
   }
 
-  return null;
+  // Fallback: look up by Hugo `url` frontmatter override
+  const cache = getUrlFrontmatterCache();
+  const urlKey = `/docs/${normalized}`.replace(/\/$/, '');
+  return cache.get(urlKey) ?? null;
 }
 
 export interface DocFrontmatter {

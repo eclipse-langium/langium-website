@@ -23,7 +23,7 @@ const showcaseItems = [
   {
     slug: 'domainmodel',
     title: 'Domain Model',
-    img: '/assets/Langium_DomainModel.svg',
+    img: '/assets/Langium_Domainmodel.svg',
     description: 'A language to describe simple class-based domain models, visualized as a tree.',
   },
   {
@@ -49,8 +49,8 @@ const showcaseItems = [
 export default function ShowcasePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-      <h2 className="text-center text-white text-3xl mb-6">Showcase</h2>
-      <p className="text-center text-white mb-12 mx-12">
+      <h2 className="text-center text-gray-900 dark:text-gray-100 text-3xl mb-6">Showcase</h2>
+      <p className="text-center text-gray-700 dark:text-gray-300 mb-12 mx-12">
         Welcome to Langium&apos;s showcase! Here you can find examples of languages created using Langium,
         all running in the browser (no backend involved).
       </p>

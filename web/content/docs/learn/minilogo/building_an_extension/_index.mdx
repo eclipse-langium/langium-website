@@ -40,13 +40,13 @@ vsce package
 
 You should now see a VSIX extension file in the root of your project. The name of this file will correspond with the **name** and **version** properties listed in your **package.json**. For MiniLogo, this produced **minilogo-0.1.0.vsix**.
 
-{{< figure src="minilogo-vsix.jpg" height="225" >}}
+![MiniLogo VSIX extension file](minilogo-vsix.jpg)
 
 ## Installing
 
 For installing the extension, you can right click the extension file, and select "Install VSIX Extension" at the bottom of the list.
 
-{{< figure src="vsix-install.jpg" title="Indication that VSIX extension has been installed" height="400" >}}
+![Indication that VSIX extension has been installed](vsix-install.jpg)
 
 You should see a small indication at the bottom right of your screen that your VSIX extension has been successfully installed, like so:
 
@@ -54,7 +54,7 @@ You should see a small indication at the bottom right of your screen that your V
 
 You can verify this by going to your extensions tab and looking at the enabled extensions, where you should find the name of your language (again corresponding to the **name** property in your package.json).
 
-{{< figure src="installed-extension.jpg" height="400" >}}
+![Installed extension in VS Code](installed-extension.jpg)
 
 Assuming the extension is enabled and working correctly, you can open any file that ends in the extensions registered for your language, and you should immediately observe the syntax highlighting kicking in. Interaction with your language should show that syntax errors are recognized, and other LSP functionalities are working as intended (such as renaming of symbols).
 
@@ -75,11 +75,11 @@ You may notice that your extension may not have an icon to start with. This is a
 
 In our example, we're using a simple turtle icon from [onlinewebfonts](https://www.onlinewebfonts.com/icon/74548) as a placeholder.
 
-{{< figure src="icon.png" height="200" >}}
+![Extension icon](icon.png)
 
 When you regenerate your extension & reinstall it, you should get an icon that is the same as the one that you packaged it with.
 
-{{< figure src="minilogo-with-icon.png" height="300" >}}
+![MiniLogo extension with icon](minilogo-with-icon.png)
 
 ## Conclusion
 

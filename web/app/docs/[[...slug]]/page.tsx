@@ -1,8 +1,18 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
+import { evaluate } from '@mdx-js/mdx';
+import * as runtime from 'react/jsx-runtime';
+import remarkGfm from 'remark-gfm';
+import rehypeSlug from 'rehype-slug';
 import { flattenNav, docsNav } from '@/lib/docs-nav';
 import { loadDocPage } from '@/lib/docs';
-import { DocsContent } from './DocsContent';
+import { Notification } from '@/components/mdx/Notification';
+import { Hint } from '@/components/mdx/Hint';
+import { Tabs, Tab } from '@/components/mdx/Tabs';
+import { Expand } from '@/components/mdx/Expand';
+import { Columns } from '@/components/mdx/Columns';
+
+const mdxComponents = { Notification, Hint, Tabs, Tab, Expand, Columns };
 
 interface Props {
   params: Promise<{ slug?: string[] }>;
@@ -47,12 +57,18 @@ export default async function DocPage({ params }: Props) {
 
   if (!page) notFound();
 
+  const { default: Content } = await evaluate(page.content, {
+    ...(runtime as any),
+    remarkPlugins: [remarkGfm],
+    rehypePlugins: [rehypeSlug],
+  });
+
   return (
     <article className="docs-content prose-sm max-w-none">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">
         {page.frontmatter.title}
       </h1>
-      <DocsContent content={page.content} />
+      <Content components={mdxComponents} />
     </article>
   );
 }

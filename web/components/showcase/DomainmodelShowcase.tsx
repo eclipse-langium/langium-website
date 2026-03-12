@@ -61,7 +61,7 @@ class DomainmodelApp extends React.Component<{ langiumConfig: UserConfig }, AppS
       <div className="justify-center self-center flex flex-col md:flex-row h-full w-full p-4">
         <div className="float-left w-full h-full flex flex-col">
           <div className="border border-emerald-langium bg-emerald-langium-darker flex items-center p-3 text-white font-mono">Editor</div>
-          <div className="wrapper relative bg-white dark:bg-gray-900 border border-emerald-langium h-[50vh] min-h-[300px]">
+          <div className="wrapper relative bg-white dark:bg-gray-900 border border-emerald-langium h-[50vh] min-h-75">
             <React.Suspense fallback={<div className="flex h-full items-center justify-center text-white">Loading editor...</div>}>
               <MonacoEditorReactComp
                 userConfig={this.props.langiumConfig as any}

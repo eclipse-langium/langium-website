@@ -71,7 +71,7 @@ interface SidebarProps {
 
 export function Sidebar({ nav }: SidebarProps) {
   return (
-    <nav className="w-64 shrink-0 border-r border-gray-200 dark:border-gray-700 pr-4 py-6 overflow-y-auto sticky top-[96px] max-h-[calc(100vh-96px)]">
+    <nav className="w-64 shrink-0 border-r border-gray-200 dark:border-gray-700 pr-4 py-6 overflow-y-auto sticky top-24 max-h-teaser">
       <ul className="space-y-0.5">
         {nav.map((item) => (
           <SidebarItem key={item.href} item={item} />

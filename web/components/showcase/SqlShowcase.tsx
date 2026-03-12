@@ -42,7 +42,7 @@ class SqlApp extends React.Component<{ langiumConfig: UserConfig }> {
         <React.Suspense fallback={<div className="flex h-[50vh] items-center justify-center text-white">Loading editor...</div>}>
           <MonacoEditorReactComp
             userConfig={this.props.langiumConfig as any}
-            className="w-1/2 border border-emerald-langium h-[50vh] min-h-[300px]"
+            className="w-1/2 border border-emerald-langium h-[50vh] min-h-75"
             ref={this.monacoEditor as any}
             onLoad={this.onMonacoLoad}
             style={style}

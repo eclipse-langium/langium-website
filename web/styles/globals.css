@@ -25,7 +25,7 @@
 /* ===== Tailwind Component Classes ===== */
 @layer components {
   .external-link {
-    @apply border-b border-dashed hover:border-solid pb-[0.1px];
+    @apply border-b border-dashed hover:border-solid pb-underline;
   }
 
   .nav-link-desktop {
@@ -61,7 +61,7 @@
   }
 
   .feature-item-container {
-    @apply h-full min-w-[420px] border-transparent border-4 relative overflow-hidden flex justify-center items-center;
+    @apply h-full min-w-105 border-transparent border-4 relative overflow-hidden flex justify-center items-center;
   }
 
   .feature-item-content {
