@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback, Suspense } from 'react';
-import { createUserConfig } from 'langium-website-core';
+import { createUserConfig, type UserConfig } from 'langium-website-core';
 import { HelloWorldGrammar, DSLInitialContent, LangiumTextMateContent } from './constants';
 import { share, throttle } from './utils';
 import { AstTree } from './Tree';
@@ -13,9 +13,9 @@ import { useSearchParams } from 'next/navigation';
 import type { AstNode } from 'langium';
 import Image from 'next/image';
 
-const MonacoEditorReactComp = React.lazy(async () => {
+const MonacoEditorReactComp: React.LazyExoticComponent<React.ComponentType<any>> = React.lazy(async () => {
   const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
-  return { default: MonacoEditorReactComp as any };
+  return { default: MonacoEditorReactComp as React.ComponentType<any> };
 });
 
 const languageUpdateDelay = 150;
@@ -41,12 +41,11 @@ interface PlaygroundProps {
 }
 
 function PlaygroundInner({ initialGrammar, initialContent }: PlaygroundProps) {
-  const langiumEditorRef = useRef<any>(null);
-  const dslEditorRef = useRef<any>(null);
+  const dslEditorAppRef = useRef<any>(null);
   const [overlay, setOverlay] = useState<OverlayState>({ visible: false, hasError: false });
   const [astNode, setAstNode] = useState<AstNode | null>(null);
   const [showTree, setShowTree] = useState(true);
-  const [dslConfig, setDslConfig] = useState<Record<string, unknown> | null>(null);
+  const [dslConfig, setDslConfig] = useState<UserConfig | null>(null);
   const [dslKey, setDslKey] = useState(0);
   const currentGrammarRef = useRef(initialGrammar);
   const currentContentRef = useRef(initialContent);
@@ -83,37 +82,6 @@ function PlaygroundInner({ initialGrammar, initialContent }: PlaygroundProps) {
     }
   }, [showOverlay]);
 
-  const onLangiumLoad = useCallback(() => {
-    const lc = langiumEditorRef.current?.getEditorWrapper?.()?.getLanguageClient?.();
-    if (!lc) return;
-    lc.onNotification('browser/DocumentChange', async (resp: any) => {
-      if (!lc.isRunning()) return;
-      currentGrammarRef.current = resp.content;
-      if (resp.diagnostics?.filter((d: any) => d.severity === 1).length) {
-        showOverlay(true, true);
-        return;
-      }
-      throttle(1, languageUpdateDelay, async () => {
-        showOverlay(true, false);
-        await setupDslConfig(resp.content, nextId());
-      });
-    });
-  }, [showOverlay, setupDslConfig]);
-
-  const onDslLoad = useCallback(() => {
-    const lc = dslEditorRef.current?.getEditorWrapper?.()?.getLanguageClient?.();
-    if (!lc) return;
-    lc.onNotification('browser/DocumentChange', (resp: any) => {
-      const editor = dslEditorRef.current?.getEditorWrapper?.()?.getEditor?.();
-      if (editor) currentContentRef.current = editor.getValue() ?? currentContentRef.current;
-      throttle(2, languageUpdateDelay, () => {
-        try {
-          const ast = JSON.parse(resp.content);
-          setAstNode(ast);
-        } catch { /* ignore */ }
-      });
-    });
-  }, []);
 
   useEffect(() => {
     import('monaco-editor-workers').then(({ buildWorkerDefinition }) => {
@@ -178,9 +146,25 @@ function PlaygroundInner({ initialGrammar, initialContent }: PlaygroundProps) {
             <PlaygroundOverlay state={overlay} />
             <Suspense fallback={<div className="flex h-full items-center justify-center text-white">Loading editor...</div>}>
               <MonacoEditorReactComp
-                userConfig={langiumConfig as any}
-                ref={langiumEditorRef}
-                onLoad={onLangiumLoad}
+                vscodeApiConfig={langiumConfig.vscodeApiConfig as any}
+                editorAppConfig={langiumConfig.editorAppConfig as any}
+                languageClientConfig={langiumConfig.languageClientConfig as any}
+                onLanguageClientsStartDone={(lcsManager: any) => {
+                  const lc = lcsManager.getLanguageClient('langium');
+                  if (!lc) return;
+                  lc.onNotification('browser/DocumentChange', async (resp: any) => {
+                    if (!lc.isRunning()) return;
+                    currentGrammarRef.current = resp.content;
+                    if (resp.diagnostics?.filter((d: any) => d.severity === 1).length) {
+                      showOverlay(true, true);
+                      return;
+                    }
+                    throttle(1, languageUpdateDelay, async () => {
+                      showOverlay(true, false);
+                      await setupDslConfig(resp.content, nextId());
+                    });
+                  });
+                }}
                 style={editorStyle}
               />
             </Suspense>
@@ -195,9 +179,24 @@ function PlaygroundInner({ initialGrammar, initialContent }: PlaygroundProps) {
               <Suspense fallback={<div className="flex h-full items-center justify-center text-white">Loading editor...</div>}>
                 <MonacoEditorReactComp
                   key={dslKey}
-                  userConfig={dslConfig as any}
-                  ref={dslEditorRef}
-                  onLoad={onDslLoad}
+                  vscodeApiConfig={dslConfig.vscodeApiConfig as any}
+                  editorAppConfig={dslConfig.editorAppConfig as any}
+                  languageClientConfig={dslConfig.languageClientConfig as any}
+                  onEditorStartDone={(editorApp: any) => { dslEditorAppRef.current = editorApp; }}
+                  onLanguageClientsStartDone={(lcsManager: any) => {
+                    const lc = lcsManager.getLanguageClient(dslConfig.languageClientConfig?.languageId as string);
+                    if (!lc) return;
+                    lc.onNotification('browser/DocumentChange', (resp: any) => {
+                      const editor = dslEditorAppRef.current?.getEditor?.();
+                      if (editor) currentContentRef.current = editor.getValue() ?? currentContentRef.current;
+                      throttle(2, languageUpdateDelay, () => {
+                        try {
+                          const ast = JSON.parse(resp.content);
+                          setAstNode(ast);
+                        } catch { /* ignore */ }
+                      });
+                    });
+                  }}
                   style={editorStyle}
                 />
               </Suspense>

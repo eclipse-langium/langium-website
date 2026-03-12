@@ -107,7 +107,7 @@ export default function HomePage() {
     <div ref={pageRef}>
       {/* Teaser */}
       <section id="teaser" className="relative sm:h-teaser">
-        <div className="teaser-bg absolute top-0 left-0 w-full sm:h-full sm:dark:bg-emerald-langium-darkest sm:bg-[url('/assets/office.jpg')] bg-fixed bg-blend-multiply bg-cover bg-center bg-no-repeat" />
+        <div className="teaser-bg absolute top-0 left-0 w-full sm:h-full sm:dark:bg-emerald-langium-darkest sm:bg-[url(/assets/office.jpg)] bg-fixed bg-blend-multiply bg-cover bg-center bg-no-repeat" />
         <div className="relative px-4 py-16 sm:px-6 sm:py-24 lg:pt-32 lg:px-8">
           <h2 className="text-center text-2xl tracking-tight sm:text-3xl lg:text-4xl">
             <span className="block lg:inline dark:text-gray-100">Built to bring</span>{' '}

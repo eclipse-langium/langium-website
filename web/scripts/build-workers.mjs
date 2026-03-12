@@ -12,12 +12,37 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
-const nodeModules = resolve(root, '../node_modules');
+const rootNodeModules = resolve(root, '../node_modules');
+const webNodeModules = resolve(root, 'node_modules');
 const publicDir = resolve(root, 'public');
 
-function run(cmd) {
+// Resolve a package path from either workspace node_modules or root node_modules
+function resolvePackagePath(...parts) {
+  const webPath = resolve(webNodeModules, ...parts);
+  if (existsSync(webPath)) return webPath;
+  return resolve(rootNodeModules, ...parts);
+}
+
+// Build a NODE_PATH that includes nested node_modules dirs so esbuild
+// can resolve transitive deps like vscode-languageserver-types that npm
+// hoists only to nested locations (e.g. root/node_modules/vscode-languageserver/node_modules/)
+function buildNodePath() {
+  const paths = [webNodeModules, rootNodeModules];
+  // Add nested node_modules inside root packages (for hoisted nested deps)
+  const nestedSearchRoots = ['vscode-languageserver', 'vscode-languageclient'];
+  for (const pkg of nestedSearchRoots) {
+    const nested = resolve(rootNodeModules, pkg, 'node_modules');
+    if (existsSync(nested)) paths.push(nested);
+  }
+  return paths.join(':');
+}
+
+const nodeModules = rootNodeModules;
+const esbuildNodePath = buildNodePath();
+
+function run(cmd, env = {}) {
   console.log(`> ${cmd}`);
-  execSync(cmd, { stdio: 'inherit', cwd: root });
+  execSync(cmd, { stdio: 'inherit', cwd: root, env: { ...process.env, NODE_PATH: esbuildNodePath, ...env } });
 }
 
 function ensureDir(dir) {
@@ -44,19 +69,19 @@ ensureDir(resolve(publicDir, 'libs/monaco-editor-workers/workers'));
 // === Build showcase workers (IIFE bundles) ===
 const showcaseWorkers = [
   {
-    entry: `${nodeModules}/langium-statemachine-dsl/out/language-server/main-browser.js`,
+    entry: resolvePackagePath('langium-statemachine-dsl', 'out', 'language-server', 'main-browser.js'),
     out: `${publicDir}/workers/statemachineServerWorker.js`,
   },
   {
-    entry: `${nodeModules}/langium-arithmetics-dsl/out/language-server/main-browser.js`,
+    entry: resolvePackagePath('langium-arithmetics-dsl', 'out', 'language-server', 'main-browser.js'),
     out: `${publicDir}/workers/arithmeticsServerWorker.js`,
   },
   {
-    entry: `${nodeModules}/langium-domainmodel-dsl/out/language-server/main-browser.js`,
+    entry: resolvePackagePath('langium-domainmodel-dsl', 'out', 'language-server', 'main-browser.js'),
     out: `${publicDir}/workers/domainmodelServerWorker.js`,
   },
   {
-    entry: `${nodeModules}/langium-minilogo/out/language-server/main-browser.js`,
+    entry: resolvePackagePath('langium-minilogo', 'out', 'language-server', 'main-browser.js'),
     out: `${publicDir}/workers/minilogoServerWorker.js`,
   },
 ];
@@ -90,7 +115,7 @@ for (const { entry, out, format } of playgroundWorkers) {
 }
 
 // === Copy Monaco editor workers ===
-const monacoWorkersSource = resolve(nodeModules, 'monaco-editor-workers/dist');
+const monacoWorkersSource = resolvePackagePath('monaco-editor-workers', 'dist');
 const monacoWorkersDest = resolve(publicDir, 'libs/monaco-editor-workers');
 
 if (existsSync(monacoWorkersSource)) {

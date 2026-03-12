@@ -1,33 +1,22 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { createUserConfig } from 'langium-website-core';
+import { createUserConfig, type UserConfig } from 'langium-website-core';
 import { defaultText } from './sql-constants';
 import type { DocumentChangeResponse } from 'langium-ast-helper';
 
-type UserConfig = Record<string, unknown>;
-
-const MonacoEditorReactComp = React.lazy(async () => {
+const MonacoEditorReactComp: React.LazyExoticComponent<React.ComponentType<any>> = React.lazy(async () => {
   const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
-  return { default: MonacoEditorReactComp as any };
+  return { default: MonacoEditorReactComp as React.ComponentType<any> };
 });
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const sqlGrammar = require('./sql.tmLanguage.json');
 
 class SqlApp extends React.Component<{ langiumConfig: UserConfig }> {
-  monacoEditor = React.createRef<any>();
-
   constructor(props: { langiumConfig: UserConfig }) {
     super(props);
-    this.onMonacoLoad = this.onMonacoLoad.bind(this);
     this.onDocumentChange = this.onDocumentChange.bind(this);
-  }
-
-  onMonacoLoad() {
-    const lc = (this.monacoEditor.current as any)?.getEditorWrapper?.()?.getLanguageClient?.();
-    if (!lc) return;
-    lc.onNotification('browser/DocumentChange', this.onDocumentChange);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -37,14 +26,19 @@ class SqlApp extends React.Component<{ langiumConfig: UserConfig }> {
 
   render() {
     const style = { paddingTop: '5px' };
+    const { vscodeApiConfig, editorAppConfig, languageClientConfig } = this.props.langiumConfig;
     return (
       <div className="w-full justify-center flex flex-col items-center">
         <React.Suspense fallback={<div className="flex h-[50vh] items-center justify-center text-white">Loading editor...</div>}>
           <MonacoEditorReactComp
-            userConfig={this.props.langiumConfig as any}
+            vscodeApiConfig={vscodeApiConfig as any}
+            editorAppConfig={editorAppConfig as any}
+            languageClientConfig={languageClientConfig as any}
+            onLanguageClientsStartDone={(lcsManager: any) => {
+              const lc = lcsManager.getLanguageClient('sql');
+              if (lc) lc.onNotification('browser/DocumentChange', this.onDocumentChange);
+            }}
             className="w-1/2 border border-emerald-langium h-[50vh] min-h-75"
-            ref={this.monacoEditor as any}
-            onLoad={this.onMonacoLoad}
             style={style}
           />
         </React.Suspense>
@@ -92,7 +86,7 @@ export default function SqlShowcase() {
     code: defaultText,
     worker: '/workers/sqlServerWorker.js',
     textmateGrammar: sqlGrammar,
-  }) as unknown as UserConfig;
+  });
 
   return <SqlApp langiumConfig={config} />;
 }

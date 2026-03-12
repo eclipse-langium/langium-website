@@ -57,18 +57,32 @@ export const defaultLanguageConfig = {
 };
 
 /**
- * Builds a config object for use with MonacoEditorLanguageClientWrapper (monaco-languageclient 10.x).
- *
- * Import MonacoEditorLanguageClientWrapper directly from 'monaco-languageclient' —
- * the old 'monaco-editor-wrapper' package is deprecated and merged into monaco-languageclient.
+ * Return type matching the new @typefox/monaco-editor-react v7+ prop shape.
+ * Pass each field as a separate prop to MonacoEditorReactComp:
+ *   <MonacoEditorReactComp
+ *     vscodeApiConfig={config.vscodeApiConfig}
+ *     editorAppConfig={config.editorAppConfig}
+ *     languageClientConfig={config.languageClientConfig}
+ *   />
+ */
+export interface UserConfig {
+  vscodeApiConfig: Record<string, unknown>;
+  editorAppConfig: Record<string, unknown>;
+  languageClientConfig: Record<string, unknown>;
+}
+
+/**
+ * Builds a config object for use with MonacoEditorLanguageClientWrapper
+ * (monaco-editor-react 7.x / monaco-languageclient 10.x).
  */
 export function createUserConfig(
   config: MonacoExtendedReactConfig | MonacoEditorReactConfig
-): Record<string, unknown> {
+): UserConfig {
   const id = config.languageId;
   const useExtended = isMonacoExtendedReactConfig(config);
 
-  let editorAppConfig: Record<string, unknown>;
+  // ---- VSCode API config (global, initialized once) ----
+  let vscodeApiConfig: Record<string, unknown>;
 
   if (useExtended) {
     const languageConfigUrl = `/${id}-configuration.json`;
@@ -77,11 +91,17 @@ export function createUserConfig(
     extensionContents.set(languageConfigUrl, JSON.stringify(defaultLanguageConfig));
     extensionContents.set(languageGrammarUrl, JSON.stringify((config as MonacoExtendedReactConfig).textmateGrammar));
 
-    editorAppConfig = {
+    vscodeApiConfig = {
       $type: 'extended',
-      languageId: id,
-      code: config.code,
-      useDiffEditor: false,
+      viewsConfig: { $type: 'EditorService' },
+      userConfiguration: {
+        json: JSON.stringify({
+          'workbench.colorTheme': 'Default Dark Modern',
+          'editor.semanticHighlighting.enabled': true,
+          'editor.lightbulb.enabled': true,
+          'editor.guides.bracketPairsHorizontal': 'active',
+        }),
+      },
       extensions: [
         {
           config: {
@@ -97,52 +117,57 @@ export function createUserConfig(
           filesOrContents: extensionContents,
         },
       ],
-      userConfiguration: {
-        json: JSON.stringify({
-          'workbench.colorTheme': 'Default Dark Modern',
-          'editor.semanticHighlighting.enabled': true,
-          'editor.lightbulb.enabled': true,
-          'editor.guides.bracketPairsHorizontal': 'active',
-        }),
-      },
     };
   } else {
-    editorAppConfig = {
+    vscodeApiConfig = {
       $type: 'classic',
-      languageId: id,
-      code: config.code,
-      useDiffEditor: false,
-      languageExtensionConfig: { id },
-      languageDef: (config as MonacoEditorReactConfig).monarchGrammar,
-      editorOptions: {
-        'semanticHighlighting.enabled': true,
-        readOnly: config.readonly,
-        theme: 'vs-dark',
-      },
+      viewsConfig: { $type: 'EditorService' },
     };
   }
 
-  const languageClientConfig =
+  // ---- Editor app config ----
+  const editorAppConfig: Record<string, unknown> = {
+    codeResources: {
+      modified: {
+        text: config.code,
+        uri: `inmemory://model/1.${id}`,
+        enforceLanguageId: id,
+      },
+    },
+    useDiffEditor: false,
+    editorOptions: {
+      readOnly: config.readonly ?? false,
+    },
+  };
+
+  if (!useExtended && (config as MonacoEditorReactConfig).monarchGrammar) {
+    editorAppConfig.languageDef = {
+      languageExtensionConfig: { id },
+      monarchLanguage: (config as MonacoEditorReactConfig).monarchGrammar,
+    };
+  }
+
+  // ---- Language client config ----
+  const connectionOptions =
     typeof config.worker === 'string'
       ? {
-          options: {
-            $type: 'WorkerConfig',
-            url: new URL(config.worker, window.location.href),
-            type: 'module',
-            name: `${id}-language-server-worker`,
-          },
+          $type: 'WorkerConfig',
+          url: new URL(config.worker, window.location.href),
+          type: 'module',
+          workerName: `${id}-language-server-worker`,
         }
       : {
-          options: {
-            $type: 'WorkerDirect',
-            worker: config.worker,
-          },
+          $type: 'WorkerDirect',
+          worker: config.worker,
         };
 
-  return {
-    wrapperConfig: {
-      editorAppConfig,
+  const languageClientConfig: Record<string, unknown> = {
+    languageId: id,
+    connection: { options: connectionOptions },
+    clientOptions: {
+      documentSelector: [{ language: id }],
     },
-    languageClientConfig,
   };
+
+  return { vscodeApiConfig, editorAppConfig, languageClientConfig };
 }

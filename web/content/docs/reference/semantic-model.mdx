@@ -314,12 +314,6 @@ type X = A | B;
 type X = A | B;
 ```
 
-<!-- Please note that it is not allowed to use an alias type as a return type in a parser rule. The following syntax is invalid:
-```
-type X = A | B;
-
-Y returns X: name=ID;
-``` -->
 
 Using `returns` always expects a reference to an already existing type. To create a new type for your rule, use the `infers` keyword or explicitly declare an interface.
 

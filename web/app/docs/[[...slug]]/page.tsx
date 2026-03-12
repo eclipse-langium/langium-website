@@ -11,8 +11,14 @@ import { Hint } from '@/components/mdx/Hint';
 import { Tabs, Tab } from '@/components/mdx/Tabs';
 import { Expand } from '@/components/mdx/Expand';
 import { Columns } from '@/components/mdx/Columns';
+import { Mermaid } from '@/components/mdx/Mermaid';
 
-const mdxComponents = { Notification, Hint, Tabs, Tab, Expand, Columns };
+const mdxComponents = { Notification, Hint, Tabs, Tab, Expand, Columns, Mermaid };
+
+// Strip top-level MDX import lines so evaluate() doesn't need baseUrl
+function stripMdxImports(content: string): string {
+  return content.replace(/^import\s+.*?from\s+['"][^'"]+['"]\s*;?\s*$/gm, '');
+}
 
 interface Props {
   params: Promise<{ slug?: string[] }>;
@@ -57,7 +63,7 @@ export default async function DocPage({ params }: Props) {
 
   if (!page) notFound();
 
-  const { default: Content } = await evaluate(page.content, {
+  const { default: Content } = await evaluate(stripMdxImports(page.content), {
     ...(runtime as any),
     remarkPlugins: [remarkGfm],
     rehypePlugins: [rehypeSlug],

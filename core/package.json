@@ -33,16 +33,16 @@
     "build": "npm run clean && npm run compile"
   },
   "devDependencies": {
-    "@types/react": "^19.1.4",
-    "@types/react-dom": "^19.1.4",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "monaco-editor": "~0.55.1",
-    "monaco-editor-workers": "~0.44.0",
+    "monaco-editor-workers": "~0.45.0",
     "monaco-languageclient": "~10.7.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "vscode-languageserver": "~9.0.1"
   },
   "volta": {

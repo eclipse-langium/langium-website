@@ -1,16 +1,14 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { createUserConfig } from 'langium-website-core';
+import { createUserConfig, type UserConfig } from 'langium-website-core';
 import { DomainModelAstNode, example, getMainTreeNode, syntaxHighlighting } from './domainmodel-tools';
 import { deserializeAST, type Diagnostic, type DocumentChangeResponse } from 'langium-ast-helper';
 import D3Tree from './d3tree';
 
-type UserConfig = Record<string, unknown>;
-
-const MonacoEditorReactComp = React.lazy(async () => {
+const MonacoEditorReactComp: React.LazyExoticComponent<React.ComponentType<any>> = React.lazy(async () => {
   const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
-  return { default: MonacoEditorReactComp as any };
+  return { default: MonacoEditorReactComp as React.ComponentType<any> };
 });
 
 interface AppState {
@@ -19,19 +17,11 @@ interface AppState {
 }
 
 class DomainmodelApp extends React.Component<{ langiumConfig: UserConfig }, AppState> {
-  monacoEditor = React.createRef<any>();
 
   constructor(props: { langiumConfig: UserConfig }) {
     super(props);
-    this.onMonacoLoad = this.onMonacoLoad.bind(this);
     this.onDocumentChange = this.onDocumentChange.bind(this);
     this.state = { ast: undefined, diagnostics: undefined };
-  }
-
-  onMonacoLoad() {
-    const lc = (this.monacoEditor.current as any)?.getEditorWrapper?.()?.getLanguageClient?.();
-    if (!lc) return;
-    lc.onNotification('browser/DocumentChange', this.onDocumentChange);
   }
 
   onDocumentChange(resp: DocumentChangeResponse) {
@@ -57,6 +47,7 @@ class DomainmodelApp extends React.Component<{ langiumConfig: UserConfig }, AppS
 
   render() {
     const style = { height: '100%', width: '100%' };
+    const { vscodeApiConfig, editorAppConfig, languageClientConfig } = this.props.langiumConfig;
     return (
       <div className="justify-center self-center flex flex-col md:flex-row h-full w-full p-4">
         <div className="float-left w-full h-full flex flex-col">
@@ -64,9 +55,13 @@ class DomainmodelApp extends React.Component<{ langiumConfig: UserConfig }, AppS
           <div className="wrapper relative bg-white dark:bg-gray-900 border border-emerald-langium h-[50vh] min-h-75">
             <React.Suspense fallback={<div className="flex h-full items-center justify-center text-white">Loading editor...</div>}>
               <MonacoEditorReactComp
-                userConfig={this.props.langiumConfig as any}
-                ref={this.monacoEditor as any}
-                onLoad={this.onMonacoLoad}
+                vscodeApiConfig={vscodeApiConfig as any}
+                editorAppConfig={editorAppConfig as any}
+                languageClientConfig={languageClientConfig as any}
+                onLanguageClientsStartDone={(lcsManager: any) => {
+                  const lc = lcsManager.getLanguageClient('domainmodel');
+                  if (lc) lc.onNotification('browser/DocumentChange', this.onDocumentChange);
+                }}
                 style={style}
               />
             </React.Suspense>
@@ -95,7 +90,7 @@ export default function DomainmodelShowcase() {
     code: example,
     worker: '/workers/domainmodelServerWorker.js',
     monarchGrammar: syntaxHighlighting,
-  }) as unknown as UserConfig;
+  });
 
   return <DomainmodelApp langiumConfig={config} />;
 }

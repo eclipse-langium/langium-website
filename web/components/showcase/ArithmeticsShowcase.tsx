@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { createUserConfig } from 'langium-website-core';
+import { createUserConfig, type UserConfig } from 'langium-website-core';
 import { Evaluation, examples, syntaxHighlighting } from './arithmetics-tools';
 import { type Diagnostic, type DocumentChangeResponse } from 'langium-ast-helper';
 
-type UserConfig = Record<string, unknown>;
-
-const MonacoEditorReactComp = React.lazy(async () => {
+const MonacoEditorReactComp: React.LazyExoticComponent<React.ComponentType<any>> = React.lazy(async () => {
   const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
-  return { default: MonacoEditorReactComp as any };
+  return { default: MonacoEditorReactComp as React.ComponentType<any> };
 });
 
 interface PreviewProps {
@@ -64,20 +62,13 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 interface AppState { exampleIndex: number; }
 
 class ArithmeticsApp extends React.Component<{ langiumConfig: UserConfig }, AppState> {
-  monacoEditor = React.createRef<any>();
+  editorApp: any = undefined;
   preview = React.createRef<Preview>();
 
   constructor(props: { langiumConfig: UserConfig }) {
     super(props);
-    this.onMonacoLoad = this.onMonacoLoad.bind(this);
     this.onDocumentChange = this.onDocumentChange.bind(this);
     this.state = { exampleIndex: 0 };
-  }
-
-  onMonacoLoad() {
-    const lc = (this.monacoEditor.current as any)?.getEditorWrapper?.()?.getLanguageClient?.();
-    if (!lc) return;
-    lc.onNotification('browser/DocumentChange', this.onDocumentChange);
   }
 
   onDocumentChange(resp: DocumentChangeResponse) {
@@ -88,11 +79,11 @@ class ArithmeticsApp extends React.Component<{ langiumConfig: UserConfig }, AppS
 
   setExample(index: number) {
     this.setState({ exampleIndex: index });
-    (this.monacoEditor.current as any)?.getEditorWrapper?.()?.getEditor?.()?.setValue(examples[index]);
+    this.editorApp?.getEditor()?.setValue(examples[index]);
   }
 
   focusLine(line: number) {
-    const editor = (this.monacoEditor.current as any)?.getEditorWrapper?.()?.getEditor?.();
+    const editor = this.editorApp?.getEditor();
     if (!editor) return;
     editor.revealLineInCenter(line);
     editor.setPosition({ lineNumber: line, column: 1 });
@@ -101,6 +92,7 @@ class ArithmeticsApp extends React.Component<{ langiumConfig: UserConfig }, AppS
 
   render() {
     const style = { height: '100%', width: '100%' };
+    const { vscodeApiConfig, editorAppConfig, languageClientConfig } = this.props.langiumConfig;
     return (
       <div className="justify-center self-center flex flex-col md:flex-row h-full w-full">
         <div className="float-left w-full h-full flex flex-col">
@@ -114,9 +106,14 @@ class ArithmeticsApp extends React.Component<{ langiumConfig: UserConfig }, AppS
           <div className="wrapper relative bg-white dark:bg-gray-900 border border-emerald-langium h-full w-full">
             <React.Suspense fallback={<div className="flex h-full items-center justify-center text-white">Loading editor...</div>}>
               <MonacoEditorReactComp
-                userConfig={this.props.langiumConfig as any}
-                ref={this.monacoEditor as any}
-                onLoad={this.onMonacoLoad}
+                vscodeApiConfig={vscodeApiConfig as any}
+                editorAppConfig={editorAppConfig as any}
+                languageClientConfig={languageClientConfig as any}
+                onEditorStartDone={(editorApp: any) => { this.editorApp = editorApp; }}
+                onLanguageClientsStartDone={(lcsManager: any) => {
+                  const lc = lcsManager.getLanguageClient('arithmetics');
+                  if (lc) lc.onNotification('browser/DocumentChange', this.onDocumentChange);
+                }}
                 style={style}
               />
             </React.Suspense>
@@ -145,7 +142,7 @@ export default function ArithmeticsShowcase() {
     code: examples[0],
     worker: '/workers/arithmeticsServerWorker.js',
     monarchGrammar: syntaxHighlighting,
-  }) as unknown as UserConfig;
+  });
 
   return <ArithmeticsApp langiumConfig={config} />;
 }

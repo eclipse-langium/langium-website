@@ -1,17 +1,15 @@
 'use client';
 
 import React, { useEffect, createRef } from 'react';
-import { createUserConfig } from 'langium-website-core';
+import { createUserConfig, type UserConfig } from 'langium-website-core';
 import { ColorArgs, Command, MoveArgs, examples, syntaxHighlighting } from './minilogo-tools';
 import { type Diagnostic, type DocumentChangeResponse } from 'langium-ast-helper';
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 import Image from 'next/image';
 
-type UserConfig = Record<string, unknown>;
-
-const MonacoEditorReactComp = React.lazy(async () => {
+const MonacoEditorReactComp: React.LazyExoticComponent<React.ComponentType<any>> = React.lazy(async () => {
   const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
-  return { default: MonacoEditorReactComp as any };
+  return { default: MonacoEditorReactComp as React.ComponentType<any> };
 });
 
 let shouldAnimate = true;
@@ -19,7 +17,7 @@ let shouldAnimate = true;
 interface DrawCanvasProps { commands: Command[]; }
 
 class DrawCanvas extends React.Component<DrawCanvasProps, DrawCanvasProps> {
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
   posX = 0;
   posY = 0;
   scale = 1.8;
@@ -146,23 +144,16 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 interface AppState { currentExample: number; }
 
 class MinilogoApp extends React.Component<{ langiumConfig: UserConfig }, AppState> {
-  monacoEditor = React.createRef<any>();
+  editorApp: any = undefined;
   preview = React.createRef<Preview>();
   copyHint = React.createRef<HTMLDivElement>();
   shareButton = React.createRef<HTMLImageElement>();
 
   constructor(props: { langiumConfig: UserConfig }) {
     super(props);
-    this.onMonacoLoad = this.onMonacoLoad.bind(this);
     this.onDocumentChange = this.onDocumentChange.bind(this);
     this.copyLink = this.copyLink.bind(this);
     this.state = { currentExample: 0 };
-  }
-
-  onMonacoLoad() {
-    const lc = (this.monacoEditor.current as any)?.getEditorWrapper?.()?.getLanguageClient?.();
-    if (!lc) return;
-    lc.onNotification('browser/DocumentChange', this.onDocumentChange);
   }
 
   onDocumentChange(resp: DocumentChangeResponse) {
@@ -173,12 +164,12 @@ class MinilogoApp extends React.Component<{ langiumConfig: UserConfig }, AppStat
 
   setExample(example: number) {
     this.setState({ currentExample: example });
-    (this.monacoEditor.current as any)?.getEditorWrapper?.()?.getEditor?.()?.setValue(examples[example].code);
+    this.editorApp?.getEditor()?.setValue(examples[example].code);
     shouldAnimate = true;
   }
 
   async copyLink() {
-    const code = (this.monacoEditor.current as any)?.getEditorWrapper?.()?.getEditor?.()?.getValue() ?? '';
+    const code = this.editorApp?.getEditor()?.getValue() ?? '';
     const url = new URL('/showcase/minilogo', window.origin);
     url.searchParams.append('code', compressToEncodedURIComponent(code));
     if (this.copyHint.current) this.copyHint.current.style.display = 'block';
@@ -192,6 +183,7 @@ class MinilogoApp extends React.Component<{ langiumConfig: UserConfig }, AppStat
 
   render() {
     const style = { height: '100%', width: '100%' };
+    const { vscodeApiConfig, editorAppConfig, languageClientConfig } = this.props.langiumConfig;
     return (
       <div className="justify-center self-center flex flex-col md:flex-row h-full w-full">
         <div className="float-left w-full h-full flex flex-col">
@@ -208,9 +200,14 @@ class MinilogoApp extends React.Component<{ langiumConfig: UserConfig }, AppStat
           <div className="wrapper relative bg-white dark:bg-gray-900 border border-emerald-langium h-full w-full">
             <React.Suspense fallback={<div className="flex h-full items-center justify-center text-white">Loading editor...</div>}>
               <MonacoEditorReactComp
-                userConfig={this.props.langiumConfig as any}
-                ref={this.monacoEditor as any}
-                onLoad={this.onMonacoLoad}
+                vscodeApiConfig={vscodeApiConfig as any}
+                editorAppConfig={editorAppConfig as any}
+                languageClientConfig={languageClientConfig as any}
+                onEditorStartDone={(editorApp: any) => { this.editorApp = editorApp; }}
+                onLanguageClientsStartDone={(lcsManager: any) => {
+                  const lc = lcsManager.getLanguageClient('minilogo');
+                  if (lc) lc.onNotification('browser/DocumentChange', this.onDocumentChange);
+                }}
                 style={style}
               />
             </React.Suspense>
@@ -241,7 +238,7 @@ export default function MinilogoShowcase() {
     code: code ? decompressFromEncodedURIComponent(code) : examples[0].code,
     worker: '/workers/minilogoServerWorker.js',
     monarchGrammar: syntaxHighlighting,
-  }) as unknown as UserConfig;
+  });
 
   return <MinilogoApp langiumConfig={config} />;
 }

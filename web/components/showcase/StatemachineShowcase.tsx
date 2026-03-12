@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { createUserConfig } from 'langium-website-core';
+import { createUserConfig, type UserConfig } from 'langium-website-core';
 import { defaultText, StateMachineAstNode, StateMachineState, StateMachineTools } from './statemachine-tools';
 import { deserializeAST, type Diagnostic, type DocumentChangeResponse } from 'langium-ast-helper';
 
-type UserConfig = Record<string, unknown>;
-
-const MonacoEditorReactComp = React.lazy(async () => {
+const MonacoEditorReactComp: React.LazyExoticComponent<React.ComponentType<any>> = React.lazy(async () => {
   const { MonacoEditorReactComp } = await import('@typefox/monaco-editor-react');
-  return { default: MonacoEditorReactComp as any };
+  return { default: MonacoEditorReactComp as React.ComponentType<any> };
 });
 
 // Import statemachine textmate grammar
@@ -75,19 +73,11 @@ class Preview extends React.Component<PreviewProps, PreviewProps> {
 }
 
 class StateMachineComponent extends React.Component<{ langiumConfig: UserConfig }> {
-  monacoEditor = React.createRef<any>();
   preview = React.createRef<Preview>();
 
   constructor(props: { langiumConfig: UserConfig }) {
     super(props);
-    this.onMonacoLoad = this.onMonacoLoad.bind(this);
     this.onDocumentChange = this.onDocumentChange.bind(this);
-  }
-
-  onMonacoLoad() {
-    const lc = (this.monacoEditor.current as any)?.getEditorWrapper?.()?.getLanguageClient?.();
-    if (!lc) return;
-    lc.onNotification('browser/DocumentChange', this.onDocumentChange);
   }
 
   onDocumentChange(resp: DocumentChangeResponse) {
@@ -97,6 +87,7 @@ class StateMachineComponent extends React.Component<{ langiumConfig: UserConfig 
 
   render() {
     const style = { height: '100%', width: '100%' };
+    const { vscodeApiConfig, editorAppConfig, languageClientConfig } = this.props.langiumConfig;
     return (
       <div className="justify-center self-center flex flex-col md:flex-row h-full w-full">
         <div className="float-left w-full h-full flex flex-col">
@@ -104,9 +95,13 @@ class StateMachineComponent extends React.Component<{ langiumConfig: UserConfig 
           <div className="wrapper relative bg-white dark:bg-gray-900 border border-emerald-langium h-full w-full">
             <React.Suspense fallback={<div className="flex h-full items-center justify-center text-white">Loading editor...</div>}>
               <MonacoEditorReactComp
-                userConfig={this.props.langiumConfig as any}
-                ref={this.monacoEditor as any}
-                onLoad={this.onMonacoLoad}
+                vscodeApiConfig={vscodeApiConfig as any}
+                editorAppConfig={editorAppConfig as any}
+                languageClientConfig={languageClientConfig as any}
+                onLanguageClientsStartDone={(lcsManager: any) => {
+                  const lc = lcsManager.getLanguageClient('statemachine');
+                  if (lc) lc.onNotification('browser/DocumentChange', this.onDocumentChange);
+                }}
                 style={style}
               />
             </React.Suspense>
@@ -134,7 +129,7 @@ export default function StatemachineShowcase() {
     code: defaultText,
     textmateGrammar: statemachineGrammar,
     worker: '/workers/statemachineServerWorker.js',
-  }) as unknown as UserConfig;
+  });
 
   return <StateMachineComponent langiumConfig={config} />;
 }
