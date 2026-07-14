@@ -45,7 +45,7 @@ export function getMainTreeNode(ast: AstNode): TreeNode {
 
         // get all children of an Entity (including the supertype)
         const getChildren = (e: Entity): TreeNode[] => {
-            const superType = astNode.entities.find(entity => entity.name === e.superType?.ref.name);
+            const superType = astNode.entities.find(entity => entity.name === e.superType?.ref?.name);
             const features = e.features.map(f => getFeatureTreeNode(f));
 
             const children: TreeNode[] = superType ? [...features, { 
