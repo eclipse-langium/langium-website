@@ -142,7 +142,7 @@ class App extends React.Component<{}, AppState> {
 
 
 userConfig = createUserConfig({
-    languageId: 'domainmodel',
+    languageId: 'dmodel',
     code: example,
     worker: '../../showcase/libs/worker/domainmodelServerWorker.js',
     monarchGrammar: syntaxHighlighting
