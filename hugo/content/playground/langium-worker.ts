@@ -6,22 +6,23 @@
 
 import { NotificationType } from 'vscode-languageserver/browser.js';
 import { DocumentChange, createServerConnection } from './worker-utils.js';
-import { EmptyFileSystem, DocumentState } from 'langium';
-import { startLanguageServer } from 'langium/lsp';
+import { EmptyFileSystem, DocumentState, GrammarAST, ValidationChecks } from 'langium';
+import { LangiumServices, startLanguageServer } from 'langium/lsp';
 import { createLangiumGrammarServices } from 'langium/grammar';
+import { checkLeftRecursion } from './langium-validator.js';
 
 // establish a browser server connection
 const connection = createServerConnection();
 
 // Inject the shared services and language-specific services
-const { shared } = createLangiumGrammarServices({ connection, ...EmptyFileSystem });
+const services = createLangiumGrammarServices({ connection, ...EmptyFileSystem });
 
 // Start the language server with the shared services
-startLanguageServer(shared);
+startLanguageServer(services.shared);
 
 // Send a notification with the serialized AST after every document change
 const documentChangeNotification = new NotificationType<DocumentChange>('browser/DocumentChange');
-shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents => {
+services.shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents => {
     for (const document of documents) {
         connection.sendNotification(documentChangeNotification, {
             uri: document.uri.toString(),
@@ -30,3 +31,14 @@ shared.workspace.DocumentBuilder.onBuildPhase(DocumentState.Validated, documents
         });
     }
 });
+
+function registerValidationChecks(services: LangiumServices) {
+    const registry = services.validation.ValidationRegistry;
+    const validator = services.validation.DocumentValidator;
+    const checks: ValidationChecks<GrammarAST.LangiumGrammarAstType> = {
+        Grammar: checkLeftRecursion
+    };
+    registry.register(checks, validator);
+}
+
+registerValidationChecks(services.grammar);

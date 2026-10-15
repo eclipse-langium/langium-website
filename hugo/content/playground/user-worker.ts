@@ -38,7 +38,7 @@ async function startWithGrammar(grammarText: string): Promise<void> {
         grammar: grammarText,
         module: {
             validation: {
-                DocumentValidator: (services: LangiumServices) => new PlaygroundValidator(services) 
+                DocumentValidator: (services: LangiumServices) => new PlaygroundValidator(services)
             }
         },
         sharedModule: {
