@@ -1,7 +1,7 @@
 import { ValidationAcceptor, GrammarAST } from 'langium';
 
 export function checkLeftRecursion(grammar: GrammarAST.Grammar, accept: ValidationAcceptor): void {
-    const parserRules = grammar.rules.filter(rule => rule.$type === "ParserRule").map(rule => rule as GrammarAST.ParserRule);
+    const parserRules = grammar.rules.filter(GrammarAST.isParserRule).map(rule => rule as GrammarAST.ParserRule);
     const graph = new Map<GrammarAST.ParserRule, Set<GrammarAST.ParserRule>>();
     for (const rule of parserRules) {
         fromParserRule(rule, graph);
@@ -12,32 +12,35 @@ function fromParserRule(rule: GrammarAST.ParserRule, graph: Map<GrammarAST.Parse
     return fromAbstractElement(rule, rule.definition, graph);
 }
 function fromAbstractElement(from: GrammarAST.ParserRule, element: GrammarAST.AbstractElement, graph: Map<GrammarAST.ParserRule, Set<GrammarAST.ParserRule>>): void {
-    if (element.$type === "RuleCall") {
+    if (GrammarAST.isRuleCall(element)) {
         const ref = (element as GrammarAST.RuleCall).rule.ref;
-        if (ref?.$type === "ParserRule") {
+        if (GrammarAST.isParserRule(ref)) {
             if (!graph.has(from)) {
                 graph.set(from, new Set());
             }
             graph.get(from)!.add(ref);
         }
-    } else if (element.$type === "Group") {
+    } else if (GrammarAST.isGroup(element)) {
         const first = (element as GrammarAST.Group).elements[0];
         if (first) {
             fromAbstractElement(from, first, graph);
         }
-    } else if (element.$type === "Alternatives") {
+    } else if (GrammarAST.isAlternatives(element)) {
         (element as GrammarAST.Alternatives).elements.forEach(e => {
             fromAbstractElement(from, e, graph);
         });
-    } else if (element.$type === "UnorderedGroup") {
+    } else if (GrammarAST.isUnorderedGroup(element)) {
         (element as GrammarAST.UnorderedGroup).elements.forEach(e => {
             fromAbstractElement(from, e, graph);
         });
-    } else if (element.$type === "Assignment") {
+    } else if (GrammarAST.isAssignment(element)) {
         const terminal = (element as GrammarAST.Assignment).terminal;
         if (terminal) {
             fromAbstractElement(from, terminal, graph);
         }
+    } else if (GrammarAST.isInfixRule(element)) {
+        const infix = element as GrammarAST.InfixRule;
+        fromAbstractElement(from, infix.call, graph);
     }
 }
 function detectLeftRecursion(graph: Map<GrammarAST.ParserRule, Set<GrammarAST.ParserRule>>, accept: ValidationAcceptor): void {
